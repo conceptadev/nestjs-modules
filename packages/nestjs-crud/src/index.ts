@@ -10,9 +10,22 @@ export { CrudRelationBindingInterface } from './services/interfaces/crud-relatio
 export { CrudResponsePaginatedInterface } from './crud/interfaces/crud-response-paginated.interface';
 export { CrudResponseMetrics } from './crud/interfaces/crud-response-metrics.interface';
 export { CrudCreateManyInterface } from './crud/interfaces/crud-create-many.interface';
+export { CrudModuleForFeatureOptionsInterface } from './interfaces/crud-module-for-feature-options.interface';
 
 export { CrudAdapter } from './crud/adapters/crud.adapter';
 export { TypeOrmCrudAdapter } from './crud/adapters/typeorm-crud.adapter';
+
+// utilities
+export { createCrudAdapterProvider } from './util/create-crud-adapter-provider';
+export { createCrudServiceProvider } from './util/create-crud-service-provider';
+export {
+  InjectDynamicCrudAdapter,
+  getDynamicCrudAdapterToken,
+} from './util/inject-dynamic-crud-adapter.decorator';
+export {
+  InjectDynamicCrudService,
+  getDynamicCrudServiceToken,
+} from './util/inject-dynamic-crud-service.decorator';
 
 // controller decorators
 export { CrudController } from './crud/decorators/controller/crud-controller.decorator';

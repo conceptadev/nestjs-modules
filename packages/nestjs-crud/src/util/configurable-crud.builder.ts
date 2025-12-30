@@ -29,7 +29,10 @@ import { CrudService } from '../services/crud.service';
 
 import { ConfigurableCrudDecorators } from './interfaces/configurable-crud-decorators.interface';
 import { ConfigurableCrudHost } from './interfaces/configurable-crud-host.interface';
-import { ConfigurableCrudOptions } from './interfaces/configurable-crud-options.interface';
+import {
+  ConfigurableCrudOptions,
+  ConfigurableCrudServiceAdapterOption,
+} from './interfaces/configurable-crud-options.interface';
 
 export class ConfigurableCrudBuilder<
   Entity extends PlainLiteralObject,
@@ -67,14 +70,18 @@ export class ConfigurableCrudBuilder<
   build(): ConfigurableCrudHost<Entity, Creatable, Updatable, Replaceable> {
     const options = this.optionsTransform(this.options, this.extras);
     const decorators = this.generateDecorators(options);
-    const ConfigurableServiceClass = this.generateService<Entity>(
-      options.service,
-    );
+
+    // Use provided class or generate one from adapter
+    const ConfigurableServiceClass =
+      'useClass' in options.service
+        ? options.service.useClass
+        : this.generateService<Entity>(options.service);
+
     const ConfigurableControllerClass = this.generateClass(options, decorators);
 
     return {
       ConfigurableServiceProvider: {
-        provide: options.service.injectionToken,
+        provide: options.service.serviceToken,
         useClass: ConfigurableServiceClass,
       },
       ConfigurableServiceClass,
@@ -197,7 +204,7 @@ export class ConfigurableCrudBuilder<
       Replaceable
     > {
       constructor(
-        @Inject(options.service.injectionToken)
+        @Inject(options.service.serviceToken)
         protected crudService: CrudService<Entity>,
       ) {
         super(crudService);
@@ -388,13 +395,13 @@ export class ConfigurableCrudBuilder<
   }
 
   private generateService<Entity extends PlainLiteralObject>(
-    options: ConfigurableCrudOptions<Entity>['service'],
+    options: ConfigurableCrudServiceAdapterOption<Entity>,
   ): Type<CrudService<Entity>> {
-    const { adapter } = options;
+    const { adapterToken } = options;
 
     class InternalServiceClass extends CrudService<Entity> {
       constructor(
-        @Inject(adapter)
+        @Inject(adapterToken)
         protected readonly crudAdapter: CrudAdapter<Entity>,
       ) {
         super(crudAdapter);

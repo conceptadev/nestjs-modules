@@ -47,8 +47,8 @@ export class OrgProfileCrudBuilder<
   constructor(
     options: ConfigurableCrudOptions<Entity> = {
       service: {
-        adapter: OrgProfileTypeOrmCrudAdapter<Entity>,
-        injectionToken: ORG_MODULE_CONFIGURABLE_CRUD_PROFILE_SERVICE_TOKEN,
+        adapterToken: OrgProfileTypeOrmCrudAdapter<Entity>,
+        serviceToken: ORG_MODULE_CONFIGURABLE_CRUD_PROFILE_SERVICE_TOKEN,
       },
       controller: {
         path: 'org-profile',

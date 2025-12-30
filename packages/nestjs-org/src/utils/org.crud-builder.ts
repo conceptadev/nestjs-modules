@@ -50,8 +50,8 @@ export class OrgCrudBuilder<
   constructor(
     options: ConfigurableCrudOptions<Entity> = {
       service: {
-        adapter: OrgTypeOrmCrudAdapter<Entity>,
-        injectionToken: ORG_MODULE_CONFIGURABLE_CRUD_SERVICE_TOKEN,
+        adapterToken: OrgTypeOrmCrudAdapter<Entity>,
+        serviceToken: ORG_MODULE_CONFIGURABLE_CRUD_SERVICE_TOKEN,
       },
       controller: {
         path: 'org',

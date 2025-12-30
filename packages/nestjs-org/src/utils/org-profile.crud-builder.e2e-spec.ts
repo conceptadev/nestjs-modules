@@ -79,8 +79,10 @@ describe('Org Profile Crud Builder (e2e)', () => {
   ): ConfigurableCrudOptions<OrgProfileEntityFixture> => {
     if (!extras) return options;
 
-    options.service.adapter =
-      OrgProfileTypeOrmCrudAdapter<OrgProfileEntityFixture>;
+    if ('adapter' in options.service) {
+      options.service.adapter =
+        OrgProfileTypeOrmCrudAdapter<OrgProfileEntityFixture>;
+    }
     options.controller.model.type = extras.model.type;
     if (options.createOne) options.createOne.dto = extras.createOne.dto;
     if (options.updateOne) options.updateOne.dto = extras.updateOne.dto;

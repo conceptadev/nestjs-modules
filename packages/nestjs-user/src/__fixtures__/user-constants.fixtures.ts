@@ -24,8 +24,9 @@ import { UserProfileEntityFixture } from './user-profile.entity.fixture';
 export const USER_PROFILE_CRUD_OPTIONS_DEFAULT: ConfigurableCrudOptions<UserProfileEntityFixture> =
   {
     service: {
-      adapter: UserProfileTypeOrmCrudAdapterFixture<UserProfileEntityFixture>,
-      injectionToken: USER_MODULE_CONFIGURABLE_CRUD_PROFILE_SERVICE_TOKEN,
+      adapterToken:
+        UserProfileTypeOrmCrudAdapterFixture<UserProfileEntityFixture>,
+      serviceToken: USER_MODULE_CONFIGURABLE_CRUD_PROFILE_SERVICE_TOKEN,
     },
     controller: {
       path: 'user-profile',

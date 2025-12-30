@@ -1,4 +1,8 @@
+import { Inject, Injectable } from '@nestjs/common';
+
+import { CrudAdapter } from '../../crud/adapters/crud.adapter';
 import { CrudSoftDelete } from '../../crud/decorators/routes/crud-soft-delete.decorator';
+import { CrudService } from '../../services/crud.service';
 import { ConfigurableCrudBuilder } from '../../util/configurable-crud.builder';
 import { PhotoCreateManyDtoFixture } from '../photo/dto/photo-create-many.dto.fixture';
 import { PhotoCreateDtoFixture } from '../photo/dto/photo-create.dto.fixture';
@@ -10,7 +14,30 @@ import { PhotoEntityInterfaceFixture } from '../photo/interfaces/photo-entity.in
 import { PhotoUpdatableInterfaceFixture } from '../photo/interfaces/photo-updatable.interface.fixture';
 import { PhotoTypeOrmCrudAdapterFixture } from '../photo/photo-typeorm-crud.adapter.fixture';
 
-export const PHOTO_CRUD_ADAPTER_TOKEN = Symbol('__PHOTO_CRUD_ADAPTER_TOKEN__');
+export const PHOTO_USECLASS_SERVICE_TOKEN = Symbol(
+  '__PHOTO_USECLASS_SERVICE_TOKEN__',
+);
+
+/**
+ * Custom service class that will be passed via useClass option
+ * Has a custom method to verify it's being used
+ */
+@Injectable()
+export class PhotoUseClassCrudServiceFixture extends CrudService<PhotoEntityInterfaceFixture> {
+  constructor(
+    @Inject(PhotoTypeOrmCrudAdapterFixture)
+    protected readonly crudAdapter: CrudAdapter<PhotoEntityInterfaceFixture>,
+  ) {
+    super(crudAdapter);
+  }
+
+  /**
+   * Custom method to verify this service is being used
+   */
+  customServiceMethod(): string {
+    return 'custom-service-used';
+  }
+}
 
 const crudBuilder = new ConfigurableCrudBuilder<
   PhotoEntityInterfaceFixture,
@@ -18,8 +45,8 @@ const crudBuilder = new ConfigurableCrudBuilder<
   PhotoUpdatableInterfaceFixture
 >({
   service: {
-    adapterToken: PhotoTypeOrmCrudAdapterFixture,
-    serviceToken: PHOTO_CRUD_ADAPTER_TOKEN,
+    useClass: PhotoUseClassCrudServiceFixture,
+    serviceToken: PHOTO_USECLASS_SERVICE_TOKEN,
   },
   controller: {
     path: 'photo',
@@ -48,8 +75,17 @@ const crudBuilder = new ConfigurableCrudBuilder<
   recoverOne: { path: 'recover/:id' },
 });
 
-const { ConfigurableControllerClass, ConfigurableServiceClass } =
-  crudBuilder.build();
+const {
+  ConfigurableControllerClass,
+  ConfigurableServiceClass,
+  ConfigurableServiceProvider,
+} = crudBuilder.build();
 
-export class PhotoCcbCrudServiceFixture extends ConfigurableServiceClass {}
-export class PhotoCcbControllerFixture extends ConfigurableControllerClass {}
+// Verify that ConfigurableServiceClass is the same as our custom class
+export const serviceClassIsCustom =
+  ConfigurableServiceClass === PhotoUseClassCrudServiceFixture;
+
+// Export the provider for module registration
+export { ConfigurableServiceProvider as PhotoUseClassServiceProvider };
+
+export class PhotoCcbUseClassControllerFixture extends ConfigurableControllerClass {}

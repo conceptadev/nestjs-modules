@@ -8,6 +8,7 @@ import { SeedingSource } from '@concepta/typeorm-seeding';
 
 import { AppCcbCustomModuleFixture } from '../__fixtures__/app-ccb-custom.module.fixture';
 import { AppCcbSubModuleFixture } from '../__fixtures__/app-ccb-sub.module.fixture';
+import { AppCcbUseClassModuleFixture } from '../__fixtures__/app-ccb-useclass.module.fixture';
 import { AppCcbModuleFixture } from '../__fixtures__/app-ccb.module.fixture';
 import { PhotoFixture } from '../__fixtures__/photo/photo.entity.fixture';
 import { PhotoFactoryFixture } from '../__fixtures__/photo/photo.factory.fixture';
@@ -17,6 +18,7 @@ describe.each([
   { testModule: AppCcbModuleFixture },
   { testModule: AppCcbCustomModuleFixture },
   { testModule: AppCcbSubModuleFixture },
+  { testModule: AppCcbUseClassModuleFixture },
 ])('Configurable Crud Builder (e2e)', ({ testModule }) => {
   let app: INestApplication;
   let seedingSource: SeedingSource;

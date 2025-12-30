@@ -13,12 +13,35 @@ import {
   CrudReplaceOneOptionsInterface,
   CrudUpdateOneOptionsInterface,
 } from '../../crud/interfaces/crud-route-options.interface';
+import { CrudService } from '../../services/crud.service';
+
+/**
+ * Service config with adapter token - generates a service class that injects the adapter
+ */
+export interface ConfigurableCrudServiceAdapterOption<
+  Entity extends PlainLiteralObject,
+> {
+  serviceToken: InjectionToken<CrudService<Entity>>;
+  adapterToken: InjectionToken<CrudAdapter<Entity>>;
+}
+
+/**
+ * Service config with useClass - uses the provided service class directly
+ */
+export interface ConfigurableCrudServiceUseClassOption<
+  Entity extends PlainLiteralObject,
+> {
+  serviceToken: InjectionToken<CrudService<Entity>>;
+  useClass: Type<CrudService<Entity>>;
+}
 
 export interface ConfigurableCrudOptions<Entity extends PlainLiteralObject> {
-  service: {
-    injectionToken: InjectionToken;
-    adapter: Type<CrudAdapter<Entity>>;
-  };
+  /**
+   * Service configuration - either adapter (generate) or useClass (use directly)
+   */
+  service:
+    | ConfigurableCrudServiceAdapterOption<Entity>
+    | ConfigurableCrudServiceUseClassOption<Entity>;
   controller: CrudControllerOptionsInterface<Entity> &
     CrudExtraDecoratorsInterface;
   getMany?: CrudReadAllOptionsInterface<Entity> & CrudExtraDecoratorsInterface;

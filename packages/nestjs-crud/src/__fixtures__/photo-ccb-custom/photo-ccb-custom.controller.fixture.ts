@@ -25,8 +25,8 @@ const crudBuilder = new ConfigurableCrudBuilder<
   PhotoUpdatableInterfaceFixture
 >({
   service: {
-    adapter: PhotoTypeOrmCrudAdapterFixture,
-    injectionToken: PHOTO_CRUD_SERVICE_TOKEN,
+    adapterToken: PhotoTypeOrmCrudAdapterFixture,
+    serviceToken: PHOTO_CRUD_SERVICE_TOKEN,
   },
   controller: {
     path: 'photo',

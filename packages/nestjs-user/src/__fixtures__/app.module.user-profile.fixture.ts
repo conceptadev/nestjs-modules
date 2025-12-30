@@ -56,8 +56,10 @@ const myOptionsTransform: ConfigurableCrudOptionsTransformer<
   if (!extras) return options;
 
   options.controller.model.type = extras.model.type;
-  options.service.adapter =
-    UserProfileTypeOrmCrudAdapterFixture<UserProfileEntityFixture>;
+  if ('adapter' in options.service) {
+    options.service.adapter =
+      UserProfileTypeOrmCrudAdapterFixture<UserProfileEntityFixture>;
+  }
   if (options.createOne) options.createOne.dto = extras.createOne.dto;
   if (options.updateOne) options.updateOne.dto = extras.updateOne.dto;
   return options;
