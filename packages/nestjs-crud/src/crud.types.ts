@@ -9,14 +9,11 @@ export type CrudValidationOptions<Entity extends PlainLiteralObject> =
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 export type DecoratorTargetObject<T = any> = Type<T> | T;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ReflectionTargetOrHandler = CallableFunction | Type<any>;
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+export type ControllerTarget = Function;
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-export type AdditionalCrudMethodArgs = any[];
-
-export type CrudEntityColumn<Entity extends PlainLiteralObject> = keyof Entity &
-  string;
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+export type MethodHandler = Function;
 
 export type ConfigurableCrudOptionsTransformer<
   Entity extends PlainLiteralObject,

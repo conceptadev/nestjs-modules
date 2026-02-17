@@ -1,9 +1,10 @@
-import { CondOperator } from '../../../request/types/crud-request-query.types';
+import { Where, WhereOperator } from '@concepta/nestjs-common';
+
 import { createPaginatedResponse } from '../../__FIXTURES__/crud-federation-mock-helpers';
 import {
-  assertServiceCallCounts,
-  assertRootGetManyRequest,
-  assertRelationRequest,
+  assertHandlerCallCounts,
+  assertRootListQuery,
+  assertRelationQuery,
   assertRelationFirst,
   assertResultStructure,
   assertEnrichment,
@@ -16,10 +17,7 @@ import {
   createRelationSortPaginationSet,
   createRelationSortEmptySet,
 } from '../../__FIXTURES__/crud-federation-test-data';
-import {
-  createOneToManyForwardRelation,
-  TestRelationService,
-} from '../../__FIXTURES__/crud-federation-test-entities';
+import { createOneToManyForwardRelation } from '../../__FIXTURES__/crud-federation-test-entities';
 import {
   setupCrudFederationTests,
   cleanupCrudFederationTests,
@@ -28,7 +26,7 @@ import {
 
 /**
  * Behavior tests for relation sort strategy (Scenario 13)
- * Relation sort requires INNER JOIN semantics with $notnull filter on join key
+ * Relation sort requires INNER JOIN semantics with $nnull filter on join key
  * Causes relation-first sequencing with sort applied to driving relation
  */
 describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
@@ -36,8 +34,6 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
 
   beforeEach(async () => {
     mocks = await setupCrudFederationTests();
-    // Register the 'relations' relation that tests use
-    mocks.registerRelation(mocks.mockRelationService);
   });
 
   afterEach(async () => {
@@ -45,14 +41,20 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
   });
 
   describe('Forward relationship relation sort', () => {
-    it('should sort roots by relation field with distinctFilter and $notnull filter', async () => {
+    it('should sort roots by relation field with distinctFilter and $nnull filter', async () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } }, // distinctFilter for uniqueness
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        }, // distinctFilter for uniqueness
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           sort: ['relations.title,ASC'],
           page: '1',
@@ -64,7 +66,7 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
       const data = createRelationSortByTitleSet();
 
       // Sequential approach: constraint call + enrichment call
-      mocks.mockRelationService.getMany
+      mocks.relationListSpy
         .mockResolvedValueOnce(
           createPaginatedResponse(data.relationsByTitle.slice(0, 3), {
             total: 3,
@@ -75,7 +77,7 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
             total: 4,
           }),
         );
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.rootsInNaturalOrder, {
           limit: 10,
           total: 3,
@@ -83,74 +85,57 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockRelationService, count: 2 }, // constraint + enrichment
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.relationListSpy, count: 2 }, // constraint + enrichment
       ]);
 
-      // Verify first call: relation service called with user pagination and distinctFilter applied
-      assertRelationRequest(
-        mocks.mockRelationService,
+      // Verify first call: relation handler called with user pagination and distinctFilter applied
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
           limit: 10,
           offset: 0,
           page: undefined,
           sort: [{ field: 'title', order: 'ASC' }],
-          search: {
-            $and: [
-              { rootId: { [CondOperator.NOT_NULL]: true } },
-              { isLatest: { $eq: true } },
-            ],
-          },
+          filter: [
+            Where.rel('relations', Where.notNull('rootId')),
+            Where.rel('relations', Where.eq('isLatest', true)),
+          ],
         },
         0,
       );
 
       // Verify distinctFilter was applied to first call
-      assertRelationRequest(mocks.mockRelationService, {
+      assertRelationQuery(mocks.relationListSpy, {
         filter: [
-          {
-            field: 'isLatest',
-            operator: '$eq',
-            value: true,
-            relation: 'relations',
-          },
-          {
-            field: 'rootId',
-            operator: '$notnull',
-            relation: 'relations',
-            value: '',
-          },
+          Where.rel('relations', Where.notNull('rootId')),
+          Where.rel('relations', Where.eq('isLatest', true)),
         ],
         limit: 10,
         offset: 0,
-        search: {
-          $and: [{ rootId: { $notnull: true } }, { isLatest: { $eq: true } }],
-        },
         sort: [{ field: 'title', order: 'ASC' }],
       });
 
       // Verify second call: enrichment call for discovered root IDs
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
-          search: {
-            $and: [
-              { rootId: { $notnull: true } },
-              { isLatest: { $eq: true } },
-              { rootId: { $in: [2, 1, 3] } },
-            ],
-          },
+          filter: [
+            Where.rel('relations', Where.notNull('rootId')),
+            Where.rel('relations', Where.eq('isLatest', true)),
+            Where.rel('relations', Where.in('rootId', [2, 1, 3])),
+          ],
         },
         1,
       );
 
       // Verify root request has discovered IDs
-      assertRootGetManyRequest(mocks.mockRootService, {
-        search: { id: { $in: [2, 1, 3] } }, // Root IDs discovered from sorted relations
+      assertRootListQuery(mocks.rootListSpy, {
+        filter: [Where.in('id', [2, 1, 3])], // Root IDs discovered from sorted relations
         page: 1,
         limit: 10,
         sort: [], // No root sorts (relation sort takes precedence)
@@ -177,10 +162,16 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } }, // distinctFilter for uniqueness
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        }, // distinctFilter for uniqueness
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           filter: ['relations.priority||$gte||5'],
           sort: ['relations.priority,DESC'],
@@ -204,14 +195,14 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
       const allHighPriorityRelations = data.relationsByPriority.filter(
         (relation) => relation.priority >= 5,
       );
-      mocks.mockRelationService.getMany
+      mocks.relationListSpy
         .mockResolvedValueOnce(
           createPaginatedResponse(highPriorityRelations, { total: 3 }),
         )
         .mockResolvedValueOnce(
           createPaginatedResponse(allHighPriorityRelations, { total: 4 }),
         );
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.uniqueRootsInOrder, {
           limit: 10,
           total: 3,
@@ -219,55 +210,51 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockRelationService, count: 2 }, // constraint + enrichment
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.relationListSpy, count: 2 }, // constraint + enrichment
       ]);
 
       // Verify relation called first (relation-sort pattern)
-      assertRelationFirst(mocks.mockRootService, [mocks.mockRelationService]);
+      assertRelationFirst(mocks.rootListSpy, [mocks.relationListSpy]);
 
-      // Verify first call: relation service called with multiple filters and sort
-      assertRelationRequest(
-        mocks.mockRelationService,
+      // Verify first call: relation handler called with multiple filters and sort
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
           limit: 10,
           offset: 0,
           page: undefined,
-          search: {
-            $and: [
-              { priority: { $gte: 5 } },
-              { rootId: { $notnull: true } },
-              { isLatest: { $eq: true } },
-            ],
-          },
+          filter: [
+            Where.rel('relations', Where.gte('priority', 5)),
+            Where.rel('relations', Where.notNull('rootId')),
+            Where.rel('relations', Where.eq('isLatest', true)),
+          ],
           sort: [{ field: 'priority', order: 'DESC' }],
         },
         0,
       );
 
       // Verify second call: enrichment call for discovered root IDs
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
-          search: {
-            $and: [
-              { priority: { $gte: 5 } },
-              { rootId: { $notnull: true } },
-              { isLatest: { $eq: true } },
-              { rootId: { $in: [1, 2, 3] } },
-            ],
-          },
+          filter: [
+            Where.rel('relations', Where.gte('priority', 5)),
+            Where.rel('relations', Where.notNull('rootId')),
+            Where.rel('relations', Where.eq('isLatest', true)),
+            Where.rel('relations', Where.in('rootId', [1, 2, 3])),
+          ],
         },
         1,
       );
 
       // Verify root request has discovered IDs and correct pagination
-      assertRootGetManyRequest(mocks.mockRootService, {
-        search: { id: { $in: [1, 2, 3] } },
+      assertRootListQuery(mocks.rootListSpy, {
+        filter: [Where.in('id', [1, 2, 3])],
         page: 1,
         limit: 10,
         sort: [],
@@ -282,10 +269,16 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } }, // distinctFilter for uniqueness
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        }, // distinctFilter for uniqueness
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           sort: ['relations.priority,DESC'],
           page: '1',
@@ -303,7 +296,7 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
 
       // First call: distinctFilter applied for sorting (unique relations)
       // Second call: all relations for enrichment
-      mocks.mockRelationService.getMany
+      mocks.relationListSpy
         .mockResolvedValueOnce(
           createPaginatedResponse(uniqueRelations, { total: 3 }),
         )
@@ -312,7 +305,7 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
             total: data.relationsByPriority.length,
           }),
         );
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.uniqueRootsInOrder, {
           limit: 10,
           total: 3,
@@ -320,50 +313,49 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockRelationService, count: 2 }, // constraint + enrichment
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.relationListSpy, count: 2 }, // constraint + enrichment
       ]);
 
       // Verify relation called first (relation-sort pattern)
-      assertRelationFirst(mocks.mockRootService, [mocks.mockRelationService]);
+      assertRelationFirst(mocks.rootListSpy, [mocks.relationListSpy]);
 
-      // Verify first call: relation service called with filter and sort
-      assertRelationRequest(
-        mocks.mockRelationService,
+      // Verify first call: relation handler called with filter and sort
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
           limit: 10,
           offset: 0,
           page: undefined,
-          search: {
-            $and: [{ rootId: { $notnull: true } }, { isLatest: { $eq: true } }],
-          },
+          filter: [
+            Where.rel('relations', Where.notNull('rootId')),
+            Where.rel('relations', Where.eq('isLatest', true)),
+          ],
           sort: [{ field: 'priority', order: 'DESC' }],
         },
         0,
       );
 
       // Verify second call: enrichment call for discovered root IDs
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
-          search: {
-            $and: [
-              { rootId: { $notnull: true } },
-              { isLatest: { $eq: true } },
-              { rootId: { $in: [1, 2, 3] } },
-            ],
-          },
+          filter: [
+            Where.rel('relations', Where.notNull('rootId')),
+            Where.rel('relations', Where.eq('isLatest', true)),
+            Where.rel('relations', Where.in('rootId', [1, 2, 3])),
+          ],
         },
         1,
       );
 
       // Verify root request has discovered IDs and correct pagination
-      assertRootGetManyRequest(mocks.mockRootService, {
-        search: { id: { $in: [1, 2, 3] } }, // Deduplicated root IDs
+      assertRootListQuery(mocks.rootListSpy, {
+        filter: [Where.in('id', [1, 2, 3])], // Deduplicated root IDs
         page: 1,
         limit: 10,
         sort: [],
@@ -378,10 +370,16 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } }, // distinctFilter for uniqueness
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        }, // distinctFilter for uniqueness
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           filter: ['relations.status||$eq||archived'],
           sort: ['relations.title,ASC'],
@@ -391,33 +389,31 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
 
       const data = createRelationSortEmptySet();
 
-      mocks.mockRelationService.getMany.mockResolvedValue(
+      mocks.relationListSpy.mockResolvedValue(
         createPaginatedResponse(data.relations, { total: 0 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
       // ASSERT - No relations found, so root not called
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 0 },
-        { service: mocks.mockRelationService, count: 1 }, // Only one call since no relations found
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 0 },
+        { handler: mocks.relationListSpy, count: 1 }, // Only one call since no relations found
       ]);
 
-      // Verify the single relation service call had correct filters and sort
-      assertRelationRequest(
-        mocks.mockRelationService,
+      // Verify the single relation handler call had correct filters and sort
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
           limit: 10,
           offset: 0,
           page: undefined,
-          search: {
-            $and: [
-              { status: { $eq: 'archived' } },
-              { rootId: { $notnull: true } },
-              { isLatest: { $eq: true } }, // distinctFilter
-            ],
-          },
+          filter: [
+            Where.rel('relations', Where.eq('status', 'archived')),
+            Where.rel('relations', Where.notNull('rootId')),
+            Where.rel('relations', Where.eq('isLatest', true)),
+          ],
           sort: [{ field: 'title', order: 'ASC' }],
         },
         0,
@@ -430,10 +426,16 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } }, // distinctFilter for uniqueness
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        }, // distinctFilter for uniqueness
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           sort: ['relations.title,ASC'],
           page: '1',
@@ -447,62 +449,61 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
       // First call: distinctFilter applied for sorting (paginated relations - first 5 for page 1)
       // Second call: enrichment for discovered root IDs from page 1 (same 5 relations)
       const firstPageRelations = data.allRelationsSorted.slice(0, 5); // First 5 relations for page 1
-      mocks.mockRelationService.getMany
+      mocks.relationListSpy
         .mockResolvedValueOnce(
           createPaginatedResponse(firstPageRelations, { total: 10 }), // Total across all pages
         )
         .mockResolvedValueOnce(
           createPaginatedResponse(firstPageRelations, { total: 5 }), // Current page count
         );
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.firstPageRoots, { limit: 5, total: 10 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockRelationService, count: 2 }, // constraint + enrichment
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.relationListSpy, count: 2 }, // constraint + enrichment
       ]);
 
       // Verify relation called first (relation-sort pattern)
-      assertRelationFirst(mocks.mockRootService, [mocks.mockRelationService]);
+      assertRelationFirst(mocks.rootListSpy, [mocks.relationListSpy]);
 
-      // Verify first call: relation service called with filter and sort
-      assertRelationRequest(
-        mocks.mockRelationService,
+      // Verify first call: relation handler called with filter and sort
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
           limit: 5,
           offset: 0,
           page: undefined,
-          search: {
-            $and: [{ rootId: { $notnull: true } }, { isLatest: { $eq: true } }],
-          },
+          filter: [
+            Where.rel('relations', Where.notNull('rootId')),
+            Where.rel('relations', Where.eq('isLatest', true)),
+          ],
           sort: [{ field: 'title', order: 'ASC' }],
         },
         0,
       );
 
       // Verify second call: enrichment call for paginated root IDs only (first page)
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
-          search: {
-            $and: [
-              { rootId: { $notnull: true } },
-              { isLatest: { $eq: true } }, // distinctFilter
-              { rootId: { $in: [5, 2, 8, 1, 9] } }, // Only first page root IDs
-            ],
-          },
+          filter: [
+            Where.rel('relations', Where.notNull('rootId')),
+            Where.rel('relations', Where.eq('isLatest', true)),
+            Where.rel('relations', Where.in('rootId', [5, 2, 8, 1, 9])),
+          ],
         },
         1,
       );
 
       // Verify root request has only paginated root IDs (page 1: first 5)
-      assertRootGetManyRequest(mocks.mockRootService, {
-        search: { id: { $in: [5, 2, 8, 1, 9] } }, // Only first page root IDs
+      assertRootListQuery(mocks.rootListSpy, {
+        filter: [Where.in('id', [5, 2, 8, 1, 9])], // Only first page root IDs
         limit: 5, // Page limit, not total discovered count
         page: 1,
         sort: [],
@@ -522,10 +523,16 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } }, // distinctFilter for uniqueness
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        }, // distinctFilter for uniqueness
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           sort: ['relations.title,ASC'],
           page: '2',
@@ -539,14 +546,14 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
       // First call: distinctFilter applied for sorting (paginated relations - second 5 for page 2)
       // Second call: enrichment for discovered root IDs from page 2 (same 5 relations)
       const secondPageRelations = data.allRelationsSorted.slice(5, 10); // Second 5 relations for page 2
-      mocks.mockRelationService.getMany
+      mocks.relationListSpy
         .mockResolvedValueOnce(
           createPaginatedResponse(secondPageRelations, { total: 10 }), // Total across all pages
         )
         .mockResolvedValueOnce(
           createPaginatedResponse(secondPageRelations, { total: 5 }), // Current page count
         );
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.secondPageRoots, {
           limit: 5,
           total: 10,
@@ -554,50 +561,49 @@ describe('CrudFederationService - Behavior: Relation Sort Strategy', () => {
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockRelationService, count: 2 }, // constraint + enrichment
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.relationListSpy, count: 2 }, // constraint + enrichment
       ]);
 
       // Verify relation called first (relation-sort pattern)
-      assertRelationFirst(mocks.mockRootService, [mocks.mockRelationService]);
+      assertRelationFirst(mocks.rootListSpy, [mocks.relationListSpy]);
 
-      // Verify first call: relation service called with filter and sort
-      assertRelationRequest(
-        mocks.mockRelationService,
+      // Verify first call: relation handler called with filter and sort
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
           limit: 5,
           offset: 5,
           page: undefined,
-          search: {
-            $and: [{ rootId: { $notnull: true } }, { isLatest: { $eq: true } }],
-          },
+          filter: [
+            Where.rel('relations', Where.notNull('rootId')),
+            Where.rel('relations', Where.eq('isLatest', true)),
+          ],
           sort: [{ field: 'title', order: 'ASC' }],
         },
         0,
       );
 
       // Verify second call: enrichment call for paginated root IDs only (second page)
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
-          search: {
-            $and: [
-              { rootId: { $notnull: true } },
-              { isLatest: { $eq: true } }, // distinctFilter
-              { rootId: { $in: [4, 7, 3, 6, 10] } }, // Only second page root IDs
-            ],
-          },
+          filter: [
+            Where.rel('relations', Where.notNull('rootId')),
+            Where.rel('relations', Where.eq('isLatest', true)),
+            Where.rel('relations', Where.in('rootId', [4, 7, 3, 6, 10])),
+          ],
         },
         1,
       );
 
       // Verify root request has only paginated root IDs (page 2: second 5)
-      assertRootGetManyRequest(mocks.mockRootService, {
-        search: { id: { $in: [4, 7, 3, 6, 10] } }, // Only second page root IDs
+      assertRootListQuery(mocks.rootListSpy, {
+        filter: [Where.in('id', [4, 7, 3, 6, 10])], // Only second page root IDs
         page: 1,
         limit: 5,
         sort: [],

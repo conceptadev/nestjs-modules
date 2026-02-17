@@ -4,14 +4,6 @@ import { BaseEntity } from '../base-entity';
 import { CompanyEntity } from '../company/company.entity';
 import { UserProfileEntity } from '../user-profile/user-profile.entity';
 
-export class NameEntity {
-  @Column({ type: 'varchar', nullable: true })
-  first!: string | null;
-
-  @Column({ type: 'varchar', nullable: true })
-  last!: string | null;
-}
-
 @Entity('users')
 export class UserEntity extends BaseEntity {
   @Column({ type: 'varchar', length: 255, nullable: false, unique: true })
@@ -20,8 +12,11 @@ export class UserEntity extends BaseEntity {
   @Column({ type: 'boolean', default: true })
   isActive!: boolean;
 
-  @Column(() => NameEntity)
-  name!: NameEntity;
+  @Column({ type: 'varchar', nullable: true })
+  firstName!: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  lastName!: string | null;
 
   @Column({ nullable: false })
   companyId?: number;

@@ -18,7 +18,4 @@ export const hasValue = (val: unknown): boolean =>
     : isValue(val);
 
 export const isDateString = (val: string): boolean =>
-  isStringFull(val) &&
-  /^\d{4}-[01]\d-[0-3]\d(?:T[0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|[-+][0-2]\d(?::?[0-5]\d)?)?)?$/g.test(
-    val,
-  );
+  isStringFull(val) && !isNaN(Date.parse(val));

@@ -1,20 +1,20 @@
+import { Where } from '@concepta/nestjs-common';
+
 import { createPaginatedResponse } from '../../__FIXTURES__/crud-federation-mock-helpers';
 import {
-  assertServiceCallCounts,
+  assertHandlerCallCounts,
   assertResultStructure,
   assertOneToOneEnrichment,
   assertRootFirst,
   assertLeftJoinBehavior,
-  assertRootGetManyRequest,
-  assertRelationRequest,
+  assertRootListQuery,
+  assertRelationQuery,
 } from '../../__FIXTURES__/crud-federation-test-assertions';
 import { createMultiRelationSet } from '../../__FIXTURES__/crud-federation-test-data';
 import {
   createOneToOneForwardRelation,
   TestProfile,
   TestSettings,
-  TestProfileService,
-  TestSettingsService,
 } from '../../__FIXTURES__/crud-federation-test-entities';
 import {
   setupCrudFederationTests,
@@ -32,9 +32,6 @@ describe('CrudFederationService - Integration: One-to-One Forward Relationships'
 
   beforeEach(async () => {
     mocks = await setupCrudFederationTests();
-    // Register the relations that tests use (one-to-one cardinality)
-    mocks.registerRelation(mocks.mockProfileService);
-    mocks.registerRelation(mocks.mockSettingsService);
   });
 
   afterEach(async () => {
@@ -44,11 +41,8 @@ describe('CrudFederationService - Integration: One-to-One Forward Relationships'
   describe('Root with existing related entity', () => {
     it('should populate profile entity object on root (LEFT JOIN)', async () => {
       // ARRANGE
-      const relation = createOneToOneForwardRelation(
-        'profile',
-        TestProfileService,
-      );
-      const req = mocks.createTestRequest({ page: '1', limit: '10' }, [
+      const relation = createOneToOneForwardRelation('profile', 'TestProfile');
+      const req = await mocks.createTestQuery({ page: '1', limit: '10' }, [
         relation,
       ]);
 
@@ -57,35 +51,33 @@ describe('CrudFederationService - Integration: One-to-One Forward Relationships'
       const rootData = data.roots;
       const profileData = data.profiles;
 
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(rootData, { limit: 10, total: 2 }),
       );
-      mocks.mockProfileService.getMany.mockResolvedValue(
+      mocks.profileListSpy.mockResolvedValue(
         createPaginatedResponse(profileData, { total: 1 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockProfileService, count: 1 },
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.profileListSpy, count: 1 },
       ]);
-      assertRootFirst(mocks.mockRootService, [mocks.mockProfileService]);
-      assertLeftJoinBehavior(mocks.mockRootService);
+      assertRootFirst(mocks.rootListSpy, [mocks.profileListSpy]);
+      assertLeftJoinBehavior(mocks.rootListSpy);
 
       // Verify root service parameters
-      assertRootGetManyRequest(mocks.mockRootService, {
+      assertRootListQuery(mocks.rootListSpy, {
         page: 1,
         limit: 10,
       });
 
-      // Verify profile service called with root IDs
-      assertRelationRequest(mocks.mockProfileService, {
-        search: {
-          rootId: { $in: [1, 2] },
-        },
+      // Verify profile handler called with root IDs
+      assertRelationQuery(mocks.profileListSpy, {
+        filter: [Where.rel('profile', Where.in('rootId', [1, 2]))],
       });
 
       // ASSERT - Result verification
@@ -105,11 +97,8 @@ describe('CrudFederationService - Integration: One-to-One Forward Relationships'
   describe('Root with missing related entity', () => {
     it('should populate null profile object on root, root still included (LEFT JOIN)', async () => {
       // ARRANGE
-      const relation = createOneToOneForwardRelation(
-        'profile',
-        TestProfileService,
-      );
-      const req = mocks.createTestRequest({ page: '1', limit: '10' }, [
+      const relation = createOneToOneForwardRelation('profile', 'TestProfile');
+      const req = await mocks.createTestQuery({ page: '1', limit: '10' }, [
         relation,
       ]);
 
@@ -118,35 +107,33 @@ describe('CrudFederationService - Integration: One-to-One Forward Relationships'
       const rootData = data.roots;
       const profileData: TestProfile[] = []; // No profiles for this test
 
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(rootData, { limit: 10, total: 2 }),
       );
-      mocks.mockProfileService.getMany.mockResolvedValue(
+      mocks.profileListSpy.mockResolvedValue(
         createPaginatedResponse(profileData, { total: 0 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockProfileService, count: 1 },
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.profileListSpy, count: 1 },
       ]);
-      assertRootFirst(mocks.mockRootService, [mocks.mockProfileService]);
-      assertLeftJoinBehavior(mocks.mockRootService);
+      assertRootFirst(mocks.rootListSpy, [mocks.profileListSpy]);
+      assertLeftJoinBehavior(mocks.rootListSpy);
 
       // Verify root service parameters
-      assertRootGetManyRequest(mocks.mockRootService, {
+      assertRootListQuery(mocks.rootListSpy, {
         page: 1,
         limit: 10,
       });
 
-      // Verify profile service called with root IDs
-      assertRelationRequest(mocks.mockProfileService, {
-        search: {
-          rootId: { $in: [1, 2] },
-        },
+      // Verify profile handler called with root IDs
+      assertRelationQuery(mocks.profileListSpy, {
+        filter: [Where.rel('profile', Where.in('rootId', [1, 2]))],
       });
 
       // ASSERT - Result verification (LEFT JOIN: all roots returned with null profiles)
@@ -163,13 +150,13 @@ describe('CrudFederationService - Integration: One-to-One Forward Relationships'
       // ARRANGE
       const profileRelation = createOneToOneForwardRelation(
         'profile',
-        TestProfileService,
+        'TestProfile',
       );
       const settingsRelation = createOneToOneForwardRelation(
         'settings',
-        TestSettingsService,
+        'TestSettings',
       );
-      const req = mocks.createTestRequest({ page: '1', limit: '10' }, [
+      const req = await mocks.createTestQuery({ page: '1', limit: '10' }, [
         profileRelation,
         settingsRelation,
       ]);
@@ -204,49 +191,45 @@ describe('CrudFederationService - Integration: One-to-One Forward Relationships'
         // Roots 3 and 4 have no settings
       ];
 
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(rootData, { limit: 10, total: 5 }),
       );
-      mocks.mockProfileService.getMany.mockResolvedValue(
+      mocks.profileListSpy.mockResolvedValue(
         createPaginatedResponse(profileData, { total: 3 }),
       );
-      mocks.mockSettingsService.getMany.mockResolvedValue(
+      mocks.settingsListSpy.mockResolvedValue(
         createPaginatedResponse(settingsData, { total: 3 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockProfileService, count: 1 },
-        { service: mocks.mockSettingsService, count: 1 },
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.profileListSpy, count: 1 },
+        { handler: mocks.settingsListSpy, count: 1 },
       ]);
-      assertRootFirst(mocks.mockRootService, [
-        mocks.mockProfileService,
-        mocks.mockSettingsService,
+      assertRootFirst(mocks.rootListSpy, [
+        mocks.profileListSpy,
+        mocks.settingsListSpy,
       ]);
-      assertLeftJoinBehavior(mocks.mockRootService);
+      assertLeftJoinBehavior(mocks.rootListSpy);
 
       // Verify root service parameters
-      assertRootGetManyRequest(mocks.mockRootService, {
+      assertRootListQuery(mocks.rootListSpy, {
         page: 1,
         limit: 10,
       });
 
-      // Verify profile service called with all root IDs
-      assertRelationRequest(mocks.mockProfileService, {
-        search: {
-          rootId: { $in: [1, 2, 3, 4, 5] },
-        },
+      // Verify profile handler called with all root IDs
+      assertRelationQuery(mocks.profileListSpy, {
+        filter: [Where.rel('profile', Where.in('rootId', [1, 2, 3, 4, 5]))],
       });
 
-      // Verify settings service called with all root IDs
-      assertRelationRequest(mocks.mockSettingsService, {
-        search: {
-          rootId: { $in: [1, 2, 3, 4, 5] },
-        },
+      // Verify settings handler called with all root IDs
+      assertRelationQuery(mocks.settingsListSpy, {
+        filter: [Where.rel('settings', Where.in('rootId', [1, 2, 3, 4, 5]))],
       });
 
       // ASSERT - Result verification
@@ -280,11 +263,8 @@ describe('CrudFederationService - Integration: One-to-One Forward Relationships'
   describe('Pagination handling', () => {
     it('should handle page 1 pagination with profile enrichment (LEFT JOIN)', async () => {
       // ARRANGE
-      const relation = createOneToOneForwardRelation(
-        'profile',
-        TestProfileService,
-      );
-      const req = mocks.createTestRequest({ page: '1', limit: '5' }, [
+      const relation = createOneToOneForwardRelation('profile', 'TestProfile');
+      const req = await mocks.createTestQuery({ page: '1', limit: '5' }, [
         relation,
       ]);
 
@@ -314,41 +294,39 @@ describe('CrudFederationService - Integration: One-to-One Forward Relationships'
         // Roots 2 and 4 have no profiles
       ];
 
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(rootData, { limit: 5, total: 10 }),
       );
-      mocks.mockProfileService.getMany.mockResolvedValue(
+      mocks.profileListSpy.mockResolvedValue(
         createPaginatedResponse(profileData, { total: 3 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockProfileService, count: 1 },
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.profileListSpy, count: 1 },
       ]);
-      assertRootFirst(mocks.mockRootService, [mocks.mockProfileService]);
-      assertLeftJoinBehavior(mocks.mockRootService);
+      assertRootFirst(mocks.rootListSpy, [mocks.profileListSpy]);
+      assertLeftJoinBehavior(mocks.rootListSpy);
 
       // Verify root service parameters
-      assertRootGetManyRequest(mocks.mockRootService, {
+      assertRootListQuery(mocks.rootListSpy, {
         page: 1,
         limit: 5,
       });
 
       // Verify root pagination parameters
-      assertRootGetManyRequest(mocks.mockRootService, {
+      assertRootListQuery(mocks.rootListSpy, {
         page: 1,
         limit: 5,
       });
 
-      // Verify profile service called with page 1 root IDs
-      assertRelationRequest(mocks.mockProfileService, {
-        search: {
-          rootId: { $in: [1, 2, 3, 4, 5] },
-        },
+      // Verify profile handler called with page 1 root IDs
+      assertRelationQuery(mocks.profileListSpy, {
+        filter: [Where.rel('profile', Where.in('rootId', [1, 2, 3, 4, 5]))],
       });
 
       // ASSERT - Result verification
@@ -378,11 +356,8 @@ describe('CrudFederationService - Integration: One-to-One Forward Relationships'
 
     it('should handle page 2 pagination with profile enrichment (LEFT JOIN)', async () => {
       // ARRANGE
-      const relation = createOneToOneForwardRelation(
-        'profile',
-        TestProfileService,
-      );
-      const req = mocks.createTestRequest({ page: '2', limit: '5' }, [
+      const relation = createOneToOneForwardRelation('profile', 'TestProfile');
+      const req = await mocks.createTestQuery({ page: '2', limit: '5' }, [
         relation,
       ]);
 
@@ -412,41 +387,39 @@ describe('CrudFederationService - Integration: One-to-One Forward Relationships'
         // Roots 7 and 9 have no profiles
       ];
 
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(rootData, { limit: 5, total: 10 }),
       );
-      mocks.mockProfileService.getMany.mockResolvedValue(
+      mocks.profileListSpy.mockResolvedValue(
         createPaginatedResponse(profileData, { total: 3 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockProfileService, count: 1 },
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.profileListSpy, count: 1 },
       ]);
-      assertRootFirst(mocks.mockRootService, [mocks.mockProfileService]);
-      assertLeftJoinBehavior(mocks.mockRootService);
+      assertRootFirst(mocks.rootListSpy, [mocks.profileListSpy]);
+      assertLeftJoinBehavior(mocks.rootListSpy);
 
       // Verify root service parameters
-      assertRootGetManyRequest(mocks.mockRootService, {
+      assertRootListQuery(mocks.rootListSpy, {
         page: 2,
         limit: 5,
       });
 
       // Verify root pagination parameters
-      assertRootGetManyRequest(mocks.mockRootService, {
+      assertRootListQuery(mocks.rootListSpy, {
         page: 2,
         limit: 5,
       });
 
-      // Verify profile service called with page 2 root IDs
-      assertRelationRequest(mocks.mockProfileService, {
-        search: {
-          rootId: { $in: [6, 7, 8, 9, 10] },
-        },
+      // Verify profile handler called with page 2 root IDs
+      assertRelationQuery(mocks.profileListSpy, {
+        filter: [Where.rel('profile', Where.in('rootId', [6, 7, 8, 9, 10]))],
       });
 
       // ASSERT - Result verification

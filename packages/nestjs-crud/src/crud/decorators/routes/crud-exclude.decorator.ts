@@ -1,15 +1,25 @@
-import { PlainLiteralObject, SetMetadata } from '@nestjs/common';
+import { PlainLiteralObject } from '@nestjs/common';
 
 import { CRUD_MODULE_ROUTE_QUERY_EXCLUDE_METADATA } from '../../../crud.constants';
-import { CrudServiceQueryOptionsInterface } from '../../interfaces/crud-service-query-options.interface';
+import {
+  CrudMetadataLookupTarget,
+  CrudMetadata,
+} from '../../../services/crud-metadata.service';
+import { CrudQueryOptionsInterface } from '../../interfaces/crud-query-options.interface';
 
 /**
  * CRUD exclude route decorator.
  *
  * Set the CRUD exclude query option.
  */
-export const CrudExclude = <
-  Entity extends PlainLiteralObject = PlainLiteralObject,
->(
-  fields: CrudServiceQueryOptionsInterface<Entity>['exclude'],
-) => SetMetadata(CRUD_MODULE_ROUTE_QUERY_EXCLUDE_METADATA, fields);
+export const CrudExclude = CrudMetadata.createWrappedDecorator(
+  {
+    key: CRUD_MODULE_ROUTE_QUERY_EXCLUDE_METADATA,
+    lookupTarget: CrudMetadataLookupTarget.MethodAndClass,
+  },
+  (decorator) =>
+    <Entity extends PlainLiteralObject = PlainLiteralObject>(
+      exclude: CrudQueryOptionsInterface<Entity>['exclude'],
+    ) =>
+      decorator(exclude),
+);

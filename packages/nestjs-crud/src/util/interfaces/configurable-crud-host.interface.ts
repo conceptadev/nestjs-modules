@@ -1,24 +1,45 @@
-import { ClassProvider, PlainLiteralObject, Type } from '@nestjs/common';
+import { Provider, Type } from '@nestjs/common';
 
-import { DeepPartial } from '@concepta/nestjs-common';
+/**
+ * Map of classes by name for runtime access.
+ */
+export interface ConfigurableCrudClassesMap {
+  [className: string]: Type;
+}
 
-import { CrudBaseController } from '../../crud/controllers/crud-base.controller';
-import { CrudService } from '../../services/crud.service';
-
-import { ConfigurableCrudDecorators } from './configurable-crud-decorators.interface';
-
-export interface ConfigurableCrudHost<
-  Entity extends PlainLiteralObject,
-  Creatable extends DeepPartial<Entity>,
-  Updatable extends DeepPartial<Entity>,
-  Replaceable extends Creatable = Creatable,
-> extends ConfigurableCrudDecorators {
-  ConfigurableControllerClass: typeof CrudBaseController<
-    Entity,
-    Creatable,
-    Updatable,
-    Replaceable
-  >;
-  ConfigurableServiceClass: Type<CrudService<Entity>>;
-  ConfigurableServiceProvider: ClassProvider;
+/**
+ * Result from ConfigurableCrudBuilder.build().
+ *
+ * Contains categorized maps of generated classes, accessible by their
+ * generated names via destructuring.
+ */
+export interface ConfigurableCrudHost {
+  /**
+   * All providers needed for the module (adapter, handlers).
+   */
+  providers: Provider[];
+  /**
+   * Controller classes by name.
+   */
+  controllers: ConfigurableCrudClassesMap;
+  /**
+   * Query classes by name (for read operations).
+   */
+  queries: ConfigurableCrudClassesMap;
+  /**
+   * Query handler classes by name.
+   */
+  queryHandlers: ConfigurableCrudClassesMap;
+  /**
+   * Command classes by name (for write operations).
+   */
+  commands: ConfigurableCrudClassesMap;
+  /**
+   * Command handler classes by name.
+   */
+  commandHandlers: ConfigurableCrudClassesMap;
+  /**
+   * Adapter classes by name.
+   */
+  adapters: ConfigurableCrudClassesMap;
 }

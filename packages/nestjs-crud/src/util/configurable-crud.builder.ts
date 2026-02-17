@@ -1,44 +1,63 @@
-import { randomUUID } from 'crypto';
-
 import {
   applyDecorators,
   Inject,
   PlainLiteralObject,
+  Provider,
   Type,
 } from '@nestjs/common';
 
-import { DeepPartial } from '@concepta/nestjs-common';
+import { DeepPartial, Operation, Ctx } from '@concepta/nestjs-common';
 
 import { CrudAdapter } from '../crud/adapters/crud.adapter';
-import { CrudBaseController } from '../crud/controllers/crud-base.controller';
-import { CrudCreateMany } from '../crud/decorators/actions/crud-create-many.decorator';
-import { CrudCreateOne } from '../crud/decorators/actions/crud-create-one.decorator';
-import { CrudDeleteOne } from '../crud/decorators/actions/crud-delete-one.decorator';
-import { CrudGetMany } from '../crud/decorators/actions/crud-get-many.decorator';
-import { CrudGetOne } from '../crud/decorators/actions/crud-get-one.decorator';
-import { CrudRecoverOne } from '../crud/decorators/actions/crud-recover-one.decorator';
-import { CrudReplaceOne } from '../crud/decorators/actions/crud-replace-one.decorator';
-import { CrudUpdateOne } from '../crud/decorators/actions/crud-update-one.decorator';
 import { CrudController } from '../crud/decorators/controller/crud-controller.decorator';
+import { CrudInit } from '../crud/decorators/controller/crud-init.decorator';
+import { CrudCreateBatch } from '../crud/decorators/operations/crud-create-batch.decorator';
+import { CrudCreate } from '../crud/decorators/operations/crud-create.decorator';
+import { CrudDelete } from '../crud/decorators/operations/crud-delete.decorator';
+import { CrudList } from '../crud/decorators/operations/crud-list.decorator';
+import { CrudRead } from '../crud/decorators/operations/crud-read.decorator';
+import { CrudReplace } from '../crud/decorators/operations/crud-replace.decorator';
+import { CrudRestore } from '../crud/decorators/operations/crud-restore.decorator';
+import { CrudSoftDelete } from '../crud/decorators/operations/crud-soft-delete.decorator';
+import { CrudUpdate } from '../crud/decorators/operations/crud-update.decorator';
 import { CrudBody } from '../crud/decorators/params/crud-body.decorator';
-import { CrudRequest } from '../crud/decorators/params/crud-request.decorator';
-import { CrudCreateManyInterface } from '../crud/interfaces/crud-create-many.interface';
-import { CrudRequestInterface } from '../crud/interfaces/crud-request.interface';
-import { ConfigurableCrudOptionsTransformer } from '../crud.types';
-import { CrudService } from '../services/crud.service';
-
-import { ConfigurableCrudDecorators } from './interfaces/configurable-crud-decorators.interface';
-import { ConfigurableCrudHost } from './interfaces/configurable-crud-host.interface';
+import { CrudCommandHandler } from '../crud/decorators/routes/crud-command-handler.decorator';
+import { CrudQueryHandler } from '../crud/decorators/routes/crud-query-handler.decorator';
+import { CrudContextInterface } from '../crud/interfaces/crud-context.interface';
 import {
+  CrudControllerClassOptionsInterface,
+  CrudControllerOptionsInterface,
+} from '../crud/interfaces/crud-controller-options.interface';
+import { CrudCreateBatchInterface } from '../crud/interfaces/crud-create-batch.interface';
+import { CrudResolverInterface } from '../crud/interfaces/crud-resolver.interface';
+import {
+  CrudRouteCommandOptionsInterface,
+  CrudRouteQueryOptionsInterface,
+} from '../crud/interfaces/crud-route-ctlr-options.interface';
+import { CrudAdapterResolver } from '../crud/resolvers/crud-adapter.resolver';
+import { CrudOperationOptions } from '../crud/types/crud-operation-options.type';
+import {
+  getControllerName,
+  isAdapterType,
+  isBodyOperation,
+  isReadOperation,
+} from '../crud/util';
+import { ConfigurableCrudOptionsTransformer } from '../crud.types';
+import { CrudMetaview } from '../services/crud-metaview.service';
+
+import { createCrudAdapterProvider } from './create-crud-adapter-provider';
+import {
+  ConfigurableCrudClassesMap,
+  ConfigurableCrudHost,
+} from './interfaces/configurable-crud-host.interface';
+import {
+  ConfigurableCrudGeneratedOptions,
+  ConfigurableCrudHybridOptions,
   ConfigurableCrudOptions,
-  ConfigurableCrudServiceAdapterOption,
 } from './interfaces/configurable-crud-options.interface';
 
 export class ConfigurableCrudBuilder<
   Entity extends PlainLiteralObject,
-  Creatable extends DeepPartial<Entity>,
-  Updatable extends DeepPartial<Entity>,
-  Replaceable extends Creatable = Creatable,
   ExtraOptions extends PlainLiteralObject = PlainLiteralObject,
 > {
   private extras: ExtraOptions;
@@ -55,359 +74,622 @@ export class ConfigurableCrudBuilder<
   setExtras(
     extras: ExtraOptions,
     optionsTransform: ConfigurableCrudOptionsTransformer<Entity, ExtraOptions>,
-  ): ConfigurableCrudBuilder<
-    Entity,
-    Creatable,
-    Updatable,
-    Replaceable,
-    ExtraOptions
-  > {
+  ): ConfigurableCrudBuilder<Entity, ExtraOptions> {
     this.extras = extras;
     this.optionsTransform = optionsTransform;
     return this;
   }
 
-  build(): ConfigurableCrudHost<Entity, Creatable, Updatable, Replaceable> {
+  /**
+   * Build the CRUD configuration and return generated classes.
+   *
+   * Returns an object with:
+   * - `providers` - All providers needed for the module (adapter, handlers)
+   * - `controllers` - Controller classes by name
+   * - `queries` - Query classes by name (for read operations)
+   * - `queryHandlers` - Query handler classes by name
+   * - `commands` - Command classes by name (for write operations)
+   * - `commandHandlers` - Command handler classes by name
+   * - `adapters` - Adapter classes by name
+   *
+   * @example
+   * ```typescript
+   * const { providers, controllers, queries, queryHandlers } = new ConfigurableCrudBuilder<UserEntity>({
+   *   controller: {
+   *     entity: 'User',
+   *     path: 'users',
+   *     adapter: CrudAdapter, // optional, defaults to CrudAdapter
+   *   },
+   *   operations: [{ operation: Operation.List }],
+   * }).build();
+   *
+   * // Destructure generated classes by name:
+   * const { UserController } = controllers;
+   * const { UserCrudListQuery } = queries;
+   * const { User_list_Handler } = queryHandlers;
+   * ```
+   */
+  build(): ConfigurableCrudHost {
     const options = this.optionsTransform(this.options, this.extras);
-    const decorators = this.generateDecorators(options);
 
-    // Use provided class or generate one from adapter
-    const ConfigurableServiceClass =
-      'useClass' in options.service
-        ? options.service.useClass
-        : this.generateService<Entity>(options.service);
+    // Path 3: Hybrid - class with operations
+    if (this.isHybridOptions(options)) {
+      return this.buildHybrid(options.controller.class, options.operations);
+    }
 
-    const ConfigurableControllerClass = this.generateClass(options, decorators);
+    if (this.isControllerClassOptions(options.controller)) {
+      // Path 1: Pre-decorated class - generate handlers and adapter provider
+      const controllerClass = options.controller.class;
+      const { handlers, queries, queryHandlers, commands, commandHandlers } =
+        this.collectClassesFromController(controllerClass);
+
+      // Extract adapter from controller metadata
+      const reflectionService = new CrudMetaview<Entity>();
+      const entity = reflectionService.getEntity(controllerClass);
+      const adapter = reflectionService.getAdapter(controllerClass);
+
+      const providers: Provider[] = [...handlers];
+      const adapters: ConfigurableCrudClassesMap = {};
+
+      // Create adapter provider if we have both entity and adapter type
+      if (entity && adapter && isAdapterType<Entity>(adapter)) {
+        providers.unshift(
+          createCrudAdapterProvider<Entity>({ entity, adapter }),
+        );
+        adapters[adapter.name] = adapter;
+      }
+
+      return {
+        providers,
+        controllers: { [controllerClass.name]: controllerClass },
+        queries,
+        queryHandlers,
+        commands,
+        commandHandlers,
+        adapters,
+      };
+    }
+
+    if (!this.isGeneratedOptions(options)) {
+      throw new Error('Invalid options: expected operations array');
+    }
+
+    // Path 2: Generate new class from controller options
+    const { controller, operations } = options;
+
+    // Validate operations have unique method names
+    this.validateOperations(operations);
+
+    // Resolve adapter class to factory provider if needed
+    const adapter = controller.adapter ?? CrudAdapter;
+    const adapterProvider = isAdapterType<Entity>(adapter)
+      ? createCrudAdapterProvider<Entity>({
+          entity: controller.entity,
+          adapter,
+        })
+      : adapter;
+
+    // Build controller config with resolved adapter
+    const resolvedController = { ...controller, adapter: adapterProvider };
+
+    // Generate controller class
+    const ConfigurableControllerClass = this.generateClass(
+      operations,
+      resolvedController,
+    );
+
+    // Collect classes from the controller's decorator metadata
+    const { handlers, queries, queryHandlers, commands, commandHandlers } =
+      this.collectClassesFromController(ConfigurableControllerClass);
+
+    // Build adapters map
+    const adapters: ConfigurableCrudClassesMap = {};
+    if (isAdapterType<Entity>(adapter)) {
+      adapters[adapter.name] = adapter;
+    }
 
     return {
-      ConfigurableServiceProvider: {
-        provide: options.service.serviceToken,
-        useClass: ConfigurableServiceClass,
+      providers: [adapterProvider, ...handlers],
+      controllers: {
+        [ConfigurableControllerClass.name]: ConfigurableControllerClass,
       },
-      ConfigurableServiceClass,
-      ConfigurableControllerClass,
-      ...decorators,
+      queries,
+      queryHandlers,
+      commands,
+      commandHandlers,
+      adapters,
     };
   }
 
-  private generateDecorators<O extends ConfigurableCrudOptions<Entity>>(
-    options: O,
-  ): ConfigurableCrudDecorators {
-    const {
-      controller,
-      getMany,
-      getOne,
-      createMany,
-      createOne,
-      updateOne,
-      replaceOne,
-      deleteOne,
-      recoverOne,
-    } = options;
+  /**
+   * Validate that all operations have unique method names.
+   */
+  private validateOperations(operations: CrudOperationOptions<Entity>[]): void {
+    const methodNames = new Set<string>();
 
-    const operationIdPrefix =
-      (Array.isArray(options.controller?.path)
-        ? options.controller?.path.join()
-        : options.controller?.path
-      )?.replace(/[^\w]/g, '_') ?? randomUUID();
+    for (const op of operations) {
+      const methodName = op.methodName ?? op.operation;
+
+      if (methodNames.has(methodName)) {
+        throw new Error(
+          `Duplicate method name "${methodName}" in operations. ` +
+            `When using multiple operations with the same operation type, each must have a unique methodName.`,
+        );
+      }
+      methodNames.add(methodName);
+    }
+  }
+
+  /**
+   * Get the operation decorator for a given operation type.
+   */
+  private getOperationDecorator(
+    operation: Operation,
+    options: Record<string, unknown>,
+  ): MethodDecorator {
+    switch (operation) {
+      case Operation.List:
+        return CrudList<Entity>(options);
+      case Operation.Read:
+        return CrudRead<Entity>(options);
+      case Operation.Create:
+        return CrudCreate<Entity>(options);
+      case Operation.CreateBatch:
+        return CrudCreateBatch<Entity>(options);
+      case Operation.Update:
+        return CrudUpdate<Entity>(options);
+      case Operation.Replace:
+        return CrudReplace<Entity>(options);
+      case Operation.Delete:
+        return CrudDelete<Entity>(options);
+      case Operation.SoftDelete:
+        return CrudSoftDelete<Entity>(options);
+      case Operation.Restore:
+        return CrudRestore<Entity>(options);
+      default: {
+        const _exhaustive: never = operation;
+        throw new Error(`Unsupported operation: ${_exhaustive}`);
+      }
+    }
+  }
+
+  /**
+   * Apply all decorators for an operation: operation decorator + parameter decorators.
+   */
+  private applyOperationDecorators(
+    controllerClass: Type,
+    methodName: string,
+    op: CrudOperationOptions<Entity>,
+    operationIdPrefix: string,
+  ): void {
+    const { operation, extraDecorators = [], ...restOptions } = op;
+    const proto = controllerClass.prototype;
+    const descriptor = Object.getOwnPropertyDescriptor(proto, methodName);
+
+    // Build options with operationId
+    const optionsWithId = {
+      ...restOptions,
+      api: {
+        ...restOptions.api,
+        operation: {
+          operationId: `${operationIdPrefix}_${methodName}`,
+          ...restOptions.api?.operation,
+        },
+      },
+    };
+
+    // Apply operation decorator with extra decorators
+    const opDecorator = this.getOperationDecorator(operation, optionsWithId);
+    applyDecorators(opDecorator, ...extraDecorators)(
+      proto,
+      methodName,
+      descriptor,
+    );
+
+    // Apply parameter decorators
+    this.applyParameterDecorators(controllerClass, methodName, op);
+  }
+
+  /**
+   * Apply only parameter decorators (CrudContext, CrudBody) without operation decorator.
+   * Also applies handler overrides if specified in the operation.
+   * Used for hybrid controllers where the method already has the operation decorator applied.
+   */
+  private applyParameterDecorators(
+    controllerClass: Type,
+    methodName: string,
+    op: CrudOperationOptions<Entity>,
+  ): void {
+    const { operation } = op;
+    const proto = controllerClass.prototype;
+    const descriptor = Object.getOwnPropertyDescriptor(proto, methodName);
+
+    // Apply CrudContext to first parameter
+    Ctx()(proto, methodName, 0);
+
+    // Apply CrudBody to second parameter if operation requires body
+    if (isBodyOperation(operation)) {
+      const bodyDto = op.request?.body;
+      CrudBody({ validation: bodyDto ? { expectedType: bodyDto } : undefined })(
+        proto,
+        methodName,
+        1,
+      );
+    }
+
+    // Apply handler overrides if specified
+    if (descriptor) {
+      if (isReadOperation(operation)) {
+        const queryOptions = op as CrudRouteQueryOptionsInterface<Entity>;
+        if (queryOptions.queryHandler) {
+          CrudQueryHandler<Entity>({ handler: queryOptions.queryHandler })(
+            proto,
+            methodName,
+            descriptor,
+          );
+        }
+      } else {
+        const commandOptions = op as CrudRouteCommandOptionsInterface<Entity>;
+        if (commandOptions.commandHandler) {
+          CrudCommandHandler<Entity>({
+            handler: commandOptions.commandHandler,
+          })(proto, methodName, descriptor);
+        }
+      }
+    }
+  }
+
+  /**
+   * Result of collecting classes from controller.
+   */
+  private collectClassesResult(): {
+    handlers: Type[];
+    queries: ConfigurableCrudClassesMap;
+    queryHandlers: ConfigurableCrudClassesMap;
+    commands: ConfigurableCrudClassesMap;
+    commandHandlers: ConfigurableCrudClassesMap;
+  } {
+    return {
+      handlers: [],
+      queries: {},
+      queryHandlers: {},
+      commands: {},
+      commandHandlers: {},
+    };
+  }
+
+  /**
+   * Extract handlers and CQRS classes from a controller's decorated methods.
+   */
+  private collectClassesFromController(
+    controller: Type,
+  ): ReturnType<typeof this.collectClassesResult> {
+    const reflectionService = new CrudMetaview<Entity>();
+    const result = this.collectClassesResult();
+
+    const methodNames = this.getControllerMethodNames(controller);
+
+    for (const methodName of methodNames) {
+      const method = controller.prototype[methodName];
+      const operation = reflectionService.getOperation(method);
+
+      if (!operation) continue;
+
+      if (isReadOperation(operation)) {
+        // Collect query class
+        const queryOptions = reflectionService.getQuery(method);
+        if (queryOptions?.resolved) {
+          result.queries[queryOptions.resolved.name] = queryOptions.resolved;
+        }
+        // Collect query handler
+        const queryHandlerOptions = reflectionService.getQueryHandler(method);
+        if (queryHandlerOptions?.resolved) {
+          result.handlers.push(queryHandlerOptions.resolved);
+          result.queryHandlers[queryHandlerOptions.resolved.name] =
+            queryHandlerOptions.resolved;
+        }
+      } else {
+        // Collect command class
+        const commandOptions = reflectionService.getCommand(method);
+        if (commandOptions?.resolved) {
+          result.commands[commandOptions.resolved.name] =
+            commandOptions.resolved;
+        }
+        // Collect command handler
+        const commandHandlerOptions =
+          reflectionService.getCommandHandler(method);
+        if (commandHandlerOptions?.resolved) {
+          result.handlers.push(commandHandlerOptions.resolved);
+          result.commandHandlers[commandHandlerOptions.resolved.name] =
+            commandHandlerOptions.resolved;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Get all method names from a controller, including inherited methods.
+   */
+  private getControllerMethodNames(controller: Type): string[] {
+    const methods = new Set<string>();
+    let proto = controller.prototype;
+
+    while (proto && proto !== Object.prototype) {
+      for (const name of Object.getOwnPropertyNames(proto)) {
+        if (name !== 'constructor' && typeof proto[name] === 'function') {
+          methods.add(name);
+        }
+      }
+      proto = Object.getPrototypeOf(proto);
+    }
+
+    return Array.from(methods);
+  }
+
+  /**
+   * Create a method implementation for a given operation type.
+   */
+  private createMethodImplementation(operation: Operation): CallableFunction {
+    switch (operation) {
+      case Operation.List:
+        return function (
+          this: { crudResolver: CrudResolverInterface },
+          crudContext: CrudContextInterface<Entity>,
+        ) {
+          return this.crudResolver.list(crudContext);
+        };
+      case Operation.Read:
+        return function (
+          this: { crudResolver: CrudResolverInterface },
+          crudContext: CrudContextInterface<Entity>,
+        ) {
+          return this.crudResolver.read(crudContext);
+        };
+      case Operation.Create:
+        return function (
+          this: { crudResolver: CrudResolverInterface },
+          crudContext: CrudContextInterface<Entity>,
+          dto: DeepPartial<Entity>,
+        ) {
+          return this.crudResolver.create(crudContext, dto);
+        };
+      case Operation.CreateBatch:
+        return function (
+          this: { crudResolver: CrudResolverInterface },
+          crudContext: CrudContextInterface<Entity>,
+          dto: CrudCreateBatchInterface<DeepPartial<Entity>>,
+        ) {
+          return this.crudResolver.createBatch(crudContext, dto);
+        };
+      case Operation.Update:
+        return function (
+          this: { crudResolver: CrudResolverInterface },
+          crudContext: CrudContextInterface<Entity>,
+          dto: DeepPartial<Entity>,
+        ) {
+          return this.crudResolver.update(crudContext, dto);
+        };
+      case Operation.Replace:
+        return function (
+          this: { crudResolver: CrudResolverInterface },
+          crudContext: CrudContextInterface<Entity>,
+          dto: DeepPartial<Entity>,
+        ) {
+          return this.crudResolver.replace(crudContext, dto);
+        };
+      case Operation.Delete:
+        return function (
+          this: { crudResolver: CrudResolverInterface },
+          crudContext: CrudContextInterface<Entity>,
+        ) {
+          return this.crudResolver.delete(crudContext);
+        };
+      case Operation.SoftDelete:
+        return function (
+          this: { crudResolver: CrudResolverInterface },
+          crudContext: CrudContextInterface<Entity>,
+        ) {
+          return this.crudResolver.softDelete(crudContext);
+        };
+      case Operation.Restore:
+        return function (
+          this: { crudResolver: CrudResolverInterface },
+          crudContext: CrudContextInterface<Entity>,
+        ) {
+          return this.crudResolver.restore(crudContext);
+        };
+      default: {
+        const _exhaustive: never = operation;
+        throw new Error(`Unsupported operation: ${_exhaustive}`);
+      }
+    }
+  }
+
+  /**
+   * Generate a standalone controller class with methods for each operation.
+   */
+  private generateClass(
+    operations: CrudOperationOptions<Entity>[],
+    controller: CrudControllerOptionsInterface<Entity>,
+  ): Type {
+    // Get the resolver class (defaults to CrudAdapterResolver)
+    const ResolverClass = controller.resolver ?? CrudAdapterResolver;
+
+    // Create standalone class (no CrudBaseController inheritance)
+    class GeneratedController {
+      constructor(
+        @Inject(ResolverClass)
+        protected readonly crudResolver: CrudResolverInterface,
+      ) {}
+    }
+
+    // Set class name to ${entity}Controller
+    Object.defineProperty(GeneratedController, 'name', {
+      value: `${controller.entity}Controller`,
+    });
+
+    // Generate methods for each operation
+    for (const op of operations) {
+      const { operation } = op;
+      const methodName = op.methodName ?? operation;
+
+      // Create method implementation based on operation type
+      Object.defineProperty(GeneratedController.prototype, methodName, {
+        value: this.createMethodImplementation(operation),
+        writable: true,
+        configurable: true,
+      });
+
+      // Apply all decorators
+      this.applyOperationDecorators(
+        GeneratedController,
+        methodName,
+        op,
+        getControllerName(controller),
+      );
+    }
+
+    // Apply CrudController decorator to class
+    const crudControllerDecorator = applyDecorators(
+      CrudController(controller),
+      ...(this.options.controller?.extraDecorators ?? []),
+    );
+    crudControllerDecorator(GeneratedController);
+
+    return GeneratedController as Type;
+  }
+
+  /**
+   * Path 3: Hybrid - class with operations.
+   *
+   * For each operation:
+   * - Determine method name (explicit or default for operation)
+   * - If method exists with matching operation → augment/override its options
+   * - If method doesn't exist → create new method with implementation + decorators
+   */
+  private buildHybrid(
+    controllerClass: Type,
+    operations: CrudOperationOptions<Entity>[],
+  ): ConfigurableCrudHost {
+    const reflectionService = new CrudMetaview<Entity>();
+
+    // Extract entity, name, and adapter from controller metadata
+    const entity = reflectionService.getEntity(controllerClass);
+    const name = reflectionService.getName(controllerClass);
+    const adapter = reflectionService.getAdapter(controllerClass);
+
+    if (!entity) {
+      throw new Error(
+        'Hybrid controller must have @CrudController with entity specified',
+      );
+    }
+
+    // Get effective controller name for operationId prefix
+    const controllerName = getControllerName({ entity, name });
+
+    // Process each operation
+    for (const op of operations) {
+      const methodName = op.methodName ?? op.operation;
+      const existingMethod = controllerClass.prototype[methodName];
+
+      if (existingMethod) {
+        // Method exists - check if operation matches
+        const existingOperation =
+          reflectionService.getOperation(existingMethod);
+
+        if (existingOperation === op.operation) {
+          // Operation matches - only apply parameter decorators
+          // Do NOT re-apply operation decorator as it would overwrite resolved query/command metadata
+          this.applyParameterDecorators(controllerClass, methodName, op);
+        } else {
+          throw new Error(
+            `Method "${methodName}" on ${controllerClass.name} is decorated with operation ` +
+              `"${existingOperation}" but operations array specifies "${op.operation}". ` +
+              `Use a different methodName to avoid this conflict.`,
+          );
+        }
+      } else {
+        // Method doesn't exist - create new method with implementation
+        Object.defineProperty(controllerClass.prototype, methodName, {
+          value: this.createMethodImplementation(op.operation),
+          writable: true,
+          configurable: true,
+        });
+
+        // Apply all decorators
+        this.applyOperationDecorators(
+          controllerClass,
+          methodName,
+          op,
+          controllerName,
+        );
+      }
+    }
+
+    // Re-run initialization decorators after augmentation
+    // This resolves query/command classes and applies @Body decorators
+    CrudInit()(controllerClass);
+
+    // Collect classes from the now-decorated controller
+    const { handlers, queries, queryHandlers, commands, commandHandlers } =
+      this.collectClassesFromController(controllerClass);
+
+    const providers: Provider[] = [...handlers];
+    const adapters: ConfigurableCrudClassesMap = {};
+
+    // Create adapter provider if we have adapter type
+    if (adapter && isAdapterType<Entity>(adapter)) {
+      providers.unshift(createCrudAdapterProvider<Entity>({ entity, adapter }));
+      adapters[adapter.name] = adapter;
+    }
 
     return {
-      CrudController: applyDecorators(
-        CrudController(controller),
-        ...(controller?.extraDecorators ?? []),
-      ),
-      CrudGetMany: applyDecorators(
-        CrudGetMany({
-          api: { operation: { operationId: `${operationIdPrefix}_getMany` } },
-          ...getMany,
-        }),
-        ...(getMany?.extraDecorators ?? []),
-      ),
-      CrudGetOne: applyDecorators(
-        CrudGetOne({
-          api: { operation: { operationId: `${operationIdPrefix}_getOne` } },
-          ...getOne,
-        }),
-        ...(getOne?.extraDecorators ?? []),
-      ),
-      CrudCreateMany: applyDecorators(
-        CrudCreateMany({
-          api: {
-            operation: { operationId: `${operationIdPrefix}_createMany` },
-          },
-          ...createMany,
-        }),
-        ...(createMany?.extraDecorators ?? []),
-      ),
-      CrudCreateOne: applyDecorators(
-        CrudCreateOne({
-          api: { operation: { operationId: `${operationIdPrefix}_createOne` } },
-          ...createOne,
-        }),
-        ...(createOne?.extraDecorators ?? []),
-      ),
-      CrudUpdateOne: applyDecorators(
-        CrudUpdateOne({
-          api: { operation: { operationId: `${operationIdPrefix}_updateOne` } },
-          ...updateOne,
-        }),
-        ...(updateOne?.extraDecorators ?? []),
-      ),
-      CrudReplaceOne: applyDecorators(
-        CrudReplaceOne({
-          api: {
-            operation: { operationId: `${operationIdPrefix}_replaceOne` },
-          },
-          ...replaceOne,
-        }),
-        ...(replaceOne?.extraDecorators ?? []),
-      ),
-      CrudDeleteOne: applyDecorators(
-        CrudDeleteOne({
-          api: { operation: { operationId: `${operationIdPrefix}_deleteOne` } },
-          ...deleteOne,
-        }),
-        ...(deleteOne?.extraDecorators ?? []),
-      ),
-      CrudRecoverOne: applyDecorators(
-        CrudRecoverOne({
-          api: {
-            operation: { operationId: `${operationIdPrefix}_recoverOne` },
-          },
-          ...recoverOne,
-        }),
-        ...(recoverOne?.extraDecorators ?? []),
-      ),
+      providers,
+      controllers: { [controllerClass.name]: controllerClass },
+      queries,
+      queryHandlers,
+      commands,
+      commandHandlers,
+      adapters,
     };
   }
 
-  private generateClass<O extends ConfigurableCrudOptions<Entity>>(
-    options: O,
-    decorators: ConfigurableCrudDecorators,
-  ): typeof CrudBaseController<Entity, Creatable, Updatable, Replaceable> {
-    const {
-      CrudController,
-      CrudGetMany,
-      CrudGetOne,
-      CrudCreateMany,
-      CrudCreateOne,
-      CrudUpdateOne,
-      CrudReplaceOne,
-      CrudDeleteOne,
-      CrudRecoverOne,
-    } = decorators;
-
-    class InternalCrudClass extends CrudBaseController<
-      Entity,
-      Creatable,
-      Updatable,
-      Replaceable
-    > {
-      constructor(
-        @Inject(options.service.serviceToken)
-        protected crudService: CrudService<Entity>,
-      ) {
-        super(crudService);
-      }
-    }
-
-    if (options?.getMany) {
-      InternalCrudClass.prototype.getMany = async function (
-        this: InternalCrudClass,
-        crudRequest: CrudRequestInterface<Entity>,
-      ) {
-        return this.crudService.getMany(crudRequest);
-      };
-
-      CrudGetMany(
-        InternalCrudClass.prototype,
-        'getMany',
-        Object.getOwnPropertyDescriptor(InternalCrudClass.prototype, 'getMany'),
-      );
-      CrudRequest()(InternalCrudClass.prototype, 'getMany', 0);
-    }
-
-    if (options?.getOne) {
-      InternalCrudClass.prototype.getOne = async function (
-        this: InternalCrudClass,
-        crudRequest: CrudRequestInterface<Entity>,
-      ) {
-        return this.crudService.getOne(crudRequest);
-      };
-
-      CrudGetOne(
-        InternalCrudClass.prototype,
-        'getOne',
-        Object.getOwnPropertyDescriptor(InternalCrudClass.prototype, 'getOne'),
-      );
-      CrudRequest()(InternalCrudClass.prototype, 'getOne', 0);
-    }
-
-    if (options?.createMany) {
-      InternalCrudClass.prototype.createMany = async function (
-        this: InternalCrudClass,
-        crudRequest: CrudRequestInterface<Entity>,
-        createManyDto: CrudCreateManyInterface<Creatable>,
-      ) {
-        return this.crudService.createMany(crudRequest, {
-          ...createManyDto,
-          // TODO: this cast is a temporary workaround
-          bulk: createManyDto.bulk as (Entity | Partial<Entity>)[],
-        });
-      };
-
-      CrudCreateMany(
-        InternalCrudClass.prototype,
-        'createMany',
-        Object.getOwnPropertyDescriptor(
-          InternalCrudClass.prototype,
-          'createMany',
-        ),
-      );
-      CrudRequest()(InternalCrudClass.prototype, 'createMany', 0);
-      CrudBody()(InternalCrudClass.prototype, 'createMany', 1);
-    }
-
-    if (options?.createOne) {
-      InternalCrudClass.prototype.createOne = async function (
-        this: InternalCrudClass,
-        crudRequest: CrudRequestInterface<Entity>,
-        createDto: Creatable,
-      ) {
-        return this.crudService.createOne(
-          crudRequest,
-          // TODO: this cast is a temporary workaround
-          createDto as Entity | Partial<Entity>,
-        );
-      };
-
-      CrudCreateOne(
-        InternalCrudClass.prototype,
-        'createOne',
-        Object.getOwnPropertyDescriptor(
-          InternalCrudClass.prototype,
-          'createOne',
-        ),
-      );
-      CrudRequest()(InternalCrudClass.prototype, 'createOne', 0);
-      CrudBody({ validation: { expectedType: options.createOne?.dto } })(
-        InternalCrudClass.prototype,
-        'createOne',
-        1,
-      );
-    }
-
-    if (options?.updateOne) {
-      InternalCrudClass.prototype.updateOne = async function (
-        this: InternalCrudClass,
-        crudRequest: CrudRequestInterface<Entity>,
-        updateDto: Updatable,
-      ) {
-        return this.crudService.updateOne(
-          crudRequest,
-          // TODO: this cast is a temporary workaround
-          updateDto as Entity | Partial<Entity>,
-        );
-      };
-
-      CrudUpdateOne(
-        InternalCrudClass.prototype,
-        'updateOne',
-        Object.getOwnPropertyDescriptor(
-          InternalCrudClass.prototype,
-          'updateOne',
-        ),
-      );
-      CrudRequest()(InternalCrudClass.prototype, 'updateOne', 0);
-      CrudBody({ validation: { expectedType: options.updateOne?.dto } })(
-        InternalCrudClass.prototype,
-        'updateOne',
-        1,
-      );
-    }
-
-    if (options?.replaceOne) {
-      InternalCrudClass.prototype.replaceOne = async function (
-        this: InternalCrudClass,
-        crudRequest: CrudRequestInterface<Entity>,
-        replaceDto: Replaceable,
-      ) {
-        return this.crudService.replaceOne(
-          crudRequest,
-          // TODO: this cast is a temporary workaround
-          replaceDto as Entity | Partial<Entity>,
-        );
-      };
-
-      CrudReplaceOne(
-        InternalCrudClass.prototype,
-        'replaceOne',
-        Object.getOwnPropertyDescriptor(
-          InternalCrudClass.prototype,
-          'replaceOne',
-        ),
-      );
-      CrudRequest()(InternalCrudClass.prototype, 'replaceOne', 0);
-      CrudBody()(InternalCrudClass.prototype, 'replaceOne', 1);
-    }
-
-    if (options?.deleteOne) {
-      InternalCrudClass.prototype.deleteOne = async function (
-        this: InternalCrudClass,
-        crudRequest: CrudRequestInterface<Entity>,
-      ) {
-        return this.crudService.deleteOne(crudRequest);
-      };
-
-      CrudDeleteOne(
-        InternalCrudClass.prototype,
-        'deleteOne',
-        Object.getOwnPropertyDescriptor(
-          InternalCrudClass.prototype,
-          'deleteOne',
-        ),
-      );
-      CrudRequest()(InternalCrudClass.prototype, 'deleteOne', 0);
-    }
-
-    if (options?.recoverOne) {
-      InternalCrudClass.prototype.recoverOne = async function (
-        this: InternalCrudClass,
-        crudRequest: CrudRequestInterface<Entity>,
-      ) {
-        return this.crudService.recoverOne(crudRequest);
-      };
-
-      CrudRecoverOne(
-        InternalCrudClass.prototype,
-        'recoverOne',
-        Object.getOwnPropertyDescriptor(
-          InternalCrudClass.prototype,
-          'recoverOne',
-        ),
-      );
-      CrudRequest()(InternalCrudClass.prototype, 'recoverOne', 0);
-    }
-
-    CrudController(InternalCrudClass);
-
-    return InternalCrudClass;
+  /**
+   * Type guard to check if options are for hybrid controller (class + operations).
+   */
+  private isHybridOptions(
+    options: ConfigurableCrudOptions<Entity>,
+  ): options is ConfigurableCrudHybridOptions<Entity> {
+    return (
+      this.isControllerClassOptions(options.controller) &&
+      'operations' in options &&
+      Array.isArray(options.operations)
+    );
   }
 
-  private generateService<Entity extends PlainLiteralObject>(
-    options: ConfigurableCrudServiceAdapterOption<Entity>,
-  ): Type<CrudService<Entity>> {
-    const { adapterToken } = options;
+  /**
+   * Type guard to check if options are for generated controller.
+   */
+  private isGeneratedOptions(
+    options: ConfigurableCrudOptions<Entity>,
+  ): options is ConfigurableCrudGeneratedOptions<Entity> {
+    return (
+      !this.isControllerClassOptions(options.controller) &&
+      'operations' in options &&
+      Array.isArray(options.operations)
+    );
+  }
 
-    class InternalServiceClass extends CrudService<Entity> {
-      constructor(
-        @Inject(adapterToken)
-        protected readonly crudAdapter: CrudAdapter<Entity>,
-      ) {
-        super(crudAdapter);
-      }
-    }
-
-    return InternalServiceClass;
+  /**
+   * Type guard to check if options use the class path.
+   */
+  private isControllerClassOptions(
+    options:
+      | CrudControllerClassOptionsInterface
+      | CrudControllerOptionsInterface<Entity>,
+  ): options is CrudControllerClassOptionsInterface {
+    return 'class' in options && options.class !== undefined;
   }
 }

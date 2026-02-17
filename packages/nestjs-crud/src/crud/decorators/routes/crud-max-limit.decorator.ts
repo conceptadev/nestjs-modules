@@ -1,15 +1,25 @@
-import { PlainLiteralObject, SetMetadata } from '@nestjs/common';
+import { PlainLiteralObject } from '@nestjs/common';
 
 import { CRUD_MODULE_ROUTE_QUERY_MAX_LIMIT_METADATA } from '../../../crud.constants';
-import { CrudServiceQueryOptionsInterface } from '../../interfaces/crud-service-query-options.interface';
+import {
+  CrudMetadataLookupTarget,
+  CrudMetadata,
+} from '../../../services/crud-metadata.service';
+import { CrudQueryOptionsInterface } from '../../interfaces/crud-query-options.interface';
 
 /**
  * CRUD max limit route decorator.
  *
  * Set the CRUD max limit query option.
  */
-export const CrudMaxLimit = <
-  Entity extends PlainLiteralObject = PlainLiteralObject,
->(
-  maxLimit: CrudServiceQueryOptionsInterface<Entity>['maxLimit'],
-) => SetMetadata(CRUD_MODULE_ROUTE_QUERY_MAX_LIMIT_METADATA, maxLimit);
+export const CrudMaxLimit = CrudMetadata.createWrappedDecorator(
+  {
+    key: CRUD_MODULE_ROUTE_QUERY_MAX_LIMIT_METADATA,
+    lookupTarget: CrudMetadataLookupTarget.MethodAndClass,
+  },
+  (decorator) =>
+    <Entity extends PlainLiteralObject = PlainLiteralObject>(
+      maxLimit: CrudQueryOptionsInterface<Entity>['maxLimit'],
+    ) =>
+      decorator(maxLimit),
+);

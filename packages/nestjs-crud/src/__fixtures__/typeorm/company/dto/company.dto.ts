@@ -7,7 +7,7 @@ import { UserDto } from '../../users/dto/user.dto';
 export class CompanyDto {
   @Expose()
   @ApiProperty({ type: 'number' })
-  id!: string;
+  id?: number;
 
   @Expose()
   @ApiProperty({ type: 'string' })

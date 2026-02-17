@@ -1,107 +1,63 @@
+import { PlainLiteralObject } from '@nestjs/common';
+import { MetadataScanner } from '@nestjs/core';
 import { ApiQuery } from '@nestjs/swagger';
 
-import { CrudException } from '../../../exceptions/crud.exception';
-import { CrudReflectionService } from '../../../services/crud-reflection.service';
-import { CrudActions } from '../../enums/crud-actions.enum';
+import { CrudMetaview } from '../../../services/crud-metaview.service';
 import { Swagger } from '../../helpers/swagger.helper';
-import { CrudRouteName } from '../../types/crud-route-name.type';
+import { isReadOperation } from '../../util';
 
 /**
  * \@CrudInit() api query decorator.
  */
 export const CrudInitApiQuery =
-  (): ClassDecorator =>
-  (...args: Parameters<ClassDecorator>) => {
-    // get the args
-    const [classTarget] = args;
+  <T extends PlainLiteralObject = PlainLiteralObject>(): ClassDecorator =>
+  (classTarget) => {
+    const reflectionService = new CrudMetaview<T>();
+    const scanner = new MetadataScanner();
+    const prototype = classTarget.prototype;
 
-    const reflectionService = new CrudReflectionService();
+    for (const methodName of scanner.getAllMethodNames(prototype)) {
+      const handler = Reflect.get(prototype, methodName);
+      const descriptor = Object.getOwnPropertyDescriptor(prototype, methodName);
 
-    // get the api query options
-    const apiQueryMetadata =
-      reflectionService.getApiQueryOptions(classTarget.prototype) ?? [];
+      if (!descriptor) continue;
 
-    // loop metadatas
-    apiQueryMetadata.map((metadata) => {
-      // break out the args
-      const { propertyKey, options = [] } = metadata;
+      // get the api query options for this method
+      const apiQueryOptions = reflectionService.getApiQueryOptions(handler);
+      if (!apiQueryOptions?.length) continue;
 
-      // need the descriptor
-      const descriptor = Object.getOwnPropertyDescriptor(
-        classTarget.prototype,
-        propertyKey,
-      );
+      // get the operation
+      const operation = reflectionService.getOperation(handler);
 
-      // sanity check
-      if (!descriptor) {
-        throw new CrudException({
-          message: 'Did not find property descriptor',
-        });
-      }
-
-      // get the action
-      const action = reflectionService.getAction(
-        classTarget.prototype[propertyKey],
-      );
-
-      // get the base name
-      const basename = mapActionNameToQueryableBaseName(action);
-
-      // get a base name?
-      if (basename) {
-        // get the request options
-        const requestOptions = reflectionService.getRequestOptions(
-          classTarget,
-          classTarget.prototype[propertyKey],
-        );
-
+      // only apply query params for queryable operations (List and Read)
+      if (isReadOperation(operation)) {
         // use swagger helper to get the query
-        const queryParamsMeta = Swagger.createQueryParamsMeta(
-          basename,
-          requestOptions,
-        );
+        const queryParamsMeta = Swagger.createQueryParamsMeta(operation);
 
         // the merged options
         const appliedParamsMap = new Map<string, boolean>();
 
-        // filter options to only include those with a name property (NestJS 11 compatibility)
-        const queryOptionsWithName = [...options, ...queryParamsMeta].filter(
-          (option): option is typeof option & { name: string } =>
-            'name' in option && typeof option.name === 'string',
+        // flatten and filter options to only include those with a name property (NestJS 11 compatibility)
+        const queryOptionsWithName = [
+          ...apiQueryOptions.flat(),
+          ...queryParamsMeta,
+        ].filter(
+          (option): option is NonNullable<typeof option> & { name: string } =>
+            option !== undefined &&
+            'name' in option &&
+            typeof option.name === 'string',
         );
 
         // loop all of the options merged together, overrides first
-        for (const apiQueryOptions of queryOptionsWithName) {
+        for (const queryOption of queryOptionsWithName) {
           // applied yet?
-          if (!appliedParamsMap.has(apiQueryOptions.name)) {
+          if (!appliedParamsMap.has(queryOption.name)) {
             // apply the decorator
-            ApiQuery(apiQueryOptions)(
-              classTarget.prototype,
-              propertyKey,
-              descriptor,
-            );
+            ApiQuery(queryOption)(prototype, methodName, descriptor);
             // consider it done
-            appliedParamsMap.set(apiQueryOptions.name, true);
+            appliedParamsMap.set(queryOption.name, true);
           }
         }
       }
-    });
+    }
   };
-
-/**
- * Map crud action name to queryable base name.
- *
- * @param action - The crud action we are mapping.
- */
-function mapActionNameToQueryableBaseName(
-  action: CrudActions,
-): CrudRouteName | undefined {
-  switch (action) {
-    case CrudActions.ReadAll:
-      return 'getMany';
-    case CrudActions.ReadOne:
-      return 'getOne';
-    default:
-      return undefined;
-  }
-}

@@ -15,7 +15,7 @@ This document tracks test scenario definitions and coverage status for the
 
 ### Federation Scope
 
-- **Current Implementation**: Supports both `getMany` and `getOne` operations
+- **Current Implementation**: Supports both `list` and `read` operations
   with relationship-aware data fetching
 - **Federation Patterns**: Handles forward relationships (fully tested),
   inverse relationships (implementation exists, limited testing), constraint
@@ -51,7 +51,7 @@ This document tracks test scenario definitions and coverage status for the
 Complete
 
 - **Scenario**: Root query with no relation entities
-- **Expected**: Direct root service call, no federated logic
+- **Expected**: Direct root handler call, no federated logic
 - **Test Cases**: ✅ Simple root fetch with pagination, filters, sorting
 
 ### 3. One-to-One (Forward) Relationships
@@ -91,7 +91,7 @@ Implemented & Complete
   - ✅ **Pagination**: Page-based pagination (always paginate mode enforced,
     offset calculated internally)
     - ✅ Page 2 with relation collection enrichment
-  - ✅ **Edge Cases**: Request beyond available pages, single result, zero
+  - ✅ **Edge Cases**: Query beyond available pages, single result, zero
     results, partial last page
 
 ### 5. One-to-One (Inverse) Relationships
@@ -158,7 +158,7 @@ Implemented & Complete
 - **Scenario**: Achieving INNER JOIN through explicit relation filters
 - **Expected**: Only roots with matching relations returned
 - **Test Cases**:
-  - ✅ `relations.rootId||$notnull` - Existence filter triggers INNER JOIN
+  - ✅ `relations.rootId||$nnull` - Existence filter triggers INNER JOIN
   - ✅ `relations.status||$eq||active` - Value filters trigger INNER JOIN
   - ✅ Multiple relation filters (AND condition) - Combined filters
     constrain roots
@@ -177,7 +177,7 @@ Implemented & Complete
 GET /roots?join=relations
 
 // Inner join - only roots with relations  
-GET /roots?join=relations&filter=relations.rootId||$notnull
+GET /roots?join=relations&filter=relations.rootId||$nnull
 ```
 
 ### 9. Join Type Control
@@ -188,13 +188,13 @@ Complete
 - **Scenario**: Explicit control of JOIN behavior via `join` property on
   relations
 - **Expected**: LEFT JOIN (default), INNER JOIN via `join: 'INNER'` with
-  automatic $notnull injection
+  automatic $nnull injection
 - **Test Cases**:
   - ✅ Default LEFT JOIN behavior (no join property specified)
   - ✅ Explicit LEFT JOIN via `join: 'LEFT'`
-  - ✅ INNER JOIN via `join: 'INNER'` with automatic $notnull filter
+  - ✅ INNER JOIN via `join: 'INNER'` with automatic $nnull filter
     injection
-  - ✅ Preservation of existing filters when injecting $notnull for INNER
+  - ✅ Preservation of existing filters when injecting $nnull for INNER
     join
 
 ## Filter and Sort Scenarios
@@ -248,7 +248,7 @@ Complete
 - **Expected**: Relation-driven sorting with mandatory AND filter on join
   key, proper error handling
 - **Test Cases**:
-  - ✅ Relation sort with `relations.rootId||$notnull` (forward
+  - ✅ Relation sort with `relations.rootId||$nnull` (forward
     relationship)
   - ✅ Relation sort with additional AND filters
   - ✅ Root deduplication when multiple relations match
@@ -259,10 +259,10 @@ Complete
       suggestion
     - ✅ Relation sort with unrelated relation filters → Error requires
       join key filter
-    - ✅ Relation sort with non-$notnull filters → Error requires
-      $notnull filter
-    - ✅ Valid relation sort with $notnull filter → Success
-    - ✅ Valid relation sort with $notnull + additional filters →
+    - ✅ Relation sort with non-$nnull filters → Error requires
+      $nnull filter
+    - ✅ Valid relation sort with $nnull filter → Success
+    - ✅ Valid relation sort with $nnull + additional filters →
       Success
 
 ### 14. Combined Root+Relation Filters
@@ -270,7 +270,7 @@ Complete
 **Test File**: `behavior/combined-filters.spec.ts` | **Status**: ✅
 Implemented & Complete
 
-- **Scenario**: Requests with both root-side and relation-side filters
+- **Scenario**: Queries with both root-side and relation-side filters
   applied simultaneously
 - **Expected**: Proper filter delegation and INNER JOIN behavior when
   relation filters present
@@ -287,7 +287,7 @@ Implemented & Complete
 
 **Test File**: `behavior/combined-sorts.spec.ts` | **Status**: ❌ Missing
 
-- **Scenario**: Requests with both root and relation sort fields specified
+- **Scenario**: Queries with both root and relation sort fields specified
 - **Expected**: Proper validation and error handling for unsupported
   combinations
 - **Test Cases**:
@@ -308,30 +308,30 @@ Implemented & Complete
   one-cardinality relations do not
 - **Test Cases**:
   - ✅ Error when many-cardinality relation lacks distinctFilter
-  - ✅ Success when many-cardinality relation has distinctFilter and $notnull
-  - ✅ Requirement for $notnull filter even with distinctFilter
+  - ✅ Success when many-cardinality relation has distinctFilter and $nnull
+  - ✅ Requirement for $nnull filter even with distinctFilter
   - ✅ One-cardinality relations work without distinctFilter
 
 ### 17. API Call Optimization
 
 **Test File**: `e2e/performance.spec.ts` | **Status**: ❌ Missing
 
-- **Scenario**: Minimizing service calls
+- **Scenario**: Minimizing handler calls
 - **Expected**: 3 calls for typical root+2relations scenario
 - **Test Cases**: Single relation (2 calls), multiple relations (3 calls)
 
-### 18. GetOne Hydration
+### 18. Read Hydration
 
 **Test File**: `integration/get-one-hydration.spec.ts` | **Status**: ✅
 Implemented & Complete
 
 - **Scenario**: Single entity retrieval with relation hydration
-- **Expected**: Root retrieved via getOne, relations fetched and attached
+- **Expected**: Root retrieved via read, relations fetched and attached
 - **Test Cases**:
-  - ✅ GetOne with one-to-many forward relations
-  - ✅ GetOne with one-to-one forward relations
-  - ✅ GetOne with multiple relation types
-  - ✅ GetOne with no matching relations (empty arrays/null values)
+  - ✅ Read with one-to-many forward relations
+  - ✅ Read with one-to-one forward relations
+  - ✅ Read with multiple relation types
+  - ✅ Read with no matching relations (empty arrays/null values)
 
 ## Error Handling Scenarios
 
@@ -355,7 +355,7 @@ Implemented & Complete
   - ✅ Search via query string (`req.parsed.search`) throws error
   - ✅ OR filter via query string (`req.parsed.or`) throws error
   - ✅ Combined search and OR filters (search error takes precedence)
-  - ✅ Validation in `getMany` method (metrics available when
+  - ✅ Validation in `list` method (metrics available when
     `includeMetrics: true`)
   - ✅ Empty OR array allowed (no error)
 
@@ -376,7 +376,7 @@ Implemented & Complete
 ### Test Coverage Summary
 
 - ✅ **Implemented**: 12 scenarios fully covered (including comprehensive
-  pagination, JOIN control, distinct filter validation, getOne hydration)
+  pagination, JOIN control, distinct filter validation, read hydration)
 - ❌ **Missing**: 9 scenarios not yet tested (inverse relationships, unit
   tests, performance tests)
 
@@ -401,7 +401,7 @@ Based on the streamlined scenario mapping:
 - Relation sort with validation and error handling
 - Combined root+relation filters with pagination
 - Distinct filter validation for many-cardinality relations
-- GetOne hydration with multiple relation types
+- Read hydration with multiple relation types
 - Unsupported query features validation
 
 **❌ Missing Implementation (9 scenarios)**:

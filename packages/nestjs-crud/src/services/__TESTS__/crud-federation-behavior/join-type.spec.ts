@@ -1,17 +1,16 @@
+import { Where, WhereOperator } from '@concepta/nestjs-common';
+
 import { createPaginatedResponse } from '../../__FIXTURES__/crud-federation-mock-helpers';
 import {
-  assertServiceCallCounts,
+  assertHandlerCallCounts,
   assertInnerJoinBehavior,
   assertLeftJoinBehavior,
   assertResultStructure,
   assertEnrichment,
-  assertRelationRequest,
+  assertRelationQuery,
 } from '../../__FIXTURES__/crud-federation-test-assertions';
 import { createMinimalRootRelationSet } from '../../__FIXTURES__/crud-federation-test-data';
-import {
-  createOneToManyForwardRelation,
-  TestRelationService,
-} from '../../__FIXTURES__/crud-federation-test-entities';
+import { createOneToManyForwardRelation } from '../../__FIXTURES__/crud-federation-test-entities';
 import {
   setupCrudFederationTests,
   cleanupCrudFederationTests,
@@ -20,15 +19,13 @@ import {
 
 /**
  * Tests for join type behavior (LEFT vs INNER) for forward relations
- * Tests automatic $notnull filter injection for INNER join relations
+ * Tests automatic $nnull filter injection for INNER join relations
  */
 describe('CrudFederationService - Behavior: Join Type (Forward Relations)', () => {
   let mocks: CrudFederationTestMocks;
 
   beforeEach(async () => {
     mocks = await setupCrudFederationTests();
-    // Note: We register basic relations, but tests may override with specific join types
-    mocks.registerRelation(mocks.mockRelationService);
   });
 
   afterEach(async () => {
@@ -40,30 +37,30 @@ describe('CrudFederationService - Behavior: Join Type (Forward Relations)', () =
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
+        'TestRelation',
       );
       // No join property specified - should default to LEFT JOIN
-      const req = mocks.createTestRequest({ page: '1', limit: '10' }, [
+      const req = await mocks.createTestQuery({ page: '1', limit: '10' }, [
         relation,
       ]);
 
       const data = createMinimalRootRelationSet();
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.roots, { limit: 10, total: 3 }),
       );
-      mocks.mockRelationService.getMany.mockResolvedValue(
+      mocks.relationListSpy.mockResolvedValue(
         createPaginatedResponse(data.relations, { total: 3 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
       // ASSERT - Should use LEFT JOIN behavior (root-first, no search constraints)
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockRelationService, count: 1 },
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.relationListSpy, count: 1 },
       ]);
-      assertLeftJoinBehavior(mocks.mockRootService);
+      assertLeftJoinBehavior(mocks.rootListSpy);
       assertResultStructure(result, { count: 3, total: 3 });
 
       // Verify all roots returned (LEFT JOIN behavior)
@@ -82,42 +79,48 @@ describe('CrudFederationService - Behavior: Join Type (Forward Relations)', () =
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
+        'TestRelation',
       );
       relation.join = 'LEFT'; // Explicitly specify LEFT JOIN
-      const req = mocks.createTestRequest({ page: '1', limit: '10' }, [
+      const req = await mocks.createTestQuery({ page: '1', limit: '10' }, [
         relation,
       ]);
 
       const data = createMinimalRootRelationSet();
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.roots, { limit: 10, total: 3 }),
       );
-      mocks.mockRelationService.getMany.mockResolvedValue(
+      mocks.relationListSpy.mockResolvedValue(
         createPaginatedResponse(data.relations, { total: 3 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
       // ASSERT - Should use LEFT JOIN behavior
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockRelationService, count: 1 },
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.relationListSpy, count: 1 },
       ]);
-      assertLeftJoinBehavior(mocks.mockRootService);
+      assertLeftJoinBehavior(mocks.rootListSpy);
       assertResultStructure(result, { count: 3, total: 3 });
     });
 
-    it('should automatically inject $notnull filter for join: "INNER" forward relation', async () => {
+    it('should automatically inject $nnull filter for join: "INNER" forward relation', async () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } },
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        },
       );
       relation.join = 'INNER'; // Specify INNER JOIN
-      const req = mocks.createTestRequest({ page: '1', limit: '10' }, [
+      const req = await mocks.createTestQuery({ page: '1', limit: '10' }, [
         relation,
       ]);
 
@@ -126,43 +129,53 @@ describe('CrudFederationService - Behavior: Join Type (Forward Relations)', () =
       const innerJoinRelations = data.relations.filter(
         (relation) => relation.rootId,
       );
-      mocks.mockRelationService.getMany.mockResolvedValue(
+      mocks.relationListSpy.mockResolvedValue(
         createPaginatedResponse(innerJoinRelations, { total: 3 }),
       );
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.roots, { limit: 10, total: 3 }),
       );
 
       // ACT
-      await mocks.service.getMany(req);
+      await mocks.service.list(req);
 
-      // ASSERT - Should trigger INNER JOIN behavior with $notnull search condition
-      assertRelationRequest(mocks.mockRelationService, {
-        search: {
-          $and: [{ rootId: { $notnull: true } }, { isLatest: { $eq: true } }],
-        },
+      // ASSERT - Should trigger INNER JOIN behavior with $nnull search condition
+      assertRelationQuery(mocks.relationListSpy, {
+        filter: [
+          { ...Where.notNull('rootId'), relation: 'relations' },
+          { ...Where.eq('isLatest', true), relation: 'relations' },
+        ],
         limit: 10,
         offset: 0,
       });
 
       // Should trigger INNER JOIN behavior (relation-first)
       assertInnerJoinBehavior(
-        mocks.mockRootService,
-        mocks.mockRelationService,
-        { $and: [{ rootId: { $notnull: true } }, { isLatest: { $eq: true } }] }, // Expected search condition
-        [1, 2],
+        mocks.rootListSpy,
+        mocks.relationListSpy,
+        [
+          { ...Where.notNull('rootId'), relation: 'relations' },
+          { ...Where.eq('isLatest', true), relation: 'relations' },
+        ],
+        [Where.in('id', [1, 2])],
       );
     });
 
-    it('should preserve existing filters when injecting $notnull for INNER join', async () => {
+    it('should preserve existing filters when injecting $nnull for INNER join', async () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } },
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        },
       );
       relation.join = 'INNER';
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           filter: ['relations.status||$eq||active'], // Existing filter
           page: '1',
@@ -172,41 +185,45 @@ describe('CrudFederationService - Behavior: Join Type (Forward Relations)', () =
       );
 
       const data = createMinimalRootRelationSet();
-      mocks.mockRelationService.getMany.mockResolvedValue(
+      mocks.relationListSpy.mockResolvedValue(
         createPaginatedResponse(data.relations.slice(0, 2), { total: 2 }),
       );
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.roots, { total: 2 }),
       );
 
       // ACT
-      await mocks.service.getMany(req);
+      await mocks.service.list(req);
 
-      // ASSERT - Should have both existing filter and injected $notnull in search conditions
-      assertRelationRequest(mocks.mockRelationService, {
-        search: {
-          $and: [
-            { status: { $eq: 'active' } },
-            { rootId: { $notnull: true } },
-            { isLatest: { $eq: true } },
-          ],
-        },
+      // ASSERT - Should have both existing filter and injected $nnull in search conditions
+      assertRelationQuery(mocks.relationListSpy, {
+        filter: [
+          { ...Where.eq('status', 'active'), relation: 'relations' },
+          { ...Where.notNull('rootId'), relation: 'relations' },
+          { ...Where.eq('isLatest', true), relation: 'relations' },
+        ],
         limit: 10,
         offset: 0,
       });
     });
 
-    it('should not inject duplicate $notnull filter if one already exists', async () => {
+    it('should not inject duplicate $nnull filter if one already exists', async () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } },
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        },
       );
       relation.join = 'INNER';
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
-          filter: ['relations.rootId||$notnull'], // Already has $notnull filter
+          filter: ['relations.rootId||$nnull'], // Already has $nnull filter
           page: '1',
           limit: '10',
         },
@@ -214,21 +231,22 @@ describe('CrudFederationService - Behavior: Join Type (Forward Relations)', () =
       );
 
       const data = createMinimalRootRelationSet();
-      mocks.mockRelationService.getMany.mockResolvedValue(
+      mocks.relationListSpy.mockResolvedValue(
         createPaginatedResponse(data.relations, { total: 3 }),
       );
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.roots, { total: 2 }),
       );
 
       // ACT
-      await mocks.service.getMany(req);
+      await mocks.service.list(req);
 
-      // ASSERT - Should have only one $notnull search condition (not duplicated)
-      assertRelationRequest(mocks.mockRelationService, {
-        search: {
-          $and: [{ rootId: { $notnull: true } }, { isLatest: { $eq: true } }],
-        },
+      // ASSERT - Should have only one $nnull search condition (not duplicated)
+      assertRelationQuery(mocks.relationListSpy, {
+        filter: [
+          { ...Where.notNull('rootId'), relation: 'relations' },
+          { ...Where.eq('isLatest', true), relation: 'relations' },
+        ],
         limit: 10,
         offset: 0,
       });

@@ -28,7 +28,7 @@ export class FederatedService implements FederatedServiceInterface {
       });
     } catch (e) {
       const exception = e instanceof Error ? e : new NotAnErrorException(e);
-      throw new FederatedQueryException(this.repo.entityName(), exception);
+      throw new FederatedQueryException(this.repo.metadata.name, exception);
     }
   }
 }

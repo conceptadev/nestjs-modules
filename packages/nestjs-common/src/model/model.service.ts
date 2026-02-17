@@ -2,8 +2,9 @@ import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 
 import { ReferenceIdInterface } from '../reference/interfaces/reference-id.interface';
-import { RepositoryInternals } from '../repository/interfaces/repository-internals';
+import { RepositoryFindOptions } from '../repository/interfaces/repository-options.interface';
 import { RepositoryInterface } from '../repository/interfaces/repository.interface';
+import { Where } from '../repository/where.helpers';
 import { DeepPartial } from '../utils/deep-partial';
 import { Type } from '../utils/interfaces/type.interface';
 
@@ -36,41 +37,11 @@ export abstract class ModelService<
   constructor(protected repo: RepositoryInterface<Entity>) {}
 
   /**
-   * Greater than
-   */
-  gt<T>(value: T) {
-    return this.repo.gt(value);
-  }
-
-  /**
-   * Greater than or equal
-   */
-  gte<T>(value: T) {
-    return this.repo.gte(value);
-  }
-
-  /**
-   * Less than or equal
-   */
-  lt<T>(value: T) {
-    return this.repo.lt(value);
-  }
-
-  /**
-   * Less than
-   */
-  lte<T>(value: T) {
-    return this.repo.lte(value);
-  }
-
-  /**
    * Find
    *
    * @param options - Find many options
    */
-  async find(
-    options?: RepositoryInternals.FindManyOptions<Entity>,
-  ): Promise<Entity[]> {
+  async find(options?: RepositoryFindOptions<Entity>): Promise<Entity[]> {
     return this.repo.find(options);
   }
 
@@ -81,8 +52,8 @@ export abstract class ModelService<
    */
   async byId(id: Entity['id']): Promise<Entity | null> {
     return this.repo.findOne({
-      where: { id },
-    } as RepositoryInternals.FindOneOptions<Entity>);
+      where: Where.eq<Entity>('id', id),
+    });
   }
 
   /**
@@ -97,9 +68,15 @@ export abstract class ModelService<
     // apply transformations
     const transformed = await this.transform(dto);
     // create new entity
-    const entity = this.repo.create(transformed);
-    // try to save the entity
-    return this.save(entity);
+    const entity = this.repo.transform(transformed);
+    // try to create the entity
+    try {
+      return await this.repo.create(entity);
+    } catch (e) {
+      throw new ModelMutateException(this.repo.metadata.name, {
+        originalError: e,
+      });
+    }
   }
 
   /**
@@ -115,10 +92,14 @@ export abstract class ModelService<
     const dto = await this.validate<Updatable>(this.updateDto, data);
     // apply transformations
     const transformed = await this.transform(dto);
-    // merge changes into the entity
-    const mergedEntity = this.repo.merge(entity, transformed);
-    // try to save it
-    return this.save(mergedEntity);
+    // try to update it
+    try {
+      return await this.repo.update(entity, transformed);
+    } catch (e) {
+      throw new ModelMutateException(this.repo.metadata.name, {
+        originalError: e,
+      });
+    }
   }
 
   /**
@@ -134,10 +115,14 @@ export abstract class ModelService<
     const dto = await this.validate<Creatable>(this.createDto, data);
     // apply transformations
     const transformed = await this.transform(dto);
-    // merge changes into the entity
-    const mergedEntity = this.repo.merge(entity, transformed);
-    // try to save it
-    return this.save(mergedEntity);
+    // try to replace it
+    try {
+      return await this.repo.replace(entity, transformed);
+    } catch (e) {
+      throw new ModelMutateException(this.repo.metadata.name, {
+        originalError: e,
+      });
+    }
   }
 
   /**
@@ -156,26 +141,12 @@ export abstract class ModelService<
   /**
    * @internal
    */
-  private async save(entity: Entity): Promise<Entity> {
-    // try to save it
-    try {
-      return await this.repo.save(entity);
-    } catch (e) {
-      throw new ModelMutateException(this.repo.entityName(), {
-        originalError: e,
-      });
-    }
-  }
-
-  /**
-   * @internal
-   */
   private async delete(entity: Entity): Promise<Entity> {
     // try to save it
     try {
-      return await this.repo.remove(entity);
+      return await this.repo.delete(entity);
     } catch (e) {
-      throw new ModelMutateException(this.repo.entityName(), {
+      throw new ModelMutateException(this.repo.metadata.name, {
         originalError: e,
       });
     }
@@ -198,7 +169,7 @@ export abstract class ModelService<
     if (validationErrors?.length) {
       // yes, throw error
       throw new ModelValidationException(
-        this.repo.entityName(),
+        this.repo.metadata.name,
         validationErrors,
       );
     }
@@ -226,7 +197,7 @@ export abstract class ModelService<
     if (entity) {
       return entity;
     } else {
-      throw new ModelIdNoMatchException(this.repo.entityName(), id);
+      throw new ModelIdNoMatchException(this.repo.metadata.name, id);
     }
   }
 }

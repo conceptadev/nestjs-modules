@@ -1,6 +1,10 @@
-import { PlainLiteralObject, SetMetadata } from '@nestjs/common';
+import { PlainLiteralObject } from '@nestjs/common';
 
 import { CRUD_MODULE_ROUTE_RELATIONS_METADATA } from '../../../crud.constants';
+import {
+  CrudMetadataLookupTarget,
+  CrudMetadata,
+} from '../../../services/crud-metadata.service';
 import { CrudRelationsInterface } from '../../interfaces/crud-relations.interface';
 
 /**
@@ -9,9 +13,17 @@ import { CrudRelationsInterface } from '../../interfaces/crud-relations.interfac
  * Configure relationship properties for hydrating sub-properties based on raw
  * foreign keys.
  */
-export const CrudRelations = <
-  Entity extends PlainLiteralObject = PlainLiteralObject,
-  Relations extends PlainLiteralObject[] = PlainLiteralObject[],
->(
-  relations: CrudRelationsInterface<Entity, Relations>,
-) => SetMetadata(CRUD_MODULE_ROUTE_RELATIONS_METADATA, relations);
+export const CrudRelations = CrudMetadata.createWrappedDecorator(
+  {
+    key: CRUD_MODULE_ROUTE_RELATIONS_METADATA,
+    lookupTarget: CrudMetadataLookupTarget.MethodAndClass,
+  },
+  (decorator) =>
+    <
+      Entity extends PlainLiteralObject = PlainLiteralObject,
+      Relations extends PlainLiteralObject[] = PlainLiteralObject[],
+    >(
+      relations: CrudRelationsInterface<Entity, Relations>,
+    ) =>
+      decorator(relations),
+);

@@ -1,9 +1,12 @@
-import { PlainLiteralObject, Type } from '@nestjs/common';
+import { PlainLiteralObject } from '@nestjs/common';
 
+import { AppContextHost, Operation } from '@concepta/nestjs-common';
+
+import { CrudContextInterface } from '../../crud/interfaces/crud-context.interface';
 import { CrudRelationsInterface } from '../../crud/interfaces/crud-relations.interface';
-import { CrudRequestParsedParamsInterface } from '../../request/interfaces/crud-request-parsed-params.interface';
-import { QueryRelation } from '../../request/types/crud-request-query.types';
-import { CrudQueryHelper } from '../helpers/crud-query.helper';
+import { operationToAction } from '../../crud/util';
+import { QueryRelation } from '../../request/crud-query.types';
+import { CrudParsedQueryInterface } from '../../request/interfaces/crud-parsed-query.interface';
 
 // Mock entities
 export interface TestRoot extends PlainLiteralObject {
@@ -35,20 +38,43 @@ export interface TestSettings extends PlainLiteralObject {
   notifications: boolean;
 }
 
-// Mock service classes
-export class TestRootService {}
-export class TestRelationService {}
-export class TestProfileService {}
-export class TestSettingsService {}
+// Factory function for creating a default CrudContextInterface
+export const createTestContext = <T extends PlainLiteralObject = TestRoot>(
+  operation: Operation = Operation.List,
+  entity = '',
+): CrudContextInterface<T> => {
+  return AppContextHost.create<CrudContextInterface<T>>({
+    entity,
+    params: {},
+    query: {
+      search: undefined,
+
+      sort: [],
+      fields: [],
+      limit: undefined,
+      offset: undefined,
+      page: undefined,
+      filter: [],
+      or: [],
+      cache: undefined,
+      includeDeleted: undefined,
+    },
+    options: {},
+    operation,
+    action: operationToAction(operation),
+    locals: {},
+    trx: null,
+    hooks: [],
+  });
+};
 
 // Factory functions for creating test data
-export const createTestParsed = (
-  overrides: Partial<CrudRequestParsedParamsInterface<TestRoot>> = {},
-): CrudRequestParsedParamsInterface<TestRoot> => {
-  const queryHelper = new CrudQueryHelper<TestRoot>();
-  const baseRequest = queryHelper.createRequest();
+export const createTestQuery = (
+  overrides: Partial<CrudParsedQueryInterface<TestRoot>> = {},
+): CrudParsedQueryInterface<TestRoot> => {
+  const baseContext = createTestContext();
   return {
-    ...baseRequest.parsed,
+    ...baseContext.query,
     ...overrides,
   };
 };
@@ -63,37 +89,42 @@ export const createTestRelations = (
 });
 
 // Common relation configurations
-export const createOneToManyForwardRelation = (
+export function createOneToManyForwardRelation<
+  R extends PlainLiteralObject = PlainLiteralObject,
+>(
   property: string,
-  service: Type,
+  entity: string,
   options?: {
     primaryKey?: string;
     foreignKey?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    distinctFilter?: QueryRelation<any>['distinctFilter'];
+    distinctFilter?: QueryRelation<TestRoot, R>['distinctFilter'];
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): QueryRelation<TestRoot, any> => ({
-  property,
-  primaryKey: options?.primaryKey || 'id',
-  foreignKey: options?.foreignKey || 'rootId',
-  cardinality: 'many',
-  service,
-  owner: false,
-  distinctFilter: options?.distinctFilter,
-});
+): QueryRelation<TestRoot, R> {
+  return {
+    property,
+    entity,
+    primaryKey: options?.primaryKey || 'id',
+    foreignKey: options?.foreignKey || 'rootId',
+    cardinality: 'many',
+    owner: false,
+    distinctFilter: options?.distinctFilter,
+  };
+}
 
-export const createOneToOneForwardRelation = (
+export function createOneToOneForwardRelation<
+  R extends PlainLiteralObject = PlainLiteralObject,
+>(
   property: string,
-  service: Type,
+  entity: string,
   primaryKey: string = 'id',
   foreignKey: string = 'rootId',
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): QueryRelation<TestRoot, any> => ({
-  property,
-  primaryKey,
-  foreignKey,
-  cardinality: 'one',
-  service,
-  owner: false,
-});
+): QueryRelation<TestRoot, R> {
+  return {
+    property,
+    entity,
+    primaryKey,
+    foreignKey,
+    cardinality: 'one',
+    owner: false,
+  };
+}

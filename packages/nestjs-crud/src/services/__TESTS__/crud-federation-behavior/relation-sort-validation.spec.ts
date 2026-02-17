@@ -1,12 +1,11 @@
+import { WhereOperator } from '@concepta/nestjs-common';
+
 import { CrudFederationException } from '../../../exceptions/crud-federation.exception';
 import {
-  assertServiceCallCounts,
+  assertHandlerCallCounts,
   assertRelationSortValidationError,
 } from '../../__FIXTURES__/crud-federation-test-assertions';
-import {
-  createOneToManyForwardRelation,
-  TestRelationService,
-} from '../../__FIXTURES__/crud-federation-test-entities';
+import { createOneToManyForwardRelation } from '../../__FIXTURES__/crud-federation-test-entities';
 import {
   setupCrudFederationTests,
   cleanupCrudFederationTests,
@@ -15,7 +14,7 @@ import {
 
 /**
  * Validation tests for relation sort requirements (Scenario 14)
- * Relation sort requires specific $notnull filter on join key to ensure INNER JOIN semantics
+ * Relation sort requires specific $nnull filter on join key to ensure INNER JOIN semantics
  * Tests various invalid configurations and validates helpful error messages
  */
 describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
@@ -23,8 +22,6 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
 
   beforeEach(async () => {
     mocks = await setupCrudFederationTests();
-    // Register the 'relations' relation that tests use
-    mocks.registerRelation(mocks.mockRelationService);
   });
 
   afterEach(async () => {
@@ -36,9 +33,9 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
+        'TestRelation',
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           sort: ['relations.title,ASC'], // No filters - will error!
         },
@@ -46,14 +43,14 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
       );
 
       // ACT & ASSERT
-      const error = await mocks.service.getMany(req).catch((e) => e);
+      const error = await mocks.service.list(req).catch((e) => e);
 
       assertRelationSortValidationError(error);
 
-      // No services should be called when validation fails
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 0 },
-        { service: mocks.mockRelationService, count: 0 },
+      // No handlers should be called when validation fails
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 0 },
+        { handler: mocks.relationListSpy, count: 0 },
       ]);
     });
 
@@ -61,24 +58,24 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
+        'TestRelation',
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
-          filter: ['relations.status||$eq||active'], // Unrelated filter, missing $notnull
+          filter: ['relations.status||$eq||active'], // Unrelated filter, missing $nnull
           sort: ['relations.priority,DESC'],
         },
         [relation],
       );
 
       // ACT & ASSERT
-      const error = await mocks.service.getMany(req).catch((e) => e);
+      const error = await mocks.service.list(req).catch((e) => e);
 
       assertRelationSortValidationError(error);
 
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 0 },
-        { service: mocks.mockRelationService, count: 0 },
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 0 },
+        { handler: mocks.relationListSpy, count: 0 },
       ]);
     });
 
@@ -86,11 +83,11 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
+        'TestRelation',
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
-          // This should trigger the validation error since no $notnull filter exists
+          // This should trigger the validation error since no $nnull filter exists
           filter: ['relations.status||$eq||active'],
           sort: ['relations.title,ASC'],
         },
@@ -98,14 +95,14 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
       );
 
       // ACT & ASSERT
-      const error = await mocks.service.getMany(req).catch((e) => e);
+      const error = await mocks.service.list(req).catch((e) => e);
 
       expect(error).toBeInstanceOf(CrudFederationException);
       expect(error.message).toContain('distinctFilter configuration');
 
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 0 },
-        { service: mocks.mockRelationService, count: 0 },
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 0 },
+        { handler: mocks.relationListSpy, count: 0 },
       ]);
     });
 
@@ -113,9 +110,9 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
+        'TestRelation',
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           filter: [
             'relations.status||$eq||active',
@@ -127,13 +124,13 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
       );
 
       // ACT & ASSERT
-      const error = await mocks.service.getMany(req).catch((e) => e);
+      const error = await mocks.service.list(req).catch((e) => e);
 
       assertRelationSortValidationError(error);
 
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 0 },
-        { service: mocks.mockRelationService, count: 0 },
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 0 },
+        { handler: mocks.relationListSpy, count: 0 },
       ]);
     });
 
@@ -141,9 +138,9 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
+        'TestRelation',
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           sort: ['relations.priority,DESC'],
         },
@@ -151,7 +148,7 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
       );
 
       // ACT & ASSERT
-      const error = await mocks.service.getMany(req).catch((e) => e);
+      const error = await mocks.service.list(req).catch((e) => e);
 
       expect(error).toBeInstanceOf(CrudFederationException);
       expect(error.message).toContain('distinctFilter configuration');
@@ -164,41 +161,47 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
+        'TestRelation',
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
-          filter: ['name||$cont||Project'], // Root filter only
+          filter: ['name||$contains||Project'], // Root filter only
           sort: ['relations.title,ASC'], // Relation sort
         },
         [relation],
       );
 
       // ACT & ASSERT
-      const error = await mocks.service.getMany(req).catch((e) => e);
+      const error = await mocks.service.list(req).catch((e) => e);
 
       assertRelationSortValidationError(error);
     });
   });
 
   describe('Valid configurations (should not throw)', () => {
-    it('should not throw error when valid $notnull filter exists', async () => {
+    it('should not throw error when valid $nnull filter exists', async () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } }, // distinctFilter configuration
-      );
-      const req = mocks.createTestRequest(
+        'TestRelation',
         {
-          filter: ['relations.rootId||$notnull'], // Valid filter
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        }, // distinctFilter configuration
+      );
+      const req = await mocks.createTestQuery(
+        {
+          filter: ['relations.rootId||$nnull'], // Valid filter
           sort: ['relations.title,ASC'],
         },
         [relation],
       );
 
       // Mock empty responses to avoid actual fetch logic
-      mocks.mockRelationService.getMany.mockResolvedValue({
+      mocks.relationListSpy.mockResolvedValue({
         data: [],
         count: 0,
         total: 0,
@@ -208,27 +211,33 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
       });
 
       // ACT - Should not throw
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Validation passed, relation service called
+      // ASSERT - Validation passed, relation handler called
       expect(result.data).toEqual([]);
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 0 }, // No roots when no relations
-        { service: mocks.mockRelationService, count: 1 },
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 0 }, // No roots when no relations
+        { handler: mocks.relationListSpy, count: 1 },
       ]);
     });
 
-    it('should not throw error when valid $notnull filter exists with additional filters', async () => {
+    it('should not throw error when valid $nnull filter exists with additional filters', async () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } }, // distinctFilter configuration
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        }, // distinctFilter configuration
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           filter: [
-            'relations.rootId||$notnull', // Valid join key filter
+            'relations.rootId||$nnull', // Valid join key filter
             'relations.status||$eq||active', // Additional filter OK
           ],
           sort: ['relations.priority,DESC'],
@@ -237,7 +246,7 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
       );
 
       // Mock empty responses
-      mocks.mockRelationService.getMany.mockResolvedValue({
+      mocks.relationListSpy.mockResolvedValue({
         data: [],
         count: 0,
         total: 0,
@@ -247,13 +256,11 @@ describe('CrudFederationService - Behavior: Relation Sort Validation', () => {
       });
 
       // ACT - Should not throw
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
       // ASSERT - Validation passed
       expect(result.data).toEqual([]);
-      assertServiceCallCounts([
-        { service: mocks.mockRelationService, count: 1 },
-      ]);
+      assertHandlerCallCounts([{ handler: mocks.relationListSpy, count: 1 }]);
     });
   });
 });

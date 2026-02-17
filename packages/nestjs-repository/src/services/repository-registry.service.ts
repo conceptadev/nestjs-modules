@@ -1,0 +1,59 @@
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+
+import { RepositoryDuplicateKeyException } from '../exceptions/repository-duplicate-key.exception';
+import { RepositoryRegistryItem } from '../interfaces/repository-registry-item.interface';
+
+export { RepositoryRegistryItem };
+
+export const REPOSITORY_REGISTRY = Symbol('RepositoryRegistry');
+
+/**
+ * Registry for tracking repository registrations.
+ *
+ * Validates for duplicate keys at application bootstrap.
+ */
+@Injectable()
+export class RepositoryRegistryService implements OnApplicationBootstrap {
+  private readonly registry = new Map<
+    string,
+    Readonly<RepositoryRegistryItem>
+  >();
+  private readonly pending: Readonly<RepositoryRegistryItem>[] = [];
+
+  /**
+   * Queue an item for validation at bootstrap.
+   */
+  register(item: RepositoryRegistryItem): void {
+    this.pending.push(Object.freeze({ ...item }));
+  }
+
+  /**
+   * Validate all pending items at application bootstrap.
+   * Throws if duplicate keys are found.
+   */
+  onApplicationBootstrap(): void {
+    const duplicates: { key: string; existing: string; attempted: string }[] =
+      [];
+
+    for (const item of this.pending) {
+      const existing = this.registry.get(item.key);
+
+      if (existing) {
+        duplicates.push({
+          key: item.key,
+          existing: existing.entityName,
+          attempted: item.entityName,
+        });
+      } else {
+        this.registry.set(item.key, item);
+      }
+    }
+
+    // Clear pending after processing
+    this.pending.length = 0;
+
+    if (duplicates.length > 0) {
+      throw new RepositoryDuplicateKeyException(duplicates);
+    }
+  }
+}

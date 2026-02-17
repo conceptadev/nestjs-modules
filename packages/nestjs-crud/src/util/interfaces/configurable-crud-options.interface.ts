@@ -1,61 +1,58 @@
-import { InjectionToken, PlainLiteralObject, Type } from '@nestjs/common';
+import { PlainLiteralObject } from '@nestjs/common';
 
-import { CrudAdapter } from '../../crud/adapters/crud.adapter';
-import { CrudControllerOptionsInterface } from '../../crud/interfaces/crud-controller-options.interface';
-import { CrudExtraDecoratorsInterface } from '../../crud/interfaces/crud-extra-decorators.interface';
 import {
-  CrudCreateManyOptionsInterface,
-  CrudCreateOneOptionsInterface,
-  CrudDeleteOneOptionsInterface,
-  CrudReadAllOptionsInterface,
-  CrudReadOneOptionsInterface,
-  CrudRecoverOneOptionsInterface,
-  CrudReplaceOneOptionsInterface,
-  CrudUpdateOneOptionsInterface,
-} from '../../crud/interfaces/crud-route-options.interface';
-import { CrudService } from '../../services/crud.service';
+  CrudControllerClassOptionsInterface,
+  CrudControllerOptionsInterface,
+} from '../../crud/interfaces/crud-controller-options.interface';
+import { CrudExtraDecoratorsInterface } from '../../crud/interfaces/crud-extra-decorators.interface';
+import { CrudOperationOptions } from '../../crud/types/crud-operation-options.type';
 
 /**
- * Service config with adapter token - generates a service class that injects the adapter
+ * Options for pre-decorated controller class.
+ * Operations are read from class metadata.
  */
-export interface ConfigurableCrudServiceAdapterOption<
-  Entity extends PlainLiteralObject,
-> {
-  serviceToken: InjectionToken<CrudService<Entity>>;
-  adapterToken: InjectionToken<CrudAdapter<Entity>>;
+export interface ConfigurableCrudClassOptions {
+  controller: CrudControllerClassOptionsInterface &
+    CrudExtraDecoratorsInterface;
 }
 
 /**
- * Service config with useClass - uses the provided service class directly
+ * Options for hybrid controller class with operations.
+ *
+ * The class provides the base controller, and operations define which methods
+ * to augment or create:
+ * - If method exists with matching operation → augment/override its options
+ * - If method doesn't exist → create new method with implementation + decorators
  */
-export interface ConfigurableCrudServiceUseClassOption<
+export interface ConfigurableCrudHybridOptions<
   Entity extends PlainLiteralObject,
 > {
-  serviceToken: InjectionToken<CrudService<Entity>>;
-  useClass: Type<CrudService<Entity>>;
+  controller: CrudControllerClassOptionsInterface &
+    CrudExtraDecoratorsInterface;
+  operations: CrudOperationOptions<Entity>[];
 }
 
-export interface ConfigurableCrudOptions<Entity extends PlainLiteralObject> {
-  /**
-   * Service configuration - either adapter (generate) or useClass (use directly)
-   */
-  service:
-    | ConfigurableCrudServiceAdapterOption<Entity>
-    | ConfigurableCrudServiceUseClassOption<Entity>;
+/**
+ * Options for generated controller.
+ * Operations array defines what methods to generate.
+ */
+export interface ConfigurableCrudGeneratedOptions<
+  Entity extends PlainLiteralObject,
+> {
   controller: CrudControllerOptionsInterface<Entity> &
     CrudExtraDecoratorsInterface;
-  getMany?: CrudReadAllOptionsInterface<Entity> & CrudExtraDecoratorsInterface;
-  getOne?: CrudReadOneOptionsInterface<Entity> & CrudExtraDecoratorsInterface;
-  createMany?: CrudCreateManyOptionsInterface<Entity> &
-    CrudExtraDecoratorsInterface;
-  createOne?: CrudCreateOneOptionsInterface<Entity> &
-    CrudExtraDecoratorsInterface;
-  updateOne?: CrudUpdateOneOptionsInterface<Entity> &
-    CrudExtraDecoratorsInterface;
-  replaceOne?: CrudReplaceOneOptionsInterface<Entity> &
-    CrudExtraDecoratorsInterface;
-  deleteOne?: CrudDeleteOneOptionsInterface<Entity> &
-    CrudExtraDecoratorsInterface;
-  recoverOne?: CrudRecoverOneOptionsInterface<Entity> &
-    CrudExtraDecoratorsInterface;
+  operations: CrudOperationOptions<Entity>[];
 }
+
+/**
+ * Options for configurable CRUD builder.
+ *
+ * Either:
+ * - Pre-decorated class: `{ controller: { class: MyController } }`
+ * - Hybrid class + operations: `{ controller: { class: MyController }, operations: [...] }`
+ * - Generated controller: `{ controller: { entity: ..., adapter: ... }, operations: [...] }`
+ */
+export type ConfigurableCrudOptions<Entity extends PlainLiteralObject> =
+  | ConfigurableCrudClassOptions
+  | ConfigurableCrudHybridOptions<Entity>
+  | ConfigurableCrudGeneratedOptions<Entity>;

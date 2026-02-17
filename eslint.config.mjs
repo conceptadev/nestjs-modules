@@ -82,6 +82,8 @@ export default tseslint.config(
 
       // JSDoc/TSDoc rules
       'jsdoc/tag-lines': ['error', 'any', { startLines: 1 }],
+      // Disable nested param checking since TSDoc doesn't support dot notation
+      'jsdoc/check-param-names': ['warn', { checkDestructured: false }],
       'tsdoc/syntax': 'error',
     },
   },

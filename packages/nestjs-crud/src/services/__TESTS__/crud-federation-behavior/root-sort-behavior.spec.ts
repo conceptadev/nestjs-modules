@@ -1,23 +1,22 @@
+import { Where } from '@concepta/nestjs-common';
+
 import { createPaginatedResponse } from '../../__FIXTURES__/crud-federation-mock-helpers';
 import {
-  assertServiceCallCounts,
+  assertHandlerCallCounts,
   assertRootFirst,
   assertLeftJoinBehavior,
-  assertRootGetManyRequest,
+  assertRootListQuery,
   assertResultStructure,
   assertEnrichment,
   assertSortOrder,
-  assertRelationRequest,
+  assertRelationQuery,
 } from '../../__FIXTURES__/crud-federation-test-assertions';
 import {
   createNameSortDataSet,
   createIdDescSortDataSet,
   createMultiSortDataSet,
 } from '../../__FIXTURES__/crud-federation-test-data';
-import {
-  createOneToManyForwardRelation,
-  TestRelationService,
-} from '../../__FIXTURES__/crud-federation-test-entities';
+import { createOneToManyForwardRelation } from '../../__FIXTURES__/crud-federation-test-entities';
 import {
   setupCrudFederationTests,
   cleanupCrudFederationTests,
@@ -34,8 +33,6 @@ describe('CrudFederationService - Behavior: Root Sort Strategy', () => {
 
   beforeEach(async () => {
     mocks = await setupCrudFederationTests();
-    // Register the 'relations' relation that tests use
-    mocks.registerRelation(mocks.mockRelationService);
   });
 
   afterEach(async () => {
@@ -47,9 +44,9 @@ describe('CrudFederationService - Behavior: Root Sort Strategy', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
+        'TestRelation',
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           page: '1',
           limit: '10',
@@ -60,36 +57,34 @@ describe('CrudFederationService - Behavior: Root Sort Strategy', () => {
 
       const data = createNameSortDataSet();
 
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.roots, { limit: 10, total: 3 }),
       );
-      mocks.mockRelationService.getMany.mockResolvedValue(
+      mocks.relationListSpy.mockResolvedValue(
         createPaginatedResponse(data.relations, { total: 2 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockRelationService, count: 1 },
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.relationListSpy, count: 1 },
       ]);
-      assertRootFirst(mocks.mockRootService, [mocks.mockRelationService]);
-      assertLeftJoinBehavior(mocks.mockRootService);
+      assertRootFirst(mocks.rootListSpy, [mocks.relationListSpy]);
+      assertLeftJoinBehavior(mocks.rootListSpy);
 
-      // Verify root service called with sort parameters
-      assertRootGetManyRequest(mocks.mockRootService, {
+      // Verify root handler called with sort parameters
+      assertRootListQuery(mocks.rootListSpy, {
         sort: [{ field: 'name', order: 'ASC' }],
         page: 1,
         limit: 10,
       });
 
-      // Verify relation service called with all root IDs for enrichment
-      assertRelationRequest(mocks.mockRelationService, {
-        search: {
-          rootId: { $in: [1, 3, 2] },
-        },
+      // Verify relation handler called with all root IDs for enrichment
+      assertRelationQuery(mocks.relationListSpy, {
+        filter: [{ ...Where.in('rootId', [1, 3, 2]), relation: 'relations' }],
       });
 
       // ASSERT - Result verification
@@ -106,9 +101,9 @@ describe('CrudFederationService - Behavior: Root Sort Strategy', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
+        'TestRelation',
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           page: '1',
           limit: '5',
@@ -119,36 +114,36 @@ describe('CrudFederationService - Behavior: Root Sort Strategy', () => {
 
       const data = createIdDescSortDataSet();
 
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.roots, { limit: 5, total: 5 }),
       );
-      mocks.mockRelationService.getMany.mockResolvedValue(
+      mocks.relationListSpy.mockResolvedValue(
         createPaginatedResponse(data.relations, { total: 3 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockRelationService, count: 1 },
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.relationListSpy, count: 1 },
       ]);
-      assertRootFirst(mocks.mockRootService, [mocks.mockRelationService]);
-      assertLeftJoinBehavior(mocks.mockRootService);
+      assertRootFirst(mocks.rootListSpy, [mocks.relationListSpy]);
+      assertLeftJoinBehavior(mocks.rootListSpy);
 
-      // Verify root service called with descending sort parameters
-      assertRootGetManyRequest(mocks.mockRootService, {
+      // Verify root handler called with descending sort parameters
+      assertRootListQuery(mocks.rootListSpy, {
         sort: [{ field: 'id', order: 'DESC' }],
         page: 1,
         limit: 5,
       });
 
-      // Verify relation service called with all root IDs for enrichment
-      assertRelationRequest(mocks.mockRelationService, {
-        search: {
-          rootId: { $in: [3, 4, 5, 2, 1] },
-        },
+      // Verify relation handler called with all root IDs for enrichment
+      assertRelationQuery(mocks.relationListSpy, {
+        filter: [
+          { ...Where.in('rootId', [3, 4, 5, 2, 1]), relation: 'relations' },
+        ],
       });
 
       // ASSERT - Result verification
@@ -172,9 +167,9 @@ describe('CrudFederationService - Behavior: Root Sort Strategy', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
+        'TestRelation',
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           page: '1',
           limit: '10',
@@ -185,26 +180,26 @@ describe('CrudFederationService - Behavior: Root Sort Strategy', () => {
 
       const data = createMultiSortDataSet();
 
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.roots, { limit: 10, total: 3 }),
       );
-      mocks.mockRelationService.getMany.mockResolvedValue(
+      mocks.relationListSpy.mockResolvedValue(
         createPaginatedResponse(data.relations, { total: 3 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockRelationService, count: 1 },
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.relationListSpy, count: 1 },
       ]);
-      assertRootFirst(mocks.mockRootService, [mocks.mockRelationService]);
-      assertLeftJoinBehavior(mocks.mockRootService);
+      assertRootFirst(mocks.rootListSpy, [mocks.relationListSpy]);
+      assertLeftJoinBehavior(mocks.rootListSpy);
 
-      // Verify root service called with multi-field sort parameters
-      assertRootGetManyRequest(mocks.mockRootService, {
+      // Verify root handler called with multi-field sort parameters
+      assertRootListQuery(mocks.rootListSpy, {
         sort: [
           { field: 'name', order: 'ASC' },
           { field: 'id', order: 'DESC' },
@@ -213,11 +208,9 @@ describe('CrudFederationService - Behavior: Root Sort Strategy', () => {
         limit: 10,
       });
 
-      // Verify relation service called with all root IDs for enrichment
-      assertRelationRequest(mocks.mockRelationService, {
-        search: {
-          rootId: { $in: [3, 1, 2] },
-        },
+      // Verify relation handler called with all root IDs for enrichment
+      assertRelationQuery(mocks.relationListSpy, {
+        filter: [{ ...Where.in('rootId', [3, 1, 2]), relation: 'relations' }],
       });
 
       // ASSERT - Result verification

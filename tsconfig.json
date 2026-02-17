@@ -21,6 +21,9 @@
       "path": "packages/nestjs-common"
     },
     {
+      "path": "packages/nestjs-hook"
+    },
+    {
       "path": "packages/nestjs-access-control"
     },
     {
@@ -52,6 +55,12 @@
     },
     {
       "path": "packages/nestjs-typeorm-ext"
+    },
+    {
+      "path": "packages/nestjs-repository"
+    },
+    {
+      "path": "packages/nestjs-repository-typeorm"
     },
     {
       "path": "packages/nestjs-role"

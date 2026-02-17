@@ -20,7 +20,7 @@ import { isFunction, isObject } from '@nestjs/common/utils/shared.utils';
 import { CRUD_MODULE_SETTINGS_TOKEN } from '../../crud.constants';
 import { CrudException } from '../../exceptions/crud.exception';
 import { CrudModuleSettingsInterface } from '../../interfaces/crud-module-settings.interface';
-import { CrudReflectionService } from '../../services/crud-reflection.service';
+import { CrudMetaview } from '../../services/crud-metaview.service';
 import { crudIsPaginatedHelper } from '../../util/crud-is-paginated.helper';
 import { CrudInvalidResponseDto } from '../dto/crud-invalid-response.dto';
 import { CrudResponsePaginatedDto } from '../dto/crud-response-paginated.dto';
@@ -38,7 +38,7 @@ export class CrudSerializeInterceptor<
   constructor(
     @Inject(CRUD_MODULE_SETTINGS_TOKEN)
     private settings: CrudModuleSettingsInterface,
-    private reflectionService: CrudReflectionService<T>,
+    private reflectionService: CrudMetaview<T>,
   ) {}
 
   /**
@@ -107,30 +107,27 @@ export class CrudSerializeInterceptor<
   protected getOptions(
     context: ExecutionContext,
   ): CrudSerializationOptionsInterface {
+    const target = context.getClass();
+    const handler = context.getHandler();
+
     // get serialization options
     const options =
-      this.reflectionService.getAllSerializationOptions(
-        context.getClass(),
-        context.getHandler(),
-      ) ?? {};
-
-    // get model options
-    const modelOptions = this.reflectionService.getAllModelOptions(
-      context.getClass(),
-      context.getHandler(),
-    );
+      this.reflectionService.getAllSerializationOptions(target, handler) ?? {};
 
     // is the type missing?
     if (!options?.type) {
-      // yes, set it
-      options.type = modelOptions.type ?? CrudInvalidResponseDto;
+      // yes, set it from response resource
+      options.type =
+        this.reflectionService.getResponseResource(target, handler) ??
+        CrudInvalidResponseDto;
     }
 
-    // is the many type missing?
+    // is the paginated type missing?
     if (!options?.paginatedType) {
-      // yes, set it
+      // yes, set it from response paginated
       options.paginatedType =
-        modelOptions.paginatedType ?? CrudResponsePaginatedDto;
+        this.reflectionService.getResponsePaginated(target, handler) ??
+        CrudResponsePaginatedDto;
     }
 
     return {

@@ -1,36 +1,47 @@
-import { SetMetadata } from '@nestjs/common';
 import { ApiParamOptions } from '@nestjs/swagger';
 
 import { CRUD_MODULE_API_PARAMS_METADATA } from '../../../crud.constants';
-import { DecoratorTargetObject } from '../../../crud.types';
-import { CrudException } from '../../../exceptions/crud.exception';
-import { CrudReflectionService } from '../../../services/crud-reflection.service';
-import { CrudApiParamMetadataInterface } from '../../interfaces/crud-api-param-metadata.interface';
+import {
+  CrudMetadataLookupTarget,
+  CrudMetadata,
+} from '../../../services/crud-metadata.service';
+
+export type ApiParamMetadata = (ApiParamOptions | undefined)[];
+
+type ApiParamDecoratorFn = (
+  options?: ApiParamOptions,
+) => <T>(
+  target: object,
+  propertyKey: string | symbol,
+  descriptor: TypedPropertyDescriptor<T>,
+) => void;
 
 /**
- * \@CrudApiParam() open api decorator
+ * \@CrudApiParam() open api decorator.
+ * Can be applied multiple times to accumulate parameters.
  */
-export function CrudApiParam(options?: ApiParamOptions): MethodDecorator {
-  return (target: DecoratorTargetObject, ...rest) => {
-    const [propertyKey] = rest;
+export const CrudApiParam = CrudMetadata.createWrappedDecorator<
+  ApiParamMetadata,
+  ApiParamDecoratorFn
+>(
+  {
+    key: CRUD_MODULE_API_PARAMS_METADATA,
+    lookupTarget: CrudMetadataLookupTarget.Method,
+  },
+  (decorator) =>
+    (options?: ApiParamOptions) =>
+    <T>(
+      target: object,
+      propertyKey: string | symbol,
+      descriptor: TypedPropertyDescriptor<T>,
+    ) => {
+      const handler = descriptor.value;
 
-    if (!('__proto__' in target)) {
-      throw new CrudException({
-        message: 'Cannot decorate with api param, target must be a class',
-      });
-    }
+      const existing =
+        typeof handler === 'function'
+          ? (CrudMetadata.get<ApiParamMetadata>(CrudApiParam, handler) ?? [])
+          : [];
 
-    const reflectionService = new CrudReflectionService();
-
-    const previousValues = reflectionService.getApiParamsOptions(target) || [];
-
-    const value: CrudApiParamMetadataInterface = {
-      propertyKey,
-      options,
-    };
-
-    const values = [...previousValues, value];
-
-    SetMetadata(CRUD_MODULE_API_PARAMS_METADATA, values)(target);
-  };
-}
+      decorator([...existing, options])(target, propertyKey, descriptor);
+    },
+);

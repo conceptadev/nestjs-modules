@@ -1,67 +1,62 @@
 import { PlainLiteralObject } from '@nestjs/common';
+import { MetadataScanner } from '@nestjs/core';
 import { ApiParam, ApiParamOptions } from '@nestjs/swagger';
 
-import { CrudException } from '../../../exceptions/crud.exception';
-import { CrudReflectionService } from '../../../services/crud-reflection.service';
+import { CrudMetaview } from '../../../services/crud-metaview.service';
 
 /**
  * Crud initialize open api params decorator.
  *
- * Add an ApiParam to every method with a crud action.
+ * Add an ApiParam to every method with a crud operation.
  */
 export const CrudInitApiParams =
   <T extends PlainLiteralObject = PlainLiteralObject>(): ClassDecorator =>
-  (...args: Parameters<ClassDecorator>) => {
-    // get the args
-    const [classTarget] = args;
+  (classTarget) => {
+    const reflectionService = new CrudMetaview<T>();
+    const scanner = new MetadataScanner();
+    const prototype = classTarget.prototype;
 
-    const reflectionService = new CrudReflectionService<T>();
+    for (const methodName of scanner.getAllMethodNames(prototype)) {
+      const handler = Reflect.get(prototype, methodName);
+      const descriptor = Object.getOwnPropertyDescriptor(prototype, methodName);
 
-    // get the api param options
-    const apiParamsMetadata =
-      reflectionService.getApiParamsOptions(classTarget.prototype) ?? [];
+      if (!descriptor) continue;
 
-    // yes, loop all metadatas
-    apiParamsMetadata.map((metadata) => {
-      // break out the args
-      const { propertyKey } = metadata;
+      const apiParamsOptions = reflectionService.getApiParamsOptions(handler);
+      if (!apiParamsOptions?.length) continue;
 
-      // need the descriptor
-      const descriptor = Object.getOwnPropertyDescriptor(
-        classTarget.prototype,
-        propertyKey,
-      );
-
-      // sanity check
-      if (!descriptor) {
-        throw new CrudException({
-          message: 'Did not find property descriptor',
-        });
-      }
-
-      // get the route params options
       const paramsOptions = reflectionService.getAllParamOptions(
         classTarget,
-        classTarget.prototype[propertyKey],
+        handler,
       );
 
-      // create the api param decorator
-      if (paramsOptions) {
-        // loop all params options
-        for (const p in paramsOptions) {
-          // options for this property
-          const propOpts = paramsOptions[p];
+      for (const options of apiParamsOptions) {
+        // Use decorator's name option to look up matching route param config
+        const paramName = options?.name;
+        const routeParam = paramName
+          ? paramsOptions?.[paramName]
+          : Object.values(paramsOptions ?? {})[0];
 
-          // merge the options
-          const apiOptions: ApiParamOptions = {
-            name: propOpts.field ?? '',
-            required: true,
-            type: propOpts.type === 'number' ? Number : String,
-            enum: propOpts?.enum ? Object.values(propOpts.enum) : undefined,
-          };
+        // ApiParamOptions is a union: ApiParamMetadata | ApiParamSchemaHost
+        // - ApiParamMetadata has `type` and `enum` at top level (accepts Function like Number/String)
+        // - ApiParamSchemaHost has `schema.type` and `schema.enum` (OpenAPI string format)
+        const isSchemaHost = options && 'schema' in options;
+        const optType = isSchemaHost ? options.schema?.type : options?.type;
+        const optEnum = isSchemaHost ? options.schema?.enum : options?.enum;
 
-          ApiParam(apiOptions)(classTarget.prototype, propertyKey, descriptor);
-        }
+        // Build final options: spread decorator options first, then set defaults
+        // for any properties not explicitly provided
+        const apiOptions: ApiParamOptions = {
+          ...options,
+          name: options?.name ?? routeParam?.field ?? '',
+          type: optType ?? (routeParam?.type === 'number' ? Number : String),
+          enum:
+            optEnum ??
+            (routeParam?.enum ? Object.values(routeParam.enum) : undefined),
+          required: options?.required ?? true,
+        };
+
+        ApiParam(apiOptions)(prototype, methodName, descriptor);
       }
-    });
+    }
   };

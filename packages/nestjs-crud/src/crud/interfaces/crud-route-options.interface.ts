@@ -1,69 +1,30 @@
 import { PlainLiteralObject, Type } from '@nestjs/common';
-import {
-  ApiBodyOptions,
-  ApiOperationOptions,
-  ApiParamOptions,
-  ApiQueryOptions,
-  ApiResponseOptions,
-} from '@nestjs/swagger';
 
-import { CrudValidationOptions } from '../../crud.types';
+import { CrudCommandInterface } from './crud-command.interface';
+import { CrudQueryInterface } from './crud-query.interface';
 
-import {
-  CrudCreateOneRouteOptionsInterface,
-  CrudDeleteOneRouteOptionsInterface,
-  CrudRecoverOneRouteOptionsInterface,
-  CrudReplaceOneRouteOptionsInterface,
-  CrudUpdateOneRouteOptionsInterface,
-} from './crud-routes-options.interface';
-import { CrudSerializationOptionsInterface } from './crud-serialization-options.interface';
+/**
+ * Resolved handler options containing the handler class.
+ */
+interface CrudResolvedHandlerOptions {
+  resolved?: Type;
+}
 
+/**
+ * Runtime route options available in CrudContext.
+ * Contains query/command types, handlers, and return behavior flags.
+ */
 export interface CrudRouteOptionsInterface<T extends PlainLiteralObject> {
-  path?: string | string[];
-  validation?: CrudValidationOptions<T>;
-  serialization?: CrudSerializationOptionsInterface;
-  api?: {
-    operation?: ApiOperationOptions;
-    query?: ApiQueryOptions[];
-    params?: ApiParamOptions;
-    body?: ApiBodyOptions;
-    response?: ApiResponseOptions;
-  };
+  /** Resolved query class */
+  query?: Type<CrudQueryInterface<T>>;
+  /** Resolved query handler options */
+  queryHandler?: CrudResolvedHandlerOptions;
+  /** Resolved command class */
+  command?: Type<CrudCommandInterface<T>>;
+  /** Resolved command handler options */
+  commandHandler?: CrudResolvedHandlerOptions;
+  /** Return deleted entity on delete or soft delete operation */
+  returnDeleted?: boolean;
+  /** Return restored entity on restore operation */
+  returnRestored?: boolean;
 }
-
-export interface CrudRouteDtoOptionsInterface {
-  dto?: Type;
-}
-
-export interface CrudCreateManyOptionsInterface<T extends PlainLiteralObject>
-  extends CrudRouteOptionsInterface<T>,
-    CrudRouteDtoOptionsInterface {}
-
-export interface CrudCreateOneOptionsInterface<T extends PlainLiteralObject>
-  extends CrudRouteOptionsInterface<T>,
-    CrudCreateOneRouteOptionsInterface,
-    CrudRouteDtoOptionsInterface {}
-
-export interface CrudReadAllOptionsInterface<T extends PlainLiteralObject>
-  extends CrudRouteOptionsInterface<T> {}
-
-export interface CrudReadOneOptionsInterface<T extends PlainLiteralObject>
-  extends CrudRouteOptionsInterface<T> {}
-
-export interface CrudUpdateOneOptionsInterface<T extends PlainLiteralObject>
-  extends CrudRouteOptionsInterface<T>,
-    Pick<CrudUpdateOneRouteOptionsInterface, 'returnShallow'>,
-    CrudRouteDtoOptionsInterface {}
-
-export interface CrudReplaceOneOptionsInterface<T extends PlainLiteralObject>
-  extends CrudRouteOptionsInterface<T>,
-    Pick<CrudReplaceOneRouteOptionsInterface, 'returnShallow'>,
-    CrudRouteDtoOptionsInterface {}
-
-export interface CrudDeleteOneOptionsInterface<T extends PlainLiteralObject>
-  extends CrudRouteOptionsInterface<T>,
-    CrudDeleteOneRouteOptionsInterface {}
-
-export interface CrudRecoverOneOptionsInterface<T extends PlainLiteralObject>
-  extends CrudRouteOptionsInterface<T>,
-    CrudRecoverOneRouteOptionsInterface {}

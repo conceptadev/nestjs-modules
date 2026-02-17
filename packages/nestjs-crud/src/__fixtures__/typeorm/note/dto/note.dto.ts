@@ -7,10 +7,10 @@ export class NoteDto {
   @Expose()
   @ApiProperty({ type: 'number' })
   @IsNumber()
-  id!: string;
+  id!: number;
 
   @Expose()
   @ApiProperty({ type: 'number' })
   @IsNumber()
-  revisionId!: string;
+  revisionId!: number;
 }

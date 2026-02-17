@@ -1,59 +1,51 @@
 import { Body, ValidationPipe } from '@nestjs/common';
+import { MetadataScanner } from '@nestjs/core';
 
 import { CRUD_MODULE_DEFAULT_VALIDATION_PIPE_OPTIONS } from '../../../crud.constants';
-import { CrudReflectionService } from '../../../services/crud-reflection.service';
+import { CrudMetaview } from '../../../services/crud-metaview.service';
 
 /**
  * Crud initialize validation decorator.
  *
  * Add a ValidationPipe to every parameter called with the `CrudBody` decorator.
  */
-export const CrudInitValidation =
-  (): ClassDecorator =>
-  (...args: Parameters<ClassDecorator>) => {
-    // get the args
-    const [classTarget] = args;
+export const CrudInitValidation = (): ClassDecorator => (classTarget) => {
+  const reflectionService = new CrudMetaview();
+  const scanner = new MetadataScanner();
+  const prototype = classTarget.prototype;
 
-    // reflection service
-    const reflectionService = new CrudReflectionService();
+  // get the fallback validation options
+  const fallbackOptions = reflectionService.getValidationOptions(classTarget);
 
-    // get the param options
-    const bodyParamMetadata = reflectionService.getBodyParamOptions(
-      classTarget.prototype,
-    );
+  for (const methodName of scanner.getAllMethodNames(prototype)) {
+    const handler = Reflect.get(prototype, methodName);
 
-    // get the fallback validation options
-    const fallbackOptions = reflectionService.getValidationOptions(classTarget);
+    // get the body param options for this method
+    const bodyParamOptions = reflectionService.getBodyParamOptions(handler);
+    if (!bodyParamOptions?.length) continue;
 
-    // do we have param validation metada?
-    if (Array.isArray(bodyParamMetadata)) {
-      // yes, loop all metadatas and set up the pipe
-      bodyParamMetadata.map((metadata) => {
-        // break out the args
-        let { pipes = [] } = metadata;
-        const { validation = fallbackOptions } = metadata;
+    // loop all metadatas and set up the pipe
+    for (const metadata of bodyParamOptions) {
+      let { pipes = [] } = metadata;
+      const { validation = fallbackOptions } = metadata;
 
-        // are we injecting validation?
-        if (validation !== false) {
-          // yes, merge options
-          const finalOptions = {
-            ...CRUD_MODULE_DEFAULT_VALIDATION_PIPE_OPTIONS,
-            ...validation,
-          };
+      // are we injecting validation?
+      if (validation !== false) {
+        // yes, merge options
+        const finalOptions = {
+          ...CRUD_MODULE_DEFAULT_VALIDATION_PIPE_OPTIONS,
+          ...validation,
+        };
 
-          // create new pipe
-          const paramPipe = new ValidationPipe(finalOptions);
+        // create new pipe
+        const paramPipe = new ValidationPipe(finalOptions);
 
-          // put our validation pipe first
-          pipes = [paramPipe, ...pipes];
-        }
+        // put our validation pipe first
+        pipes = [paramPipe, ...pipes];
+      }
 
-        // create the body decorator
-        Body(...pipes)(
-          classTarget.prototype,
-          metadata.propertyKey,
-          metadata.parameterIndex,
-        );
-      });
+      // create the body decorator
+      Body(...pipes)(prototype, methodName, metadata.parameterIndex);
     }
-  };
+  }
+};

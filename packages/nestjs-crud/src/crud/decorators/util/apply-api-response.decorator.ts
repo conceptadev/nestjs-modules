@@ -8,12 +8,13 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 
+import { Operation } from '@concepta/nestjs-common';
+
 import { DecoratorTargetObject } from '../../../crud.types';
 import { CrudException } from '../../../exceptions/crud.exception';
-import { CrudReflectionService } from '../../../services/crud-reflection.service';
+import { CrudMetaview } from '../../../services/crud-metaview.service';
 import { CrudInvalidResponseDto } from '../../dto/crud-invalid-response.dto';
 import { CrudResponsePaginatedDto } from '../../dto/crud-response-paginated.dto';
-import { CrudActions } from '../../enums/crud-actions.enum';
 
 /**
  * Utility decorator used to apply response
@@ -22,7 +23,7 @@ import { CrudActions } from '../../enums/crud-actions.enum';
  * DO NOT USE THIS DIRECTLY ON METHODS!!!
  */
 export function applyApiResponse(
-  action: CrudActions,
+  operation: Operation,
   options: ApiResponseOptions = {},
 ): MethodDecorator {
   return (target: DecoratorTargetObject, ...rest) => {
@@ -30,7 +31,7 @@ export function applyApiResponse(
     const [propertyKey] = rest;
 
     // reflection service
-    const reflectionService = new CrudReflectionService();
+    const reflectionService = new CrudMetaview();
 
     if (!('prototype' in target)) {
       throw new CrudException({
@@ -39,28 +40,24 @@ export function applyApiResponse(
       });
     }
 
+    const handler = target.prototype[propertyKey];
+
     // get the serialize options
     const serializeOptions = reflectionService.getAllSerializationOptions(
       target,
-      target.prototype[propertyKey],
-    );
-
-    // get the request options
-    const requestOptions = reflectionService.getRequestOptions(
-      target,
-      target.prototype[propertyKey],
+      handler,
     );
 
     // determine the dto type
     const dto =
       serializeOptions?.type ??
-      requestOptions.model.type ??
+      reflectionService.getResponseResource(target, handler) ??
       CrudInvalidResponseDto;
 
     // determine pagination dto
     const paginatedDto =
       serializeOptions?.paginatedType ??
-      requestOptions.model.paginatedType ??
+      reflectionService.getResponsePaginated(target, handler) ??
       CrudResponsePaginatedDto;
 
     // dto meta options
@@ -69,44 +66,49 @@ export function applyApiResponse(
     // dto schema options
     let dtoSchemaOptions: ApiResponseSchemaHost = { schema: {} };
 
-    // action is the discriminator
-    switch (action) {
-      // read all
-      case CrudActions.ReadAll:
-        dtoSchemaOptions = createReadAllResponse({
-          action: CrudActions.ReadAll,
-          modelName: requestOptions.model.type.name,
+    // operation is the discriminator
+    switch (operation) {
+      // list (paginated)
+      case Operation.List:
+        dtoSchemaOptions = createListResponse({
+          operation: Operation.List,
+          modelName: dto.name,
           dto,
           paginatedDto,
         });
         break;
 
-      // create many
-      case CrudActions.CreateMany:
+      // create batch (array response)
+      case Operation.CreateBatch:
         dtoSchemaOptions.schema = createArraySchema(dto);
         break;
 
       // returns deleted item or empty
-      case CrudActions.DeleteOne:
-        dtoMetaOptions.type =
-          requestOptions.routes?.deleteOne?.returnDeleted === true
-            ? dto
-            : undefined;
+      case Operation.Delete:
+      case Operation.SoftDelete:
+        dtoMetaOptions.type = reflectionService.getReturnDeleted(
+          target,
+          target.prototype[propertyKey],
+        )
+          ? dto
+          : undefined;
         break;
 
-      // returns recovered item or empty
-      case CrudActions.RecoverOne:
-        dtoMetaOptions.type =
-          requestOptions.routes?.recoverOne?.returnRecovered === true
-            ? dto
-            : undefined;
+      // returns restored item or empty
+      case Operation.Restore:
+        dtoMetaOptions.type = reflectionService.getReturnRestored(
+          target,
+          target.prototype[propertyKey],
+        )
+          ? dto
+          : undefined;
         break;
 
       // returns one item
-      case CrudActions.ReadOne:
-      case CrudActions.CreateOne:
-      case CrudActions.UpdateOne:
-      case CrudActions.ReplaceOne:
+      case Operation.Read:
+      case Operation.Create:
+      case Operation.Update:
+      case Operation.Replace:
       default:
         dtoMetaOptions.type = dto;
         break;
@@ -115,7 +117,7 @@ export function applyApiResponse(
     // merge the options
     const mergedOptions: ApiResponseOptions = {
       status: HttpStatus.OK,
-      description: `${action} ${requestOptions.model.type.name}`,
+      description: `${operation} ${dto.name}`,
       ...dtoMetaOptions,
       ...dtoSchemaOptions,
       ...options,
@@ -148,18 +150,18 @@ function createPaginatedSchema(
 }
 
 function createPaginatedResponse(options: {
-  action: CrudActions;
+  operation: Operation;
   modelName: string;
   paginatedDto: Type;
 }): ApiResponseSchemaHost {
   return {
-    description: `${options.action} ${options.modelName} as paginated response.`,
+    description: `${options.operation} ${options.modelName} as paginated response.`,
     schema: createPaginatedSchema(options.paginatedDto),
   };
 }
 
-function createReadAllResponse(options: {
-  action: CrudActions;
+function createListResponse(options: {
+  operation: Operation;
   modelName: string;
   dto: Type;
   paginatedDto: Type;

@@ -1,7 +1,9 @@
 import { ReferenceIdInterface } from '../../../reference/interfaces/reference-id.interface';
-import { ReferenceId } from '../../../reference/interfaces/reference.types';
-import { RepositoryInternals } from '../../../repository/interfaces/repository-internals';
+import { RepositoryFindOptions } from '../../../repository/interfaces/repository-options.interface';
 
-export interface FindInterface<T = ReferenceId, U = ReferenceIdInterface> {
-  find(options?: RepositoryInternals.FindManyOptions<T>): Promise<U[]>;
+export interface FindInterface<
+  T extends ReferenceIdInterface = ReferenceIdInterface,
+  U extends T = T,
+> {
+  find(options?: RepositoryFindOptions<T>): Promise<U[]>;
 }

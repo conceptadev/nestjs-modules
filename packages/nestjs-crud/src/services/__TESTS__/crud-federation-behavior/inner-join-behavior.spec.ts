@@ -1,10 +1,12 @@
+import { Where, WhereOperator } from '@concepta/nestjs-common';
+
 import { createPaginatedResponse } from '../../__FIXTURES__/crud-federation-mock-helpers';
 import {
-  assertServiceCallCounts,
+  assertHandlerCallCounts,
   assertResultStructure,
   assertEmptyResult,
-  assertRelationRequest,
-  assertRootGetManyRequest,
+  assertRelationQuery,
+  assertRootListQuery,
   assertRelationFirst,
   assertRootFirst,
 } from '../../__FIXTURES__/crud-federation-test-assertions';
@@ -14,10 +16,7 @@ import {
   createPriorityDataSet,
   createCombinedFiltersSet,
 } from '../../__FIXTURES__/crud-federation-test-data';
-import {
-  createOneToManyForwardRelation,
-  TestRelationService,
-} from '../../__FIXTURES__/crud-federation-test-entities';
+import { createOneToManyForwardRelation } from '../../__FIXTURES__/crud-federation-test-entities';
 import {
   setupCrudFederationTests,
   cleanupCrudFederationTests,
@@ -29,8 +28,8 @@ import {
  *
  * Key Concept: While LEFT JOIN is the default federation behavior (all roots returned),
  * INNER JOIN can be achieved using existence filters on relation fields like:
- * - relations.rootId||$notnull
- * - relations.status||$notnull
+ * - relations.rootId||$nnull
+ * - relations.status||$nnull
  *
  * This causes only roots with matching relations to be returned.
  */
@@ -39,8 +38,6 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
 
   beforeEach(async () => {
     mocks = await setupCrudFederationTests();
-    // Register the 'relations' relation that tests use
-    mocks.registerRelation(mocks.mockRelationService);
   });
 
   afterEach(async () => {
@@ -52,25 +49,31 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } },
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        },
       );
 
-      const req = mocks.createTestRequest(
-        { filter: ['relations.rootId||$notnull'], page: 1, limit: 10 },
+      const req = await mocks.createTestQuery(
+        { filter: ['relations.rootId||$nnull'], page: 1, limit: 10 },
         [relation],
       );
 
       const data = createMinimalRootRelationSet();
 
-      mocks.mockRootService.getMany.mockResolvedValueOnce(
+      mocks.rootListSpy.mockResolvedValueOnce(
         createPaginatedResponse(data.roots.slice(0, 2), {
           limit: 10,
           total: 2,
         }),
       );
 
-      mocks.mockRelationService.getMany
+      mocks.relationListSpy
         .mockResolvedValueOnce(
           createPaginatedResponse(data.relations.slice(0, 2), { total: 2 }),
         )
@@ -79,43 +82,40 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
         );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
       // ASSERT
-      assertRelationRequest(mocks.mockRelationService, {
-        search: {
-          $and: [{ rootId: { $notnull: true } }, { isLatest: { $eq: true } }],
-        },
+      assertRelationQuery(mocks.relationListSpy, {
+        filter: [
+          { ...Where.notNull('rootId'), relation: 'relations' },
+          { ...Where.eq('isLatest', true), relation: 'relations' },
+        ],
         limit: 10,
         offset: 0,
       });
 
       // Second relation call - enrichment with discovered root IDs
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
-          search: {
-            $and: [
-              { rootId: { $notnull: true } },
-              { isLatest: { $eq: true } },
-              { rootId: { $in: [1, 2] } },
-            ],
-          },
+          filter: [
+            { ...Where.notNull('rootId'), relation: 'relations' },
+            { ...Where.eq('isLatest', true), relation: 'relations' },
+            { ...Where.in('rootId', [1, 2]), relation: 'relations' },
+          ],
         },
         1,
       );
 
-      assertRootGetManyRequest(mocks.mockRootService, {
-        search: {
-          id: { $in: [1, 2] },
-        },
+      assertRootListQuery(mocks.rootListSpy, {
+        filter: [Where.in('id', [1, 2])],
         page: 1,
         limit: 10,
       });
 
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockRelationService, count: 2 },
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.relationListSpy, count: 2 },
       ]);
 
       const expectedData = [
@@ -143,19 +143,25 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } },
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        },
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         { filter: ['relations.status||$eq||active'] },
         [relation],
       );
       const data = createFilteredDataSet();
 
-      mocks.mockRelationService.getMany.mockResolvedValue(
+      mocks.relationListSpy.mockResolvedValue(
         createPaginatedResponse(data.activeRelations, { total: 2 }),
       );
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.roots.slice(0, 2), {
           limit: 10,
           total: 2,
@@ -163,46 +169,43 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
       // ASSERT
-      assertRelationRequest(mocks.mockRelationService, {
-        search: {
-          $and: [{ status: { $eq: 'active' } }, { isLatest: { $eq: true } }],
-        },
+      assertRelationQuery(mocks.relationListSpy, {
+        filter: [
+          { ...Where.eq('status', 'active'), relation: 'relations' },
+          { ...Where.eq('isLatest', true), relation: 'relations' },
+        ],
         limit: 10,
         offset: 0,
       });
 
       // Second relation call - enrichment with discovered root IDs
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
-          search: {
-            $and: [
-              { status: { $eq: 'active' } },
-              { isLatest: { $eq: true } },
-              { rootId: { $in: [1, 2] } },
-            ],
-          },
+          filter: [
+            { ...Where.eq('status', 'active'), relation: 'relations' },
+            { ...Where.eq('isLatest', true), relation: 'relations' },
+            { ...Where.in('rootId', [1, 2]), relation: 'relations' },
+          ],
         },
         1,
       );
 
-      assertRootGetManyRequest(mocks.mockRootService, {
-        search: {
-          id: { $in: [1, 2] },
-        },
+      assertRootListQuery(mocks.rootListSpy, {
+        filter: [Where.in('id', [1, 2])],
         page: 1,
         limit: 10,
       });
 
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockRelationService, count: 2 },
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.relationListSpy, count: 2 },
       ]);
 
-      assertRelationFirst(mocks.mockRootService, [mocks.mockRelationService]);
+      assertRelationFirst(mocks.rootListSpy, [mocks.relationListSpy]);
 
       const expectedData = [
         {
@@ -229,10 +232,16 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } },
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        },
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           filter: [
             'relations.status||$eq||active',
@@ -243,61 +252,55 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
       );
       const data = createPriorityDataSet();
 
-      mocks.mockRelationService.getMany.mockResolvedValue(
+      mocks.relationListSpy.mockResolvedValue(
         createPaginatedResponse(data.highPriorityActiveRelations, {
           total: 2,
         }),
       );
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.roots, { limit: 10, total: 2 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
       // ASSERT
-      assertRelationRequest(mocks.mockRelationService, {
-        search: {
-          $and: [
-            { status: { $eq: 'active' } },
-            { priority: { $gte: 5 } },
-            { isLatest: { $eq: true } },
-          ],
-        },
+      assertRelationQuery(mocks.relationListSpy, {
+        filter: [
+          { ...Where.eq('status', 'active'), relation: 'relations' },
+          { ...Where.gte('priority', 5), relation: 'relations' },
+          { ...Where.eq('isLatest', true), relation: 'relations' },
+        ],
         limit: 10,
         offset: 0,
       });
 
       // Second relation call - enrichment with discovered root IDs
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
-          search: {
-            $and: [
-              { status: { $eq: 'active' } },
-              { priority: { $gte: 5 } },
-              { isLatest: { $eq: true } },
-              { rootId: { $in: [1, 2] } },
-            ],
-          },
+          filter: [
+            { ...Where.eq('status', 'active'), relation: 'relations' },
+            { ...Where.gte('priority', 5), relation: 'relations' },
+            { ...Where.eq('isLatest', true), relation: 'relations' },
+            { ...Where.in('rootId', [1, 2]), relation: 'relations' },
+          ],
         },
         1,
       );
 
-      assertRootGetManyRequest(mocks.mockRootService, {
-        search: {
-          id: { $in: [1, 2] },
-        },
+      assertRootListQuery(mocks.rootListSpy, {
+        filter: [Where.in('id', [1, 2])],
         page: 1,
         limit: 10,
       });
 
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 },
-        { service: mocks.mockRelationService, count: 2 },
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 },
+        { handler: mocks.relationListSpy, count: 2 },
       ]);
 
-      assertRelationFirst(mocks.mockRootService, [mocks.mockRelationService]);
+      assertRelationFirst(mocks.rootListSpy, [mocks.relationListSpy]);
 
       const expectedData = [
         {
@@ -324,30 +327,37 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } },
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        },
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         { filter: ['relations.status||$eq||archived'] },
         [relation],
       );
 
-      mocks.mockRelationService.getMany.mockResolvedValue(
+      mocks.relationListSpy.mockResolvedValue(
         createPaginatedResponse([], { total: 0 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
       // ASSERT
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 0 },
-        { service: mocks.mockRelationService, count: 1 },
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 0 },
+        { handler: mocks.relationListSpy, count: 1 },
       ]);
-      assertRelationRequest(mocks.mockRelationService, {
-        search: {
-          $and: [{ status: { $eq: 'archived' } }, { isLatest: { $eq: true } }],
-        },
+      assertRelationQuery(mocks.relationListSpy, {
+        filter: [
+          { ...Where.eq('status', 'archived'), relation: 'relations' },
+          { ...Where.eq('isLatest', true), relation: 'relations' },
+        ],
         limit: 10,
         offset: 0,
       });
@@ -358,13 +368,19 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } },
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        },
       );
 
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
-          filter: ['name||$cont||Project', 'relations.status||$eq||active'],
+          filter: ['name||$contains||Project', 'relations.status||$eq||active'],
           page: 1,
           limit: 10,
         },
@@ -373,67 +389,62 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
 
       const data = createCombinedFiltersSet();
 
-      mocks.mockRelationService.getMany.mockResolvedValue(
+      mocks.relationListSpy.mockResolvedValue(
         createPaginatedResponse(data.activeRelations, { total: 2 }),
       );
 
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(data.projectRoots, { limit: 10, total: 2 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
       // ASSERT
-      assertRootGetManyRequest(mocks.mockRootService, {
-        search: {
-          name: { $cont: 'Project' },
-        },
+      assertRootListQuery(mocks.rootListSpy, {
+        filter: [Where.contains('name', 'Project'), Where.in('id', [1, 2])],
         page: 1,
         limit: 1,
       });
 
-      assertRelationRequest(mocks.mockRelationService, {
-        search: {
-          $and: [{ status: { $eq: 'active' } }, { isLatest: { $eq: true } }],
-        },
+      assertRelationQuery(mocks.relationListSpy, {
+        filter: [
+          { ...Where.eq('status', 'active'), relation: 'relations' },
+          { ...Where.eq('isLatest', true), relation: 'relations' },
+        ],
         limit: 10,
         offset: 0,
       });
 
       // Second relation call - enrichment with discovered root IDs
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
-          search: {
-            $and: [
-              { status: { $eq: 'active' } },
-              { isLatest: { $eq: true } },
-              { rootId: { $in: [1, 2] } },
-            ],
-          },
+          filter: [
+            { ...Where.eq('status', 'active'), relation: 'relations' },
+            { ...Where.eq('isLatest', true), relation: 'relations' },
+            { ...Where.in('rootId', [1, 2]), relation: 'relations' },
+          ],
         },
         1,
       );
 
-      assertRootGetManyRequest(
-        mocks.mockRootService,
+      assertRootListQuery(
+        mocks.rootListSpy,
         {
-          search: {
-            $and: [{ name: { $cont: 'Project' } }, { id: { $in: [1, 2] } }],
-          },
+          filter: [Where.contains('name', 'Project'), Where.in('id', [1, 2])],
           page: 1,
           limit: 10,
         },
         1,
       );
 
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 2 },
-        { service: mocks.mockRelationService, count: 2 },
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 2 },
+        { handler: mocks.relationListSpy, count: 2 },
       ]);
 
-      assertRootFirst(mocks.mockRootService, [mocks.mockRelationService]);
+      assertRootFirst(mocks.rootListSpy, [mocks.relationListSpy]);
 
       const expectedData = [
         {
@@ -461,12 +472,16 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
         // ARRANGE
         const relation = createOneToManyForwardRelation(
           'relations',
-          TestRelationService,
+          'TestRelation',
           {
-            distinctFilter: { field: 'isLatest', operator: '$eq', value: true },
+            distinctFilter: {
+              field: 'isLatest',
+              operator: WhereOperator.EQ,
+              value: true,
+            },
           },
         );
-        const req = mocks.createTestRequest(
+        const req = await mocks.createTestQuery(
           {
             filter: ['relations.status||$eq||active'],
             page: '1',
@@ -490,52 +505,51 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
           { id: 3, name: 'Root 3' },
         ];
 
-        mocks.mockRelationService.getMany.mockResolvedValue(
+        mocks.relationListSpy.mockResolvedValue(
           createPaginatedResponse(activeRelations.slice(0, 3), { total: 5 }),
         );
-        mocks.mockRootService.getMany.mockResolvedValue(
+        mocks.rootListSpy.mockResolvedValue(
           createPaginatedResponse(page1Roots, { limit: 3, total: 5 }),
         );
 
         // ACT
-        const result = await mocks.service.getMany(req);
+        const result = await mocks.service.list(req);
 
         // ASSERT
-        assertRelationRequest(mocks.mockRelationService, {
-          search: {
-            $and: [{ status: { $eq: 'active' } }, { isLatest: { $eq: true } }],
-          },
+        assertRelationQuery(mocks.relationListSpy, {
+          filter: [
+            { ...Where.eq('status', 'active'), relation: 'relations' },
+            { ...Where.eq('isLatest', true), relation: 'relations' },
+          ],
           limit: 3,
           offset: 0,
         });
 
         // Second relation call - enrichment with discovered root IDs
-        assertRelationRequest(
-          mocks.mockRelationService,
+        assertRelationQuery(
+          mocks.relationListSpy,
           {
-            search: {
-              $and: [
-                { status: { $eq: 'active' } },
-                { isLatest: { $eq: true } },
-                { rootId: { $in: [1, 2, 3] } },
-              ],
-            },
+            filter: [
+              { ...Where.eq('status', 'active'), relation: 'relations' },
+              { ...Where.eq('isLatest', true), relation: 'relations' },
+              { ...Where.in('rootId', [1, 2, 3]), relation: 'relations' },
+            ],
           },
           1,
         );
 
-        assertRootGetManyRequest(mocks.mockRootService, {
-          search: { id: { $in: [1, 2, 3] } },
+        assertRootListQuery(mocks.rootListSpy, {
+          filter: [Where.in('id', [1, 2, 3])],
           page: 1,
           limit: 3,
         });
 
-        assertServiceCallCounts([
-          { service: mocks.mockRootService, count: 1 },
-          { service: mocks.mockRelationService, count: 2 },
+        assertHandlerCallCounts([
+          { handler: mocks.rootListSpy, count: 1 },
+          { handler: mocks.relationListSpy, count: 2 },
         ]);
 
-        assertRelationFirst(mocks.mockRootService, [mocks.mockRelationService]);
+        assertRelationFirst(mocks.rootListSpy, [mocks.relationListSpy]);
 
         const expectedData = page1Roots.map((root, index) => ({
           ...root,
@@ -556,12 +570,16 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
         // ARRANGE
         const relation = createOneToManyForwardRelation(
           'relations',
-          TestRelationService,
+          'TestRelation',
           {
-            distinctFilter: { field: 'isLatest', operator: '$eq', value: true },
+            distinctFilter: {
+              field: 'isLatest',
+              operator: WhereOperator.EQ,
+              value: true,
+            },
           },
         );
-        const req = mocks.createTestRequest(
+        const req = await mocks.createTestQuery(
           {
             filter: ['relations.status||$eq||active'],
             page: '2',
@@ -585,52 +603,51 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
           { id: 7, name: 'Root 7' },
         ];
 
-        mocks.mockRelationService.getMany.mockResolvedValue(
+        mocks.relationListSpy.mockResolvedValue(
           createPaginatedResponse(activeRelations.slice(3), { total: 5 }),
         );
-        mocks.mockRootService.getMany.mockResolvedValue(
+        mocks.rootListSpy.mockResolvedValue(
           createPaginatedResponse(page2Roots, { limit: 3, total: 5 }),
         );
 
         // ACT
-        const result = await mocks.service.getMany(req);
+        const result = await mocks.service.list(req);
 
         // ASSERT
-        assertRelationRequest(mocks.mockRelationService, {
-          search: {
-            $and: [{ status: { $eq: 'active' } }, { isLatest: { $eq: true } }],
-          },
+        assertRelationQuery(mocks.relationListSpy, {
+          filter: [
+            { ...Where.eq('status', 'active'), relation: 'relations' },
+            { ...Where.eq('isLatest', true), relation: 'relations' },
+          ],
           limit: 3,
           offset: 3, // Page 2: (2-1) * 3 = 3
         });
 
         // Second relation call - enrichment with discovered root IDs
-        assertRelationRequest(
-          mocks.mockRelationService,
+        assertRelationQuery(
+          mocks.relationListSpy,
           {
-            search: {
-              $and: [
-                { status: { $eq: 'active' } },
-                { isLatest: { $eq: true } },
-                { rootId: { $in: [5, 7] } },
-              ],
-            },
+            filter: [
+              { ...Where.eq('status', 'active'), relation: 'relations' },
+              { ...Where.eq('isLatest', true), relation: 'relations' },
+              { ...Where.in('rootId', [5, 7]), relation: 'relations' },
+            ],
           },
           1,
         );
 
-        assertRootGetManyRequest(mocks.mockRootService, {
-          search: { id: { $in: [5, 7] } },
+        assertRootListQuery(mocks.rootListSpy, {
+          filter: [Where.in('id', [5, 7])],
           page: 1,
           limit: 3,
         });
 
-        assertServiceCallCounts([
-          { service: mocks.mockRootService, count: 1 },
-          { service: mocks.mockRelationService, count: 2 },
+        assertHandlerCallCounts([
+          { handler: mocks.rootListSpy, count: 1 },
+          { handler: mocks.relationListSpy, count: 2 },
         ]);
 
-        assertRelationFirst(mocks.mockRootService, [mocks.mockRelationService]);
+        assertRelationFirst(mocks.rootListSpy, [mocks.relationListSpy]);
 
         const expectedData = page2Roots.map((root, index) => ({
           ...root,
@@ -651,12 +668,16 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
         // ARRANGE
         const relation = createOneToManyForwardRelation(
           'relations',
-          TestRelationService,
+          'TestRelation',
           {
-            distinctFilter: { field: 'isLatest', operator: '$eq', value: true },
+            distinctFilter: {
+              field: 'isLatest',
+              operator: WhereOperator.EQ,
+              value: true,
+            },
           },
         );
-        const req = mocks.createTestRequest(
+        const req = await mocks.createTestQuery(
           {
             filter: ['relations.status||$eq||critical'],
             page: '1',
@@ -675,55 +696,51 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
           { id: 3, name: 'Root 3' },
         ];
 
-        mocks.mockRelationService.getMany.mockResolvedValue(
+        mocks.relationListSpy.mockResolvedValue(
           createPaginatedResponse(criticalRelations, { total: 2 }),
         );
-        mocks.mockRootService.getMany.mockResolvedValue(
+        mocks.rootListSpy.mockResolvedValue(
           createPaginatedResponse(filteredRoots, { limit: 5, total: 2 }),
         );
 
         // ACT
-        const result = await mocks.service.getMany(req);
+        const result = await mocks.service.list(req);
 
         // ASSERT
-        assertRelationRequest(mocks.mockRelationService, {
-          search: {
-            $and: [
-              { status: { $eq: 'critical' } },
-              { isLatest: { $eq: true } },
-            ],
-          },
+        assertRelationQuery(mocks.relationListSpy, {
+          filter: [
+            { ...Where.eq('status', 'critical'), relation: 'relations' },
+            { ...Where.eq('isLatest', true), relation: 'relations' },
+          ],
           limit: 5,
           offset: 0,
         });
 
         // Second relation call - enrichment with discovered root IDs
-        assertRelationRequest(
-          mocks.mockRelationService,
+        assertRelationQuery(
+          mocks.relationListSpy,
           {
-            search: {
-              $and: [
-                { status: { $eq: 'critical' } },
-                { isLatest: { $eq: true } },
-                { rootId: { $in: [1, 3] } },
-              ],
-            },
+            filter: [
+              { ...Where.eq('status', 'critical'), relation: 'relations' },
+              { ...Where.eq('isLatest', true), relation: 'relations' },
+              { ...Where.in('rootId', [1, 3]), relation: 'relations' },
+            ],
           },
           1,
         );
 
-        assertRootGetManyRequest(mocks.mockRootService, {
-          search: { id: { $in: [1, 3] } },
+        assertRootListQuery(mocks.rootListSpy, {
+          filter: [Where.in('id', [1, 3])],
           page: 1,
           limit: 5,
         });
 
-        assertServiceCallCounts([
-          { service: mocks.mockRootService, count: 1 },
-          { service: mocks.mockRelationService, count: 2 },
+        assertHandlerCallCounts([
+          { handler: mocks.rootListSpy, count: 1 },
+          { handler: mocks.relationListSpy, count: 2 },
         ]);
 
-        assertRelationFirst(mocks.mockRootService, [mocks.mockRelationService]);
+        assertRelationFirst(mocks.rootListSpy, [mocks.relationListSpy]);
 
         const expectedData = filteredRoots.map((root, index) => ({
           ...root,
@@ -746,17 +763,21 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
         // ARRANGE
         const relation = createOneToManyForwardRelation(
           'relations',
-          TestRelationService,
+          'TestRelation',
           {
-            distinctFilter: { field: 'isLatest', operator: '$eq', value: true },
+            distinctFilter: {
+              field: 'isLatest',
+              operator: WhereOperator.EQ,
+              value: true,
+            },
           }, // distinctFilter for uniqueness
         );
-        const req = mocks.createTestRequest(
+        const req = await mocks.createTestQuery(
           {
             filter: [
               'relations.status||$eq||active',
-              'relations.rootId||$notnull',
-            ], // INNER JOIN trigger + required $notnull
+              'relations.rootId||$nnull',
+            ], // INNER JOIN trigger + required $nnull
             sort: ['relations.title,ASC'], // Relation sort
           },
           [relation],
@@ -778,14 +799,14 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
 
         // First call: distinctFilter applied for sorting (unique relations)
         // Second call: all active relations for enrichment
-        mocks.mockRelationService.getMany
+        mocks.relationListSpy
           .mockResolvedValueOnce(
             createPaginatedResponse(sortedActiveRelations, { total: 3 }),
           )
           .mockResolvedValueOnce(
             createPaginatedResponse(sortedActiveRelations, { total: 3 }),
           );
-        mocks.mockRootService.getMany.mockResolvedValue(
+        mocks.rootListSpy.mockResolvedValue(
           createPaginatedResponse(rootsInNaturalOrder, {
             limit: 3,
             total: 3,
@@ -793,52 +814,48 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
         );
 
         // ACT
-        const result = await mocks.service.getMany(req);
+        const result = await mocks.service.list(req);
 
-        // ASSERT - Service call verification
-        assertServiceCallCounts([
-          { service: mocks.mockRootService, count: 1 },
-          { service: mocks.mockRelationService, count: 2 },
+        // ASSERT - Handler call verification
+        assertHandlerCallCounts([
+          { handler: mocks.rootListSpy, count: 1 },
+          { handler: mocks.relationListSpy, count: 2 },
         ]);
-        assertRelationFirst(mocks.mockRootService, [mocks.mockRelationService]);
+        assertRelationFirst(mocks.rootListSpy, [mocks.relationListSpy]);
 
-        // Verify first call: relation service called with INNER JOIN filter and sort
-        assertRelationRequest(
-          mocks.mockRelationService,
+        // Verify first call: relation handler called with INNER JOIN filter and sort
+        assertRelationQuery(
+          mocks.relationListSpy,
           {
             limit: 10,
             offset: 0,
-            search: {
-              $and: [
-                { status: { $eq: 'active' } },
-                { rootId: { $notnull: true } },
-                { isLatest: { $eq: true } },
-              ],
-            },
+            filter: [
+              { ...Where.eq('status', 'active'), relation: 'relations' },
+              { ...Where.notNull('rootId'), relation: 'relations' },
+              { ...Where.eq('isLatest', true), relation: 'relations' },
+            ],
             sort: [{ field: 'title', order: 'ASC' }],
           },
           0,
         );
 
         // Verify second call: enrichment call for discovered root IDs
-        assertRelationRequest(
-          mocks.mockRelationService,
+        assertRelationQuery(
+          mocks.relationListSpy,
           {
-            search: {
-              $and: [
-                { status: { $eq: 'active' } },
-                { rootId: { $notnull: true } },
-                { isLatest: { $eq: true } },
-                { rootId: { $in: [2, 1, 3] } },
-              ],
-            },
+            filter: [
+              { ...Where.eq('status', 'active'), relation: 'relations' },
+              { ...Where.notNull('rootId'), relation: 'relations' },
+              { ...Where.eq('isLatest', true), relation: 'relations' },
+              { ...Where.in('rootId', [2, 1, 3]), relation: 'relations' },
+            ],
           },
           1,
         );
 
-        // Verify root service called with discovered IDs from sorted relations
-        assertRootGetManyRequest(mocks.mockRootService, {
-          search: { id: { $in: [2, 1, 3] } }, // IDs in relation sort order
+        // Verify root handler called with discovered IDs from sorted relations
+        assertRootListQuery(mocks.rootListSpy, {
+          filter: [Where.in('id', [2, 1, 3])], // IDs in relation sort order
           page: 1,
           limit: 10,
         });
@@ -874,17 +891,18 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
         // ARRANGE
         const relation = createOneToManyForwardRelation(
           'relations',
-          TestRelationService,
+          'TestRelation',
           {
-            distinctFilter: { field: 'isLatest', operator: '$eq', value: true },
+            distinctFilter: {
+              field: 'isLatest',
+              operator: WhereOperator.EQ,
+              value: true,
+            },
           }, // distinctFilter for uniqueness
         );
-        const req = mocks.createTestRequest(
+        const req = await mocks.createTestQuery(
           {
-            filter: [
-              'relations.priority||$gte||5',
-              'relations.rootId||$notnull',
-            ], // INNER JOIN trigger + required $notnull
+            filter: ['relations.priority||$gte||5', 'relations.rootId||$nnull'], // INNER JOIN trigger + required $nnull
             sort: ['relations.priority,DESC'], // Relation sort by priority
           },
           [relation],
@@ -917,14 +935,14 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
           (relation, index, array) =>
             array.findIndex((r) => r.rootId === relation.rootId) === index,
         );
-        mocks.mockRelationService.getMany
+        mocks.relationListSpy
           .mockResolvedValueOnce(
             createPaginatedResponse(uniqueHighPriorityRelations, { total: 3 }),
           )
           .mockResolvedValueOnce(
             createPaginatedResponse(sortedHighPriorityRelations, { total: 4 }),
           );
-        mocks.mockRootService.getMany.mockResolvedValue(
+        mocks.rootListSpy.mockResolvedValue(
           createPaginatedResponse(rootsInNaturalOrder, {
             limit: 3,
             total: 3,
@@ -932,52 +950,48 @@ describe('CrudFederationService - Behavior: INNER JOIN via Filters', () => {
         );
 
         // ACT
-        const result = await mocks.service.getMany(req);
+        const result = await mocks.service.list(req);
 
-        // ASSERT - Service call verification
-        assertServiceCallCounts([
-          { service: mocks.mockRootService, count: 1 },
-          { service: mocks.mockRelationService, count: 2 },
+        // ASSERT - Handler call verification
+        assertHandlerCallCounts([
+          { handler: mocks.rootListSpy, count: 1 },
+          { handler: mocks.relationListSpy, count: 2 },
         ]);
-        assertRelationFirst(mocks.mockRootService, [mocks.mockRelationService]);
+        assertRelationFirst(mocks.rootListSpy, [mocks.relationListSpy]);
 
-        // Verify first call: relation service called with filter and sort
-        assertRelationRequest(
-          mocks.mockRelationService,
+        // Verify first call: relation handler called with filter and sort
+        assertRelationQuery(
+          mocks.relationListSpy,
           {
             limit: 10,
             offset: 0,
-            search: {
-              $and: [
-                { priority: { $gte: 5 } },
-                { rootId: { $notnull: true } },
-                { isLatest: { $eq: true } },
-              ],
-            },
+            filter: [
+              { ...Where.gte('priority', 5), relation: 'relations' },
+              { ...Where.notNull('rootId'), relation: 'relations' },
+              { ...Where.eq('isLatest', true), relation: 'relations' },
+            ],
             sort: [{ field: 'priority', order: 'DESC' }],
           },
           0,
         );
 
         // Verify second call: enrichment call for discovered root IDs
-        assertRelationRequest(
-          mocks.mockRelationService,
+        assertRelationQuery(
+          mocks.relationListSpy,
           {
-            search: {
-              $and: [
-                { priority: { $gte: 5 } },
-                { rootId: { $notnull: true } },
-                { isLatest: { $eq: true } },
-                { rootId: { $in: [1, 2, 3] } },
-              ],
-            },
+            filter: [
+              { ...Where.gte('priority', 5), relation: 'relations' },
+              { ...Where.notNull('rootId'), relation: 'relations' },
+              { ...Where.eq('isLatest', true), relation: 'relations' },
+              { ...Where.in('rootId', [1, 2, 3]), relation: 'relations' },
+            ],
           },
           1,
         );
 
-        // Verify root service called with deduped IDs in relation order [1, 2, 3]
-        assertRootGetManyRequest(mocks.mockRootService, {
-          search: { id: { $in: [1, 2, 3] } },
+        // Verify root handler called with deduped IDs in relation order [1, 2, 3]
+        assertRootListQuery(mocks.rootListSpy, {
+          filter: [Where.in('id', [1, 2, 3])],
           page: 1,
           limit: 10,
         });

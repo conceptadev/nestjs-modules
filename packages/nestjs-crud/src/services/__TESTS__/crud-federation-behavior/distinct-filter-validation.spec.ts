@@ -1,9 +1,10 @@
+import { WhereOperator } from '@concepta/nestjs-common';
+
 import { CrudFederationException } from '../../../exceptions/crud-federation.exception';
-import { assertRelationRequest } from '../../__FIXTURES__/crud-federation-test-assertions';
+import { assertRelationQuery } from '../../__FIXTURES__/crud-federation-test-assertions';
 import {
   createOneToManyForwardRelation,
   createOneToOneForwardRelation,
-  TestRelationService,
 } from '../../__FIXTURES__/crud-federation-test-entities';
 import {
   setupCrudFederationTests,
@@ -20,7 +21,6 @@ describe('CrudFederationService - Behavior: distinctFilter Validation', () => {
 
   beforeEach(async () => {
     mocks = await setupCrudFederationTests();
-    mocks.registerRelation(mocks.mockRelationService);
   });
 
   afterEach(async () => {
@@ -32,10 +32,10 @@ describe('CrudFederationService - Behavior: distinctFilter Validation', () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
+        'TestRelation',
       );
       // Remove distinctFilter to test validation
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           sort: ['relations.title,ASC'], // Trying to sort by relation field
         },
@@ -43,7 +43,7 @@ describe('CrudFederationService - Behavior: distinctFilter Validation', () => {
       );
 
       // ACT & ASSERT
-      const error = await mocks.service.getMany(req).catch((e) => e);
+      const error = await mocks.service.list(req).catch((e) => e);
 
       expect(error).toBeInstanceOf(CrudFederationException);
       expect(error.message).toContain(
@@ -52,14 +52,20 @@ describe('CrudFederationService - Behavior: distinctFilter Validation', () => {
       expect(error.message).toContain('many-cardinality relationship');
     });
 
-    it('should succeed when many-cardinality relation has distinctFilter and $notnull', async () => {
+    it('should succeed when many-cardinality relation has distinctFilter and $nnull', async () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } },
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        },
       );
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           sort: ['relations.title,ASC'], // Sorting by relation field
           limit: '3',
@@ -79,7 +85,7 @@ describe('CrudFederationService - Behavior: distinctFilter Validation', () => {
         { id: 3, name: 'Root 3' },
       ];
 
-      mocks.mockRelationService.getMany.mockResolvedValue({
+      mocks.relationListSpy.mockResolvedValue({
         data: relationData,
         count: 3,
         total: 3,
@@ -88,7 +94,7 @@ describe('CrudFederationService - Behavior: distinctFilter Validation', () => {
         limit: 3,
       });
 
-      mocks.mockRootService.getMany.mockResolvedValue({
+      mocks.rootListSpy.mockResolvedValue({
         data: rootData,
         count: 3,
         total: 3,
@@ -98,7 +104,7 @@ describe('CrudFederationService - Behavior: distinctFilter Validation', () => {
       });
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
       // ASSERT
       expect(result).toBeDefined();
@@ -106,41 +112,49 @@ describe('CrudFederationService - Behavior: distinctFilter Validation', () => {
       expect(result.total).toBe(3);
 
       // Verify distinctFilter was applied
-      assertRelationRequest(mocks.mockRelationService, {
+      assertRelationQuery(mocks.relationListSpy, {
         filter: [
           {
+            field: 'rootId',
+            operator: WhereOperator.NOT_NULL,
+            relation: 'relations',
+          },
+          {
             field: 'isLatest',
-            operator: '$eq',
+            operator: WhereOperator.EQ,
             value: true,
             relation: 'relations',
           },
         ],
         limit: 3,
         offset: 0,
-        search: {
-          $and: [{ rootId: { $notnull: true } }, { isLatest: { $eq: true } }],
-        },
         sort: [{ field: 'title', order: 'ASC' }],
       });
     });
 
-    it('should automatically inject $notnull filter for relation sorting', async () => {
+    it('should automatically inject $nnull filter for relation sorting', async () => {
       // ARRANGE
       const relation = createOneToManyForwardRelation(
         'relations',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } },
-      );
-      const req = mocks.createTestRequest(
+        'TestRelation',
         {
-          // No $notnull filter provided - system should inject it automatically
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        },
+      );
+      const req = await mocks.createTestQuery(
+        {
+          // No $nnull filter provided - system should inject it automatically
           sort: ['relations.title,ASC'],
         },
         [relation],
       );
 
       // Mock data
-      mocks.mockRelationService.getMany.mockResolvedValue({
+      mocks.relationListSpy.mockResolvedValue({
         data: [{ id: 1, rootId: 1, title: 'Test Relation', isLatest: true }],
         count: 1,
         total: 1,
@@ -149,7 +163,7 @@ describe('CrudFederationService - Behavior: distinctFilter Validation', () => {
         limit: 1,
       });
 
-      mocks.mockRootService.getMany.mockResolvedValue({
+      mocks.rootListSpy.mockResolvedValue({
         data: [{ id: 1, name: 'Root 1' }],
         count: 1,
         total: 1,
@@ -159,20 +173,17 @@ describe('CrudFederationService - Behavior: distinctFilter Validation', () => {
       });
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Should succeed because $notnull filter was automatically injected
+      // ASSERT - Should succeed because $nnull filter was automatically injected
       expect(result).toBeDefined();
       expect(result.data).toHaveLength(1);
     });
 
     it('should work fine with one-cardinality relations (no distinctFilter needed)', async () => {
       // ARRANGE - Using createOneToOneForwardRelation for proper typing
-      const relation = createOneToOneForwardRelation(
-        'profile',
-        TestRelationService,
-      );
-      const req = mocks.createTestRequest(
+      const relation = createOneToOneForwardRelation('profile', 'TestRelation');
+      const req = await mocks.createTestQuery(
         {
           sort: ['profile.title,ASC'], // No distinctFilter needed for one-to-one
         },
@@ -180,7 +191,7 @@ describe('CrudFederationService - Behavior: distinctFilter Validation', () => {
       );
 
       // Mock data
-      mocks.mockRelationService.getMany.mockResolvedValue({
+      mocks.relationListSpy.mockResolvedValue({
         data: [{ id: 1, rootId: 1, title: 'Developer Profile' }],
         count: 1,
         total: 1,
@@ -189,7 +200,7 @@ describe('CrudFederationService - Behavior: distinctFilter Validation', () => {
         limit: 1,
       });
 
-      mocks.mockRootService.getMany.mockResolvedValue({
+      mocks.rootListSpy.mockResolvedValue({
         data: [{ id: 1, name: 'Root 1' }],
         count: 1,
         total: 1,
@@ -199,7 +210,7 @@ describe('CrudFederationService - Behavior: distinctFilter Validation', () => {
       });
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
       // ASSERT
       expect(result).toBeDefined();

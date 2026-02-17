@@ -2,20 +2,25 @@ import {
   applyDecorators,
   Controller,
   PlainLiteralObject,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { CRUD_MODULE_DEFAULT_PARAMS_OPTIONS } from '../../../crud.constants';
+import { CrudAdapter as CrudAdapterClass } from '../../adapters/crud.adapter';
+import { CrudContextInterceptor } from '../../interceptors/crud-context.interceptor';
 import { CrudControllerOptionsInterface } from '../../interfaces/crud-controller-options.interface';
-import { CrudModel } from '../routes/crud-model.decorator';
+import { CrudAdapter } from '../routes/crud-adapter.decorator';
+import { CrudEntity } from '../routes/crud-entity.decorator';
+import { CrudName } from '../routes/crud-name.decorator';
 import { CrudParams } from '../routes/crud-params.decorator';
+import { CrudRequestBodyBatch } from '../routes/crud-request-body-batch.decorator';
+import { CrudRequestBody } from '../routes/crud-request-body.decorator';
+import { CrudResponsePaginated } from '../routes/crud-response-paginated.decorator';
+import { CrudResponseResource } from '../routes/crud-response-resource.decorator';
 import { CrudSerialize } from '../routes/crud-serialize.decorator';
 import { CrudValidate } from '../routes/crud-validate.decorator';
 
-import { CrudInitApiParams } from './crud-init-api-params.decorator';
-import { CrudInitApiQuery } from './crud-init-api-query.decorator';
-import { CrudInitApiResponse } from './crud-init-api-response.decorator';
-import { CrudInitSerialization } from './crud-init-serialization.decorator';
-import { CrudInitValidation } from './crud-init-validation.decorator';
+import { CrudInit } from './crud-init.decorator';
 
 /**
  * CRUD controller decorator
@@ -26,19 +31,30 @@ export function CrudController<
   T extends PlainLiteralObject = PlainLiteralObject,
 >(options: CrudControllerOptionsInterface<T>) {
   // break out options
-  const { path, host, ...moreOptions } = options;
+  const {
+    path,
+    host,
+    entity,
+    name,
+    adapter = CrudAdapterClass,
+    request,
+    response,
+  } = options;
 
   // apply all decorators
   return applyDecorators(
     Controller({ path, host }),
-    CrudModel(moreOptions.model),
-    CrudParams<T>(moreOptions.params ?? CRUD_MODULE_DEFAULT_PARAMS_OPTIONS),
-    CrudValidate(moreOptions.validation),
-    CrudSerialize(moreOptions.serialization),
-    CrudInitValidation(),
-    CrudInitSerialization(),
-    CrudInitApiQuery(),
-    CrudInitApiParams(),
-    CrudInitApiResponse(),
+    UseInterceptors(CrudContextInterceptor),
+    CrudEntity(entity),
+    CrudName(name),
+    CrudAdapter(adapter),
+    CrudParams<T>(request?.params ?? CRUD_MODULE_DEFAULT_PARAMS_OPTIONS),
+    CrudValidate(request?.validation),
+    CrudRequestBody(request?.body),
+    CrudRequestBodyBatch(request?.bodyBatch),
+    CrudResponseResource(response?.resource),
+    CrudResponsePaginated(response?.paginated),
+    CrudSerialize(response?.serialization),
+    CrudInit(),
   );
 }

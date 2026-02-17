@@ -1,28 +1,32 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
 import {
-  QueryFields,
-  QueryFilter,
-  QueryFilterArr,
-  QuerySort,
-  QuerySortArr,
-  SCondition,
-} from '../types/crud-request-query.types';
+  EntityColumn,
+  SortCondition,
+  SortConditionArr,
+  WhereCondition,
+  WhereConditionArr,
+} from '@concepta/nestjs-common';
+
+import { SCondition } from '../crud-query.types';
 
 export interface CrudCreateQueryParamsInterface<
   T extends PlainLiteralObject = PlainLiteralObject,
 > {
-  fields?: QueryFields<T>;
+  fields?: EntityColumn<T>[];
   search?: SCondition<T>;
   filter?:
-    | QueryFilter<T>
-    | QueryFilterArr<T>
-    | Array<QueryFilter<T> | QueryFilterArr<T>>;
+    | WhereCondition<T>
+    | WhereConditionArr<T>
+    | Array<WhereCondition<T> | WhereConditionArr<T>>;
   or?:
-    | QueryFilter<T>
-    | QueryFilterArr<T>
-    | Array<QueryFilter<T> | QueryFilterArr<T>>;
-  sort?: QuerySort<T> | QuerySortArr<T> | Array<QuerySort<T> | QuerySortArr<T>>;
+    | WhereCondition<T>
+    | WhereConditionArr<T>
+    | Array<WhereCondition<T> | WhereConditionArr<T>>;
+  sort?:
+    | SortCondition<T>
+    | SortConditionArr<T>
+    | Array<SortCondition<T> | SortConditionArr<T>>;
   limit?: number;
   offset?: number;
   page?: number;

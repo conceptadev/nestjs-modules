@@ -1,36 +1,47 @@
-import { SetMetadata } from '@nestjs/common';
 import { ApiQueryOptions } from '@nestjs/swagger';
 
 import { CRUD_MODULE_API_QUERY_METADATA } from '../../../crud.constants';
-import { DecoratorTargetObject } from '../../../crud.types';
-import { CrudException } from '../../../exceptions/crud.exception';
-import { CrudReflectionService } from '../../../services/crud-reflection.service';
-import { CrudApiQueryMetadataInterface } from '../../interfaces/crud-api-query-metadata.interface';
+import {
+  CrudMetadataLookupTarget,
+  CrudMetadata,
+} from '../../../services/crud-metadata.service';
+
+export type ApiQueryMetadata = (ApiQueryOptions[] | undefined)[];
+
+type ApiQueryDecoratorFn = (
+  options?: ApiQueryOptions[],
+) => <T>(
+  target: object,
+  propertyKey: string | symbol,
+  descriptor: TypedPropertyDescriptor<T>,
+) => void;
 
 /**
- * \@CrudApiQuery() open api decorator
+ * \@CrudApiQuery() open api decorator.
+ * Can be applied multiple times to accumulate query parameters.
  */
-export function CrudApiQuery(options?: ApiQueryOptions[]): MethodDecorator {
-  return (target: DecoratorTargetObject, ...rest) => {
-    const [propertyKey] = rest;
+export const CrudApiQuery = CrudMetadata.createWrappedDecorator<
+  ApiQueryMetadata,
+  ApiQueryDecoratorFn
+>(
+  {
+    key: CRUD_MODULE_API_QUERY_METADATA,
+    lookupTarget: CrudMetadataLookupTarget.Method,
+  },
+  (decorator) =>
+    (options?: ApiQueryOptions[]) =>
+    <T>(
+      target: object,
+      propertyKey: string | symbol,
+      descriptor: TypedPropertyDescriptor<T>,
+    ) => {
+      const handler = descriptor.value;
 
-    if (typeof target === 'object') {
-      const reflectionService = new CrudReflectionService();
+      const existing =
+        typeof handler === 'function'
+          ? (CrudMetadata.get<ApiQueryMetadata>(CrudApiQuery, handler) ?? [])
+          : [];
 
-      const previousValues = reflectionService.getApiQueryOptions(target) || [];
-
-      const value: CrudApiQueryMetadataInterface = {
-        propertyKey,
-        options,
-      };
-
-      const values = [...previousValues, value];
-
-      SetMetadata(CRUD_MODULE_API_QUERY_METADATA, values)(target);
-    } else {
-      throw new CrudException({
-        message: 'Cannot decorate with api query, target must be a class',
-      });
-    }
-  };
-}
+      decorator([...existing, options])(target, propertyKey, descriptor);
+    },
+);

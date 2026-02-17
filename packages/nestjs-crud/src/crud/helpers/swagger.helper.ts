@@ -1,9 +1,6 @@
-import { PlainLiteralObject } from '@nestjs/common';
-import { isString } from '@nestjs/common/utils/shared.utils';
+import { Operation } from '@concepta/nestjs-common';
 
-import { CrudRequestQueryBuilder } from '../../request/crud-request-query.builder';
-import { CrudOptionsInterface } from '../interfaces/crud-options.interface';
-import { CrudRouteName } from '../types/crud-route-name.type';
+import { CrudQueryBuilder } from '../../request/crud-query.builder';
 import { safeRequire } from '../util';
 
 export const swagger = safeRequire('@nestjs/swagger', () =>
@@ -20,10 +17,7 @@ export const swaggerPkgJson = safeRequire('@nestjs/swagger/package.json', () =>
 );
 
 export class Swagger {
-  static createQueryParamsMeta<T extends PlainLiteralObject>(
-    name: CrudRouteName,
-    options: CrudOptionsInterface<T>,
-  ) {
+  static createQueryParamsMeta(operation: Operation.List | Operation.Read) {
     /* istanbul ignore if */
     if (!swaggerConst) {
       return [];
@@ -257,38 +251,23 @@ export class Swagger {
           schema: { type: 'integer', minimum: 0, maximum: 1 },
         };
 
-    switch (name) {
-      case 'getMany':
-        return options.query?.softDelete
-          ? [
-              fieldsMeta,
-              searchMeta,
-              filterMeta,
-              orMeta,
-              sortMeta,
-              joinMeta,
-              limitMeta,
-              offsetMeta,
-              pageMeta,
-              cacheMeta,
-              includeDeletedMeta,
-            ]
-          : [
-              fieldsMeta,
-              searchMeta,
-              filterMeta,
-              orMeta,
-              sortMeta,
-              joinMeta,
-              limitMeta,
-              offsetMeta,
-              pageMeta,
-              cacheMeta,
-            ];
-      case 'getOne':
-        return options.query?.softDelete
-          ? [fieldsMeta, joinMeta, cacheMeta, includeDeletedMeta]
-          : [fieldsMeta, joinMeta, cacheMeta];
+    switch (operation) {
+      case Operation.List:
+        return [
+          fieldsMeta,
+          searchMeta,
+          filterMeta,
+          orMeta,
+          sortMeta,
+          joinMeta,
+          limitMeta,
+          offsetMeta,
+          pageMeta,
+          cacheMeta,
+          includeDeletedMeta,
+        ];
+      case Operation.Read:
+        return [fieldsMeta, joinMeta, cacheMeta, includeDeletedMeta];
       default:
         return [];
     }
@@ -296,11 +275,10 @@ export class Swagger {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static getQueryParamsNames(): any {
-    const qbOptions = CrudRequestQueryBuilder.getOptions();
+    const qbOptions = CrudQueryBuilder.getOptions();
     const name = (n: string) => {
       if (qbOptions?.paramNamesMap) {
-        const selected = qbOptions?.paramNamesMap[n];
-        return isString(selected) ? selected : selected[0];
+        return qbOptions.paramNamesMap[n][0];
       } else {
         return;
       }

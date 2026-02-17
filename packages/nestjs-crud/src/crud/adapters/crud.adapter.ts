@@ -1,28 +1,75 @@
-import { plainToInstance } from 'class-transformer';
+import {
+  BadRequestException,
+  NotFoundException,
+  PlainLiteralObject,
+  Type,
+} from '@nestjs/common';
+import { isObject, isUndefined } from '@nestjs/common/utils/shared.utils';
 
-import { BadRequestException, PlainLiteralObject, Type } from '@nestjs/common';
-import { isObject } from '@nestjs/common/utils/shared.utils';
+import {
+  DeepPartial,
+  EntityColumn,
+  RepositoryInterface,
+  RepositoryFindOptions,
+  RepositoryFindOneOptions,
+  RepositoryOrderOptions,
+  Where,
+  WhereClause,
+  WhereCondition,
+  isWhereCondition,
+} from '@concepta/nestjs-common';
 
-import { CrudEntityColumn } from '../../crud.types';
-import { CrudRequestParsedParamsInterface } from '../../request/interfaces/crud-request-parsed-params.interface';
-import { QueryFilter } from '../../request/types/crud-request-query.types';
-import { CrudCreateManyInterface } from '../interfaces/crud-create-many.interface';
+import { SConditionConverter } from '../../request/crud-scondition.converter';
+import { CrudParsedQueryInterface } from '../../request/interfaces/crud-parsed-query.interface';
+import { CrudContextOptionsInterface } from '../interfaces/crud-context-options.interface';
+import { CrudContextInterface } from '../interfaces/crud-context.interface';
+import { CrudCreateBatchInterface } from '../interfaces/crud-create-batch.interface';
 import { CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
 import { CrudQueryOptionsInterface } from '../interfaces/crud-query-options.interface';
-import { CrudRequestOptionsInterface } from '../interfaces/crud-request-options.interface';
-import { CrudRequestInterface } from '../interfaces/crud-request.interface';
 import { CrudResponsePaginatedInterface } from '../interfaces/crud-response-paginated.interface';
 import { queryFilterIsArray } from '../util';
 
-export abstract class CrudAdapter<Entity extends PlainLiteralObject> {
-  throwBadRequestException(msg?: unknown): BadRequestException {
-    throw new BadRequestException(msg);
+export class CrudAdapter<Entity extends PlainLiteralObject> {
+  protected entityColumns: EntityColumn<Entity>[] = [];
+
+  protected entityPrimaryColumns: EntityColumn<Entity>[] = [];
+
+  protected entityHasDeleteColumn = false;
+
+  constructor(protected repository: RepositoryInterface<Entity>) {
+    this.initColumnMetadata();
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Metadata
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  entityName(): string {
+    return this.repository.metadata.name;
+  }
+
+  entityType(): Type<Entity> {
+    return this.repository.metadata.type;
+  }
+
+  protected initColumnMetadata(): void {
+    const { columns } = this.repository.metadata;
+
+    this.entityColumns = columns.map((col) => col.name);
+    this.entityPrimaryColumns = columns
+      .filter((col) => col.isPrimary)
+      .map((col) => col.name);
+    this.entityHasDeleteColumn = columns.some((col) => col.isRemoveDate);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Pagination helpers
+  // ═══════════════════════════════════════════════════════════════════════════
 
   /**
    * Wrap page into page-info
    * override this method to create custom page-info response
-   * or set custom `serialize.getMany` dto in the controller's CrudOption
+   * or set custom `serialize.list` dto in the controller's CrudOption
    *
    * @param data - array of data to be paginated
    * @param total - total number of items in the collection
@@ -48,40 +95,36 @@ export abstract class CrudAdapter<Entity extends PlainLiteralObject> {
   /**
    * Get number of resources to be fetched
    *
-   * @param query - parsed request params
+   * @param query - parsed query parameters
    * @param options - query options
    */
   getTake(
-    query: CrudRequestParsedParamsInterface<Entity>,
+    query: CrudParsedQueryInterface<Entity>,
     options: CrudQueryOptionsInterface<Entity>,
   ): number | null {
     if (query.limit) {
       return options.maxLimit
-        ? query.limit <= options.maxLimit
-          ? query.limit
-          : options.maxLimit
+        ? Math.min(query.limit, options.maxLimit)
         : query.limit;
     }
 
     if (options.limit) {
       return options.maxLimit
-        ? options.limit <= options.maxLimit
-          ? options.limit
-          : options.maxLimit
+        ? Math.min(options.limit, options.maxLimit)
         : options.limit;
     }
 
-    return options.maxLimit ? options.maxLimit : null;
+    return options.maxLimit ?? null;
   }
 
   /**
    * Get number of resources to be skipped
    *
-   * @param query - parsed request params
+   * @param query - parsed query parameters
    * @param take - number of resources to be fetched
    */
   getSkip(
-    query: CrudRequestParsedParamsInterface<Entity>,
+    query: CrudParsedQueryInterface<Entity>,
     take: number | null,
   ): number | null {
     return query.page && take
@@ -91,14 +134,18 @@ export abstract class CrudAdapter<Entity extends PlainLiteralObject> {
         : null;
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Column & param helpers
+  // ═══════════════════════════════════════════════════════════════════════════
+
   /**
    * Get primary param name from CrudOptions
    *
    * @param options - crud request options
    */
   getPrimaryParams(
-    options: CrudRequestOptionsInterface<Entity>,
-  ): CrudEntityColumn<Entity>[] {
+    options: CrudContextOptionsInterface<Entity>,
+  ): EntityColumn<Entity>[] {
     const rawParams: CrudParamsOptionsInterface<Entity> = options.params ?? {};
 
     const params = Object.keys(rawParams).filter(
@@ -107,47 +154,36 @@ export abstract class CrudAdapter<Entity extends PlainLiteralObject> {
 
     return params
       .map((p) => rawParams[p].field)
-      .filter((field): field is string => typeof field === 'string');
-  }
-
-  /**
-   * Get parameter filters from parsed request.
-   *
-   * @param parsed - The parsed request parameters.
-   * @returns An object containing parameter filters.
-   */
-  public getParamFilters(parsed: CrudRequestParsedParamsInterface<Entity>) {
-    const filters: Partial<Record<CrudEntityColumn<Entity>, unknown>> = {};
-
-    /* istanbul ignore else */
-    if (parsed.paramsFilter.length) {
-      for (const filter of parsed.paramsFilter) {
-        filters[filter.field] = filter.value;
-      }
-    }
-
-    return filters;
+      .filter(
+        (field): field is EntityColumn<Entity> => typeof field === 'string',
+      );
   }
 
   getAllowedColumns(
-    columns: CrudEntityColumn<Entity>[],
+    columns: EntityColumn<Entity>[],
     options: CrudQueryOptionsInterface<Entity>,
-  ): CrudEntityColumn<Entity>[] {
-    return (!options.exclude || !options.exclude.length) &&
-      (!options.allow || !options.allow.length)
-      ? columns
-      : columns.filter(
-          (column) =>
-            (options.exclude && options.exclude.length
-              ? !options.exclude.some((col) => col === column)
-              : true) &&
-            (options.allow && options.allow.length
-              ? options.allow.some((col) => col === column)
-              : true),
-        );
+  ): EntityColumn<Entity>[] {
+    const { exclude, allow } = options;
+
+    if (!exclude?.length && !allow?.length) {
+      return columns;
+    }
+
+    return columns.filter(
+      (column) =>
+        (!exclude?.length || !exclude.some((col) => col === column)) &&
+        (!allow?.length || allow.some((col) => col === column)),
+    );
   }
 
-  checkFilterIsArray(cond: QueryFilter<Entity>): boolean {
+  /**
+   * Type guard to check if a string is a valid entity column name.
+   */
+  protected isEntityColumn(key: string): key is keyof Entity & string {
+    return this.entityColumns.some((col) => col === key);
+  }
+
+  checkFilterIsArray(cond: WhereCondition<Entity>): boolean {
     if (queryFilterIsArray(cond)) {
       return true;
     }
@@ -155,67 +191,396 @@ export abstract class CrudAdapter<Entity extends PlainLiteralObject> {
     throw new BadRequestException(`Invalid column '${cond.field}' value`);
   }
 
+  /**
+   * Get select fields without alias prefix.
+   */
+  protected getSelectFields(
+    query: CrudParsedQueryInterface<Entity>,
+    options: CrudQueryOptionsInterface<Entity>,
+  ): (keyof Entity)[] {
+    const allowed = this.getAllowedColumns(this.entityColumns, options);
+
+    const columns =
+      query.fields && query.fields.length
+        ? query.fields.filter((field) => allowed.some((col) => field === col))
+        : allowed;
+
+    const selectArray = [
+      ...(options.persist && options.persist.length ? options.persist : []),
+      ...columns,
+      ...this.entityPrimaryColumns,
+    ];
+
+    const uniqueFields = new Set<keyof Entity>(selectArray);
+    return Array.from(uniqueFields);
+  }
+
+  /**
+   * Build order clause for FindOptions.
+   */
+  protected buildOrderClause(
+    query: CrudParsedQueryInterface<Entity>,
+    options: CrudQueryOptionsInterface<Entity>,
+  ): RepositoryOrderOptions<Entity> {
+    const sort =
+      query.sort && query.sort.length
+        ? query.sort
+        : options.sort && options.sort.length
+          ? options.sort
+          : [];
+
+    const order: RepositoryOrderOptions<Entity> = {};
+
+    for (const s of sort) {
+      (order as Record<string, string>)[s.field as string] = s.order;
+    }
+
+    return order;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Entity preparation
+  // ═══════════════════════════════════════════════════════════════════════════
+
   prepareEntityBeforeSave(
-    dto: Partial<Entity>,
-    parsed: CrudRequestParsedParamsInterface<Entity>,
+    dto: DeepPartial<Entity>,
+    context: CrudContextInterface<Entity>,
   ): Entity | undefined {
     if (!isObject(dto)) {
       return undefined;
     }
 
-    if (parsed.paramsFilter.length) {
-      for (const filter of parsed.paramsFilter) {
-        if (filter.field in dto) {
-          (dto as Record<string, unknown>)[filter.field] = filter.value;
+    // Apply route params to dto fields that exist in the dto
+    let merged = dto;
+    for (const [field, value] of Object.entries(context.params)) {
+      if (field in merged) {
+        merged = { ...merged, [field]: value };
+      }
+    }
+
+    if (!Object.keys(merged).length) {
+      return undefined;
+    }
+
+    return this.repository.prepare(merged);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CRUD operations
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Create one entity.
+   *
+   * @param context - The CRUD context interface.
+   * @param dto - The DTO containing the entity data to create.
+   */
+  async create(
+    context: CrudContextInterface<Entity>,
+    dto: DeepPartial<Entity>,
+  ): Promise<Entity> {
+    const entity = this.prepareEntityBeforeSave(dto, context);
+
+    if (!entity) {
+      throw new BadRequestException();
+    }
+
+    return this.repository.create(entity, { ctx: context });
+  }
+
+  /**
+   * Create many entities in batch.
+   *
+   * @param context - The CRUD context interface.
+   * @param dto - The DTO containing the bulk array of entities to create.
+   * @returns A promise resolving to an array of created entities.
+   */
+  async createBatch(
+    context: CrudContextInterface<Entity>,
+    dto: CrudCreateBatchInterface<DeepPartial<Entity>>,
+  ): Promise<Entity[]> {
+    if (!isObject(dto) || !Array.isArray(dto.bulk) || !dto.bulk.length) {
+      throw new BadRequestException('Empty data. Nothing to save.');
+    }
+
+    const preparedBulk = dto.bulk.map((one) =>
+      this.prepareEntityBeforeSave(one, context),
+    );
+
+    const bulk: Entity[] = preparedBulk.filter(
+      (d): d is Entity => !isUndefined(d),
+    );
+
+    if (!bulk.length) {
+      throw new BadRequestException('Empty data. Nothing to save.');
+    }
+
+    return this.repository.createMany(bulk, { ctx: context });
+  }
+
+  /**
+   * Update one entity.
+   *
+   * @param context - The CRUD context interface.
+   * @param dto - The DTO containing the updated entity data.
+   * @returns A promise resolving to the updated entity.
+   */
+  async update(
+    context: CrudContextInterface<Entity>,
+    dto: DeepPartial<Entity>,
+  ): Promise<Entity> {
+    const found = await this.getOneOrFail(context);
+    const data = { ...dto, ...context.params };
+
+    return this.repository.update(found, data, { ctx: context });
+  }
+
+  /**
+   * Replace one entity.
+   *
+   * @param context - The CRUD context interface.
+   * @param dto - The DTO containing the replacement entity data.
+   * @returns A promise resolving to the replaced entity.
+   */
+  async replace(
+    context: CrudContextInterface<Entity>,
+    dto: DeepPartial<Entity>,
+  ): Promise<Entity> {
+    const found = await this.getOneOrFail(context);
+    const data = { ...dto, ...context.params };
+
+    return this.repository.replace(found, data, { ctx: context });
+  }
+
+  /**
+   * Permanently delete one entity (hard delete).
+   *
+   * @param context - The CRUD context interface.
+   * @returns A promise resolving to the deleted entity, or null if returnDeleted is false.
+   */
+  async delete(context: CrudContextInterface<Entity>): Promise<Entity | null> {
+    const { returnDeleted = false } = context.options?.route ?? {};
+    const found = await this.getOneOrFail(context);
+    const deleted = await this.repository.delete(found, { ctx: context });
+
+    return returnDeleted ? deleted : null;
+  }
+
+  /**
+   * Soft delete one entity by setting its delete date.
+   *
+   * @param context - The CRUD context interface.
+   * @returns A promise resolving to the soft-deleted entity, or null if returnDeleted is false.
+   */
+  async softDelete(
+    context: CrudContextInterface<Entity>,
+  ): Promise<Entity | null> {
+    const { returnDeleted = false } = context.options?.route ?? {};
+    const found = await this.getOneOrFail(context);
+    const deleted = await this.repository.softDelete(found, { ctx: context });
+
+    return returnDeleted ? deleted : null;
+  }
+
+  /**
+   * Restore one soft-deleted entity.
+   *
+   * @param context - The CRUD context interface.
+   * @returns A promise resolving to the restored entity, or null if returnRestored is false.
+   */
+  async restore(context: CrudContextInterface<Entity>): Promise<Entity | null> {
+    const { returnRestored = false } = context.options?.route ?? {};
+    const found = await this.getOneOrFail(context, true);
+    const restored = await this.repository.restore(found, { ctx: context });
+
+    return returnRestored ? restored : null;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Query operations
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * List many entities.
+   *
+   * @param context - The CRUD context interface.
+   */
+  async list(
+    context: CrudContextInterface<Entity>,
+  ): Promise<CrudResponsePaginatedInterface<Entity>> {
+    const options = this.buildFindOptions(context);
+    const [data, total] = await this.repository.findAndCount(options);
+    const limit = options.take ?? total;
+    const offset = options.skip ?? 0;
+
+    return this.createPageInfo(data, total, limit, offset);
+  }
+
+  /**
+   * Read one entity.
+   *
+   * @param context - The CRUD context interface.
+   */
+  async read(context: CrudContextInterface<Entity>): Promise<Entity> {
+    return this.getOneOrFail(context);
+  }
+
+  protected async getOneOrFail(
+    context: CrudContextInterface<Entity>,
+    withDeleted = false,
+  ): Promise<Entity> {
+    const { query } = context;
+
+    // Build and validate where clause from all filter sources
+    const where = this.buildWhere(context);
+    this.validateWhereFields(where);
+
+    // Handle soft-delete query inclusion
+    // includeDeleted=1 query param enables fetching soft-deleted entities
+    const includeDeleted =
+      withDeleted || (this.entityHasDeleteColumn && query.includeDeleted === 1);
+
+    const findOptions: RepositoryFindOneOptions<Entity> = {
+      ctx: context,
+      where,
+      withDeleted: includeDeleted || undefined,
+    };
+
+    const found = await this.repository.findOne(findOptions);
+
+    if (!found) {
+      throw new NotFoundException(`${this.entityName()} not found`);
+    }
+
+    return found;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FindOptions-based query methods
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Build FindManyOptions from CRUD context.
+   *
+   * @param context - The CRUD context interface.
+   * @returns RepositoryFindOptions for repository.findAndCount()
+   */
+  protected buildFindOptions(
+    context: CrudContextInterface<Entity>,
+  ): RepositoryFindOptions<Entity> {
+    const { query, options } = context;
+    const queryOptions = options.query ?? {};
+
+    // Build and validate where clause from all filter sources
+    const where = this.buildWhere(context);
+    this.validateWhereFields(where);
+
+    // Get select fields (without alias prefix)
+    const select = this.getSelectFields(query, queryOptions);
+
+    // Build order clause
+    const order = this.buildOrderClause(query, queryOptions);
+
+    // Calculate pagination
+    const take = this.getTake(query, queryOptions);
+    const skip = this.getSkip(query, take);
+
+    // Handle soft-delete inclusion
+    // includeDeleted=1 query param enables fetching soft-deleted entities
+    const withDeleted =
+      this.entityHasDeleteColumn && query.includeDeleted === 1;
+
+    return {
+      ctx: context,
+      where,
+      select: select.length > 0 ? select : undefined,
+      order: Object.keys(order).length > 0 ? order : undefined,
+      take: take || undefined,
+      skip: skip || undefined,
+      withDeleted: withDeleted || undefined,
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Where clause building & validation
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Build WhereClause from all filter sources in the context.
+   *
+   * Combines: route params, options.query.filter, query.search, query.filter/or
+   * into a single WhereClause for the repository layer.
+   */
+  protected buildWhere(
+    context: CrudContextInterface<Entity>,
+  ): WhereClause | undefined {
+    const { query, options, params } = context;
+    const clauses: WhereClause[] = [];
+
+    // 1. Route params -> Where.eq(field, value) each
+    for (const [field, value] of Object.entries(params)) {
+      clauses.push(Where.eq(field, value));
+    }
+
+    // 2. options.query.filter -> WhereCondition[] or SCondition
+    const optionsFilter = options?.query?.filter;
+    if (optionsFilter) {
+      if (Array.isArray(optionsFilter)) {
+        clauses.push(...optionsFilter);
+      } else {
+        const clause = SConditionConverter.convert(optionsFilter);
+        if (clause) clauses.push(clause);
+      }
+    }
+
+    // 3. query.search (mutually exclusive with filter/or per parser)
+    if (query.search) {
+      const clause = SConditionConverter.convert(query.search);
+      if (clause) clauses.push(clause);
+    } else {
+      // 4. query.filter[] + query.or[] -> combined WhereClause
+      const filters = query.filter || [];
+      const ors = query.or || [];
+
+      if (filters.length && ors.length) {
+        if (filters.length === 1 && ors.length === 1) {
+          clauses.push(Where.or(filters[0], ors[0]));
+        } else {
+          clauses.push(Where.or(Where.and(...filters), Where.and(...ors)));
+        }
+      } else if (filters.length) {
+        clauses.push(...filters);
+      } else if (ors.length) {
+        if (ors.length === 1) {
+          clauses.push(ors[0]);
+        } else {
+          clauses.push(Where.or(...ors));
         }
       }
     }
 
-    if (!Object.keys(dto).length) {
-      return undefined;
-    }
-
-    return dto instanceof this.entityType()
-      ? Object.assign(dto)
-      : plainToInstance(
-          this.entityType(),
-          { ...dto },
-          parsed.classTransformOptions,
-        );
+    if (clauses.length === 0) return undefined;
+    if (clauses.length === 1) return clauses[0];
+    return Where.and(...clauses);
   }
 
-  abstract entityType(): Type<Entity>;
-  abstract entityName(): string;
+  /**
+   * Validate all field names in a WhereClause tree against entity columns.
+   * Throws BadRequestException for any invalid field.
+   */
+  protected validateWhereFields(clause: WhereClause | undefined): void {
+    if (!clause) return;
 
-  abstract getMany(
-    req: CrudRequestInterface<Entity>,
-  ): Promise<CrudResponsePaginatedInterface<Entity>>;
-
-  abstract getOne(req: CrudRequestInterface<Entity>): Promise<Entity>;
-
-  abstract createOne(
-    req: CrudRequestInterface<Entity>,
-    dto: Entity | Partial<Entity>,
-  ): Promise<Entity>;
-
-  abstract createMany(
-    req: CrudRequestInterface<Entity>,
-    dto: CrudCreateManyInterface,
-  ): Promise<Entity[]>;
-
-  abstract updateOne(
-    req: CrudRequestInterface<Entity>,
-    dto: Entity | Partial<Entity>,
-  ): Promise<Entity>;
-
-  abstract replaceOne(
-    req: CrudRequestInterface<Entity>,
-    dto: Entity | Partial<Entity>,
-  ): Promise<Entity>;
-
-  abstract deleteOne(req: CrudRequestInterface<Entity>): Promise<void | Entity>;
-
-  abstract recoverOne(
-    req: CrudRequestInterface<Entity>,
-  ): Promise<void | Entity>;
+    if (isWhereCondition(clause)) {
+      if (!this.isEntityColumn(clause.field)) {
+        throw new BadRequestException(
+          `Invalid filter field '${clause.field}' for entity '${this.entityName()}'`,
+        );
+      }
+    } else {
+      for (const child of clause.conditions) {
+        this.validateWhereFields(child);
+      }
+    }
+  }
 }

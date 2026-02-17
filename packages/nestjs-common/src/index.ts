@@ -1,3 +1,12 @@
+// Enums
+export { ActionEnum } from './enums/action.enum';
+export {
+  Operation,
+  ReadOperations,
+  WriteOperations,
+  MutateOperations,
+} from './enums/operation.enum';
+
 // DTOs
 export { AuditDto } from './audit/dto/audit.dto';
 export { CommonEntityDto } from './common/dto/common-entity.dto';
@@ -17,7 +26,12 @@ export { ModuleOptionsSettingsInterface } from './modules/interfaces/module-opti
 export * from './domain';
 
 // Core types & exceptions
-export { ExceptionContext } from './core.types';
+export {
+  ExceptionContext,
+  ReadOperation,
+  WriteOperation,
+  MutateOperation,
+} from './core.types';
 export { ExceptionInterface } from './exceptions/interfaces/exception.interface';
 export { NotAnErrorException } from './exceptions/not-an-error.exception';
 
@@ -77,6 +91,58 @@ export { UpdateOneInterface } from './model/interfaces/mutate/update-one.interfa
 // Repository interfaces
 export { RepositoryInterface } from './repository/interfaces/repository.interface';
 export { RepositoryEntityOptionInterface } from './repository/interfaces/repository-entity-option.interface';
+export {
+  RepositoryColumnMetadataInterface,
+  RepositoryMetadataInterface,
+} from './repository/interfaces/repository-column-metadata.interface';
+
+// Repository option types (replaces RepositoryInternals)
+export {
+  RepositoryOrderOptions,
+  RepositoryFindOneOptions,
+  RepositoryFindOptions,
+  RepositoryCreateOptions,
+  RepositoryUpdateOptions,
+  RepositoryUpsertOptions,
+  RepositoryDeleteOptions,
+  RepositoryRestoreOptions,
+} from './repository/interfaces/repository-options.interface';
+
+// Repository query types
+export {
+  EntityColumn,
+  WhereOperator,
+  WhereNullaryOperator,
+  WhereScalarOperator,
+  WhereArrayOperator,
+  WherePairOperator,
+  WhereCompoundOperator,
+  WhereConditionArr,
+  SortOrder,
+  SortConditionArr,
+} from './repository/repository.types';
+
+// Sort condition interface
+export { SortCondition } from './repository/interfaces/sort-condition.interface';
+
+// Where clause interfaces
+export {
+  WhereConditionNullary,
+  WhereConditionScalar,
+  WhereConditionArray,
+  WhereConditionPair,
+  WhereCondition,
+  WhereCompound,
+  WhereClause,
+  isWhereCondition,
+  isWhereCompound,
+  isNullaryCondition,
+  isArrayCondition,
+  isPairCondition,
+} from './repository/interfaces/where-clause.interface';
+
+// Where clause helpers
+export { Where } from './repository/where.helpers';
 
 // Repository utils
 export { getDynamicRepositoryToken } from './repository/utils/get-dynamic-repository-token';
@@ -112,5 +178,18 @@ export { RuntimeExceptionInterface } from './exceptions/interfaces/runtime-excep
 // exceptions
 export { RuntimeException } from './exceptions/runtime.exception';
 
-// !!! THESE EXPORTS ARE TEMPORARY AND MAY BE REMOVED IN THE FUTURE !!!
-export { RepositoryInternals } from './repository/interfaces/repository-internals';
+// Hook interfaces and types
+export { SpecificationInterface } from './hooks/interfaces/specification.interface';
+export { HookOption, HookWithSpec } from './hooks/hook.types';
+
+// Context host and decorators
+export { AppContextHost, TypedAppContext } from './context/app-context';
+export { getAppContext } from './context/get-app-context.util';
+export { Ctx } from './context/ctx.decorator';
+
+// Context interfaces
+export { HookContextInterface } from './context/interfaces/hook-context.interface';
+export { TransactionContextInterface } from './context/interfaces/transaction-context.interface';
+export { RepositoryContextInterface } from './context/interfaces/repository-context.interface';
+export { TransactionInterface } from './context/interfaces/transaction.interface';
+export { TransactionManagerInterface } from './context/interfaces/transaction-manager.interface';

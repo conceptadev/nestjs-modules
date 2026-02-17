@@ -1,8 +1,10 @@
+import { Where, WhereOperator } from '@concepta/nestjs-common';
+
 import { createPaginatedResponse } from '../../__FIXTURES__/crud-federation-mock-helpers';
 import {
-  assertServiceCallCounts,
-  assertRootGetManyRequest,
-  assertRelationRequest,
+  assertHandlerCallCounts,
+  assertRootListQuery,
+  assertRelationQuery,
   assertRootFirst,
   assertResultStructure,
   assertEnrichment,
@@ -12,8 +14,6 @@ import {
 import {
   createOneToOneForwardRelation,
   createOneToManyForwardRelation,
-  TestRelationService,
-  TestProfileService,
 } from '../../__FIXTURES__/crud-federation-test-entities';
 import {
   setupCrudFederationTests,
@@ -58,9 +58,6 @@ describe('CrudFederationService - Complex Scenario: Multi-Relation with Paginati
 
   beforeEach(async () => {
     mocks = await setupCrudFederationTests();
-    // Register both relation services
-    mocks.registerRelation(mocks.mockRelationService); // comments
-    mocks.registerRelation(mocks.mockProfileService); // profiles
   });
 
   afterEach(async () => {
@@ -72,29 +69,33 @@ describe('CrudFederationService - Complex Scenario: Multi-Relation with Paginati
       // ARRANGE - Complex configuration
       const profileRelation = createOneToOneForwardRelation(
         'profiles',
-        TestProfileService,
+        'TestProfile',
         'id',
         'rootId',
       );
 
       const commentRelation = createOneToManyForwardRelation(
         'comments',
-        TestRelationService,
+        'TestRelation',
         {
-          distinctFilter: { field: 'isLatest', operator: '$eq', value: true }, // Required for many-cardinality sort
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          }, // Required for many-cardinality sort
         },
       );
 
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           // Root filters - multiple conditions
           filter: [
-            'name||$cont||Project', // Root name contains "Project"
+            'name||$contains||Project', // Root name contains "Project"
             'status||$eq||active', // Root status equals "active"
             'profiles.isActive||$eq||true', // Profile filter
             'comments.status||$eq||published', // Comment filter 1
             'comments.priority||$gte||5', // Comment filter 2
-            'comments.rootId||$notnull', // Required for relation sort
+            'comments.rootId||$nnull', // Required for relation sort
           ],
           // Mixed sorts - root sorts and relation sort
           sort: [
@@ -115,7 +116,7 @@ describe('CrudFederationService - Complex Scenario: Multi-Relation with Paginati
 
       // Mock comment service responses for sequential constraint processing
       // First call: constraint discovery with sort and filters
-      mocks.mockRelationService.getMany
+      mocks.relationListSpy
         .mockResolvedValueOnce(
           createPaginatedResponse(testData.page2CommentsDiscovery, {
             total: 25, // Total comments matching filters across all pages
@@ -129,14 +130,14 @@ describe('CrudFederationService - Complex Scenario: Multi-Relation with Paginati
         );
 
       // Mock profile service response for enrichment
-      mocks.mockProfileService.getMany.mockResolvedValue(
+      mocks.profileListSpy.mockResolvedValue(
         createPaginatedResponse(testData.profilesForFinalRoots, {
           total: 4, // Profiles for the specific roots returned
         }),
       );
 
       // Mock root service response after constraint discovery
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(testData.page2Roots, {
           limit: 5,
           total: 18, // Total roots after all constraints applied
@@ -144,21 +145,21 @@ describe('CrudFederationService - Complex Scenario: Multi-Relation with Paginati
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call verification
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 2 }, // Multiple calls in complex scenario
-        { service: mocks.mockRelationService, count: 2 }, // constraint + enrichment
-        { service: mocks.mockProfileService, count: 2 }, // Constraint discovery + enrichment
+      // ASSERT - Handler call verification
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 2 }, // Multiple calls in complex scenario
+        { handler: mocks.relationListSpy, count: 2 }, // constraint + enrichment
+        { handler: mocks.profileListSpy, count: 2 }, // Constraint discovery + enrichment
       ]);
 
       // Verify root-first strategy in complex scenario
-      assertRootFirst(mocks.mockRootService, [mocks.mockRelationService]);
+      assertRootFirst(mocks.rootListSpy, [mocks.relationListSpy]);
 
       // ASSERT - Comment service constraint discovery call
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
           page: undefined, // Comment relation is driving but not first, so page is reset
           offset: 0, // Offset-based pagination starts at 0
@@ -167,49 +168,43 @@ describe('CrudFederationService - Complex Scenario: Multi-Relation with Paginati
             { field: 'priority', order: 'DESC' },
             { field: 'createdAt', order: 'ASC' },
           ],
-          search: {
-            $and: [
-              { status: { $eq: 'published' } }, // Comment filter from request
-              { priority: { $gte: 5 } },
-              { rootId: { $notnull: true } },
-              { isLatest: { $eq: true } }, // distinctFilter from relation config
-            ],
-          },
+          filter: [
+            Where.rel('comments', Where.eq('status', 'published')),
+            Where.rel('comments', Where.gte('priority', 5)),
+            Where.rel('comments', Where.notNull('rootId')),
+            Where.rel('comments', Where.eq('isLatest', true)),
+            Where.in('rootId', [7, 11, 22, 28]),
+          ],
         },
         0,
       );
 
-      // This assertion is redundant with the one above, removing it since we've already verified call 0
-
       // ASSERT - Root service total count call (call 0)
-      assertRootGetManyRequest(
-        mocks.mockRootService,
+      assertRootListQuery(
+        mocks.rootListSpy,
         {
           page: 1,
           limit: 1,
-          search: {
-            $and: [
-              { name: { $cont: 'Project' } },
-              { status: { $eq: 'active' } },
-            ],
-          },
+          filter: [
+            Where.contains('name', 'Project'),
+            Where.eq('status', 'active'),
+            Where.in('id', [7, 11, 15, 22, 28]),
+          ],
         },
         0, // Call 0: Total count
       );
 
       // ASSERT - Root service data retrieval call (call 1)
-      assertRootGetManyRequest(
-        mocks.mockRootService,
+      assertRootListQuery(
+        mocks.rootListSpy,
         {
           page: 1, // Reset to page 1 after constraint discovery
           limit: 5,
-          search: {
-            $and: [
-              { name: { $cont: 'Project' } },
-              { status: { $eq: 'active' } },
-              { id: { $in: [7, 11, 15, 22, 28] } }, // Constrained by discovered IDs
-            ],
-          },
+          filter: [
+            Where.contains('name', 'Project'),
+            Where.eq('status', 'active'),
+            Where.in('id', [7, 11, 15, 22, 28]),
+          ],
           sort: [
             { field: 'name', order: 'ASC' }, // Root sort 1
             { field: 'id', order: 'DESC' }, // Root sort 2
@@ -219,43 +214,37 @@ describe('CrudFederationService - Complex Scenario: Multi-Relation with Paginati
       );
 
       // ASSERT - Comment service enrichment call (should constrain by discovered root IDs)
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
-          search: {
-            $and: [
-              { status: { $eq: 'published' } },
-              { priority: { $gte: 5 } },
-              { rootId: { $notnull: true } },
-              { isLatest: { $eq: true } }, // distinctFilter from relation config
-              { rootId: { $in: [7, 11, 15, 22, 28] } },
-            ],
-          },
+          filter: [
+            Where.rel('comments', Where.eq('status', 'published')),
+            Where.rel('comments', Where.gte('priority', 5)),
+            Where.rel('comments', Where.notNull('rootId')),
+            Where.rel('comments', Where.eq('isLatest', true)),
+            Where.rel('comments', Where.in('rootId', [7, 11, 15, 22, 28])),
+          ],
         },
         1, // Call 1: Enrichment call
       );
 
       // ASSERT - Profile service constraint discovery call (broad filter)
-      assertRelationRequest(
-        mocks.mockProfileService,
+      assertRelationQuery(
+        mocks.profileListSpy,
         {
-          search: {
-            isActive: { $eq: true },
-          },
+          filter: [Where.rel('profiles', Where.eq('isActive', true))],
         },
         0, // Call 0: Profile constraint discovery
       );
 
       // ASSERT - Profile service enrichment call (should have filters and root ID constraints)
-      assertRelationRequest(
-        mocks.mockProfileService,
+      assertRelationQuery(
+        mocks.profileListSpy,
         {
-          search: {
-            $and: [
-              { isActive: { $eq: true } },
-              { rootId: { $in: [7, 11, 15, 22, 28] } },
-            ],
-          },
+          filter: [
+            Where.rel('profiles', Where.eq('isActive', true)),
+            Where.rel('profiles', Where.in('rootId', [7, 11, 15, 22, 28])),
+          ],
         },
         1, // Call 1: Profile enrichment call
       );
@@ -305,11 +294,17 @@ describe('CrudFederationService - Complex Scenario: Multi-Relation with Paginati
       // Test INNER JOIN sparsity without relation sorting to avoid distinctFilter requirement
       const commentRelation = createOneToManyForwardRelation(
         'comments',
-        TestRelationService,
-        { distinctFilter: { field: 'isLatest', operator: '$eq', value: true } }, // Required for many-cardinality with filters
+        'TestRelation',
+        {
+          distinctFilter: {
+            field: 'isLatest',
+            operator: WhereOperator.EQ,
+            value: true,
+          },
+        }, // Required for many-cardinality with filters
       );
 
-      const req = mocks.createTestRequest(
+      const req = await mocks.createTestQuery(
         {
           filter: ['comments.priority||$gte||8'],
           page: '1',
@@ -675,7 +670,7 @@ describe('CrudFederationService - Complex Scenario: Multi-Relation with Paginati
 
       const totalComments = 500; // Large total to ensure service continues iterations
 
-      mocks.mockRelationService.getMany
+      mocks.relationListSpy
         .mockResolvedValueOnce(
           createPaginatedResponse(constraintBatch1, {
             total: totalComments,
@@ -730,124 +725,117 @@ describe('CrudFederationService - Complex Scenario: Multi-Relation with Paginati
         { id: 479, name: 'Project Toomuch', status: 'active' },
       ];
 
-      mocks.mockRootService.getMany.mockResolvedValue(
+      mocks.rootListSpy.mockResolvedValue(
         createPaginatedResponse(correspondingRoots, { total: 1000 }),
       );
 
       // ACT
-      const result = await mocks.service.getMany(req);
+      const result = await mocks.service.list(req);
 
-      // ASSERT - Service call counts (should be much cleaner now)
-      assertServiceCallCounts([
-        { service: mocks.mockRootService, count: 1 }, // Single call with accumulated root IDs
-        { service: mocks.mockRelationService, count: 6 }, // 5 constraint discovery + 1 enrichment
+      // ASSERT - Handler call counts (should be much cleaner now)
+      assertHandlerCallCounts([
+        { handler: mocks.rootListSpy, count: 1 }, // Single call with accumulated root IDs
+        { handler: mocks.relationListSpy, count: 6 }, // 5 constraint discovery + 1 enrichment
       ]);
 
       // ASSERT - Comment service constraint discovery call (first iteration, unconstrained)
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
           offset: 0,
           limit: 10,
-          search: {
-            $and: [
-              { priority: { $gte: 8 } },
-              { isLatest: { $eq: true } }, // distinctFilter from relation config
-            ],
-          },
+          filter: [
+            Where.rel('comments', Where.gte('priority', 8)),
+            Where.rel('comments', Where.eq('isLatest', true)),
+          ],
         },
         0,
       );
 
       // ASSERT - Comment service constraint discovery calls (iterations 1-4)
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
           offset: 10,
           limit: 10,
-          search: {
-            $and: [
-              { priority: { $gte: 8 } },
-              { isLatest: { $eq: true } }, // distinctFilter from relation config
-            ],
-          },
+          filter: [
+            Where.rel('comments', Where.gte('priority', 8)),
+            Where.rel('comments', Where.eq('isLatest', true)),
+          ],
         },
         1, // Call 1: Iteration 2
       );
 
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
           offset: 20,
           limit: 10,
-          search: {
-            $and: [
-              { priority: { $gte: 8 } },
-              { isLatest: { $eq: true } }, // distinctFilter from relation config
-            ],
-          },
+          filter: [
+            Where.rel('comments', Where.gte('priority', 8)),
+            Where.rel('comments', Where.eq('isLatest', true)),
+          ],
         },
         2, // Call 2: Iteration 3
       );
 
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
           offset: 30,
           limit: 10,
-          search: {
-            $and: [
-              { priority: { $gte: 8 } },
-              { isLatest: { $eq: true } }, // distinctFilter from relation config
-            ],
-          },
+          filter: [
+            Where.rel('comments', Where.gte('priority', 8)),
+            Where.rel('comments', Where.eq('isLatest', true)),
+          ],
         },
         3, // Call 3: Iteration 4
       );
 
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
           offset: 40,
           limit: 10,
-          search: {
-            $and: [
-              { priority: { $gte: 8 } },
-              { isLatest: { $eq: true } }, // distinctFilter from relation config
-            ],
-          },
+          filter: [
+            Where.rel('comments', Where.gte('priority', 8)),
+            Where.rel('comments', Where.eq('isLatest', true)),
+          ],
         },
         4, // Call 4: Iteration 5
       );
 
       // ASSERT - Comment service enrichment call (final call with discovered root IDs)
-      assertRelationRequest(
-        mocks.mockRelationService,
+      assertRelationQuery(
+        mocks.relationListSpy,
         {
-          search: {
-            $and: [
-              { priority: { $gte: 8 } },
-              { isLatest: { $eq: true } }, // distinctFilter from relation config
-              {
-                rootId: {
-                  $in: [479, 67, 89, 23, 156, 201, 234, 298, 345, 389],
-                },
-              }, // First 10 root IDs (user limit)
-            ],
-          },
+          filter: [
+            Where.rel('comments', Where.gte('priority', 8)),
+            Where.rel('comments', Where.eq('isLatest', true)),
+            Where.rel(
+              'comments',
+              Where.in(
+                'rootId',
+                [479, 67, 89, 23, 156, 201, 234, 298, 345, 389],
+              ),
+            ),
+          ],
         },
         5, // Call 5: Enrichment
       );
 
       // ASSERT - Root service data retrieval call (single call with all accumulated root IDs)
-      assertRootGetManyRequest(
-        mocks.mockRootService,
+      assertRootListQuery(
+        mocks.rootListSpy,
         {
           page: 1,
           limit: 10,
-          search: {
-            id: { $in: [479, 67, 89, 23, 156, 201, 234, 298, 345, 389, 412] }, // All accumulated root IDs (11 total after iterations)
-          },
+          filter: [
+            Where.in(
+              'id',
+              [479, 67, 89, 23, 156, 201, 234, 298, 345, 389, 412],
+            ),
+          ],
         },
         0, // Call 0: Data retrieval (no total count call in this scenario)
       );

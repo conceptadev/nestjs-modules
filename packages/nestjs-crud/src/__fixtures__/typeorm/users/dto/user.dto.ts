@@ -3,17 +3,9 @@ import { Expose, Type } from 'class-transformer';
 import { CompanyDto } from '../../company/dto/company.dto';
 import { UserProfileDto } from '../../user-profile/dto/user-profile.dto';
 
-export class NameDto {
-  @Expose()
-  first!: string | null;
-
-  @Expose()
-  last!: string | null;
-}
-
 export class UserDto {
   @Expose()
-  id!: string;
+  id?: number;
 
   @Expose()
   email!: string;
@@ -28,8 +20,10 @@ export class UserDto {
   deletedAt?: Date;
 
   @Expose()
-  @Type(() => NameDto)
-  name!: NameDto;
+  firstName?: string | null;
+
+  @Expose()
+  lastName?: string | null;
 
   @Expose()
   @Type(() => CompanyDto)

@@ -1,12 +1,11 @@
 import { PlainLiteralObject } from '@nestjs/common';
 import { SwaggerEnumType } from '@nestjs/swagger/dist/types/swagger-enum.type';
 
-import { CrudEntityColumn } from '../../crud.types';
-import { ParamOptionType } from '../../request/types/crud-request-param.types';
+import { EntityColumn } from '@concepta/nestjs-common';
 
 export interface CrudParamOptionInterface<T extends PlainLiteralObject> {
-  field?: CrudEntityColumn<T>;
-  type?: ParamOptionType;
+  field?: EntityColumn<T>;
+  type?: 'number' | 'string' | 'uuid';
   enum?: SwaggerEnumType;
   primary?: boolean;
   disabled?: boolean;

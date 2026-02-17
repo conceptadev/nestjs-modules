@@ -1,9 +1,4 @@
-import {
-  InjectionToken,
-  PlainLiteralObject,
-  Provider,
-  Type,
-} from '@nestjs/common';
+import { PlainLiteralObject, Provider, Type } from '@nestjs/common';
 
 import {
   getDynamicRepositoryToken,
@@ -11,43 +6,37 @@ import {
 } from '@concepta/nestjs-common';
 
 import { CrudAdapter } from '../crud/adapters/crud.adapter';
-
-import { getDynamicCrudAdapterToken } from './inject-dynamic-crud-adapter.decorator';
+import { getDynamicAdapterToken } from '../crud/util';
 
 /**
  * Configuration for creating a CRUD adapter provider
  */
 interface CreateCrudAdapterProviderConfig<Entity extends PlainLiteralObject> {
   /**
-   * The entity key used to identify the repository
-   * (e.g., 'USER_MODULE_USER_ENTITY_KEY')
+   * Entity key used for repository injection tokens.
    */
-  entityKey: string;
+  entity: string;
 
   /**
-   * The CRUD adapter class to instantiate
-   * (e.g., TypeOrmCrudAdapter)
+   * The CRUD adapter class to instantiate.
    */
   adapter: Type<CrudAdapter<Entity>>;
-
-  /**
-   * Optional custom injection token
-   * If not provided, uses getDynamicCrudAdapterToken(entityKey)
-   */
-  injectionToken?: InjectionToken<CrudAdapter<Entity>>;
 }
 
 /**
- * Creates a NestJS provider for a CRUD adapter
+ * Creates a NestJS provider for a CRUD adapter.
  *
  * This factory eliminates boilerplate adapter class files by dynamically
- * creating adapter instances from repository adapters.
+ * creating adapter instances from repositories.
+ *
+ * A unique token is derived from the entity key (e.g., 'CRUD_ADAPTER_USER').
+ * Repository token is derived from entity via getDynamicRepositoryToken.
  *
  * @example
  * ```typescript
  * const UserCrudAdapterProvider = createCrudAdapterProvider({
- *   entityKey: USER_MODULE_USER_ENTITY_KEY,
- *   adapter: TypeOrmCrudAdapter,
+ *   entity: 'User',
+ *   adapter: CrudAdapter,
  * });
  *
  * @Module({
@@ -61,12 +50,13 @@ interface CreateCrudAdapterProviderConfig<Entity extends PlainLiteralObject> {
  */
 export function createCrudAdapterProvider<Entity extends PlainLiteralObject>(
   config: CreateCrudAdapterProviderConfig<Entity>,
-): Provider {
-  const { entityKey, adapter, injectionToken } = config;
+): Provider<CrudAdapter<Entity>> {
+  const { entity, adapter } = config;
+  const token = getDynamicAdapterToken(entity);
 
   return {
-    provide: injectionToken ?? getDynamicCrudAdapterToken(entityKey),
-    inject: [getDynamicRepositoryToken(entityKey)],
+    provide: token,
+    inject: [getDynamicRepositoryToken(entity)],
     useFactory: (repository: RepositoryInterface<Entity>) => {
       return new adapter(repository);
     },

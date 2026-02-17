@@ -1,29 +1,36 @@
 import request from 'supertest';
 
-import { INestApplication } from '@nestjs/common';
+import { Inject, INestApplication } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 
-import { ExceptionsFilter } from '@concepta/nestjs-common';
+import { ExceptionsFilter, Ctx, WhereOperator } from '@concepta/nestjs-common';
 
-import { TestCrudAdapter } from '../../../__fixtures__/crud/adapters/test-crud.adapter';
-import { TestModelCreateManyDto } from '../../../__fixtures__/crud/dto/test-model-create-many.dto';
+import { TestModelCreateBatchDto } from '../../../__fixtures__/crud/dto/test-model-create-batch.dto';
 import { TestModelCreateDto } from '../../../__fixtures__/crud/dto/test-model-create.dto';
 import { TestModelUpdateDto } from '../../../__fixtures__/crud/dto/test-model-update.dto';
 import { TestModelDto } from '../../../__fixtures__/crud/models/test.model';
 import { CrudModule } from '../../../crud.module';
-import { CrudRequestQueryBuilder } from '../../../request/crud-request-query.builder';
-import { CrudCreateManyInterface } from '../../interfaces/crud-create-many.interface';
-import { CrudRequestInterface } from '../../interfaces/crud-request.interface';
-import { CrudCreateMany } from '../actions/crud-create-many.decorator';
-import { CrudCreateOne } from '../actions/crud-create-one.decorator';
-import { CrudDeleteOne } from '../actions/crud-delete-one.decorator';
-import { CrudGetMany } from '../actions/crud-get-many.decorator';
-import { CrudGetOne } from '../actions/crud-get-one.decorator';
-import { CrudReplaceOne } from '../actions/crud-replace-one.decorator';
-import { CrudUpdateOne } from '../actions/crud-update-one.decorator';
+import { CrudQueryBuilder } from '../../../request/crud-query.builder';
+import { CrudContextInterface } from '../../interfaces/crud-context.interface';
+import { CrudCreateBatchInterface } from '../../interfaces/crud-create-batch.interface';
+import { CrudResolverInterface } from '../../interfaces/crud-resolver.interface';
+import { CrudCreateBatchHandler } from '../../operations/handlers/crud-create-batch.handler';
+import { CrudCreateHandler } from '../../operations/handlers/crud-create.handler';
+import { CrudDeleteHandler } from '../../operations/handlers/crud-delete.handler';
+import { CrudListHandler } from '../../operations/handlers/crud-list.handler';
+import { CrudReadHandler } from '../../operations/handlers/crud-read.handler';
+import { CrudReplaceHandler } from '../../operations/handlers/crud-replace.handler';
+import { CrudUpdateHandler } from '../../operations/handlers/crud-update.handler';
+import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver';
+import { CrudCreateBatch } from '../operations/crud-create-batch.decorator';
+import { CrudCreate } from '../operations/crud-create.decorator';
+import { CrudDelete } from '../operations/crud-delete.decorator';
+import { CrudList } from '../operations/crud-list.decorator';
+import { CrudRead } from '../operations/crud-read.decorator';
+import { CrudReplace } from '../operations/crud-replace.decorator';
+import { CrudUpdate } from '../operations/crud-update.decorator';
 import { CrudBody } from '../params/crud-body.decorator';
-import { CrudRequest } from '../params/crud-request.decorator';
 
 import { CrudController } from './crud-controller.decorator';
 
@@ -31,68 +38,92 @@ describe('#crud', () => {
   describe('#base methods', () => {
     let app: INestApplication;
     let server: ReturnType<INestApplication['getHttpServer']>;
-    let qb: CrudRequestQueryBuilder;
+    let qb: CrudQueryBuilder;
+
+    // Mock CrudResolver for testing decorator behavior
+    const mockCrudResolver = {
+      list: jest.fn().mockResolvedValue({
+        data: [],
+        count: 0,
+        total: 0,
+        page: 1,
+        pageCount: 0,
+      }),
+      read: jest.fn().mockResolvedValue({ id: 1 }),
+      create: jest.fn().mockResolvedValue({ id: 1 }),
+      createBatch: jest.fn().mockResolvedValue([{ id: 1 }, { id: 2 }]),
+      update: jest.fn().mockResolvedValue({ id: 1 }),
+      replace: jest.fn().mockResolvedValue({ id: 1 }),
+      delete: jest.fn().mockResolvedValue({ id: 1 }),
+      restore: jest.fn().mockResolvedValue({ id: 1 }),
+    };
 
     @CrudController({
       path: 'test',
-      model: { type: TestModelDto },
-      params: {
-        id: { field: 'id', type: 'number' },
-      },
-      validation: {
-        transformOptions: {
-          strategy: 'exposeAll',
+      entity: 'Test',
+      request: {
+        params: {
+          id: { field: 'id', type: 'number' },
+        },
+        validation: {
+          transformOptions: {
+            strategy: 'exposeAll',
+          },
         },
       },
+      response: { resource: TestModelDto },
     })
     class TestController {
-      constructor(public service: TestCrudAdapter<TestModelDto>) {}
+      constructor(
+        @Inject(CrudAdapterResolver)
+        private readonly crudResolver: CrudResolverInterface,
+      ) {}
 
-      @CrudGetMany()
-      async getMany(@CrudRequest() req: CrudRequestInterface<TestModelDto>) {
-        return this.service.getMany(req);
+      @CrudList({ queryHandler: CrudListHandler })
+      async list(@Ctx() context: CrudContextInterface<TestModelDto>) {
+        return this.crudResolver.list(context);
       }
 
-      @CrudGetOne()
-      async getOne(@CrudRequest() req: CrudRequestInterface<TestModelDto>) {
-        return this.service.getOne(req);
+      @CrudRead({ queryHandler: CrudReadHandler })
+      async read(@Ctx() context: CrudContextInterface<TestModelDto>) {
+        return this.crudResolver.read(context);
       }
 
-      @CrudCreateOne()
-      async createOne(
-        @CrudRequest() req: CrudRequestInterface<TestModelDto>,
+      @CrudCreate({ commandHandler: CrudCreateHandler })
+      async create(
+        @Ctx() context: CrudContextInterface<TestModelDto>,
         @CrudBody() dto: TestModelCreateDto,
       ) {
-        return this.service.createOne(req, dto);
+        return this.crudResolver.create(context, dto);
       }
 
-      @CrudReplaceOne()
-      async replaceOne(
-        @CrudRequest() req: CrudRequestInterface<TestModelDto>,
+      @CrudReplace({ commandHandler: CrudReplaceHandler })
+      async replace(
+        @Ctx() context: CrudContextInterface<TestModelDto>,
         @CrudBody() dto: TestModelCreateDto,
       ) {
-        return this.service.replaceOne(req, dto);
+        return this.crudResolver.replace(context, dto);
       }
 
-      @CrudUpdateOne()
-      async updateOne(
-        @CrudRequest() req: CrudRequestInterface<TestModelDto>,
+      @CrudUpdate({ commandHandler: CrudUpdateHandler })
+      async update(
+        @Ctx() context: CrudContextInterface<TestModelDto>,
         @CrudBody() dto: TestModelUpdateDto,
       ) {
-        return this.service.updateOne(req, dto);
+        return this.crudResolver.update(context, dto);
       }
 
-      @CrudCreateMany()
-      async createMany(
-        @CrudRequest() req: CrudRequestInterface<TestModelDto>,
-        @CrudBody() dto: TestModelCreateManyDto,
+      @CrudCreateBatch({ commandHandler: CrudCreateBatchHandler })
+      async createBatch(
+        @Ctx() context: CrudContextInterface<TestModelDto>,
+        @CrudBody() dto: TestModelCreateBatchDto,
       ) {
-        return this.service.createMany(req, dto);
+        return this.crudResolver.createBatch(context, dto);
       }
 
-      @CrudDeleteOne()
-      async deleteOne(@CrudRequest() req: CrudRequestInterface<TestModelDto>) {
-        return this.service.deleteOne(req);
+      @CrudDelete({ commandHandler: CrudDeleteHandler })
+      async delete(@Ctx() context: CrudContextInterface<TestModelDto>) {
+        return this.crudResolver.delete(context);
       }
     }
 
@@ -102,7 +133,7 @@ describe('#crud', () => {
         controllers: [TestController],
         providers: [
           { provide: APP_FILTER, useClass: ExceptionsFilter },
-          TestCrudAdapter,
+          { provide: CrudAdapterResolver, useValue: mockCrudResolver },
         ],
       }).compile();
 
@@ -113,14 +144,14 @@ describe('#crud', () => {
     });
 
     beforeEach(() => {
-      qb = CrudRequestQueryBuilder.create();
+      qb = CrudQueryBuilder.create();
     });
 
     afterAll(async () => {
       app.close();
     });
 
-    describe('#getMany', () => {
+    describe('#list', () => {
       it('should return status 200', (done) => {
         request(server)
           .get('/test')
@@ -130,14 +161,14 @@ describe('#crud', () => {
           });
       });
       it('should return status 400', (done) => {
-        const query = qb.setFilter({ field: 'foo', operator: '$gt' }).query();
+        const query = qb.setFilter(['foo', WhereOperator.GT]).query();
         request(server)
           .get('/test')
           .query(query)
           .end((_, res) => {
             const expected = {
               statusCode: 400,
-              errorCode: 'CRUD_REQUEST_ERROR',
+              errorCode: 'CRUD_CONTEXT_ERROR',
             };
             expect(res.status).toEqual(400);
             expect(res.body).toMatchObject(expected);
@@ -146,7 +177,7 @@ describe('#crud', () => {
       });
     });
 
-    describe('#getOne', () => {
+    describe('#read', () => {
       it('should return status 200', (done) => {
         request(server)
           .get('/test/1')
@@ -161,7 +192,7 @@ describe('#crud', () => {
           .end((_, res) => {
             const expected = {
               statusCode: 400,
-              errorCode: 'CRUD_REQUEST_ERROR',
+              errorCode: 'CRUD_CONTEXT_ERROR',
             };
             expect(res.status).toEqual(400);
             expect(res.body).toMatchObject(expected);
@@ -202,9 +233,9 @@ describe('#crud', () => {
       });
     });
 
-    describe('#createMany', () => {
+    describe('#createBatch', () => {
       it('should return status 201', (done) => {
-        const send: CrudCreateManyInterface<TestModelDto> = {
+        const send: CrudCreateBatchInterface<TestModelDto> = {
           bulk: [
             {
               firstName: 'firstName',
@@ -229,7 +260,7 @@ describe('#crud', () => {
           });
       });
       it('should return status 400', (done) => {
-        const send: CrudCreateManyInterface<TestModelDto> = {
+        const send: CrudCreateBatchInterface<TestModelDto> = {
           bulk: [],
         };
         request(server)
@@ -242,7 +273,7 @@ describe('#crud', () => {
       });
     });
 
-    describe('#replaceOne', () => {
+    describe('#replace', () => {
       it('should return status 200', (done) => {
         const send: TestModelDto = {
           id: 1,
@@ -275,7 +306,7 @@ describe('#crud', () => {
       });
     });
 
-    describe('#updateOne', () => {
+    describe('#update', () => {
       it('should return status 200', (done) => {
         const send: TestModelDto = {
           id: 1,
@@ -308,12 +339,12 @@ describe('#crud', () => {
       });
     });
 
-    describe('#deleteOne', () => {
-      it('should return status 200', (done) => {
+    describe('#delete', () => {
+      it('should return status 204', (done) => {
         request(server)
           .delete('/test/1')
           .end((_, res) => {
-            expect(res.status).toEqual(200);
+            expect(res.status).toEqual(204);
             done();
           });
       });

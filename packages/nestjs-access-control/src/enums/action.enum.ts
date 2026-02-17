@@ -1,6 +1,2 @@
-export enum ActionEnum {
-  CREATE = 'create',
-  READ = 'read',
-  UPDATE = 'update',
-  DELETE = 'delete',
-}
+// Re-export from nestjs-common for backwards compatibility
+export { ActionEnum } from '@concepta/nestjs-common';

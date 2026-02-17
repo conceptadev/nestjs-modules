@@ -1,38 +1,39 @@
 import request from 'supertest';
 import { DataSource } from 'typeorm';
 
-import { INestApplication } from '@nestjs/common';
+import { Inject, INestApplication } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 
-import { ExceptionsFilter } from '@concepta/nestjs-common';
+import { ExceptionsFilter, Ctx } from '@concepta/nestjs-common';
+import { RepositoryModule } from '@concepta/nestjs-repository';
+import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
-import { CompanyCrudService } from '../../__fixtures__/typeorm/company/company-crud.service';
-import { CompanyTypeOrmCrudAdapter } from '../../__fixtures__/typeorm/company/company-typeorm-crud.adapter';
+import {
+  CRUD_TEST_COMPANY_ENTITY_NAME,
+  CRUD_TEST_USER_ENTITY_NAME,
+  CRUD_TEST_USER_PROFILE_ENTITY_NAME,
+} from '../../__fixtures__/crud-test.constants';
 import { CompanyEntity } from '../../__fixtures__/typeorm/company/company.entity';
-import { CompanyPaginatedDto } from '../../__fixtures__/typeorm/company/dto/company-paginated.dto';
-import { CompanyDto } from '../../__fixtures__/typeorm/company/dto/company.dto';
 import { ormSqliteConfig } from '../../__fixtures__/typeorm/orm.sqlite.config';
 import { Seeds } from '../../__fixtures__/typeorm/seeds';
-import { UserProfileCrudService } from '../../__fixtures__/typeorm/user-profile/user-profile-crud.service';
-import { UserProfileTypeOrmCrudAdapter } from '../../__fixtures__/typeorm/user-profile/user-profile-typeorm-crud.adapter';
 import { UserProfileEntity } from '../../__fixtures__/typeorm/user-profile/user-profile.entity';
-import { UserPaginatedDto } from '../../__fixtures__/typeorm/users/dto/user-paginated.dto';
-import { UserDto } from '../../__fixtures__/typeorm/users/dto/user.dto';
-import { UserCrudService } from '../../__fixtures__/typeorm/users/user-crud.service';
-import { UserTypeOrmCrudAdapter } from '../../__fixtures__/typeorm/users/user-typeorm-crud.adapter';
 import { UserEntity } from '../../__fixtures__/typeorm/users/user.entity';
-import { CrudGetMany } from '../../crud/decorators/actions/crud-get-many.decorator';
-import { CrudGetOne } from '../../crud/decorators/actions/crud-get-one.decorator';
+import { CrudAdapter } from '../../crud/adapters/crud.adapter';
 import { CrudController } from '../../crud/decorators/controller/crud-controller.decorator';
-import { CrudRequest } from '../../crud/decorators/params/crud-request.decorator';
+import { CrudList } from '../../crud/decorators/operations/crud-list.decorator';
+import { CrudRead } from '../../crud/decorators/operations/crud-read.decorator';
 import { CrudLimit } from '../../crud/decorators/routes/crud-limit.decorator';
 import { CrudRelations } from '../../crud/decorators/routes/crud-relations.decorator';
 import { CrudSort } from '../../crud/decorators/routes/crud-sort.decorator';
-import { CrudRequestInterface } from '../../crud/interfaces/crud-request.interface';
+import { CrudContextInterface } from '../../crud/interfaces/crud-context.interface';
+import { CrudResolverInterface } from '../../crud/interfaces/crud-resolver.interface';
+import { CrudListQuery } from '../../crud/operations/queries/crud-list.query';
+import { CrudReadQuery } from '../../crud/operations/queries/crud-read.query';
+import { CrudAdapterResolver } from '../../crud/resolvers/crud-adapter.resolver';
 import { CrudModule } from '../../crud.module';
-import { CrudRelationRegistry } from '../crud-relation.registry';
+import { createCrudAdapterProvider } from '../../util/create-crud-adapter-provider';
 
 // tslint:disable:max-classes-per-file no-shadowed-variable
 describe.skip('#crud-typeorm', () => {
@@ -42,10 +43,8 @@ describe.skip('#crud-typeorm', () => {
 
     @CrudController({
       path: 'companies0',
-      model: {
-        type: CompanyDto,
-        paginatedType: CompanyPaginatedDto,
-      },
+      entity: CRUD_TEST_COMPANY_ENTITY_NAME,
+      adapter: CrudAdapter,
     })
     @CrudLimit(3)
     @CrudSort([{ field: 'id', order: 'ASC' }])
@@ -55,7 +54,7 @@ describe.skip('#crud-typeorm', () => {
         {
           join: 'INNER',
           cardinality: 'many',
-          service: UserCrudService,
+          entity: CRUD_TEST_USER_ENTITY_NAME,
           property: 'users',
           primaryKey: 'id',
           foreignKey: 'companyId',
@@ -63,53 +62,49 @@ describe.skip('#crud-typeorm', () => {
       ],
     })
     class CompaniesController0 {
-      constructor(public service: CompanyCrudService) {}
+      constructor(
+        @Inject(CrudAdapterResolver)
+        public crudResolver: CrudResolverInterface,
+      ) {}
 
-      @CrudGetMany()
-      getMany(@CrudRequest() request: CrudRequestInterface<CompanyEntity>) {
-        return this.service.getMany(request);
+      @CrudList({ query: CrudListQuery })
+      list(@Ctx() context: CrudContextInterface<CompanyEntity>) {
+        return this.crudResolver.list(context);
       }
     }
 
     @CrudController({
       path: 'users',
-      model: {
-        type: UserDto,
-        paginatedType: UserPaginatedDto,
-      },
+      entity: CRUD_TEST_USER_ENTITY_NAME,
+      adapter: CrudAdapter,
     })
     @CrudSort([{ field: 'id', order: 'ASC' }])
-    @CrudRelations<UserEntity, [UserProfileEntity /* CompanyEntity */]>({
+    @CrudRelations<UserEntity, [UserProfileEntity]>({
       rootKey: 'id',
       relations: [
         {
           cardinality: 'one',
-          service: UserProfileCrudService,
+          entity: CRUD_TEST_USER_PROFILE_ENTITY_NAME,
           property: 'userProfile',
           primaryKey: 'id',
           foreignKey: 'userId',
         },
-        // {
-        //   owner: true,
-        //   cardinality: 'many',
-        //   service: CompanyCrudService,
-        //   property: 'company',
-        //   primaryKey: 'id',
-        //   foreignKey: 'companyId',
-        // },
       ],
     })
     class UsersController {
-      constructor(public service: UserCrudService) {}
+      constructor(
+        @Inject(CrudAdapterResolver)
+        public crudResolver: CrudResolverInterface,
+      ) {}
 
-      @CrudGetMany()
-      getMany(@CrudRequest() request: CrudRequestInterface<UserEntity>) {
-        return this.service.getMany(request);
+      @CrudList({ query: CrudListQuery })
+      list(@Ctx() context: CrudContextInterface<UserEntity>) {
+        return this.crudResolver.list(context);
       }
 
-      @CrudGetOne()
-      getOne(@CrudRequest() request: CrudRequestInterface<UserEntity>) {
-        return this.service.getOne(request);
+      @CrudRead({ query: CrudReadQuery })
+      read(@Ctx() context: CrudContextInterface<UserEntity>) {
+        return this.crudResolver.read(context);
       }
     }
 
@@ -117,47 +112,35 @@ describe.skip('#crud-typeorm', () => {
       const fixture = await Test.createTestingModule({
         imports: [
           TypeOrmModule.forRoot(ormSqliteConfig),
-          TypeOrmModule.forFeature([
-            CompanyEntity,
-            UserEntity,
-            UserProfileEntity,
-          ]),
+          RepositoryModule.forRoot({}),
+          RepositoryModule.forFeature({
+            module: TypeOrmRepositoryModule,
+            entities: [
+              { key: CRUD_TEST_COMPANY_ENTITY_NAME, entity: CompanyEntity },
+              { key: CRUD_TEST_USER_ENTITY_NAME, entity: UserEntity },
+              {
+                key: CRUD_TEST_USER_PROFILE_ENTITY_NAME,
+                entity: UserProfileEntity,
+              },
+            ],
+          }),
           CrudModule.forRoot({}),
         ],
         controllers: [CompaniesController0, UsersController],
         providers: [
           { provide: APP_FILTER, useClass: ExceptionsFilter },
-          CompanyTypeOrmCrudAdapter,
-          CompanyCrudService,
-          UserTypeOrmCrudAdapter,
-          UserCrudService,
-          UserProfileTypeOrmCrudAdapter,
-          UserProfileCrudService,
-          {
-            provide: 'COMPANY_RELATION_REGISTRY',
-            inject: [UserCrudService],
-            useFactory(userCrudService) {
-              const registry = new CrudRelationRegistry<
-                CompanyEntity,
-                [UserEntity]
-              >();
-              registry.register(userCrudService);
-              return registry;
-            },
-          },
-          {
-            provide: 'USER_RELATION_REGISTRY',
-            inject: [UserProfileCrudService, CompanyCrudService],
-            useFactory(userProfileCrudService, companyCrudService) {
-              const registry = new CrudRelationRegistry<
-                UserEntity,
-                [UserProfileEntity, CompanyEntity]
-              >();
-              registry.register(userProfileCrudService);
-              registry.register(companyCrudService);
-              return registry;
-            },
-          },
+          createCrudAdapterProvider({
+            entity: CRUD_TEST_COMPANY_ENTITY_NAME,
+            adapter: CrudAdapter,
+          }),
+          createCrudAdapterProvider({
+            entity: CRUD_TEST_USER_ENTITY_NAME,
+            adapter: CrudAdapter,
+          }),
+          createCrudAdapterProvider({
+            entity: CRUD_TEST_USER_PROFILE_ENTITY_NAME,
+            adapter: CrudAdapter,
+          }),
         ],
       }).compile();
 
@@ -179,7 +162,7 @@ describe.skip('#crud-typeorm', () => {
       it('should return an array of all company entities', (done) => {
         request(server)
           .get(
-            '/companies0?filter=name||$startsL||Name&filter=users.isActive||$eq||true',
+            '/companies0?filter=name||$starts||Name&filter=users.isActive||$eq||true',
           )
           .end((_, res) => {
             expect(res.status).toBe(200);
@@ -192,7 +175,8 @@ describe.skip('#crud-typeorm', () => {
         request(server)
           .get(
             // '/users?sort[]=userProfile.nickName,DESC&page=2&limit=10',
-            '/users?filter[]=userProfile.favoriteColor||$eq||Orange&page=1&limit=10',
+            '/users?filter[]=email||$starts||5&filter[]=userProfile.favoriteColor||$eq||Orange&page=1&limit=10',
+            // '/users?sort[]=email,DESC&page=1&limit=10',
           )
           .end((_, res) => {
             expect(res.status).toBe(200);

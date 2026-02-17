@@ -20,13 +20,4 @@ export interface ModelServiceInterface<
     CreateOneInterface<Creatable, Entity>,
     UpdateOneInterface<Updatable, Entity>,
     ReplaceOneInterface<Replaceable, Entity>,
-    RemoveOneInterface<Removable, Entity> {
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  gt<T>(value: T): any;
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  gte<T>(value: T): any;
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  lt<T>(value: T): any;
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  lte<T>(value: T): any;
-}
+    RemoveOneInterface<Removable, Entity> {}

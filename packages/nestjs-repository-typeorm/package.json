@@ -1,0 +1,33 @@
+{
+  "name": "@concepta/nestjs-repository-typeorm",
+  "version": "7.0.0-alpha.10",
+  "description": "Rockets NestJS TypeORM Repository Module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "BSD-3-Clause",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist/**/!(*.spec|*.e2e-spec|*.fixture).{js,d.ts}"
+  ],
+  "dependencies": {
+    "@concepta/nestjs-common": "^7.0.0-alpha.10",
+    "@concepta/nestjs-hook": "^7.0.0-alpha.10",
+    "@concepta/nestjs-repository": "^7.0.0-alpha.10",
+    "@nestjs/common": "^11.1.9",
+    "@nestjs/typeorm": "^11.0.0",
+    "zod": "^3"
+  },
+  "devDependencies": {
+    "@concepta/typeorm-seeding": "^4.0.0",
+    "@faker-js/faker": "^8.4.1",
+    "@nestjs/testing": "^11.1.9",
+    "sqlite3": "^5.1.4"
+  },
+  "peerDependencies": {
+    "class-transformer": "*",
+    "class-validator": "*",
+    "typeorm": "^0.3.0"
+  }
+}

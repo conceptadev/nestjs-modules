@@ -1,39 +1,33 @@
-import { CrudException } from '../../../exceptions/crud.exception';
-import { CrudReflectionService } from '../../../services/crud-reflection.service';
+import { MetadataScanner } from '@nestjs/core';
+
+import { CrudMetaview } from '../../../services/crud-metaview.service';
 import { applyApiResponse } from '../util/apply-api-response.decorator';
 
 /**
  * CRUD init api response decorator.
  */
-export const CrudInitApiResponse =
-  (): ClassDecorator =>
-  (...args: Parameters<ClassDecorator>) => {
-    // get the args
-    const [classTarget] = args;
+export const CrudInitApiResponse = (): ClassDecorator => (classTarget) => {
+  const reflectionService = new CrudMetaview();
+  const scanner = new MetadataScanner();
+  const prototype = classTarget.prototype;
 
-    const reflectionService = new CrudReflectionService();
+  for (const methodName of scanner.getAllMethodNames(prototype)) {
+    const handler = Reflect.get(prototype, methodName);
+    const descriptor = Object.getOwnPropertyDescriptor(prototype, methodName);
 
-    // get the api response options
-    const apiResponseMetadata =
-      reflectionService.getApiResponseOptions(classTarget.prototype) ?? [];
+    if (!descriptor) continue;
 
-    // loop all metadatas
-    apiResponseMetadata.map((metadata) => {
-      // break out the args
-      const { propertyKey, action, options } = metadata;
+    // get the operation for this method
+    const operation = reflectionService.getOperation(handler);
+    if (!operation) continue;
 
-      // need the descriptor
-      const descriptor = Object.getOwnPropertyDescriptor(
-        classTarget.prototype,
-        propertyKey,
-      );
+    // get the api response options for this method
+    const apiResponseOptions = reflectionService.getApiResponseOptions(handler);
+    if (!apiResponseOptions?.length) continue;
 
-      if (!descriptor) {
-        throw new CrudException({
-          message: 'Failed to get property descriptor',
-        });
-      }
-
-      applyApiResponse(action, options)(classTarget, propertyKey, descriptor);
-    });
-  };
+    // apply response decorators for each option
+    for (const options of apiResponseOptions) {
+      applyApiResponse(operation, options)(classTarget, methodName, descriptor);
+    }
+  }
+};

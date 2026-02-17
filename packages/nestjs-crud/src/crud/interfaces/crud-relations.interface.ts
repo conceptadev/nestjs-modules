@@ -1,13 +1,14 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { CrudEntityColumn } from '../../crud.types';
-import { QueryRelation } from '../../request/types/crud-request-query.types';
+import { EntityColumn } from '@concepta/nestjs-common';
+
+import { QueryRelation } from '../../request/crud-query.types';
 
 export interface CrudRelationsInterface<
   Entity extends PlainLiteralObject,
   Relations extends PlainLiteralObject[],
 > {
-  rootKey: CrudEntityColumn<Entity>;
+  rootKey: EntityColumn<Entity>;
   relations: {
     [K in keyof Relations]: QueryRelation<Entity, Relations[K]>;
   };

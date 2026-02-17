@@ -1,9 +1,7 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import {
-  QueryFields,
-  QuerySort,
-} from '../../request/types/crud-request-query.types';
+import { EntityColumn, SortCondition } from '@concepta/nestjs-common';
+
 import { QueryFilterOption } from '../types/query-filter-option.type';
 
 import { CrudRelationsInterface } from './crud-relations.interface';
@@ -12,14 +10,13 @@ export interface CrudQueryOptionsInterface<
   T extends PlainLiteralObject,
   Relations extends PlainLiteralObject[] = PlainLiteralObject[],
 > {
-  allow?: QueryFields<T>;
-  exclude?: QueryFields<T>;
-  persist?: QueryFields<T>;
+  allow?: EntityColumn<T>[];
+  exclude?: EntityColumn<T>[];
+  persist?: EntityColumn<T>[];
   filter?: QueryFilterOption<T>;
-  sort?: QuerySort<T>[];
+  sort?: SortCondition<T>[];
   limit?: number;
   maxLimit?: number;
   cache?: number | false;
-  softDelete?: boolean;
   relations?: CrudRelationsInterface<T, Relations>;
 }

@@ -1,8 +1,10 @@
+import { Where } from '@concepta/nestjs-common';
+
 import { createPaginatedResponse } from '../../__FIXTURES__/crud-federation-mock-helpers';
 import {
-  assertServiceCallCounts,
-  assertNoRelationServiceCalls,
-  assertRootGetManyRequest,
+  assertHandlerCallCounts,
+  assertNoRelationHandlerCalls,
+  assertRootListQuery,
   assertResultStructure,
   assertEmptyResult,
   assertSortOrder,
@@ -34,46 +36,46 @@ describe('CrudFederationService - Behavior: No Relations Query', () => {
 
   it('should pass through root request unchanged when no relations exist', async () => {
     // ARRANGE
-    const req = mocks.createTestRequest({});
+    const req = await mocks.createTestQuery({});
     const data = createMinimalRootRelationSet();
 
-    mocks.mockRootService.getMany.mockResolvedValue(
+    mocks.rootListSpy.mockResolvedValue(
       createPaginatedResponse(data.roots, { limit: 10, total: 3 }),
     );
 
     // ACT
-    const result = await mocks.service.getMany(req);
+    const result = await mocks.service.list(req);
 
     // ASSERT
-    assertServiceCallCounts([
-      { service: mocks.mockRootService, count: 1 },
-      { service: mocks.mockRelationService, count: 0 },
+    assertHandlerCallCounts([
+      { handler: mocks.rootListSpy, count: 1 },
+      { handler: mocks.relationListSpy, count: 0 },
     ]);
-    assertNoRelationServiceCalls(mocks.mockRelationService);
-    assertRootGetManyRequest(mocks.mockRootService, {});
+    assertNoRelationHandlerCalls(mocks.relationListSpy);
+    assertRootListQuery(mocks.rootListSpy, {});
     assertResultStructure(result, { count: 3, total: 3 });
   });
 
   it('should preserve root filters when no relations exist', async () => {
     // ARRANGE - Use interceptor to properly transform filters to search
-    const req = mocks.createTestRequest({ filter: ['name||$eq||test'] });
+    const req = await mocks.createTestQuery({ filter: ['name||$eq||test'] });
     const filteredRoots = [{ id: 1, name: 'test' }];
 
-    mocks.mockRootService.getMany.mockResolvedValue(
+    mocks.rootListSpy.mockResolvedValue(
       createPaginatedResponse(filteredRoots, { limit: 10, total: 1 }),
     );
 
     // ACT
-    const result = await mocks.service.getMany(req);
+    const result = await mocks.service.list(req);
 
     // ASSERT
-    assertServiceCallCounts([
-      { service: mocks.mockRootService, count: 1 },
-      { service: mocks.mockRelationService, count: 0 },
+    assertHandlerCallCounts([
+      { handler: mocks.rootListSpy, count: 1 },
+      { handler: mocks.relationListSpy, count: 0 },
     ]);
-    assertNoRelationServiceCalls(mocks.mockRelationService);
-    assertRootGetManyRequest(mocks.mockRootService, {
-      search: { name: { $eq: 'test' } },
+    assertNoRelationHandlerCalls(mocks.relationListSpy);
+    assertRootListQuery(mocks.rootListSpy, {
+      filter: [Where.eq('name', 'test')],
     });
     assertResultStructure(result, { count: 1, total: 1 });
     expect(result.data[0]).toEqual({ id: 1, name: 'test' });
@@ -81,23 +83,23 @@ describe('CrudFederationService - Behavior: No Relations Query', () => {
 
   it('should preserve root sorting when no relations exist', async () => {
     // ARRANGE
-    const req = mocks.createTestRequest({ sort: ['name,ASC'] });
+    const req = await mocks.createTestQuery({ sort: ['name,ASC'] });
     const data = createSortDataSet();
 
-    mocks.mockRootService.getMany.mockResolvedValue(
+    mocks.rootListSpy.mockResolvedValue(
       createPaginatedResponse(data.rootsByName, { limit: 10, total: 3 }),
     );
 
     // ACT
-    const result = await mocks.service.getMany(req);
+    const result = await mocks.service.list(req);
 
     // ASSERT
-    assertServiceCallCounts([
-      { service: mocks.mockRootService, count: 1 },
-      { service: mocks.mockRelationService, count: 0 },
+    assertHandlerCallCounts([
+      { handler: mocks.rootListSpy, count: 1 },
+      { handler: mocks.relationListSpy, count: 0 },
     ]);
-    assertNoRelationServiceCalls(mocks.mockRelationService);
-    assertRootGetManyRequest(mocks.mockRootService, {
+    assertNoRelationHandlerCalls(mocks.relationListSpy);
+    assertRootListQuery(mocks.rootListSpy, {
       sort: [{ field: 'name', order: 'ASC' }],
     });
     assertResultStructure(result, { count: 3, total: 3 });
@@ -106,22 +108,22 @@ describe('CrudFederationService - Behavior: No Relations Query', () => {
 
   it('should handle empty root results with no relations', async () => {
     // ARRANGE
-    const req = mocks.createTestRequest({});
+    const req = await mocks.createTestQuery({});
 
-    mocks.mockRootService.getMany.mockResolvedValue(
+    mocks.rootListSpy.mockResolvedValue(
       createPaginatedResponse([], { limit: 10, total: 0 }),
     );
 
     // ACT
-    const result = await mocks.service.getMany(req);
+    const result = await mocks.service.list(req);
 
     // ASSERT
-    assertServiceCallCounts([
-      { service: mocks.mockRootService, count: 1 },
-      { service: mocks.mockRelationService, count: 0 },
+    assertHandlerCallCounts([
+      { handler: mocks.rootListSpy, count: 1 },
+      { handler: mocks.relationListSpy, count: 0 },
     ]);
-    assertNoRelationServiceCalls(mocks.mockRelationService);
-    assertRootGetManyRequest(mocks.mockRootService, {});
+    assertNoRelationHandlerCalls(mocks.relationListSpy);
+    assertRootListQuery(mocks.rootListSpy, {});
     assertEmptyResult(result);
   });
 });

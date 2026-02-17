@@ -1,10 +1,13 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { CrudRequestInterface } from '../../crud/interfaces/crud-request.interface';
+import { WhereCondition } from '@concepta/nestjs-common';
+
+import { CrudContextInterface } from '../../crud/interfaces/crud-context.interface';
 import { CrudResponsePaginatedInterface } from '../../crud/interfaces/crud-response-paginated.interface';
-import { CrudRequestParsedParamsInterface } from '../../request/interfaces/crud-request-parsed-params.interface';
-import { CrudQueryHelper } from '../helpers/crud-query.helper';
-import { CrudFetchServiceInterface } from '../interfaces/crud-fetch-service.interface';
+import { CrudParsedQueryInterface } from '../../request/interfaces/crud-parsed-query.interface';
+
+import { createTestContext } from './crud-federation-test-entities';
+import { HandlerSpy } from './crud-federation-test-setup';
 
 // Type definitions for better type safety
 interface RootWithRelations {
@@ -12,148 +15,124 @@ interface RootWithRelations {
   [key: string]: unknown;
 }
 
-// Minimal type for services that only need mock call tracking
-interface ServiceWithMockTracking {
-  getMany: {
-    mock: {
-      invocationCallOrder: number[];
-    };
-  };
-}
-
-// Minimal type for services that only need call count verification
-interface ServiceWithCallCount {
-  getMany: unknown;
-}
+// Get the context from a handler spy's calls
+// The spies receive CrudContextInterface directly from resolver methods
+const getSpyCall = (spy: HandlerSpy, callIndex: number = 0) => {
+  const context = spy.mock.calls[callIndex]?.[0];
+  expect(context).toBeDefined();
+  return context;
+};
 
 /**
  * Shared assertion utilities for federation tests
  * Reduces boilerplate and ensures consistent verification patterns
  */
 
-// Service call sequencing verification - root called before all relation services
+// Handler call sequencing verification - root called before all relation services
 export const assertRootFirst = (
-  rootService: ServiceWithMockTracking,
-  relationServices: ServiceWithMockTracking[],
+  rootHandler: HandlerSpy,
+  relationHandlers: HandlerSpy[],
 ) => {
-  const rootCallOrder = rootService.getMany.mock.invocationCallOrder[0];
+  const rootCallOrder = rootHandler.mock.invocationCallOrder[0];
+  expect(rootCallOrder).toBeDefined();
 
-  relationServices.forEach((relationService) => {
-    const relationCallOrder =
-      relationService.getMany.mock.invocationCallOrder[0];
+  relationHandlers.forEach((relationHandler) => {
+    const relationCallOrder = relationHandler.mock.invocationCallOrder[0];
     expect(relationCallOrder).toBeGreaterThan(rootCallOrder);
   });
 };
 
-// Service call sequencing verification - relation services called before root
+// Handler call sequencing verification - relation services called before root
 export const assertRelationFirst = (
-  rootService: ServiceWithMockTracking,
-  relationServices: ServiceWithMockTracking[],
+  rootHandler: HandlerSpy,
+  relationHandlers: HandlerSpy[],
 ) => {
-  const rootCallOrder = rootService.getMany.mock.invocationCallOrder[0];
+  const rootCallOrder = rootHandler.mock.invocationCallOrder[0];
+  expect(rootCallOrder).toBeDefined();
 
-  relationServices.forEach((relationService) => {
-    const relationCallOrder =
-      relationService.getMany.mock.invocationCallOrder[0];
+  relationHandlers.forEach((relationHandler) => {
+    const relationCallOrder = relationHandler.mock.invocationCallOrder[0];
     expect(rootCallOrder).toBeGreaterThan(relationCallOrder);
   });
 };
 
-// Service call sequencing verification for getOne - root.getOne called before relation.getMany
-export const assertRootFirstGetOne = (
-  rootService: { getOne: { mock: { invocationCallOrder: number[] } } },
-  relationServices: { getMany: { mock: { invocationCallOrder: number[] } } }[],
-) => {
-  const rootCallOrder = rootService.getOne.mock.invocationCallOrder[0];
+// LEFT JOIN behavior verification - root query has no filter constraints
+export const assertLeftJoinBehavior = (rootHandler: HandlerSpy) => {
+  const context = getSpyCall(rootHandler);
 
-  relationServices.forEach((relationService) => {
-    const relationCallOrder =
-      relationService.getMany.mock.invocationCallOrder[0];
-    expect(relationCallOrder).toBeGreaterThan(rootCallOrder);
-  });
-};
-
-// LEFT JOIN behavior verification - root service has no search constraints
-export const assertLeftJoinBehavior = <R extends PlainLiteralObject>(
-  rootService: jest.Mocked<CrudFetchServiceInterface<R>>,
-) => {
-  const rootCall = rootService.getMany.mock.calls[0][0];
-
-  // Root service should have no search constraints (LEFT JOIN)
-  expect(rootCall.parsed.search).toBeUndefined();
+  // Root query should have no filter constraints (LEFT JOIN)
+  expect(context.query.filter).toEqual([]);
 };
 
 // INNER JOIN behavior verification
-export const assertInnerJoinBehavior = <
-  R extends PlainLiteralObject,
-  L extends PlainLiteralObject,
->(
-  rootService: jest.Mocked<CrudFetchServiceInterface<R>>,
-  relationService: jest.Mocked<CrudFetchServiceInterface<L>>,
-  expectedRelationFilter: object,
-  discoveredRootIds: number[],
+export const assertInnerJoinBehavior = (
+  rootHandler: HandlerSpy,
+  relationHandler: HandlerSpy,
+  expectedRelationFilter: WhereCondition<PlainLiteralObject>[],
+  expectedRootFilter: WhereCondition<PlainLiteralObject>[],
 ) => {
-  const relationCall = relationService.getMany.mock.calls[0][0];
-  const rootCall = rootService.getMany.mock.calls[0][0];
+  const relationContext = getSpyCall(relationHandler);
+  const rootContext = getSpyCall(rootHandler);
 
-  // Relation service gets the explicit filter
-  expect(relationCall.parsed.search).toEqual(expectedRelationFilter);
+  // Relation query gets the explicit filters
+  expect(relationContext.query.filter).toEqual(expectedRelationFilter);
 
-  // Root service gets ID constraint from discovered relations
-  expect(rootCall.parsed.search).toEqual({
-    id: { $in: discoveredRootIds },
-  });
+  // Root query gets ID constraint from discovered relations
+  expect(rootContext.query.filter).toEqual(expectedRootFilter);
 
   // Verify relation called first (INNER JOIN pattern)
-  assertRelationFirst(rootService, [relationService]);
+  assertRelationFirst(rootHandler, [relationHandler]);
 };
 
-// Generic service call counts - accepts array of service-count pairs
-export const assertServiceCallCounts = (
-  serviceCounts: Array<{
-    service: ServiceWithCallCount;
+// Generic handler call counts - accepts array of handler-count pairs
+export const assertHandlerCallCounts = (
+  handlerCounts: Array<{
+    handler: HandlerSpy;
     count: number;
   }>,
 ) => {
-  serviceCounts.forEach(({ service, count }) => {
-    expect(service.getMany).toHaveBeenCalledTimes(count);
+  handlerCounts.forEach(({ handler, count }) => {
+    expect(handler.mock.calls.length).toBe(count);
   });
 };
 
-// Assert no relation service calls (for no-relations scenarios)
-export const assertNoRelationServiceCalls = <L extends PlainLiteralObject>(
-  relationService: jest.Mocked<CrudFetchServiceInterface<L>>,
-) => {
-  expect(relationService.getMany).not.toHaveBeenCalled();
+// Assert no relation handler calls (for no-relations scenarios)
+export const assertNoRelationHandlerCalls = (relationHandler: HandlerSpy) => {
+  expect(relationHandler.mock.calls.length).toBe(0);
 };
 
-// Shared helper for asserting service requests with parsed parameter filtering
-const assertServiceRequest = <T extends PlainLiteralObject>(
-  actualRequest: CrudRequestInterface<T>,
-  expectedParsed: Partial<CrudRequestParsedParamsInterface<T>>,
-  options: { ignore?: Array<keyof CrudRequestParsedParamsInterface<T>> } = {
-    ignore: ['filter', 'or', 'classTransformOptions'],
-  },
-) => {
-  const ignoreProps = options.ignore || [
-    'filter',
-    'or',
-    'classTransformOptions',
-  ];
+// Properties that are auto-ignored when the caller didn't provide them.
+// If the caller passes e.g. `filter:` in expectedQuery, it WILL be checked.
+const AUTO_IGNORE_PROPS: Array<
+  keyof CrudParsedQueryInterface<PlainLiteralObject>
+> = ['filter', 'or', 'search'];
 
-  // Create expected request with defaults
-  const helper = new CrudQueryHelper<T>();
-  const expected = helper.createRequest<T>();
+// Shared helper for asserting query params with query parameter filtering
+const assertQueryParams = (
+  actualContext: CrudContextInterface<PlainLiteralObject>,
+  expectedQuery: Partial<CrudParsedQueryInterface<PlainLiteralObject>>,
+  options: {
+    ignore?: Array<keyof CrudParsedQueryInterface<PlainLiteralObject>>;
+  } = {},
+) => {
+  // If caller provided explicit ignore list, use it.
+  // Otherwise auto-ignore only properties NOT present in expectedQuery.
+  const ignoreProps =
+    options.ignore ??
+    AUTO_IGNORE_PROPS.filter((prop) => !(prop in expectedQuery));
+
+  // Create expected context with defaults
+  const expected = createTestContext<PlainLiteralObject>();
 
   // Merge expected values
-  expected.parsed = {
-    ...expected.parsed,
-    ...expectedParsed,
+  expected.query = {
+    ...expected.query,
+    ...expectedQuery,
   };
 
   // Create copies for comparison with ignored properties removed
-  const actualFiltered = { ...actualRequest.parsed };
-  const expectedFiltered = { ...expected.parsed };
+  const actualFiltered = { ...actualContext.query };
+  const expectedFiltered = { ...expected.query };
 
   // Remove ignored properties from both objects
   for (const prop of ignoreProps) {
@@ -161,75 +140,58 @@ const assertServiceRequest = <T extends PlainLiteralObject>(
     delete expectedFiltered[prop];
   }
 
-  // Compare filtered parsed objects
+  // Compare filtered query objects
   expect(actualFiltered).toEqual(expectedFiltered);
 };
 
-// Core helper function for asserting root service requests
-const assertRootServiceRequest = <R extends PlainLiteralObject>(
-  rootService: jest.Mocked<CrudFetchServiceInterface<R>>,
-  methodName: 'getOne' | 'getMany',
-  expectedParsed: Partial<CrudRequestParsedParamsInterface<R>>,
+// Core helper function for asserting handler queries
+const assertHandlerQuery = (
+  handler: HandlerSpy,
+  expectedParsed: Partial<CrudParsedQueryInterface<PlainLiteralObject>>,
   callIndex: number = 0,
-  options: { ignore?: Array<keyof CrudRequestParsedParamsInterface<R>> } = {
-    ignore: ['filter', 'or', 'classTransformOptions'],
-  },
+  options: {
+    ignore?: Array<keyof CrudParsedQueryInterface<PlainLiteralObject>>;
+  } = {},
 ) => {
-  const actual: CrudRequestInterface<R> =
-    methodName === 'getMany'
-      ? rootService.getMany.mock.calls[callIndex][0]
-      : rootService.getOne.mock.calls[callIndex][0];
-
-  assertServiceRequest(actual, expectedParsed, options);
+  // getSpyCall returns the CrudContextInterface directly (not a query with .context)
+  const context = getSpyCall(handler, callIndex);
+  assertQueryParams(context, expectedParsed, options);
 };
 
-// Root service request verification - validates request matches expected exactly
-export const assertRootGetManyRequest = <R extends PlainLiteralObject>(
-  rootService: jest.Mocked<CrudFetchServiceInterface<R>>,
-  expectedParsed: Partial<CrudRequestParsedParamsInterface<R>>,
-  callIndex: number = 0,
-  options?: { ignore?: Array<keyof CrudRequestParsedParamsInterface<R>> },
-) => {
-  assertRootServiceRequest(
-    rootService,
-    'getMany',
-    expectedParsed,
-    callIndex,
-    options,
-  );
-};
-
-// Root service getOne request verification
-export const assertRootGetOneRequest = <R extends PlainLiteralObject>(
-  rootService: jest.Mocked<CrudFetchServiceInterface<R>>,
-  expectedParsed: Partial<CrudRequestParsedParamsInterface<R>>,
-  callIndex: number = 0,
-  options?: { ignore?: Array<keyof CrudRequestParsedParamsInterface<R>> },
-) => {
-  assertRootServiceRequest(
-    rootService,
-    'getOne',
-    expectedParsed,
-    callIndex,
-    options,
-  );
-};
-
-// Relation service request verification - validates request matches expected exactly
-export const assertRelationRequest = <L extends PlainLiteralObject>(
-  relationService: jest.Mocked<CrudFetchServiceInterface<L>>,
-  expectedParsed: Partial<CrudRequestParsedParamsInterface<L>>,
+// Root list query verification - validates query matches expected exactly
+export const assertRootListQuery = (
+  rootHandler: HandlerSpy,
+  expectedParsed: Partial<CrudParsedQueryInterface<PlainLiteralObject>>,
   callIndex: number = 0,
   options?: {
-    ignore?: Array<keyof CrudRequestParsedParamsInterface<L>>;
+    ignore?: Array<keyof CrudParsedQueryInterface<PlainLiteralObject>>;
   },
 ) => {
-  const actual: CrudRequestInterface<L> =
-    relationService.getMany.mock.calls[callIndex][0];
+  assertHandlerQuery(rootHandler, expectedParsed, callIndex, options);
+};
 
-  assertServiceRequest(actual, expectedParsed, {
-    ignore: options?.ignore,
-  });
+// Root read query verification
+export const assertRootReadQuery = (
+  rootHandler: HandlerSpy,
+  expectedParsed: Partial<CrudParsedQueryInterface<PlainLiteralObject>>,
+  callIndex: number = 0,
+  options?: {
+    ignore?: Array<keyof CrudParsedQueryInterface<PlainLiteralObject>>;
+  },
+) => {
+  assertHandlerQuery(rootHandler, expectedParsed, callIndex, options);
+};
+
+// Relation query verification - validates query matches expected exactly
+export const assertRelationQuery = (
+  relationHandler: HandlerSpy,
+  expectedQuery: Partial<CrudParsedQueryInterface<PlainLiteralObject>>,
+  callIndex: number = 0,
+  options?: {
+    ignore?: Array<keyof CrudParsedQueryInterface<PlainLiteralObject>>;
+  },
+) => {
+  assertHandlerQuery(relationHandler, expectedQuery, callIndex, options);
 };
 
 // Result structure verification - checks all response properties and data contents
@@ -348,24 +310,21 @@ export const assertEmptyResult = (
   expect(result.limit).toBeGreaterThanOrEqual(1);
 };
 
-// Relation sort behavior verification - relation service called first with filter and sort
-export const assertRelationSortBehavior = <
-  R extends PlainLiteralObject,
-  L extends PlainLiteralObject,
->(
-  rootService: jest.Mocked<CrudFetchServiceInterface<R>>,
-  relationService: jest.Mocked<CrudFetchServiceInterface<L>>,
-  expectedRelationSearch: object,
+// Relation sort behavior verification - relation query called first with filter and sort
+export const assertRelationSortBehavior = (
+  rootHandler: HandlerSpy,
+  relationHandler: HandlerSpy,
+  expectedRelationFilter: WhereCondition<PlainLiteralObject>[],
   expectedRelationSort: Array<{ field: string; order: string }>,
 ) => {
-  const relationCall = relationService.getMany.mock.calls[0][0];
+  const relationCall = getSpyCall(relationHandler);
 
-  // Relation service gets the filter AND sort
-  expect(relationCall.parsed.search).toEqual(expectedRelationSearch);
-  expect(relationCall.parsed.sort).toEqual(expectedRelationSort);
+  // Relation query gets the filters and sort
+  expect(relationCall.query.filter).toEqual(expectedRelationFilter);
+  expect(relationCall.query.sort).toEqual(expectedRelationSort);
 
   // Verify relation called first (relation-sort pattern)
-  assertRelationFirst(rootService, [relationService]);
+  assertRelationFirst(rootHandler, [relationHandler]);
 };
 
 // Relation sort validation error verification

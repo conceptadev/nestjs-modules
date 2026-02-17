@@ -1,11 +1,11 @@
-import {
-  applyDecorators,
-  PlainLiteralObject,
-  SetMetadata,
-} from '@nestjs/common';
+import { PlainLiteralObject } from '@nestjs/common';
 
 import { CRUD_MODULE_ROUTE_VALIDATION_METADATA } from '../../../crud.constants';
 import { CrudValidationOptions } from '../../../crud.types';
+import {
+  CrudMetadataLookupTarget,
+  CrudMetadata,
+} from '../../../services/crud-metadata.service';
 
 /**
  * Crud validate options decorator.
@@ -13,7 +13,7 @@ import { CrudValidationOptions } from '../../../crud.types';
  * Set the fallback ValidationPipe options for all method
  * parameters called with the `CrudBody` decorator.
  *
- * If this decorator is used on a controller, it will use the given options to
+ * If this decorator is used on a controller, it will use the given options for
  * every controller method's Crud param that does NOT have validations explicitly set.
  *
  * If this decorator is used on a method, it will use the given options for
@@ -21,7 +21,14 @@ import { CrudValidationOptions } from '../../../crud.types';
  *
  * @param options - crud validation options
  */
-export const CrudValidate = <T extends PlainLiteralObject = PlainLiteralObject>(
-  options?: CrudValidationOptions<T>,
-) =>
-  applyDecorators(SetMetadata(CRUD_MODULE_ROUTE_VALIDATION_METADATA, options));
+export const CrudValidate = CrudMetadata.createWrappedDecorator(
+  {
+    key: CRUD_MODULE_ROUTE_VALIDATION_METADATA,
+    lookupTarget: CrudMetadataLookupTarget.MethodAndClass,
+  },
+  (decorator) =>
+    <Entity extends PlainLiteralObject = PlainLiteralObject>(
+      options?: CrudValidationOptions<Entity>,
+    ) =>
+      decorator(options),
+);
