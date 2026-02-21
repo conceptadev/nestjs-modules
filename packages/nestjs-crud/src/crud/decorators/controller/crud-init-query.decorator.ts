@@ -86,7 +86,7 @@ export const CrudInitQuery =
 
       let resolvedHandler: Type;
 
-      // Get the resolver class for handler decoration (method > controller > default)
+      // Get the resolver class for handler decoration (controller > default)
       const resolverClass =
         reflectionService.getResolver(classTarget, descriptor.value) ??
         CrudAdapterResolver;

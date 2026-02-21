@@ -1,9 +1,11 @@
 import { TransactionInterface } from '@concepta/nestjs-common';
 
+import { TransactionFactoryRegistry } from './transaction-factory-registry';
 import { TransactionManager } from './transaction-manager';
 
 describe(TransactionManager.name, () => {
   let manager: TransactionManager;
+  let registry: TransactionFactoryRegistry;
 
   const createMockTransaction = (
     overrides: Partial<{
@@ -27,7 +29,8 @@ describe(TransactionManager.name, () => {
   });
 
   beforeEach(() => {
-    manager = new TransactionManager();
+    registry = new TransactionFactoryRegistry();
+    manager = new TransactionManager(registry);
   });
 
   describe('get', () => {
@@ -42,6 +45,45 @@ describe(TransactionManager.name, () => {
 
       const result = manager.get('typeorm:default');
       expect(result).toBe(mockTx);
+    });
+  });
+
+  describe('getOrStart', () => {
+    it('should return existing transaction without creating new one', async () => {
+      const existingTx = createMockTransaction();
+      manager.push('typeorm:default', existingTx);
+
+      const result = await manager.getOrStart('typeorm:default');
+
+      expect(result).toBe(existingTx);
+      expect(existingTx.start).not.toHaveBeenCalled();
+    });
+
+    it('should create and start transaction lazily via factory', async () => {
+      const newTx = createMockTransaction();
+      registry.register('typeorm:default', { create: () => newTx });
+
+      const result = await manager.getOrStart('typeorm:default');
+
+      expect(result).toBe(newTx);
+      expect(newTx.start).toHaveBeenCalledTimes(1);
+    });
+
+    it('should store lazily created transaction for subsequent gets', async () => {
+      const newTx = createMockTransaction();
+      registry.register('typeorm:default', { create: () => newTx });
+
+      await manager.getOrStart('typeorm:default');
+      const second = await manager.getOrStart('typeorm:default');
+
+      expect(second).toBe(newTx);
+      expect(newTx.start).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw when no factory registered for key', async () => {
+      await expect(manager.getOrStart('unknown:key')).rejects.toThrow(
+        'No transaction factory registered for key "unknown:key"',
+      );
     });
   });
 
@@ -230,6 +272,66 @@ describe(TransactionManager.name, () => {
       // Only inner (current) should be rolled back
       expect(innerTx.rollback).toHaveBeenCalledTimes(1);
       expect(outerTx.rollback).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onCommit / flushOnCommitCallbacks', () => {
+    it('should execute callbacks in order on flush', () => {
+      const order: number[] = [];
+      manager.onCommit(() => order.push(1));
+      manager.onCommit(() => order.push(2));
+      manager.onCommit(() => order.push(3));
+
+      manager.flushOnCommitCallbacks();
+
+      expect(order).toEqual([1, 2, 3]);
+    });
+
+    it('should clear callbacks after flush', () => {
+      const fn = jest.fn();
+      manager.onCommit(fn);
+
+      manager.flushOnCommitCallbacks();
+      manager.flushOnCommitCallbacks();
+
+      expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not execute callbacks until flushed', () => {
+      const fn = jest.fn();
+      manager.onCommit(fn);
+
+      expect(fn).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onRollback / flushOnRollbackCallbacks', () => {
+    it('should execute callbacks in order on flush', () => {
+      const order: number[] = [];
+      manager.onRollback(() => order.push(1));
+      manager.onRollback(() => order.push(2));
+      manager.onRollback(() => order.push(3));
+
+      manager.flushOnRollbackCallbacks();
+
+      expect(order).toEqual([1, 2, 3]);
+    });
+
+    it('should clear callbacks after flush', () => {
+      const fn = jest.fn();
+      manager.onRollback(fn);
+
+      manager.flushOnRollbackCallbacks();
+      manager.flushOnRollbackCallbacks();
+
+      expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not execute callbacks until flushed', () => {
+      const fn = jest.fn();
+      manager.onRollback(fn);
+
+      expect(fn).not.toHaveBeenCalled();
     });
   });
 });

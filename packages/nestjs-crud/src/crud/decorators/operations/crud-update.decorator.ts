@@ -4,6 +4,7 @@ import { Operation } from '@concepta/nestjs-common';
 
 import { CRUD_MODULE_ROUTE_ID_DEFAULT_PATH } from '../../../crud.constants';
 import { CrudValidationOptions } from '../../../crud.types';
+import { getTransactionalDecorators } from '../../../util/get-transactional-decorators';
 import { CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
 import { CrudUpdateCommand } from '../../operations/commands/crud-update.command';
 import { CrudUpdateHandler } from '../../operations/handlers/crud-update.handler';
@@ -30,6 +31,7 @@ export const CrudUpdate = <T extends PlainLiteralObject = PlainLiteralObject>(
     request,
     response,
     api,
+    transactional,
   } = { ...options };
 
   const bodyDto = request?.body;
@@ -54,5 +56,6 @@ export const CrudUpdate = <T extends PlainLiteralObject = PlainLiteralObject>(
       ...api?.body,
     }),
     CrudApiResponse(api?.response),
+    ...getTransactionalDecorators(transactional),
   );
 };

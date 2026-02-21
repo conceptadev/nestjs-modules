@@ -4,24 +4,25 @@ import { getAppContext } from './get-app-context.util';
 describe('AppContextHost', () => {
   describe('register', () => {
     it('should register a property on the context', () => {
-      const ctx = AppContextHost.create<{ operation: string }>();
-      ctx.register('operation', 'List');
-      expect(ctx.operation).toBe('List');
+      const ctx = new AppContextHost<{ operation: string }>();
+      const typed = ctx.register('operation', 'List');
+      expect(typed.operation).toBe('List');
     });
 
     it('should allow registering multiple properties', () => {
-      const ctx = AppContextHost.create<{
+      const ctx = new AppContextHost<{
         operation: string;
         action: string;
       }>();
-      ctx.register('operation', 'List');
-      ctx.register('action', 'read');
-      expect(ctx.operation).toBe('List');
-      expect(ctx.action).toBe('read');
+      const typed = ctx
+        .register('operation', 'List')
+        .register('action', 'read');
+      expect(typed.operation).toBe('List');
+      expect(typed.action).toBe('read');
     });
 
     it('should throw when registering the same key twice', () => {
-      const ctx = AppContextHost.create<{ operation: string }>();
+      const ctx = new AppContextHost<{ operation: string }>();
       ctx.register('operation', 'List');
       expect(() => ctx.register('operation', 'Create')).toThrow(
         'Cannot overwrite read-only property: "operation"',
@@ -29,18 +30,18 @@ describe('AppContextHost', () => {
     });
 
     it('should make properties read-only', () => {
-      const ctx = AppContextHost.create<{ operation: string }>();
-      ctx.register('operation', 'List');
+      const ctx = new AppContextHost<{ operation: string }>();
+      const typed = ctx.register('operation', 'List');
 
       // In strict mode, assignment to read-only property throws
       expect(() => {
-        (ctx as { operation: string }).operation = 'Update';
+        (typed as { operation: string }).operation = 'Update';
       }).toThrow(TypeError);
-      expect(ctx.operation).toBe('List');
+      expect(typed.operation).toBe('List');
     });
 
     it('should make properties enumerable for spread operator', () => {
-      const ctx = AppContextHost.create<{
+      const ctx = new AppContextHost<{
         operation: string;
         action: string;
       }>();
@@ -52,7 +53,7 @@ describe('AppContextHost', () => {
     });
 
     it('should return this for chaining', () => {
-      const ctx = AppContextHost.create<{
+      const ctx = new AppContextHost<{
         operation: string;
         action: string;
       }>();
@@ -63,41 +64,114 @@ describe('AppContextHost', () => {
 
   describe('has', () => {
     it('should return false for unregistered keys', () => {
-      const ctx = AppContextHost.create<{ test: string }>();
+      const ctx = new AppContextHost<{ test: string }>();
       expect(ctx.has('test')).toBe(false);
     });
 
     it('should return true for registered keys', () => {
-      const ctx = AppContextHost.create<{ test: string }>();
+      const ctx = new AppContextHost<{ test: string }>();
       ctx.register('test', 'value');
       expect(ctx.has('test')).toBe(true);
     });
   });
 
-  describe('constructor with initial values', () => {
-    it('should accept initial values', () => {
-      const ctx = AppContextHost.create({ foo: 'bar', num: 42 });
+  describe('merge', () => {
+    it('should create a new context when ctx is undefined', () => {
+      const ctx = AppContextHost.merge<{ foo: string }>(() => ({
+        foo: 'bar',
+      }));
       expect(ctx.foo).toBe('bar');
-      expect(ctx.num).toBe(42);
     });
 
-    it('should allow spreading initial values', () => {
-      const ctx = AppContextHost.create({ foo: 'bar', num: 42 });
+    it('should use existing context when provided', () => {
+      const existing = new AppContextHost<{ a: string; b: number }>();
+      existing.register('a', 'hello');
+
+      const ctx = AppContextHost.merge<{ a: string; b: number }>(
+        () => ({ a: 'hello', b: 42 }),
+        existing,
+      );
+
+      expect(ctx).toBe(existing);
+      expect(ctx.a).toBe('hello');
+      expect(ctx.b).toBe(42);
+    });
+
+    it('should allow factory to return multiple properties', () => {
+      const ctx = AppContextHost.merge<{ x: number; y: number }>(() => ({
+        x: 1,
+        y: 2,
+      }));
+      expect(ctx.x).toBe(1);
+      expect(ctx.y).toBe(2);
+    });
+
+    it('should skip keys already on the context', () => {
+      const existing = new AppContextHost<{ a: string; b: number }>();
+      existing.register('a', 'original');
+
+      const ctx = AppContextHost.merge(
+        () => ({ a: 'replaced', b: 42 }),
+        existing,
+      );
+
+      expect(ctx.a).toBe('original');
+      expect(ctx.b).toBe(42);
+    });
+
+    it('should pass has() to the factory', () => {
+      const existing = new AppContextHost<{ a: string; b: number }>();
+      existing.register('a', 'hello');
+
+      const ctx = AppContextHost.merge<{ a: string; b: number }>(
+        (has) => ({
+          ...(!has('a') && { a: 'replaced' }),
+          b: 42,
+        }),
+        existing,
+      );
+
+      expect(ctx.a).toBe('hello');
+      expect(ctx.b).toBe(42);
+    });
+
+    it('should throw ContextMergeException for undefined values', () => {
+      expect(() =>
+        AppContextHost.merge<{ foo: string }>(
+          () => ({ foo: undefined }) as unknown as { foo: string },
+        ),
+      ).toThrow('AppContextHost.apply() must provide a value');
+    });
+
+    it('should support async factory', async () => {
+      const ctx = await AppContextHost.mergeAsync<{ foo: string }>(() => ({
+        foo: 'bar',
+      }));
+      expect(ctx.foo).toBe('bar');
+    });
+
+    it('should allow spreading the merged context', () => {
+      const ctx = AppContextHost.merge<{ foo: string; num: number }>(() => ({
+        foo: 'bar',
+        num: 42,
+      }));
       expect({ ...ctx }).toEqual({ foo: 'bar', num: 42 });
     });
   });
 
   describe('nested objects', () => {
     it('should allow mutation of nested objects', () => {
-      const ctx = AppContextHost.create<{ locals: Record<string, unknown> }>();
-      ctx.register('locals', {});
+      const ctx = AppContextHost.merge<{ locals: Record<string, unknown> }>(
+        () => ({ locals: {} }),
+      );
       ctx.locals.tenantId = 'abc';
       expect(ctx.locals.tenantId).toBe('abc');
     });
 
     it('should not allow reassigning the nested object reference', () => {
-      const ctx = AppContextHost.create<{ locals: Record<string, unknown> }>();
-      ctx.register('locals', { original: true });
+      const ctx = AppContextHost.merge<{ locals: Record<string, unknown> }>(
+        () => ({ locals: { original: true } }),
+      );
 
       // In strict mode, assignment to read-only property throws
       expect(() => {

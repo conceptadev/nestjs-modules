@@ -3,6 +3,7 @@ import { applyDecorators, Get, PlainLiteralObject } from '@nestjs/common';
 import { Operation } from '@concepta/nestjs-common';
 
 import { CRUD_MODULE_ROUTE_ID_DEFAULT_PATH } from '../../../crud.constants';
+import { getTransactionalDecorators } from '../../../util/get-transactional-decorators';
 import { CrudRouteQueryOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
 import { CrudReadHandler } from '../../operations/handlers/crud-read.handler';
 import { CrudReadQuery } from '../../operations/queries/crud-read.query';
@@ -29,6 +30,7 @@ export const CrudRead = <T extends PlainLiteralObject = PlainLiteralObject>(
     request,
     response,
     api,
+    transactional,
   } = { ...options };
 
   return applyDecorators(
@@ -45,5 +47,6 @@ export const CrudRead = <T extends PlainLiteralObject = PlainLiteralObject>(
     CrudApiQuery(api?.query),
     CrudApiParam(api?.params),
     CrudApiResponse(api?.response),
+    ...getTransactionalDecorators(transactional),
   );
 };

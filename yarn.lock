@@ -1465,12 +1465,15 @@ __metadata:
     "@concepta/nestjs-access-control": "npm:^7.0.0-alpha.10"
     "@concepta/nestjs-common": "npm:^7.0.0-alpha.10"
     "@concepta/nestjs-crud": "npm:^7.0.0-alpha.10"
-    "@concepta/nestjs-typeorm-ext": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-hook": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-repository": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-repository-typeorm": "npm:^7.0.0-alpha.10"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
     "@nestjs/common": "npm:^11.1.9"
     "@nestjs/config": "npm:^4.0.2"
     "@nestjs/core": "npm:^11.1.9"
+    "@nestjs/cqrs": "npm:^11.0.0"
     "@nestjs/swagger": "npm:^11.2.2"
     "@nestjs/testing": "npm:^11.1.9"
     "@nestjs/typeorm": "npm:^11.0.0"
@@ -1478,9 +1481,19 @@ __metadata:
     jest-mock-extended: "npm:^4.0.0"
     supertest: "npm:^6.3.4"
   peerDependencies:
+    "@concepta/nestjs-crud": ^7.0.0-alpha.10
+    "@concepta/typeorm-seeding": ^4.0.0
+    "@faker-js/faker": ^8.4.1
     class-transformer: "*"
     class-validator: "*"
     typeorm: ^0.3.0
+  peerDependenciesMeta:
+    "@concepta/nestjs-crud":
+      optional: true
+    "@concepta/typeorm-seeding":
+      optional: true
+    "@faker-js/faker":
+      optional: true
   languageName: unknown
   linkType: soft
 

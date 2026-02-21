@@ -12,7 +12,7 @@ export interface CacheInterface
   key: string;
 
   /**
-   * Type of the passcode
+   * Type of the cache
    */
   type: string;
 

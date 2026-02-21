@@ -12,7 +12,7 @@ import { getAppContext } from './get-app-context.util';
  * }
  *
  * @Get()
- * getProfile(@Ctx() ctx: TypedAppContext<MyContext>) {
+ * getProfile(@Ctx() ctx: MyContext) {
  *   return this.userService.findById(ctx.auth.userId);
  * }
  * ```

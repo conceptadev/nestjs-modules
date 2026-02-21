@@ -3,8 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 
 import {
+  AppContextHost,
   DeepPartial,
   getDynamicRepositoryToken,
+  RepositoryContextInterface,
   RepositoryFindOptions,
   RepositoryFindOneOptions,
   Where,
@@ -372,10 +374,10 @@ class AllHooks implements AllHooksInterface {
  * Adds the RepoHook.KEY type to each hook config (normally done by HookInterceptor).
  */
 function createHookContext(...hookClasses: Type[]) {
-  return {
-    trx: null,
+  return AppContextHost.merge<RepositoryContextInterface>(() => ({
+    entity: '',
     hooks: hookClasses.map((hook) => ({ hook, type: RepoHook.KEY })),
-  };
+  }));
 }
 
 // =============================================================================

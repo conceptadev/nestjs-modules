@@ -15,7 +15,7 @@ export interface CrudCommandHandlerInterface<
   Entity extends PlainLiteralObject = PlainLiteralObject,
   _Relations extends PlainLiteralObject[] = PlainLiteralObject[],
 > {
-  readonly crudAdapter: CrudAdapter<Entity>;
+  readonly crudAdapter?: CrudAdapter<Entity>;
 
   execute(
     command: CrudCommandInterface<Entity>,

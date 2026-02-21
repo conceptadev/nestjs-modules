@@ -11,33 +11,44 @@ export { PropagationBehavior, TransactionalOptions };
 export const TRANSACTIONAL_KEY = Symbol('Transactional');
 
 /**
- * Method decorator to wrap handler in a transaction.
+ * Decorator to wrap operations in a transaction.
+ *
+ * Can be applied at the class level (all methods) or method level.
+ * Method-level settings override class-level settings.
+ * Pass `false` to disable transactions for a specific method.
  *
  * @example
  * ```typescript
- * @Post()
+ * // Class-level: all routes are transactional
+ * @Controller('orders')
  * @Transactional()
- * async createOrder(@Ctx() ctx: Context, @Body() dto: CreateOrderDto) {
- *   // All repository operations within this handler share the same transaction
- *   return this.orderService.create(ctx, dto);
- * }
+ * class OrderController {
+ *   @Post()
+ *   async create(@Ctx() ctx, @Body() dto) { ... }
  *
- * @Get(':id')
- * @Transactional({ readOnly: true })
- * async getOrder(@Ctx() ctx: Context, @Param('id') id: string) {
- *   // Read-only transaction, always rolls back
- *   return this.orderService.findById(ctx, id);
+ *   // Override: disable transaction for this route
+ *   @Get()
+ *   @Transactional(false)
+ *   async list(@Ctx() ctx) { ... }
+ *
+ *   // Override: read-only transaction for this route
+ *   @Get(':id')
+ *   @Transactional({ readOnly: true })
+ *   async read(@Ctx() ctx) { ... }
  * }
  * ```
  */
-export function Transactional(
-  options: TransactionalOptions = {},
-): MethodDecorator {
+export function Transactional(options?: TransactionalOptions | false) {
+  // Explicit opt-out: set metadata to false so the runner skips this method
+  if (options === false) {
+    return SetMetadata(TRANSACTIONAL_KEY, false);
+  }
+
   const resolvedOptions: TransactionalOptions = {
-    propagation: options.propagation ?? 'REQUIRED',
-    readOnly: options.readOnly ?? false,
-    noRollbackFor: options.noRollbackFor ?? [],
-    timeout: options.timeout, // Let TransactionScope apply module default
+    propagation: options?.propagation ?? 'REQUIRED',
+    readOnly: options?.readOnly ?? false,
+    noRollbackFor: options?.noRollbackFor ?? [],
+    timeout: options?.timeout, // Let Transaction apply module default
   };
 
   return applyDecorators(

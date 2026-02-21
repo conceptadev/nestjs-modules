@@ -5,6 +5,7 @@ import { CrudControllerDomainInterface } from './crud-controller-domain.interfac
 import { CrudRequestConfig } from './crud-request-config.interface';
 import { CrudResolverInterface } from './crud-resolver.interface';
 import { CrudResponseConfig } from './crud-response-config.interface';
+import { CrudTransactionalInterface } from './crud-transactional.interface';
 
 /**
  * Controller options for pre-decorated class path (build() with class).
@@ -29,7 +30,8 @@ export interface CrudControllerClassOptionsInterface {
  */
 export interface CrudControllerOptionsInterface<T extends PlainLiteralObject>
   extends ControllerOptions,
-    CrudControllerDomainInterface {
+    CrudControllerDomainInterface,
+    CrudTransactionalInterface {
   /**
    * Adapter provider for CRUD operations.
    * Defaults to CrudAdapter.

@@ -3,16 +3,46 @@ import {
   TransactionManagerInterface,
 } from '@concepta/nestjs-common';
 
+import { TransactionFactoryRegistry } from './transaction-factory-registry';
+
 /**
  * Runtime manager holding active transactions.
- * Supports nested transactions via push/pop stack per key.
+ * Supports nested transactions via push/pop stack per key,
+ * lazy transaction creation via factory registry,
+ * and post-commit/rollback callbacks.
  */
 export class TransactionManager implements TransactionManagerInterface {
   private readonly transactions = new Map<string, TransactionInterface>();
   private readonly stack = new Map<string, TransactionInterface[]>();
+  private readonly commitCallbacks: (() => void)[] = [];
+  private readonly rollbackCallbacks: (() => void)[] = [];
+
+  constructor(private readonly registry: TransactionFactoryRegistry) {}
 
   get(key: string): TransactionInterface | null {
     return this.transactions.get(key) ?? null;
+  }
+
+  /**
+   * Get the current transaction for the given key, or create one lazily
+   * via the factory registry if none exists.
+   */
+  async getOrStart(key: string): Promise<TransactionInterface> {
+    const existing = this.transactions.get(key);
+    if (existing) {
+      return existing;
+    }
+
+    const factory = this.registry.get(key);
+    if (!factory) {
+      throw new Error(`No transaction factory registered for key "${key}"`);
+    }
+
+    const tx = factory.create();
+    await tx.start();
+    this.transactions.set(key, tx);
+
+    return tx;
   }
 
   /**
@@ -67,6 +97,28 @@ export class TransactionManager implements TransactionManagerInterface {
       if (tx.isActive) {
         await tx.rollback();
       }
+    }
+  }
+
+  onCommit(fn: () => void): void {
+    this.commitCallbacks.push(fn);
+  }
+
+  onRollback(fn: () => void): void {
+    this.rollbackCallbacks.push(fn);
+  }
+
+  flushOnCommitCallbacks(): void {
+    const callbacks = this.commitCallbacks.splice(0);
+    for (const fn of callbacks) {
+      fn();
+    }
+  }
+
+  flushOnRollbackCallbacks(): void {
+    const callbacks = this.rollbackCallbacks.splice(0);
+    for (const fn of callbacks) {
+      fn();
     }
   }
 }

@@ -3,7 +3,11 @@ import { of, throwError } from 'rxjs';
 import { Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { TransactionInterface } from '@concepta/nestjs-common';
+import {
+  AppContextHost,
+  TransactionContextInterface,
+  TransactionInterface,
+} from '@concepta/nestjs-common';
 
 import { TransactionFactoryInterface } from '../interfaces/transaction-factory.interface';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants';
@@ -18,12 +22,11 @@ import { Transactional } from './transactional.decorator';
 
 describe(TransactionalRunner.name, () => {
   let runner: TransactionalRunner;
-  let _transactionScope: TransactionScope;
   let mockRegistry: TransactionFactoryRegistry;
   let mockFactory: jest.Mocked<TransactionFactoryInterface>;
-  let mockTransaction: jest.Mocked<TransactionInterface>;
+  let mockTransaction: TransactionInterface;
 
-  const createMockTransaction = (): jest.Mocked<TransactionInterface> => {
+  const createMockTransaction = (): TransactionInterface => {
     let isActive = false;
 
     return {
@@ -44,6 +47,8 @@ describe(TransactionalRunner.name, () => {
       getClient: jest.fn(),
     };
   };
+
+  const createCtx = () => new AppContextHost<TransactionContextInterface>();
 
   beforeEach(async () => {
     mockTransaction = createMockTransaction();
@@ -72,25 +77,28 @@ describe(TransactionalRunner.name, () => {
     }).compile();
 
     runner = moduleRef.get<TransactionalRunner>(TransactionalRunner);
-    _transactionScope = moduleRef.get<TransactionScope>(TransactionScope);
   });
 
   describe('run', () => {
     it('should call operation without transaction when no @Transactional', (done) => {
+      class PlainController {}
+
       function handlerWithoutDecorator() {
         return 'result';
       }
 
+      const ctx = createCtx();
       const operation = jest.fn().mockReturnValue(of('result'));
 
-      runner.run(handlerWithoutDecorator, operation).subscribe({
-        next: (result) => {
-          expect(result).toBe('result');
-          expect(operation).toHaveBeenCalledWith(null);
-          expect(mockFactory.create).not.toHaveBeenCalled();
-        },
-        complete: done,
-      });
+      runner
+        .run(handlerWithoutDecorator, PlainController, ctx, operation)
+        .subscribe({
+          next: (result) => {
+            expect(result).toBe('result');
+            expect(ctx.has('trx')).toBe(false);
+          },
+          complete: done,
+        });
     });
 
     it('should wrap operation in transaction when @Transactional present', (done) => {
@@ -102,38 +110,13 @@ describe(TransactionalRunner.name, () => {
       }
 
       const handler = new TestHandler();
+      const ctx = createCtx();
       const operation = jest.fn().mockReturnValue(of('result'));
 
-      runner.run(handler.handle, operation).subscribe({
+      runner.run(handler.handle, TestHandler, ctx, operation).subscribe({
         next: (result) => {
           expect(result).toBe('result');
-          expect(mockFactory.create).toHaveBeenCalled();
-          expect(mockTransaction.start).toHaveBeenCalled();
-        },
-        complete: done,
-      });
-    });
-
-    it('should pass transaction manager to operation', (done) => {
-      class TestHandler {
-        @Transactional()
-        handle() {
-          return 'result';
-        }
-      }
-
-      const handler = new TestHandler();
-      let receivedTrx: unknown = 'not-set';
-
-      const operation = jest.fn().mockImplementation((trx) => {
-        receivedTrx = trx;
-        return of('result');
-      });
-
-      runner.run(handler.handle, operation).subscribe({
-        next: () => {
-          expect(receivedTrx).not.toBeNull();
-          expect(receivedTrx).not.toBe('not-set');
+          expect(ctx.has('trx')).toBe(true);
         },
         complete: done,
       });
@@ -148,36 +131,63 @@ describe(TransactionalRunner.name, () => {
       }
 
       const handler = new TestHandler();
+      const ctx = createCtx();
       const error = new Error('Operation failed');
       const operation = jest.fn().mockReturnValue(throwError(() => error));
 
-      runner.run(handler.handle, operation).subscribe({
+      runner.run(handler.handle, TestHandler, ctx, operation).subscribe({
         error: (err) => {
           expect(err).toBe(error);
-          expect(mockTransaction.rollback).toHaveBeenCalled();
           done();
         },
       });
     });
 
-    it('should use propagation options from decorator', (done) => {
-      class TestHandler {
-        @Transactional({ propagation: 'REQUIRES_NEW' })
+    it('should use class-level @Transactional for methods without decorator', (done) => {
+      @Transactional()
+      class TransactionalController {
         handle() {
           return 'result';
         }
       }
 
-      const handler = new TestHandler();
+      const ctrl = new TransactionalController();
+      const ctx = createCtx();
       const operation = jest.fn().mockReturnValue(of('result'));
 
-      // Even with existing context, REQUIRES_NEW should create new transaction
-      runner.run(handler.handle, operation).subscribe({
-        next: () => {
-          expect(mockFactory.create).toHaveBeenCalled();
-        },
-        complete: done,
-      });
+      runner
+        .run(ctrl.handle, TransactionalController, ctx, operation)
+        .subscribe({
+          next: (result) => {
+            expect(result).toBe('result');
+            expect(ctx.has('trx')).toBe(true);
+          },
+          complete: done,
+        });
+    });
+
+    it('should respect @Transactional(false) override on method when class has @Transactional', (done) => {
+      @Transactional()
+      class TransactionalController {
+        @Transactional(false)
+        handle() {
+          return 'result';
+        }
+      }
+
+      const ctrl = new TransactionalController();
+      const ctx = createCtx();
+      const operation = jest.fn().mockReturnValue(of('result'));
+
+      runner
+        .run(ctrl.handle, TransactionalController, ctx, operation)
+        .subscribe({
+          next: (result) => {
+            expect(result).toBe('result');
+            expect(ctx.has('trx')).toBe(false);
+          },
+          complete: done,
+        });
     });
 
     it('should use readOnly option from decorator', (done) => {
@@ -189,12 +199,12 @@ describe(TransactionalRunner.name, () => {
       }
 
       const handler = new TestHandler();
+      const ctx = createCtx();
       const operation = jest.fn().mockReturnValue(of('result'));
 
-      runner.run(handler.handle, operation).subscribe({
+      runner.run(handler.handle, TestHandler, ctx, operation).subscribe({
         next: () => {
-          expect(mockTransaction.rollback).toHaveBeenCalled();
-          expect(mockTransaction.commit).not.toHaveBeenCalled();
+          expect(ctx.has('trx')).toBe(true);
         },
         complete: done,
       });

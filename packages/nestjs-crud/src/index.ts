@@ -96,7 +96,12 @@ export {
   ConfigurableCrudClassesMap,
   ConfigurableCrudHost,
 } from './util/interfaces/configurable-crud-host.interface';
-export { ConfigurableCrudOptions } from './util/interfaces/configurable-crud-options.interface';
+export {
+  ConfigurableCrudClassOptions,
+  ConfigurableCrudHybridOptions,
+  ConfigurableCrudGeneratedOptions,
+  ConfigurableCrudOptions,
+} from './util/interfaces/configurable-crud-options.interface';
 export { ConfigurableCrudBuilder } from './util/configurable-crud.builder';
 export { ConfigurableCrudOptionsTransformer } from './crud.types';
 

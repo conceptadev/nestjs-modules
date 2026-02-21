@@ -7,6 +7,10 @@ import {
 } from '@nestjs/common';
 
 import { DeepPartial, Operation, Ctx } from '@concepta/nestjs-common';
+import {
+  Transactional,
+  TransactionalOptions,
+} from '@concepta/nestjs-repository';
 
 import { CrudAdapter } from '../crud/adapters/crud.adapter';
 import { CrudController } from '../crud/decorators/controller/crud-controller.decorator';
@@ -254,6 +258,36 @@ export class ConfigurableCrudBuilder<
   }
 
   /**
+   * Resolve the transactional method decorator for an operation.
+   *
+   * When controller-level transactional is enabled, read operations get
+   * `@Transactional(false)` to opt out. Per-operation transactional
+   * overrides the controller-level setting.
+   */
+  private getTransactionalDecorator(
+    operation: Operation,
+    opTransactional?: boolean | TransactionalOptions,
+    controllerTransactional?: boolean | TransactionalOptions,
+  ): MethodDecorator[] {
+    // Explicit per-operation setting takes precedence
+    if (opTransactional !== undefined) {
+      if (opTransactional === false) {
+        return [Transactional(false)];
+      }
+      const options =
+        typeof opTransactional === 'object' ? opTransactional : undefined;
+      return [Transactional(options)];
+    }
+
+    // When controller-level is enabled, opt out read operations
+    if (controllerTransactional && isReadOperation(operation)) {
+      return [Transactional(false)];
+    }
+
+    return [];
+  }
+
+  /**
    * Apply all decorators for an operation: operation decorator + parameter decorators.
    */
   private applyOperationDecorators(
@@ -261,8 +295,14 @@ export class ConfigurableCrudBuilder<
     methodName: string,
     op: CrudOperationOptions<Entity>,
     operationIdPrefix: string,
+    controllerTransactional?: boolean | TransactionalOptions,
   ): void {
-    const { operation, extraDecorators = [], ...restOptions } = op;
+    const {
+      operation,
+      extraDecorators = [],
+      transactional: opTransactional,
+      ...restOptions
+    } = op;
     const proto = controllerClass.prototype;
     const descriptor = Object.getOwnPropertyDescriptor(proto, methodName);
 
@@ -278,9 +318,14 @@ export class ConfigurableCrudBuilder<
       },
     };
 
-    // Apply operation decorator with extra decorators
+    // Apply operation decorator with transactional + extra decorators
+    const txDecorators = this.getTransactionalDecorator(
+      operation,
+      opTransactional,
+      controllerTransactional,
+    );
     const opDecorator = this.getOperationDecorator(operation, optionsWithId);
-    applyDecorators(opDecorator, ...extraDecorators)(
+    applyDecorators(opDecorator, ...txDecorators, ...extraDecorators)(
       proto,
       methodName,
       descriptor,
@@ -548,15 +593,26 @@ export class ConfigurableCrudBuilder<
         methodName,
         op,
         getControllerName(controller),
+        controller.transactional,
       );
     }
 
     // Apply CrudController decorator to class
-    const crudControllerDecorator = applyDecorators(
+    const classDecorators: Array<ClassDecorator | MethodDecorator> = [
       CrudController(controller),
-      ...(this.options.controller?.extraDecorators ?? []),
-    );
-    crudControllerDecorator(GeneratedController);
+    ];
+
+    if (controller.transactional) {
+      const txOptions =
+        typeof controller.transactional === 'object'
+          ? controller.transactional
+          : undefined;
+      classDecorators.push(Transactional(txOptions));
+    }
+
+    classDecorators.push(...(this.options.controller?.extraDecorators ?? []));
+
+    applyDecorators(...classDecorators)(GeneratedController);
 
     return GeneratedController as Type;
   }

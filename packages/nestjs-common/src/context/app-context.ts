@@ -1,5 +1,12 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
+import { ContextMergeException } from './exceptions/context-merge.exception';
+import {
+  AppContextInterface,
+  AppContextMergeInterface,
+} from './interfaces/app-context.interface';
+import { isAppContext } from './is-app-context.util';
+
 /**
  * Symbol key used to store the context on the request object.
  */
@@ -8,36 +15,23 @@ export const APP_CONTEXT_KEY = Symbol('APP_CONTEXT_KEY');
 /**
  * Per-request context container with type-safe, immutable properties.
  *
- * Properties registered via `register()` are read-only and enumerable,
+ * Properties registered via {@link register} are read-only and enumerable,
  * allowing safe use with the spread operator while preventing accidental mutation.
- *
- * Typically, interceptors register context data early in the request lifecycle,
- * making it available to controllers and services downstream.
  *
  * @example
  * ```typescript
- * // In an interceptor
- * interface MyContext {
- *   auth: { userId: string; tenantId: string };
- * }
+ * const ctx = AppContextHost.merge<MyContext>(() => ({
+ *   auth: { userId: '456' },
+ * }));
  *
- * const ctx = getAppContext<MyContext>(request);
- * ctx.register('auth', { userId: 'user-456', tenantId: 'tenant-123' });
- *
- * // In a controller
- * @Get()
- * getProfile(@Ctx() ctx: TypedAppContext<MyContext>) {
- *   return this.userService.findById(ctx.auth.userId);
- * }
+ * AppContextHost.merge((has) => ({
+ *   ...(!has('trx') && { trx: manager }),
+ * }), existingCtx);
  * ```
  */
-export class AppContextHost<T extends PlainLiteralObject = PlainLiteralObject> {
-  constructor(initial?: T) {
-    if (initial) {
-      Object.assign(this, initial);
-    }
-  }
-
+export class AppContextHost<T extends PlainLiteralObject = PlainLiteralObject>
+  implements AppContextInterface<T>
+{
   /**
    * Check if a property has been registered.
    */
@@ -52,7 +46,7 @@ export class AppContextHost<T extends PlainLiteralObject = PlainLiteralObject> {
     key: K,
     value: T[K],
   ): this & Record<K, T[K]> {
-    if (key in this) {
+    if (this.has(key)) {
       throw new Error(
         `${this.constructor.name} Cannot overwrite read-only property: "${key}"`,
       );
@@ -69,15 +63,74 @@ export class AppContextHost<T extends PlainLiteralObject = PlainLiteralObject> {
   }
 
   /**
-   * Create a typed context instance with optional initial values.
+   * Create or populate a context via a synchronous factory.
+   *
+   * @param factory - Receives `has` checker, returns properties to register
+   * @param ctx - Existing context or plain object to merge into
    */
-  static create<T extends PlainLiteralObject>(initial?: T): TypedAppContext<T> {
-    return new AppContextHost<T>(initial) as TypedAppContext<T>;
+  static merge<T extends PlainLiteralObject>(
+    factory: (has: (key: keyof T) => boolean) => Partial<T>,
+    ctx?: AppContextInterface<T> | Partial<T>,
+  ): AppContextInterface<T> & T {
+    const context = this.lift<T>(ctx);
+    return this.apply(
+      context,
+      factory((k) => context.has(k)),
+    );
+  }
+
+  /**
+   * Create or populate a context via an async factory.
+   *
+   * @param factory - Receives `has` checker, returns properties to register
+   * @param ctx - Existing context or plain object to merge into
+   */
+  static async mergeAsync<T extends PlainLiteralObject>(
+    factory: (
+      has: (key: keyof T) => boolean,
+    ) => Partial<T> | Promise<Partial<T>>,
+    ctx?: AppContextInterface<T> | Partial<T>,
+  ): Promise<AppContextInterface<T> & T> {
+    const context = this.lift<T>(ctx);
+    const props = await factory((k) => context.has(k));
+    return this.apply(context, props);
+  }
+
+  /** Resolve or create a Host instance, promoting plain objects. */
+  private static lift<T extends PlainLiteralObject>(
+    ctx?: AppContextInterface<T> | Partial<T>,
+  ): AppContextInterface<T> {
+    if (isAppContext(ctx)) return ctx;
+
+    const host = new AppContextHost<T>();
+    if (ctx) {
+      Object.entries(ctx).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          host.register(key, value);
+        }
+      });
+    }
+    return host;
+  }
+
+  /** Register factory-produced properties, throwing on null/undefined values. */
+  private static apply<T extends PlainLiteralObject>(
+    context: AppContextInterface<T>,
+    props: Partial<T>,
+  ): AppContextInterface<T> & T {
+    for (const key in props) {
+      if (context.has(key)) continue;
+
+      const value = props[key];
+
+      if (value === undefined || value === null) {
+        throw new ContextMergeException(key);
+      }
+
+      context.register(key, value);
+    }
+    return context as AppContextInterface<T> & T;
   }
 }
 
-/**
- * AppContextHost with registered properties accessible as direct properties.
- */
-export type TypedAppContext<T extends PlainLiteralObject> = AppContextHost<T> &
-  T;
+AppContextHost satisfies AppContextMergeInterface;

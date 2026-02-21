@@ -124,15 +124,15 @@ const assertQueryParams = (
   // Create expected context with defaults
   const expected = createTestContext<PlainLiteralObject>();
 
-  // Merge expected values
-  expected.query = {
+  // Build expected query by merging defaults with overrides
+  const mergedQuery = {
     ...expected.query,
     ...expectedQuery,
   };
 
   // Create copies for comparison with ignored properties removed
   const actualFiltered = { ...actualContext.query };
-  const expectedFiltered = { ...expected.query };
+  const expectedFiltered = { ...mergedQuery };
 
   // Remove ignored properties from both objects
   for (const prop of ignoreProps) {

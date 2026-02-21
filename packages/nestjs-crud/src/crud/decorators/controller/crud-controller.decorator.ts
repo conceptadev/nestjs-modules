@@ -15,6 +15,7 @@ import { CrudName } from '../routes/crud-name.decorator';
 import { CrudParams } from '../routes/crud-params.decorator';
 import { CrudRequestBodyBatch } from '../routes/crud-request-body-batch.decorator';
 import { CrudRequestBody } from '../routes/crud-request-body.decorator';
+import { CrudResolver } from '../routes/crud-resolver.decorator';
 import { CrudResponsePaginated } from '../routes/crud-response-paginated.decorator';
 import { CrudResponseResource } from '../routes/crud-response-resource.decorator';
 import { CrudSerialize } from '../routes/crud-serialize.decorator';
@@ -37,17 +38,19 @@ export function CrudController<
     entity,
     name,
     adapter = CrudAdapterClass,
+    resolver,
     request,
     response,
   } = options;
 
-  // apply all decorators
+  // apply all decorators (CrudInit must be last — it resolves query/command metadata)
   return applyDecorators(
     Controller({ path, host }),
     UseInterceptors(CrudContextInterceptor),
     CrudEntity(entity),
     CrudName(name),
     CrudAdapter(adapter),
+    CrudResolver(resolver),
     CrudParams<T>(request?.params ?? CRUD_MODULE_DEFAULT_PARAMS_OPTIONS),
     CrudValidate(request?.validation),
     CrudRequestBody(request?.body),

@@ -1,13 +1,8 @@
 import { Observable, from, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, PlainLiteralObject } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-
-import {
-  TransactionManagerInterface,
-  TransactionContextInterface,
-} from '@concepta/nestjs-common';
 
 import { TransactionScope } from './transaction-scope';
 import {
@@ -26,13 +21,12 @@ import {
  * ```typescript
  * // In an interceptor
  * intercept(context: ExecutionContext, next: CallHandler) {
+ *   const ctx = getAppContext<TransactionContextInterface>(req);
  *   return this.txRunner.run(
  *     context.getHandler(),
- *     (trx) => {
- *       // trx is the TransactionManagerInterface, or null
- *       myContext.trx = trx;
- *       return next.handle();
- *     },
+ *     context.getClass(),
+ *     ctx,
+ *     () => next.handle(),
  *   );
  * }
  * ```
@@ -47,29 +41,37 @@ export class TransactionalRunner {
   /**
    * Run an operation, wrapping in a transaction if `@Transactional()` is present.
    *
+   * Checks method-level metadata first, then class-level.
+   * `@Transactional(false)` on a method disables the class-level transaction.
+   *
    * @param handler - The method handler to check for `@Transactional()` metadata
-   * @param operation - The operation to run, receives the transaction manager (or null)
+   * @param controller - The controller class to check for class-level `@Transactional()` metadata
+   * @param ctx - The context for this request
+   * @param operation - The operation to run
    * @returns An Observable of the result
    */
   run<T>(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     handler: Function,
-    operation: (trx: TransactionManagerInterface | null) => Observable<T>,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    controller: Function,
+    ctx: PlainLiteralObject,
+    operation: () => Observable<T>,
   ): Observable<T> {
-    const options = this.reflector.get<TransactionalOptions>(
-      TRANSACTIONAL_KEY,
-      handler,
-    );
+    const options = this.reflector.getAllAndOverride<
+      TransactionalOptions | false
+    >(TRANSACTIONAL_KEY, [handler, controller]);
 
     if (!options) {
-      return operation(null);
+      return operation();
     }
 
-    // Create a minimal context to hold the trx
-    const ctx: TransactionContextInterface = { trx: null };
-
     return from(
-      this.txScope.run(ctx, () => this.toPromise(operation(ctx.trx)), options),
+      this.txScope.run(ctx, () => this.toPromise(operation()), {
+        propagation: options.propagation,
+        readOnly: options.readOnly,
+        timeout: options.timeout,
+      }),
     ).pipe(catchError((error) => throwError(() => error)));
   }
 

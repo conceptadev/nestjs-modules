@@ -1,10 +1,7 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import {
-  AppContextHost,
-  APP_CONTEXT_KEY,
-  TypedAppContext,
-} from './app-context';
+import { AppContextHost, APP_CONTEXT_KEY } from './app-context';
+import { AppContextInterface } from './interfaces/app-context.interface';
 
 /**
  * Get or create the application context for a request.
@@ -22,7 +19,7 @@ import {
 export function getAppContext<T extends PlainLiteralObject>(
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   request: any,
-): TypedAppContext<T> {
+): AppContextInterface<T> & T {
   if (!request[APP_CONTEXT_KEY]) {
     request[APP_CONTEXT_KEY] = new AppContextHost<T>();
   }

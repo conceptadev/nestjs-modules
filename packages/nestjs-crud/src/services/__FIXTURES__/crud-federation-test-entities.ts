@@ -43,12 +43,11 @@ export const createTestContext = <T extends PlainLiteralObject = TestRoot>(
   operation: Operation = Operation.List,
   entity = '',
 ): CrudContextInterface<T> => {
-  return AppContextHost.create<CrudContextInterface<T>>({
+  return AppContextHost.merge<CrudContextInterface<T>>(() => ({
     entity,
     params: {},
     query: {
       search: undefined,
-
       sort: [],
       fields: [],
       limit: undefined,
@@ -63,9 +62,8 @@ export const createTestContext = <T extends PlainLiteralObject = TestRoot>(
     operation,
     action: operationToAction(operation),
     locals: {},
-    trx: null,
     hooks: [],
-  });
+  }));
 };
 
 // Factory functions for creating test data

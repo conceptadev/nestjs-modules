@@ -17,5 +17,8 @@ export const hasValue = (val: unknown): boolean =>
     ? val.every((o) => isValue(o))
     : isValue(val);
 
+const ISO_DATE_REGEX =
+  /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?)?$/;
+
 export const isDateString = (val: string): boolean =>
-  isStringFull(val) && !isNaN(Date.parse(val));
+  isStringFull(val) && ISO_DATE_REGEX.test(val) && !isNaN(Date.parse(val));

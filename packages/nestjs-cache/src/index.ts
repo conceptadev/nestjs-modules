@@ -1,14 +1,51 @@
 export { CacheModule } from './cache.module';
 
-export { CacheService } from './services/cache.service';
-export { CacheCreateDto } from './dto/cache-create.dto';
-export { CacheUpdateDto } from './dto/cache-update.dto';
-export { CacheDto } from './dto/cache.dto';
+// domain object
+export { Cache } from './domain/aggregates/cache';
+
+// repository
+export { CacheRepository } from './infrastructure/persistence/cache.repository';
+export { CacheRepositoryResolver } from './infrastructure/persistence/cache-repository.resolver';
+
+// dto
+export { CacheCreateDto } from './infrastructure/dtos/cache-create.dto';
+export { CacheUpdateDto } from './infrastructure/dtos/cache-update.dto';
+export { CacheDto } from './infrastructure/dtos/cache.dto';
+
+// domain commands
+export { UpsertCacheCommand } from './application/commands/impl/upsert-cache.command';
+export { ClearCachesByAssigneeCommand } from './application/commands/impl/clear-caches-by-assignee.command';
+export { CreateCacheCommand } from './application/commands/impl/create-cache.command';
+export { UpdateCacheCommand } from './application/commands/impl/update-cache.command';
+export { RemoveCacheCommand } from './application/commands/impl/remove-cache.command';
+export { ReplaceCacheCommand } from './application/commands/impl/replace-cache.command';
+export { ArchiveCacheCommand } from './application/commands/impl/archive-cache.command';
+
+// domain events
+export { CacheCreatedEvent } from './domain/events/cache-created.event';
+export { CacheUpdatedEvent } from './domain/events/cache-updated.event';
+export { CacheReplacedEvent } from './domain/events/cache-replaced.event';
+export { CacheExtendedEvent } from './domain/events/cache-extended.event';
+
+// domain queries
+export { GetCacheQuery } from './application/queries/impl/get-cache.query';
+export { FindOneCacheQuery } from './application/queries/impl/find-one-cache.query';
+export { FindCachesByAssigneeQuery } from './application/queries/impl/find-caches-by-assignee.query';
+
+// domain handlers
+export { UpsertCacheHandler } from './application/commands/handlers/upsert-cache.handler';
+export { ClearCachesByAssigneeHandler } from './application/commands/handlers/clear-caches-by-assignee.handler';
+export { CreateCacheHandler } from './application/commands/handlers/create-cache.handler';
+export { UpdateCacheHandler } from './application/commands/handlers/update-cache.handler';
+export { RemoveCacheHandler } from './application/commands/handlers/remove-cache.handler';
+export { ReplaceCacheHandler } from './application/commands/handlers/replace-cache.handler';
+export { ArchiveCacheHandler } from './application/commands/handlers/archive-cache.handler';
+export { GetCacheHandler } from './application/queries/handlers/get-cache.handler';
+export { FindOneCacheHandler } from './application/queries/handlers/find-one-cache.handler';
+export { FindCachesByAssigneeHandler } from './application/queries/handlers/find-caches-by-assignee.handler';
 
 // exceptions
-export { CacheException } from './exceptions/cache.exception';
-export { CacheAssignmentNotFoundException } from './exceptions/cache-assignment-not-found.exception';
-export { CacheEntityAlreadyExistsException } from './exceptions/cache-entity-already-exists.exception';
-export { CacheEntityNotFoundException } from './exceptions/cache-entity-not-found.exception';
-export { CacheInvalidExpiredDateException } from './exceptions/cache-invalid-expired-date.exception';
-export { CacheMissingEntitiesOptionException } from './exceptions/cache-missing-entities-option.exception';
+export { CacheException } from './domain/exceptions/cache.exception';
+export { CacheEntityNotFoundException } from './infrastructure/exceptions/cache-entity-not-found.exception';
+export { CacheInvalidExpiredDateException } from './domain/exceptions/cache-invalid-expired-date.exception';
+export { CacheNotFoundException } from './infrastructure/persistence/exceptions/cache-not-found.exception';

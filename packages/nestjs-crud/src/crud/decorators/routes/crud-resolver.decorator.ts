@@ -5,31 +5,21 @@ import {
 } from '../../../services/crud-metadata.service';
 
 /**
- * Set the resolver for a controller or method.
+ * Set the resolver for a controller.
  *
- * When applied to a class, sets the default resolver for all methods.
- * When applied to a method, overrides the controller/module default.
- *
- * Resolution order: `method > controller > module default`
+ * The resolver controls how operations are dispatched at runtime and
+ * how handlers are decorated at build time. Applied at the class level only.
  *
  * @example
  * ```typescript
- * // Controller-level: all methods use this resolver
  * @Controller('products')
- * @CrudResolver(CrudOperationResolver)
+ * @CrudResolver(CrudCqrsResolver)
  * class ProductController {
  *   // ...
- * }
- *
- * // Method-level: override for specific method
- * @CrudList()
- * @CrudResolver(CrudCqrsResolver)
- * async list(@Ctx() ctx) {
- *   return this.crudResolver.list(ctx);
  * }
  * ```
  */
 export const CrudResolver = CrudMetadata.createDecorator({
   key: CRUD_MODULE_RESOLVER_METADATA,
-  lookupTarget: CrudMetadataLookupTarget.MethodAndClass,
+  lookupTarget: CrudMetadataLookupTarget.Class,
 });

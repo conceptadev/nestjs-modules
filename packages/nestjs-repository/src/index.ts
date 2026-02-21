@@ -31,7 +31,10 @@ export { TransactionFactoryInterface } from './interfaces/transaction-factory.in
 export { TransactionManager } from './transaction/transaction-manager';
 export { TransactionScope } from './transaction/transaction-scope';
 export { TransactionalRunner } from './transaction/transactional-runner';
-export { Transactional } from './transaction/transactional.decorator';
+export {
+  Transactional,
+  TransactionalOptions,
+} from './transaction/transactional.decorator';
 export { TransactionInterceptor } from './interceptors/transaction.interceptor';
 
 // ═══════════════════════════════════════════════════════════════════

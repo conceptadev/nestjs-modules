@@ -9,4 +9,9 @@ import { TransactionContextInterface } from './transaction-context.interface';
  */
 export interface RepositoryContextInterface
   extends TransactionContextInterface,
-    HookContextInterface {}
+    HookContextInterface {
+  /**
+   * Entity key used to resolve the correct repository.
+   */
+  entity: string;
+}

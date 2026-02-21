@@ -4,6 +4,16 @@
   "description": "Rockets NestJS Common",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing.d.ts",
+      "default": "./dist/testing.js"
+    }
+  },
   "license": "BSD-3-Clause",
   "publishConfig": {
     "access": "public"

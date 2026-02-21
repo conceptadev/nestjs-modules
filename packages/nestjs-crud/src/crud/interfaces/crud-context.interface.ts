@@ -14,10 +14,6 @@ export interface CrudContextInterface<
   T extends PlainLiteralObject = PlainLiteralObject,
 > extends RepositoryContextInterface {
   /**
-   * Entity name for this controller (used for adapter token resolution).
-   */
-  entity: string;
-  /**
    * Route parameter values from URL path (e.g., `\{ id: 5, userId: 'abc' \}`).
    * Simple key-value object, not WhereCondition[].
    */

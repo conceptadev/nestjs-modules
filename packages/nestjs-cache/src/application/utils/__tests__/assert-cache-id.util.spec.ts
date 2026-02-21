@@ -1,0 +1,38 @@
+import { CacheException } from '../../../domain/exceptions/cache.exception';
+import { assertCacheId } from '../assert-cache-id.util';
+
+describe('assertCacheId', () => {
+  it('should not throw for a valid string', () => {
+    expect(() => assertCacheId('abc-123')).not.toThrow();
+  });
+
+  it('should throw CacheException for an empty string', () => {
+    expect(() => assertCacheId('')).toThrow(CacheException);
+  });
+
+  it('should throw CacheException for number', () => {
+    expect(() => assertCacheId(123)).toThrow(CacheException);
+  });
+
+  it('should throw CacheException for undefined', () => {
+    expect(() => assertCacheId(undefined)).toThrow(CacheException);
+  });
+
+  it('should throw CacheException for null', () => {
+    expect(() => assertCacheId(null)).toThrow(CacheException);
+  });
+
+  it('should throw CacheException for object', () => {
+    expect(() => assertCacheId({})).toThrow(CacheException);
+  });
+
+  it('should include typeof in error message', () => {
+    try {
+      assertCacheId(42);
+      fail('Expected CacheException');
+    } catch (e) {
+      expect(e).toBeInstanceOf(CacheException);
+      expect((e as CacheException).message).toContain('number');
+    }
+  });
+});

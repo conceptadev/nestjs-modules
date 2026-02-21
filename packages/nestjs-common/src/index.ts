@@ -7,6 +7,10 @@ export {
   MutateOperations,
 } from './enums/operation.enum';
 
+// Core
+export { DomainFactory } from './core.interfaces';
+export { DomainMappable } from './core.interfaces';
+
 // DTOs
 export { AuditDto } from './audit/dto/audit.dto';
 export { CommonEntityDto } from './common/dto/common-entity.dto';
@@ -183,11 +187,12 @@ export { SpecificationInterface } from './hooks/interfaces/specification.interfa
 export { HookOption, HookWithSpec } from './hooks/hook.types';
 
 // Context host and decorators
-export { AppContextHost, TypedAppContext } from './context/app-context';
+export { AppContextHost } from './context/app-context';
 export { getAppContext } from './context/get-app-context.util';
 export { Ctx } from './context/ctx.decorator';
 
 // Context interfaces
+export { AppContextInterface } from './context/interfaces/app-context.interface';
 export { HookContextInterface } from './context/interfaces/hook-context.interface';
 export { TransactionContextInterface } from './context/interfaces/transaction-context.interface';
 export { RepositoryContextInterface } from './context/interfaces/repository-context.interface';

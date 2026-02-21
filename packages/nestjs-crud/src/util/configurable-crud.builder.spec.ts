@@ -315,6 +315,8 @@ describe('ConfigurableCrudBuilder', () => {
 
     it('should use custom resolver when specified', () => {
       class CustomResolver implements CrudResolverInterface {
+        static decorateQueryHandler = jest.fn();
+        static decorateCommandHandler = jest.fn();
         list = jest.fn();
         read = jest.fn();
         create = jest.fn();

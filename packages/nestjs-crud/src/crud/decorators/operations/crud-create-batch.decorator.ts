@@ -4,6 +4,7 @@ import { Operation } from '@concepta/nestjs-common';
 
 import { CRUD_MODULE_ROUTE_CREATE_MANY_DEFAULT_PATH } from '../../../crud.constants';
 import { CrudValidationOptions } from '../../../crud.types';
+import { getTransactionalDecorators } from '../../../util/get-transactional-decorators';
 import { CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
 import { CrudCreateBatchCommand } from '../../operations/commands/crud-create-batch.command';
 import { CrudCreateBatchHandler } from '../../operations/handlers/crud-create-batch.handler';
@@ -31,6 +32,7 @@ export const CrudCreateBatch = <
     request,
     response,
     api,
+    transactional,
   } = { ...options };
 
   const bodyBatchDto = request?.bodyBatch;
@@ -57,5 +59,6 @@ export const CrudCreateBatch = <
       ...api?.body,
     }),
     CrudApiResponse(api?.response),
+    ...getTransactionalDecorators(transactional),
   );
 };

@@ -68,11 +68,11 @@ describe('CrudFederationService - Handler Resolution', () => {
     );
 
     const request = createTestContext<TestRoot>();
-    request.options = {
+    Object.assign(request.options, {
       query: {
         relations: createTestRelations([relation]),
       },
-    };
+    });
 
     // Execute federation list
     await federationService.list(request);
@@ -132,11 +132,11 @@ describe('CrudFederationService - Handler Resolution', () => {
     );
 
     const request = createTestContext<TestRoot>();
-    request.options = {
+    Object.assign(request.options, {
       query: {
         relations: createTestRelations([relation]),
       },
-    };
+    });
 
     const result = await federationService.list(request);
 

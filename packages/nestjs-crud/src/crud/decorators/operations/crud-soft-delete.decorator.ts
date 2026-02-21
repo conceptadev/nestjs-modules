@@ -9,6 +9,7 @@ import {
 import { Operation } from '@concepta/nestjs-common';
 
 import { CRUD_MODULE_ROUTE_ID_DEFAULT_PATH } from '../../../crud.constants';
+import { getTransactionalDecorators } from '../../../util/get-transactional-decorators';
 import { CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
 import { CrudSoftDeleteCommand } from '../../operations/commands/crud-soft-delete.command';
 import { CrudSoftDeleteHandler } from '../../operations/handlers/crud-soft-delete.handler';
@@ -37,6 +38,7 @@ export const CrudSoftDelete = <
     request,
     response,
     api,
+    transactional,
   } = { ...options };
 
   const status =
@@ -60,5 +62,6 @@ export const CrudSoftDelete = <
     CrudApiOperation(api?.operation),
     CrudApiParam(api?.params),
     CrudApiResponse(api?.response),
+    ...getTransactionalDecorators(transactional),
   );
 };

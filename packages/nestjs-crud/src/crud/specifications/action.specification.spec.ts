@@ -1,4 +1,4 @@
-import { ActionEnum, Operation } from '@concepta/nestjs-common';
+import { ActionEnum, AppContextHost, Operation } from '@concepta/nestjs-common';
 
 import { CrudContextInterface } from '../interfaces/crud-context.interface';
 
@@ -8,17 +8,16 @@ function createContext(
   operation: Operation,
   action: ActionEnum,
 ): CrudContextInterface {
-  return {
+  return AppContextHost.merge<CrudContextInterface>(() => ({
     entity: '',
     operation,
     action,
     hooks: [],
-    trx: null,
     params: {},
     query: {} as CrudContextInterface['query'],
     options: {} as CrudContextInterface['options'],
     locals: {},
-  };
+  }));
 }
 
 describe('ActionSpecification', () => {

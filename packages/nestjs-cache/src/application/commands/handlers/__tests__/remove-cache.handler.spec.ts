@@ -1,0 +1,45 @@
+import {
+  createMockCacheRepository,
+  createMockRepositoryResolver,
+  createMockTransaction,
+  createMockContext,
+  createMockCacheEntity,
+} from '../../../../__tests__/helpers/mock.helpers';
+import { Cache } from '../../../../domain/aggregates/cache';
+import { RemoveCacheCommand } from '../../impl/remove-cache.command';
+import { RemoveCacheHandler } from '../remove-cache.handler';
+
+describe(RemoveCacheHandler.name, () => {
+  const ctx = createMockContext();
+  let mockRepo: ReturnType<typeof createMockCacheRepository>;
+  let handler: RemoveCacheHandler;
+
+  beforeEach(() => {
+    mockRepo = createMockCacheRepository();
+    const { transaction } = createMockTransaction();
+
+    handler = new RemoveCacheHandler(
+      createMockRepositoryResolver(mockRepo),
+      transaction as never,
+    );
+  });
+
+  it('should return the removed Cache', async () => {
+    mockRepo.get.mockResolvedValue(Cache.toInstance(createMockCacheEntity()));
+
+    const result = await handler.execute(
+      new RemoveCacheCommand(ctx, 'test-id'),
+    );
+
+    expect(result).toBeInstanceOf(Cache);
+    expect(result.id).toBe('test-id');
+  });
+
+  it('should call remove on the repository', async () => {
+    mockRepo.get.mockResolvedValue(Cache.toInstance(createMockCacheEntity()));
+
+    await handler.execute(new RemoveCacheCommand(ctx, 'test-id'));
+
+    expect(mockRepo.remove).toHaveBeenCalledTimes(1);
+  });
+});

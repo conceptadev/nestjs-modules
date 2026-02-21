@@ -9,6 +9,7 @@ import {
 import { Operation } from '@concepta/nestjs-common';
 
 import { CRUD_MODULE_ROUTE_RESTORE_DEFAULT_PATH } from '../../../crud.constants';
+import { getTransactionalDecorators } from '../../../util/get-transactional-decorators';
 import { CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
 import { CrudRestoreCommand } from '../../operations/commands/crud-restore.command';
 import { CrudRestoreHandler } from '../../operations/handlers/crud-restore.handler';
@@ -35,6 +36,7 @@ export const CrudRestore = <T extends PlainLiteralObject = PlainLiteralObject>(
     request,
     response,
     api,
+    transactional,
   } = { ...options };
 
   const status =
@@ -55,5 +57,6 @@ export const CrudRestore = <T extends PlainLiteralObject = PlainLiteralObject>(
     CrudApiOperation(api?.operation),
     CrudApiParam(api?.params),
     CrudApiResponse(api?.response),
+    ...getTransactionalDecorators(transactional),
   );
 };

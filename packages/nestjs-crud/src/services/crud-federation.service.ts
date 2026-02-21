@@ -2,6 +2,7 @@ import { PlainLiteralObject } from '@nestjs/common';
 
 import {
   ActionEnum,
+  AppContextHost,
   Operation,
   SortCondition,
   SortOrder,
@@ -1290,7 +1291,9 @@ export class CrudFederationService<
     const { limit, offset, executionStrategy, relationBinding, sorts, trx } =
       options;
 
-    const relationCtx: CrudContextInterface<Relations[number]> = {
+    const relationCtx = AppContextHost.merge<
+      CrudContextInterface<Relations[number]>
+    >(() => ({
       entity: relationBinding.entity,
       operation: Operation.List,
       action: ActionEnum.READ,
@@ -1309,9 +1312,9 @@ export class CrudFederationService<
       },
       locals: {},
       options: {},
-      trx: trx ?? null,
+      ...(trx && { trx }),
       hooks: [],
-    };
+    }));
 
     // apply relation sorts if provided
     if (sorts && sorts.length > 0) {

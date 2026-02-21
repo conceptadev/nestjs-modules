@@ -1,6 +1,5 @@
 import { CacheInterface } from './cache.interface';
 
-export interface CacheUpdatableInterface
-  extends Pick<CacheInterface, 'key' | 'type' | 'data' | 'assigneeId'> {
+export interface CacheUpdatableInterface extends Pick<CacheInterface, 'data'> {
   expiresIn: string | null;
 }

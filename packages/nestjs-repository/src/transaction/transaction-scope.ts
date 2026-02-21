@@ -1,13 +1,19 @@
-import { Injectable, Inject, Logger, Optional } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  Optional,
+  PlainLiteralObject,
+} from '@nestjs/common';
 
 import {
-  TransactionManagerInterface,
+  AppContextHost,
   TransactionContextInterface,
 } from '@concepta/nestjs-common';
 
 import { TransactionRequiredException } from '../exceptions/transaction-required.exception';
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception';
 import { RepositoryModuleOptionsInterface } from '../interfaces/repository-module-options.interface';
+import { PropagationBehavior } from '../interfaces/transactional-options.interface';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants';
 
 import {
@@ -15,47 +21,39 @@ import {
   TRANSACTION_FACTORY_REGISTRY,
 } from './transaction-factory-registry';
 import { TransactionManager } from './transaction-manager';
-import {
-  PropagationBehavior,
-  TransactionalOptions,
-} from './transactional.decorator';
 
 const DEFAULT_TIMEOUT = 30000;
 
-/**
- * Pre-computed propagation resolution results to avoid object allocation per call.
- */
-const PROPAGATION_RESULTS = {
-  CREATE_NEW: { shouldCreateNew: true, shouldParticipate: false } as const,
-  PARTICIPATE: { shouldCreateNew: false, shouldParticipate: true } as const,
-  SUPPORTS_EXISTING: {
-    shouldCreateNew: false,
-    shouldParticipate: true,
-  } as const,
-  SUPPORTS_NONE: { shouldCreateNew: false, shouldParticipate: false } as const,
-  REQUIRED_NEW: { shouldCreateNew: true, shouldParticipate: false } as const,
-  REQUIRED_EXISTING: {
-    shouldCreateNew: false,
-    shouldParticipate: true,
-  } as const,
-} as const;
+export interface TransactionRunOptions {
+  propagation?: PropagationBehavior;
+  readOnly?: boolean;
+  timeout?: number;
+}
 
 /**
- * Orchestrates transaction lifecycle across multiple drivers/datasources.
- * Used by TransactionalRunner and can be used directly for programmatic transactions.
+ * Orchestrates transaction lifecycle.
+ *
+ * Every unit of work calls `run()`. The first (outermost) call creates the
+ * `TransactionManager` and registers it on the context. Nested `run()` calls
+ * see the existing manager and simply execute the operation (join).
+ *
+ * Only the outermost `run()` commits/rolls back and flushes callbacks.
  *
  * @example
  * ```typescript
- * // Programmatic usage
- * await this.transactionScope.run(ctx, async () => {
- *   await this.orders.save(order, { ctx });
- *   await this.inventory.save(inv, { ctx });
- * });
+ * async execute(command: CreateCacheCommand): Promise<CacheInterface> {
+ *   const { context, dto } = command;
+ *   return this.txScope.run(context, async (trx) => {
+ *     const cache = Cache.create(dto, this.settings);
+ *     await cacheRepo.save({ dto: cache.toPlain(), ctx: context });
+ *     trx.onCommit(context, () => cache.commit());
+ *     return cache.toPlain();
+ *   });
+ * }
  * ```
  */
 @Injectable()
 export class TransactionScope {
-  private readonly logger = new Logger(TransactionScope.name);
   private readonly defaultTimeout: number;
 
   constructor(
@@ -69,208 +67,113 @@ export class TransactionScope {
   }
 
   /**
-   * Execute an operation within transactions for all registered drivers.
+   * Execute an operation within a transaction scope.
+   *
+   * Uses `merge()` to ensure a context exists and set up the transaction
+   * manager if one doesn't already exist. Nested calls join the existing
+   * transaction. Only the outermost call owns the lifecycle.
    */
   async run<T>(
-    ctx: TransactionContextInterface,
-    operation: () => Promise<T>,
-    options: TransactionalOptions = {},
+    ctx: PlainLiteralObject,
+    operation: (trx: TransactionScope) => Promise<T>,
+    options?: TransactionRunOptions,
   ): Promise<T> {
-    const propagation = options.propagation ?? 'REQUIRED';
-    const readOnly = options.readOnly ?? false;
-    const timeout = options.timeout ?? this.defaultTimeout;
+    const propagation = options?.propagation ?? 'REQUIRED';
+    const readOnly = options?.readOnly ?? false;
+    const timeout = options?.timeout ?? this.defaultTimeout;
 
-    const hasExisting = ctx.trx !== null;
+    let manager: TransactionManager | undefined;
 
-    const { shouldCreateNew, shouldParticipate } = this.resolvePropagation(
-      propagation,
-      hasExisting,
-    );
+    const context = AppContextHost.merge<TransactionContextInterface>((has) => {
+      // MANDATORY: require existing transaction
+      if (propagation === 'MANDATORY' && !has('trx')) {
+        throw new TransactionRequiredException();
+      }
 
-    // Join existing transactions
-    if (shouldParticipate && hasExisting) {
-      this.logger.debug(
-        `Joining existing transactions (propagation: ${propagation})`,
-      );
-      return operation();
+      // SUPPORTS without existing transaction: skip creating manager
+      if (propagation === 'SUPPORTS' && !has('trx')) {
+        return {};
+      }
+
+      // No existing transaction — I'm the outermost, create manager
+      if (!has('trx')) {
+        manager = new TransactionManager(this.registry);
+        return { trx: manager };
+      }
+
+      return {};
+    }, ctx);
+
+    // SUPPORTS without transaction: run without transaction
+    if (propagation === 'SUPPORTS' && !context.has('trx')) {
+      return operation(this);
     }
 
-    // Non-transactional execution
-    if (!shouldCreateNew) {
-      this.logger.debug(
-        `Executing without transaction (propagation: ${propagation})`,
-      );
-      return operation();
+    // Join existing or just run (manager is only set for outermost)
+    if (!manager) {
+      return operation(this);
     }
 
-    // Ensure ctx.trx exists (create if first run)
-    if (!ctx.trx) {
-      ctx.trx = new TransactionManager();
-    }
+    // I'm the outermost — own the lifecycle
+    try {
+      const result = await this.withTimeout(operation(this), timeout);
 
-    // Create new transactions for all registered factories
-    return this.executeInNewTransactions(ctx.trx, operation, {
-      readOnly,
-      timeout,
-      options,
-    });
+      if (readOnly) {
+        await manager.rollbackAll();
+      } else {
+        await manager.commitAll();
+        manager.flushOnCommitCallbacks();
+      }
+
+      return result;
+    } catch (error) {
+      await manager.rollbackAll();
+      manager.flushOnRollbackCallbacks();
+      throw error;
+    }
   }
 
   /**
-   * Execute an operation in read-only transactions.
-   * Shorthand for `run(ctx, operation, \{ readOnly: true \})`.
+   * Execute an operation in a read-only transaction scope.
+   * Shorthand for `run(ctx, operation, { readOnly: true })`.
    */
   async runReadOnly<T>(
-    ctx: TransactionContextInterface,
-    operation: () => Promise<T>,
+    ctx: PlainLiteralObject,
+    operation: (trx: TransactionScope) => Promise<T>,
   ): Promise<T> {
     return this.run(ctx, operation, { readOnly: true });
   }
 
-  private async executeInNewTransactions<T>(
-    manager: TransactionManagerInterface,
-    operation: () => Promise<T>,
-    config: {
-      readOnly: boolean;
-      timeout: number;
-      options: TransactionalOptions;
-    },
-  ): Promise<T> {
-    const { readOnly, timeout, options } = config;
-
-    // No factories registered - execute without transaction overhead
-    if (this.registry.count === 0) {
-      return operation();
-    }
-
-    const factories = this.registry.getAll();
-
-    // Pre-allocate keys array based on factory count
-    const keys: string[] = new Array(factories.size);
-    let keyIndex = 0;
-
-    // Lazy timeout - only created when we have transactions to manage
-    let timeoutHandle: NodeJS.Timeout | undefined;
-    let timeoutPromise: Promise<never> | undefined;
-
-    try {
-      // Push new transactions onto the stack
-      for (const [key, factory] of factories) {
-        const tx = factory.create();
-        await tx.start();
-        manager.push(key, tx);
-        keys[keyIndex++] = key;
-        this.logger.debug(
-          `Started transaction for ${key} (readOnly: ${readOnly})`,
-        );
-      }
-
-      // Create timeout promise only after transactions are started
-      timeoutPromise = new Promise<never>((_, reject) => {
-        timeoutHandle = setTimeout(() => {
-          reject(new TransactionTimeoutException(timeout));
-        }, timeout);
-      });
-
-      const result = await Promise.race([operation(), timeoutPromise]);
-
-      await this.finalize(manager, readOnly);
-      return result;
-    } catch (error) {
-      await this.handleError(manager, error, options);
-      throw error;
-    } finally {
-      if (timeoutHandle) {
-        clearTimeout(timeoutHandle);
-      }
-      // Pop all transactions we pushed
-      for (let i = 0; i < keyIndex; i++) {
-        manager.pop(keys[i]);
-      }
-    }
+  /**
+   * Register a callback to run after the transaction commits.
+   */
+  onCommit(ctx: TransactionContextInterface, fn: () => void): void {
+    ctx.trx.onCommit(fn);
   }
 
-  private resolvePropagation(
-    propagation: PropagationBehavior,
-    hasExisting: boolean,
-  ): {
-    readonly shouldCreateNew: boolean;
-    readonly shouldParticipate: boolean;
-  } {
-    switch (propagation) {
-      case 'REQUIRED':
-        // Join existing or create new
-        return hasExisting
-          ? PROPAGATION_RESULTS.REQUIRED_EXISTING
-          : PROPAGATION_RESULTS.REQUIRED_NEW;
-
-      case 'REQUIRES_NEW':
-        // Always create new, suspend existing
-        return PROPAGATION_RESULTS.CREATE_NEW;
-
-      case 'SUPPORTS':
-        // Use existing if available, else non-transactional
-        return hasExisting
-          ? PROPAGATION_RESULTS.SUPPORTS_EXISTING
-          : PROPAGATION_RESULTS.SUPPORTS_NONE;
-
-      case 'MANDATORY':
-        // Must have existing
-        if (!hasExisting) {
-          throw new TransactionRequiredException();
-        }
-        return PROPAGATION_RESULTS.PARTICIPATE;
-
-      default:
-        return PROPAGATION_RESULTS.CREATE_NEW;
-    }
+  /**
+   * Register a callback to run after the transaction rolls back.
+   */
+  onRollback(ctx: TransactionContextInterface, fn: () => void): void {
+    ctx.trx.onRollback(fn);
   }
 
-  private async finalize(
-    manager: TransactionManagerInterface,
-    readOnly: boolean,
-  ): Promise<void> {
-    if (readOnly) {
-      this.logger.debug('Rolling back all read-only transactions');
-      await manager.rollbackAll();
-    } else {
-      this.logger.debug(
-        'Committing dirty transactions, rolling back clean ones',
+  private withTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const handle = setTimeout(() => {
+        reject(new TransactionTimeoutException(timeout));
+      }, timeout);
+
+      promise.then(
+        (result) => {
+          clearTimeout(handle);
+          resolve(result);
+        },
+        (error) => {
+          clearTimeout(handle);
+          reject(error);
+        },
       );
-      await manager.commitAll();
-    }
-  }
-
-  private async handleError(
-    manager: TransactionManagerInterface,
-    error: unknown,
-    options: TransactionalOptions,
-  ): Promise<void> {
-    // Check if this error type should skip rollback
-    const skipRollback = options.noRollbackFor?.some(
-      (type) => error instanceof type,
-    );
-
-    if (skipRollback) {
-      this.logger.debug('Committing despite error (noRollbackFor match)');
-      try {
-        await manager.commitAll();
-        return;
-      } catch (commitError) {
-        this.logger.error(
-          'Commit failed after noRollbackFor match:',
-          commitError,
-        );
-        // Fall through to rollback
-      }
-    }
-
-    this.logger.debug('Rolling back all transactions due to error');
-
-    try {
-      await manager.rollbackAll();
-    } catch (rollbackError) {
-      this.logger.error('Rollback failed:', rollbackError);
-    }
+    });
   }
 }

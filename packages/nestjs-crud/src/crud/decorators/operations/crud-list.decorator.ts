@@ -2,6 +2,7 @@ import { applyDecorators, Get, PlainLiteralObject } from '@nestjs/common';
 
 import { Operation } from '@concepta/nestjs-common';
 
+import { getTransactionalDecorators } from '../../../util/get-transactional-decorators';
 import { CrudRouteQueryOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
 import { CrudListHandler } from '../../operations/handlers/crud-list.handler';
 import { CrudListQuery } from '../../operations/queries/crud-list.query';
@@ -20,7 +21,7 @@ import { CrudValidate } from '../routes/crud-validate.decorator';
 export const CrudList = <T extends PlainLiteralObject = PlainLiteralObject>(
   options: CrudRouteQueryOptionsInterface<T> = {},
 ) => {
-  const { path, query, queryHandler, request, response, api } = {
+  const { path, query, queryHandler, request, response, api, transactional } = {
     ...options,
   };
 
@@ -37,5 +38,6 @@ export const CrudList = <T extends PlainLiteralObject = PlainLiteralObject>(
     CrudApiOperation(api?.operation),
     CrudApiQuery(api?.query),
     CrudApiResponse(api?.response),
+    ...getTransactionalDecorators(transactional),
   );
 };

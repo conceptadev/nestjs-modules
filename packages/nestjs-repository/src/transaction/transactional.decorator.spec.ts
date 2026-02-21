@@ -25,7 +25,7 @@ describe('Transactional decorator', () => {
 
   it('should apply metadata with custom propagation', () => {
     class TestClass {
-      @Transactional({ propagation: 'REQUIRES_NEW' })
+      @Transactional({ propagation: 'MANDATORY' })
       testMethod() {
         return 'test';
       }
@@ -36,7 +36,7 @@ describe('Transactional decorator', () => {
       TestClass.prototype.testMethod,
     );
 
-    expect(metadata.propagation).toBe('REQUIRES_NEW');
+    expect(metadata.propagation).toBe('MANDATORY');
   });
 
   it('should apply metadata with SUPPORTS propagation', () => {
@@ -122,7 +122,7 @@ describe('Transactional decorator', () => {
   it('should apply metadata with multiple options', () => {
     class TestClass {
       @Transactional({
-        propagation: 'REQUIRES_NEW',
+        propagation: 'SUPPORTS',
         readOnly: true,
         timeout: 10000,
         noRollbackFor: [TestError],
@@ -137,7 +137,7 @@ describe('Transactional decorator', () => {
       TestClass.prototype.testMethod,
     );
 
-    expect(metadata.propagation).toBe('REQUIRES_NEW');
+    expect(metadata.propagation).toBe('SUPPORTS');
     expect(metadata.readOnly).toBe(true);
     expect(metadata.timeout).toBe(10000);
     expect(metadata.noRollbackFor).toContain(TestError);

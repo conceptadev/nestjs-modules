@@ -51,7 +51,11 @@ function definitionTransform(
     global,
     imports: createCrudImports({ imports }),
     providers: createCrudProviders({ providers, defaultResolver }),
-    exports: [ConfigModule, RAW_OPTIONS_TOKEN, ...createCrudExports()],
+    exports: [
+      ConfigModule,
+      RAW_OPTIONS_TOKEN,
+      ...createCrudExports({ defaultResolver }),
+    ],
   };
 }
 
@@ -67,7 +71,11 @@ export function createCrudImports(
   }
 }
 
-export function createCrudExports() {
+export function createCrudExports(options?: {
+  defaultResolver?: CrudModuleOptionsExtrasInterface['defaultResolver'];
+}) {
+  const resolverClass = options?.defaultResolver ?? CrudAdapterResolver;
+
   return [
     CRUD_MODULE_SETTINGS_TOKEN,
     CrudMetaview,
@@ -75,6 +83,7 @@ export function createCrudExports() {
     CrudOperationResolver,
     CRUD_DEFAULT_RESOLVER_TOKEN,
     CrudLocalResolverService,
+    resolverClass,
   ];
 }
 
@@ -84,23 +93,7 @@ export function createCrudProviders(options: {
 }): Provider[] {
   const { providers = [], defaultResolver } = options;
 
-  // Determine the default resolver provider
-  // If no custom resolver or a built-in resolver, use useExisting to avoid duplicates
-  // If external resolver (like CrudCqrsResolver), use useClass to create instance
   const resolverClass = defaultResolver ?? CrudAdapterResolver;
-  const isBuiltIn =
-    resolverClass === CrudAdapterResolver ||
-    resolverClass === CrudOperationResolver;
-
-  const defaultResolverProvider: Provider = isBuiltIn
-    ? {
-        provide: CRUD_DEFAULT_RESOLVER_TOKEN,
-        useExisting: resolverClass,
-      }
-    : {
-        provide: CRUD_DEFAULT_RESOLVER_TOKEN,
-        useClass: resolverClass,
-      };
 
   return [
     ...providers,
@@ -108,7 +101,11 @@ export function createCrudProviders(options: {
     CrudAdapterResolver,
     CrudOperationResolver,
     CrudLocalResolverService,
-    defaultResolverProvider,
+    resolverClass,
+    {
+      provide: CRUD_DEFAULT_RESOLVER_TOKEN,
+      useExisting: resolverClass,
+    },
     createCrudSettingsProvider(),
   ];
 }

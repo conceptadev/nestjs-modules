@@ -86,14 +86,15 @@ export class TypeOrmRepository<
   }
 
   /**
-   * Get the repository, using transactional EntityManager if available
+   * Get the repository, using transactional EntityManager if available.
+   * Creates the driver transaction lazily on first access via `getOrStart()`.
    */
-  protected getRepo(ctx?: RepositoryContextInterface): Repository<Entity> {
-    if (this.transactionKey) {
-      const tx = ctx?.trx?.get(this.transactionKey);
-      if (tx) {
-        return tx.getClient<EntityManager>().getRepository(this.metadata.type);
-      }
+  protected async getRepo(
+    ctx?: RepositoryContextInterface,
+  ): Promise<Repository<Entity>> {
+    if (this.transactionKey && ctx?.trx) {
+      const tx = await ctx.trx.getOrStart(this.transactionKey);
+      return tx.getClient<EntityManager>().getRepository(this.metadata.type);
     }
     return this.repo;
   }
@@ -273,7 +274,8 @@ export class TypeOrmRepository<
 
       // Execute
       const findOptions = this.buildNativeFindManyOptions(scopedOptions);
-      let scopedResult = await this.getRepo(ctx).find(findOptions);
+      const repo = await this.getRepo(ctx);
+      let scopedResult = await repo.find(findOptions);
 
       // After hooks
       scopedResult = await this.runHooks(
@@ -315,7 +317,8 @@ export class TypeOrmRepository<
 
       // Execute
       const findOptions = this.buildNativeFindOneOptions(scopedOptions);
-      let scopedResult = await this.getRepo(ctx).findOne(findOptions);
+      const repo = await this.getRepo(ctx);
+      let scopedResult = await repo.findOne(findOptions);
 
       // After hooks
       scopedResult = await this.runHooks(
@@ -355,7 +358,8 @@ export class TypeOrmRepository<
 
       // Execute
       const findOptions = this.buildNativeFindManyOptions(scopedOptions);
-      let scopedResult = await this.getRepo(ctx).count(findOptions);
+      const repo = await this.getRepo(ctx);
+      let scopedResult = await repo.count(findOptions);
 
       // After hooks (no AFTER_READ — result is a number, not entity data)
       scopedResult = await this.runHooks(
@@ -392,7 +396,8 @@ export class TypeOrmRepository<
 
       // Execute
       const findOptions = this.buildNativeFindManyOptions(scopedOptions);
-      let scopedResult = await this.getRepo(ctx).findAndCount(findOptions);
+      const repo = await this.getRepo(ctx);
+      let scopedResult = await repo.findAndCount(findOptions);
 
       // After hooks (no AFTER_READ — result is [Entity[], number], not entity data)
       scopedResult = await this.runHooks(
@@ -416,7 +421,6 @@ export class TypeOrmRepository<
     options?: RepositoryCreateOptions,
   ): Promise<Entity> {
     const ctx = options?.ctx;
-    this.markDirty(ctx);
 
     try {
       // Before hooks
@@ -432,7 +436,9 @@ export class TypeOrmRepository<
       );
 
       // Execute
-      let scopedResult = await this.getRepo(ctx).save(scopedEntity);
+      const repo = await this.getRepo(ctx);
+      this.markDirty(ctx);
+      let scopedResult = await repo.save(scopedEntity);
 
       // After hooks
       scopedResult = await this.runHooks(
@@ -459,7 +465,6 @@ export class TypeOrmRepository<
     options?: RepositoryCreateOptions,
   ): Promise<Entity[]> {
     const ctx = options?.ctx;
-    this.markDirty(ctx);
 
     try {
       // Before hooks
@@ -475,7 +480,9 @@ export class TypeOrmRepository<
       );
 
       // Execute
-      let scopedResult = await this.getRepo(ctx).save(scopedEntities);
+      const repo = await this.getRepo(ctx);
+      this.markDirty(ctx);
+      let scopedResult = await repo.save(scopedEntities);
 
       // After hooks
       scopedResult = await this.runHooks(
@@ -505,7 +512,6 @@ export class TypeOrmRepository<
     options?: RepositoryUpdateOptions,
   ): Promise<Entity> {
     const ctx = options?.ctx;
-    this.markDirty(ctx);
 
     try {
       // Before hooks
@@ -521,7 +527,8 @@ export class TypeOrmRepository<
       );
 
       // Execute
-      const repo = this.getRepo(ctx);
+      const repo = await this.getRepo(ctx);
+      this.markDirty(ctx);
       const merged = repo.merge(entity, scopedData);
       let scopedResult = await repo.save(merged);
 
@@ -550,7 +557,6 @@ export class TypeOrmRepository<
     options?: RepositoryUpsertOptions,
   ): Promise<Entity> {
     const ctx = options?.ctx;
-    this.markDirty(ctx);
 
     try {
       // Before hooks
@@ -566,7 +572,8 @@ export class TypeOrmRepository<
       );
 
       // Execute
-      const repo = this.getRepo(ctx);
+      const repo = await this.getRepo(ctx);
+      this.markDirty(ctx);
       const conflictPaths = this.getPrimaryColumns();
       const insertResult = await repo.upsert(scopedEntity, conflictPaths);
 
@@ -618,7 +625,6 @@ export class TypeOrmRepository<
     options?: RepositoryUpdateOptions,
   ): Promise<Entity> {
     const ctx = options?.ctx;
-    this.markDirty(ctx);
 
     try {
       // Before hooks
@@ -634,7 +640,8 @@ export class TypeOrmRepository<
       );
 
       // Execute
-      const repo = this.getRepo(ctx);
+      const repo = await this.getRepo(ctx);
+      this.markDirty(ctx);
       const replaced = repo.merge(entity, scopedData);
       let scopedResult = await repo.save(replaced);
 
@@ -665,7 +672,6 @@ export class TypeOrmRepository<
     options?: RepositoryDeleteOptions,
   ): Promise<Entity> {
     const ctx = options?.ctx;
-    this.markDirty(ctx);
 
     try {
       // Before hooks
@@ -681,7 +687,9 @@ export class TypeOrmRepository<
       );
 
       // Execute (TypeORM uses `remove` for hard delete)
-      let scopedResult = await this.getRepo(ctx).remove(scopedEntity);
+      const repo = await this.getRepo(ctx);
+      this.markDirty(ctx);
+      let scopedResult = await repo.remove(scopedEntity);
 
       // After hooks
       scopedResult = await this.runHooks(
@@ -708,7 +716,6 @@ export class TypeOrmRepository<
     options?: RepositoryDeleteOptions,
   ): Promise<Entity> {
     const ctx = options?.ctx;
-    this.markDirty(ctx);
 
     try {
       // Before hooks
@@ -724,7 +731,9 @@ export class TypeOrmRepository<
       );
 
       // Execute (TypeORM uses `softRemove` for soft delete)
-      let scopedResult = await this.getRepo(ctx).softRemove(scopedEntity);
+      const repo = await this.getRepo(ctx);
+      this.markDirty(ctx);
+      let scopedResult = await repo.softRemove(scopedEntity);
 
       // After hooks
       scopedResult = await this.runHooks(
@@ -751,7 +760,6 @@ export class TypeOrmRepository<
     options?: RepositoryRestoreOptions,
   ): Promise<Entity> {
     const ctx = options?.ctx;
-    this.markDirty(ctx);
 
     try {
       // Before hooks
@@ -767,7 +775,9 @@ export class TypeOrmRepository<
       );
 
       // Execute
-      let scopedResult = await this.getRepo(ctx).recover(scopedEntity);
+      const repo = await this.getRepo(ctx);
+      this.markDirty(ctx);
+      let scopedResult = await repo.recover(scopedEntity);
 
       // After hooks
       scopedResult = await this.runHooks(

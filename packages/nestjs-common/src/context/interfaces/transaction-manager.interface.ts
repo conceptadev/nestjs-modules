@@ -32,4 +32,30 @@ export interface TransactionManagerInterface {
    * Only affects current (top of stack) transactions.
    */
   rollbackAll(): Promise<void>;
+
+  /**
+   * Get the current transaction for the given key, or create one lazily
+   * via the factory registry if none exists.
+   */
+  getOrStart(key: string): Promise<TransactionInterface>;
+
+  /**
+   * Register a callback to run after all transactions commit successfully.
+   */
+  onCommit(fn: () => void): void;
+
+  /**
+   * Register a callback to run after transactions are rolled back.
+   */
+  onRollback(fn: () => void): void;
+
+  /**
+   * Execute and clear all onCommit callbacks.
+   */
+  flushOnCommitCallbacks(): void;
+
+  /**
+   * Execute and clear all onRollback callbacks.
+   */
+  flushOnRollbackCallbacks(): void;
 }

@@ -3,6 +3,7 @@ import { applyDecorators, PlainLiteralObject, Post } from '@nestjs/common';
 import { Operation } from '@concepta/nestjs-common';
 
 import { CrudValidationOptions } from '../../../crud.types';
+import { getTransactionalDecorators } from '../../../util/get-transactional-decorators';
 import { CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
 import { CrudCreateCommand } from '../../operations/commands/crud-create.command';
 import { CrudCreateHandler } from '../../operations/handlers/crud-create.handler';
@@ -21,7 +22,15 @@ import { CrudValidate } from '../routes/crud-validate.decorator';
 export const CrudCreate = <T extends PlainLiteralObject = PlainLiteralObject>(
   options: CrudRouteCommandOptionsInterface<T> = {},
 ) => {
-  const { path, command, commandHandler, request, response, api } = {
+  const {
+    path,
+    command,
+    commandHandler,
+    request,
+    response,
+    api,
+    transactional,
+  } = {
     ...options,
   };
 
@@ -46,5 +55,6 @@ export const CrudCreate = <T extends PlainLiteralObject = PlainLiteralObject>(
       ...api?.body,
     }),
     CrudApiResponse(api?.response),
+    ...getTransactionalDecorators(transactional),
   );
 };

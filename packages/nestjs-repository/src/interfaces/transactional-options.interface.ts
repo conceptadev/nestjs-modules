@@ -3,7 +3,6 @@
  */
 export type PropagationBehavior =
   | 'REQUIRED' // Join existing or create new (default)
-  | 'REQUIRES_NEW' // Always create new, suspend existing
   | 'SUPPORTS' // Use existing if available, else non-transactional
   | 'MANDATORY'; // Must have existing, throw if not
 

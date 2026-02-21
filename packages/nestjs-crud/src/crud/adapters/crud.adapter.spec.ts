@@ -2,6 +2,7 @@ import { BadRequestException, Type } from '@nestjs/common';
 
 import {
   ActionEnum,
+  AppContextHost,
   Operation,
   RepositoryInterface,
   Where,
@@ -75,18 +76,16 @@ function makeQuery(
 function makeContext(
   overrides: Partial<CrudContextInterface<TestEntity>> = {},
 ): CrudContextInterface<TestEntity> {
-  return {
-    entity: 'TestEntity',
-    params: {},
-    query: makeQuery(),
-    options: {},
-    operation: Operation.Read,
-    action: ActionEnum.READ,
-    locals: {},
-    trx: null,
-    hooks: [],
-    ...overrides,
-  };
+  return AppContextHost.merge<CrudContextInterface<TestEntity>>(() => ({
+    entity: overrides.entity ?? 'TestEntity',
+    params: overrides.params ?? {},
+    query: overrides.query ?? makeQuery(),
+    options: overrides.options ?? {},
+    operation: overrides.operation ?? Operation.Read,
+    action: overrides.action ?? ActionEnum.READ,
+    locals: overrides.locals ?? {},
+    hooks: overrides.hooks ?? [],
+  }));
 }
 
 describe('CrudAdapter', () => {
@@ -309,20 +308,21 @@ describe('CrudAdapter', () => {
 
   describe('prepareEntityBeforeSave', () => {
     it('should return undefined for non-object input', () => {
+      const ctx = makeContext();
       expect(
-        adapter.prepareEntityBeforeSave(null as never, makeContext()),
+        adapter.prepareEntityBeforeSave(null as never, ctx),
       ).toBeUndefined();
     });
 
     it('should return undefined for empty object', () => {
-      expect(
-        adapter.prepareEntityBeforeSave({} as never, makeContext()),
-      ).toBeUndefined();
+      const ctx = makeContext();
+      expect(adapter.prepareEntityBeforeSave({} as never, ctx)).toBeUndefined();
     });
 
     it('should return entity with dto field values', () => {
       const dto = { id: '1', name: 'Test' } as TestEntity;
-      const result = adapter.prepareEntityBeforeSave(dto, makeContext());
+      const ctx = makeContext();
+      const result = adapter.prepareEntityBeforeSave(dto, ctx);
       expect(result).toBeDefined();
       expect(result?.id).toEqual('1');
       expect(result?.name).toEqual('Test');
@@ -338,7 +338,9 @@ describe('CrudAdapter', () => {
 
     it('should ignore route params not present in dto', () => {
       const dto = { name: 'Test' } as TestEntity;
-      const context = makeContext({ params: { id: 'should-not-appear' } });
+      const context = makeContext({
+        params: { id: 'should-not-appear' },
+      });
       const result = adapter.prepareEntityBeforeSave(dto, context);
       expect(result).toBeDefined();
       expect(result).not.toHaveProperty('id');

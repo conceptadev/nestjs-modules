@@ -1,6 +1,7 @@
 import { Inject, Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 
 import { CrudAdapter } from '../../adapters/crud.adapter';
+import { CrudCommandHandlerInterface } from '../../interfaces/crud-command-handler.interface';
 import { CrudControllerDomainInterface } from '../../interfaces/crud-controller-domain.interface';
 import {
   CrudResolverInterface,
@@ -8,7 +9,6 @@ import {
 } from '../../interfaces/crud-resolver.interface';
 import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver';
 import { getControllerName, getDynamicAdapterToken } from '../../util';
-import { CrudCommandHandler } from '../handlers/crud-command.handler';
 import { CrudQueryHandler } from '../handlers/crud-query.handler';
 
 interface CreateHandlerOptionsBase extends CrudControllerDomainInterface {
@@ -29,7 +29,7 @@ interface CreateQueryHandlerOptions<Entity extends PlainLiteralObject>
 interface CreateCommandHandlerOptions<Entity extends PlainLiteralObject>
   extends CreateHandlerOptionsBase {
   /** Base handler class to extend */
-  baseClass: Type<CrudCommandHandler<Entity>>;
+  baseClass: Type<CrudCommandHandlerInterface<Entity>>;
   /** Command class for handler registration */
   commandClass: Type;
 }
@@ -77,7 +77,7 @@ export function createQueryHandler<Entity extends PlainLiteralObject>(
  */
 export function createCommandHandler<Entity extends PlainLiteralObject>(
   options: CreateCommandHandlerOptions<Entity>,
-): Type<CrudCommandHandler<Entity>> {
+): Type<CrudCommandHandlerInterface<Entity>> {
   const {
     entity,
     methodName,
