@@ -1,8 +1,15 @@
+import { EventContextInterface } from './events/interfaces/event-context-interface';
+
 export interface DomainFactory<Entity, Creatable, Domain> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  new (entity: Entity, ...args: any[]): Domain;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  create(props: Creatable, ...args: any[]): Domain;
+  new (...args: any[]): Domain;
+
+  create(
+    eventContext: EventContextInterface,
+    props: Creatable,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...args: any[]
+  ): Domain;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   toInstance(entity: Entity, ...args: any[]): Domain;
 }

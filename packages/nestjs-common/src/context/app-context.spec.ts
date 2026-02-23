@@ -1,4 +1,4 @@
-import { AppContextHost, APP_CONTEXT_KEY } from './app-context';
+import { AppContextHost, APP_CONTEXT_KEY } from './app-context.host';
 import { getAppContext } from './get-app-context.util';
 
 describe('AppContextHost', () => {

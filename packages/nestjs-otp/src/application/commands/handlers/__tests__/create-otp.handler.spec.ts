@@ -1,0 +1,169 @@
+import {
+  createMockContext,
+  createMockEventPublisher,
+  createMockOtpRepository,
+  createMockOtpSettings,
+  createMockRepositoryResolver,
+  createMockTransaction,
+} from '../../../../__tests__/helpers/mock.helpers';
+import { Otp } from '../../../../domain/aggregates/otp';
+import { OtpLimitReachedException } from '../../../../domain/exceptions/otp-limit-reached.exception';
+import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception';
+import { CreateOtpCommand } from '../../impl/create-otp.command';
+import { CreateOtpHandler } from '../create-otp.handler';
+
+describe(CreateOtpHandler.name, () => {
+  let handler: CreateOtpHandler;
+  let mockRepo: ReturnType<typeof createMockOtpRepository>;
+  let mockTx: ReturnType<typeof createMockTransaction>;
+  let mockSettings: ReturnType<typeof createMockOtpSettings>;
+
+  const ctx = createMockContext();
+
+  const validDto = {
+    category: 'test-category',
+    type: 'uuid',
+    assigneeId: 'test-assignee',
+    expiresIn: '1h',
+  };
+
+  beforeEach(() => {
+    mockRepo = createMockOtpRepository();
+    const mockResolver = createMockRepositoryResolver(mockRepo);
+    mockTx = createMockTransaction();
+    const mockPublisher = createMockEventPublisher();
+    mockSettings = createMockOtpSettings();
+
+    handler = new CreateOtpHandler(
+      mockResolver,
+      mockTx.transaction,
+      mockPublisher,
+      mockSettings,
+    );
+  });
+
+  it('should create an OTP and save it', async () => {
+    const command = new CreateOtpCommand(ctx, validDto);
+
+    const result = await handler.execute(command);
+
+    expect(result).toBeInstanceOf(Otp);
+    expect(result.category).toBe('test-category');
+    expect(result.type).toBe('uuid');
+    expect(result.assigneeId).toBe('test-assignee');
+    expect(result.passcode).toBe('generated-passcode');
+    expect(mockRepo.save).toHaveBeenCalled();
+  });
+
+  it('should throw OtpTypeNotDefinedException for unknown type', async () => {
+    const command = new CreateOtpCommand(ctx, {
+      ...validDto,
+      type: 'unknown',
+    });
+
+    await expect(handler.execute(command)).rejects.toThrow(
+      OtpTypeNotDefinedException,
+    );
+  });
+
+  it('should register onCommit and onRollback callbacks', async () => {
+    const command = new CreateOtpCommand(ctx, validDto);
+
+    await handler.execute(command);
+
+    expect(mockTx.trxHandle.onCommit).toHaveBeenCalled();
+    expect(mockTx.trxHandle.onRollback).toHaveBeenCalled();
+  });
+
+  describe('duplicateStrategy', () => {
+    it('should deactivate existing active OTP when duplicateStrategy is DEACTIVATE', async () => {
+      const existingOtp = Otp.toInstance({
+        id: 'existing',
+        category: 'test-category',
+        type: 'uuid',
+        assigneeId: 'test-assignee',
+        passcode: 'old',
+        expirationDate: new Date('2027-01-01'),
+        active: true,
+        dateCreated: new Date(),
+        dateUpdated: new Date(),
+        dateDeleted: null,
+        version: 1,
+      });
+      mockRepo.findActiveByAssignee.mockResolvedValue(existingOtp);
+
+      const command = new CreateOtpCommand(ctx, validDto, {
+        duplicateStrategy: 'DEACTIVATE',
+      });
+      await handler.execute(command);
+
+      expect(mockRepo.findActiveByAssignee).toHaveBeenCalled();
+      // save called twice: once for deactivation, once for new OTP
+      expect(mockRepo.save).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not deactivate when duplicateStrategy is ALLOW', async () => {
+      const command = new CreateOtpCommand(ctx, validDto, {
+        duplicateStrategy: 'ALLOW',
+      });
+      await handler.execute(command);
+
+      expect(mockRepo.findActiveByAssignee).not.toHaveBeenCalled();
+    });
+
+    it('should use settings.duplicateStrategy when not specified in command', async () => {
+      mockSettings.duplicateStrategy = 'DEACTIVATE';
+      mockRepo.findActiveByAssignee.mockResolvedValue(null);
+
+      const command = new CreateOtpCommand(ctx, validDto);
+      await handler.execute(command);
+
+      expect(mockRepo.findActiveByAssignee).toHaveBeenCalled();
+    });
+  });
+
+  describe('rate limiting', () => {
+    it('should throw OtpLimitReachedException when rate limit exceeded', async () => {
+      mockRepo.countCreatedSince.mockResolvedValue(5);
+
+      const command = new CreateOtpCommand(ctx, validDto, {
+        rateSeconds: 60,
+        rateThreshold: 3,
+      });
+
+      await expect(handler.execute(command)).rejects.toThrow(
+        OtpLimitReachedException,
+      );
+    });
+
+    it('should not throw when under rate limit', async () => {
+      mockRepo.countCreatedSince.mockResolvedValue(1);
+
+      const command = new CreateOtpCommand(ctx, validDto, {
+        rateSeconds: 60,
+        rateThreshold: 3,
+      });
+
+      await expect(handler.execute(command)).resolves.toBeInstanceOf(Otp);
+    });
+
+    it('should skip rate limiting when rateSeconds is not set', async () => {
+      const command = new CreateOtpCommand(ctx, validDto);
+
+      await handler.execute(command);
+
+      expect(mockRepo.countCreatedSince).not.toHaveBeenCalled();
+    });
+
+    it('should use settings rate values when command does not specify them', async () => {
+      mockSettings.rateSeconds = 60;
+      mockSettings.rateThreshold = 5;
+      mockRepo.countCreatedSince.mockResolvedValue(0);
+
+      const command = new CreateOtpCommand(ctx, validDto);
+      await handler.execute(command);
+
+      expect(mockRepo.countCreatedSince).toHaveBeenCalled();
+    });
+  });
+});

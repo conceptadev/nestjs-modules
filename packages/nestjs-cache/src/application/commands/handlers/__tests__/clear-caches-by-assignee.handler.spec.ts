@@ -27,9 +27,9 @@ describe(ClearCachesByAssigneeHandler.name, () => {
       new ClearCachesByAssigneeCommand(ctx, 'test-assignee'),
     );
 
-    expect(mockRepo.removeAllByAssignee).toHaveBeenCalledWith({
-      assigneeId: 'test-assignee',
-      ctx,
-    });
+    expect(mockRepo.removeAllByAssignee).toHaveBeenCalledWith(
+      expect.anything(),
+      'test-assignee',
+    );
   });
 });

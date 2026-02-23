@@ -4,27 +4,54 @@
   "description": "Rockets NestJS User",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./optional/seeding": {
+      "types": "./dist/optional-seeding.d.ts",
+      "default": "./dist/optional-seeding.js"
+    }
+  },
   "license": "BSD-3-Clause",
   "publishConfig": {
     "access": "public"
   },
   "files": [
-    "dist/**/!(*.spec|*.e2e-spec|*.fixture).{js,d.ts}"
+    "dist/**/!(*/__tests_/*)"
   ],
   "dependencies": {
     "@concepta/nestjs-common": "^7.0.0-alpha.10",
+    "@concepta/nestjs-repository": "^7.0.0-alpha.10",
     "@nestjs/common": "^11.1.9",
-    "@nestjs/config": "^4.0.2"
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/core": "^11.1.9",
+    "@nestjs/cqrs": "^11.0.0"
   },
   "devDependencies": {
-    "@concepta/nestjs-typeorm-ext": "^7.0.0-alpha.10",
+    "@concepta/nestjs-repository-typeorm": "^7.0.0-alpha.10",
     "@concepta/typeorm-seeding": "^4.0.0",
+    "@faker-js/faker": "^8.4.1",
     "@nestjs/testing": "^11.1.9",
     "@nestjs/typeorm": "^11.0.0"
   },
   "peerDependencies": {
+    "@concepta/typeorm-seeding": "^4.0.0",
+    "@faker-js/faker": "^8.4.1",
     "class-transformer": "*",
     "class-validator": "*",
     "typeorm": "^0.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@concepta/typeorm-seeding": {
+      "optional": true
+    },
+    "@faker-js/faker": {
+      "optional": true
+    },
+    "typeorm": {
+      "optional": true
+    }
   }
 }

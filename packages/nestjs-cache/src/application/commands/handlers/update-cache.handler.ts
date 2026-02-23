@@ -1,5 +1,9 @@
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
+import {
+  EntityHeaderInterface,
+  EventContextHost,
+} from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { Cache } from '../../../domain/aggregates/cache';
@@ -20,18 +24,22 @@ export class UpdateCacheHandler implements ICommandHandler<UpdateCacheCommand> {
 
     const cacheRepo = this.repositoryResolver.resolve(ctx.entity);
 
+    const eventContext = EventContextHost.builder<EntityHeaderInterface>()
+      .setHeader('entity', ctx.entity)
+      .build();
+
     return this.txScope.run(ctx, async (trx) => {
       const cache = this.eventPublisher.mergeObjectContext(
-        await cacheRepo.get({ id, ctx }),
+        await cacheRepo.get(ctx, id),
       );
 
-      cache.updateData(data);
+      cache.updateData(eventContext, data);
 
       if (expiresIn) {
-        cache.extend(expiresIn);
+        cache.extend(eventContext, expiresIn);
       }
 
-      await cacheRepo.save({ cache, ctx });
+      await cacheRepo.save(ctx, cache);
 
       trx.onCommit(ctx, () => cache.commit());
       trx.onRollback(ctx, () => cache.uncommit());

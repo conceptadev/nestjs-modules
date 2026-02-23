@@ -1,6 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
+import {
+  EntityHeaderInterface,
+  EventContextHost,
+} from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { CACHE_MODULE_SETTINGS_TOKEN } from '../../../cache.constants';
@@ -25,25 +29,29 @@ export class UpsertCacheHandler implements ICommandHandler<UpsertCacheCommand> {
 
     const cacheRepo = this.repositoryResolver.resolve(ctx.entity);
 
+    const eventContext = EventContextHost.builder<EntityHeaderInterface>()
+      .setHeader('entity', ctx.entity)
+      .build();
+
     return this.txScope.run(ctx, async (trx) => {
       let cache: Cache;
 
-      const existing = await cacheRepo.findOne({ key, type, assigneeId, ctx });
+      const existing = await cacheRepo.findOne(ctx, { key, type, assigneeId });
 
       if (existing) {
         cache = this.eventPublisher.mergeObjectContext(existing);
-        cache.updateData(data);
+        cache.updateData(eventContext, data);
 
         if (expiresIn) {
-          cache.extend(expiresIn);
+          cache.extend(eventContext, expiresIn);
         }
       } else {
         cache = this.eventPublisher.mergeObjectContext(
-          Cache.create(dto, this.settings),
+          Cache.create(eventContext, dto, this.settings),
         );
       }
 
-      await cacheRepo.save({ cache, ctx });
+      await cacheRepo.save(ctx, cache);
 
       trx.onCommit(ctx, () => cache.commit());
       trx.onRollback(ctx, () => cache.uncommit());

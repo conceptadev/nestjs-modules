@@ -1,3 +1,5 @@
+import { EntityHeaderInterface } from '../../events/headers/interfaces/entity-header.interface';
+
 import { HookContextInterface } from './hook-context.interface';
 import { TransactionContextInterface } from './transaction-context.interface';
 
@@ -9,9 +11,5 @@ import { TransactionContextInterface } from './transaction-context.interface';
  */
 export interface RepositoryContextInterface
   extends TransactionContextInterface,
-    HookContextInterface {
-  /**
-   * Entity key used to resolve the correct repository.
-   */
-  entity: string;
-}
+    HookContextInterface,
+    EntityHeaderInterface {}

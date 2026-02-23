@@ -17,11 +17,7 @@ export class CacheRepository {
     protected readonly settings: CacheSettingsInterface,
   ) {}
 
-  async get(params: {
-    id: ReferenceId;
-    ctx?: RepositoryContextInterface;
-  }): Promise<Cache> {
-    const { id, ctx } = params;
+  async get(ctx: RepositoryContextInterface, id: ReferenceId): Promise<Cache> {
     const w = Where.for<CacheInterface>();
 
     const entity = await this.repository.findOne({
@@ -36,11 +32,10 @@ export class CacheRepository {
     return Cache.toInstance(entity, this.settings);
   }
 
-  async findById(params: {
-    id: ReferenceId;
-    ctx?: RepositoryContextInterface;
-  }): Promise<Cache | null> {
-    const { id, ctx } = params;
+  async findById(
+    ctx: RepositoryContextInterface,
+    id: ReferenceId,
+  ): Promise<Cache | null> {
     const w = Where.for<CacheInterface>();
 
     const entity = await this.repository.findOne({
@@ -51,13 +46,11 @@ export class CacheRepository {
     return entity ? Cache.toInstance(entity, this.settings) : null;
   }
 
-  async findOne(params: {
-    key: string;
-    type: string;
-    assigneeId: string;
-    ctx?: RepositoryContextInterface;
-  }): Promise<Cache | null> {
-    const { key, type, assigneeId, ctx } = params;
+  async findOne(
+    ctx: RepositoryContextInterface,
+    options: { key: string; type: string; assigneeId: string },
+  ): Promise<Cache | null> {
+    const { key, type, assigneeId } = options;
     const w = Where.for<CacheInterface>();
 
     const entity = await this.repository.findOne({
@@ -72,11 +65,10 @@ export class CacheRepository {
     return entity ? Cache.toInstance(entity, this.settings) : null;
   }
 
-  async findAllByAssignee(params: {
-    assigneeId: string;
-    ctx?: RepositoryContextInterface;
-  }): Promise<Cache[]> {
-    const { assigneeId, ctx } = params;
+  async findAllByAssignee(
+    ctx: RepositoryContextInterface,
+    assigneeId: string,
+  ): Promise<Cache[]> {
     const w = Where.for<CacheInterface>();
 
     const entities = await this.repository.find({
@@ -87,39 +79,30 @@ export class CacheRepository {
     return entities.map((e) => Cache.toInstance(e, this.settings));
   }
 
-  async save(params: {
-    cache: Cache;
-    ctx?: RepositoryContextInterface;
-  }): Promise<void> {
-    const { cache, ctx } = params;
+  async save(ctx: RepositoryContextInterface, cache: Cache): Promise<void> {
     const entity = await this.repository.upsert(cache.toPlain(), { ctx });
     cache.hydrate(entity);
   }
 
-  async remove(params: {
-    cache: Cache;
-    ctx?: RepositoryContextInterface;
-  }): Promise<void> {
-    const { cache, ctx } = params;
+  async remove(ctx: RepositoryContextInterface, cache: Cache): Promise<void> {
     await this.repository.delete(cache.toPlain(), { ctx });
   }
 
-  async removeAllByAssignee(params: {
-    assigneeId: string;
-    ctx?: RepositoryContextInterface;
-  }): Promise<void> {
-    const caches = await this.findAllByAssignee(params);
+  async removeAllByAssignee(
+    ctx: RepositoryContextInterface,
+    assigneeId: string,
+  ): Promise<void> {
+    const caches = await this.findAllByAssignee(ctx, assigneeId);
 
     for (const cache of caches) {
-      await this.remove({ cache, ctx: params.ctx });
+      await this.remove(ctx, cache);
     }
   }
 
-  async softRemove(params: {
-    cache: Cache;
-    ctx?: RepositoryContextInterface;
-  }): Promise<void> {
-    const { cache, ctx } = params;
+  async softRemove(
+    ctx: RepositoryContextInterface,
+    cache: Cache,
+  ): Promise<void> {
     await this.repository.softDelete(cache.toPlain(), { ctx });
   }
 }

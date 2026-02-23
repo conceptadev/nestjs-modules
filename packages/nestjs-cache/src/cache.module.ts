@@ -12,23 +12,33 @@ export class CacheModule {
   static register(options: CacheOptions): DynamicModule {
     return {
       module: CacheModule,
-      imports: [CacheCoreModuleClass.register(options)],
+      imports: [CacheCoreModuleClass.register({ ...options, global: false })],
     };
   }
 
   static registerAsync(options: CacheAsyncOptions): DynamicModule {
     return {
       module: CacheModule,
-      imports: [CacheCoreModuleClass.registerAsync(options)],
+      imports: [
+        CacheCoreModuleClass.registerAsync({ ...options, global: false }),
+      ],
     };
   }
 
   static forRoot(options: CacheOptions): DynamicModule {
-    return this.register(options);
+    return {
+      module: CacheModule,
+      imports: [CacheCoreModuleClass.register({ ...options, global: true })],
+    };
   }
 
   static forRootAsync(options: CacheAsyncOptions): DynamicModule {
-    return this.registerAsync(options);
+    return {
+      module: CacheModule,
+      imports: [
+        CacheCoreModuleClass.registerAsync({ ...options, global: true }),
+      ],
+    };
   }
 
   static forFeature(entityKeys: string[]): DynamicModule {

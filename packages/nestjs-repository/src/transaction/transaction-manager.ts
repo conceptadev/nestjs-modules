@@ -1,3 +1,5 @@
+import { Logger } from '@nestjs/common';
+
 import {
   TransactionInterface,
   TransactionManagerInterface,
@@ -14,8 +16,8 @@ import { TransactionFactoryRegistry } from './transaction-factory-registry';
 export class TransactionManager implements TransactionManagerInterface {
   private readonly transactions = new Map<string, TransactionInterface>();
   private readonly stack = new Map<string, TransactionInterface[]>();
-  private readonly commitCallbacks: (() => void)[] = [];
-  private readonly rollbackCallbacks: (() => void)[] = [];
+  private readonly commitCallbacks: (() => void | Promise<void>)[] = [];
+  private readonly rollbackCallbacks: (() => void | Promise<void>)[] = [];
 
   constructor(private readonly registry: TransactionFactoryRegistry) {}
 
@@ -100,25 +102,41 @@ export class TransactionManager implements TransactionManagerInterface {
     }
   }
 
-  onCommit(fn: () => void): void {
+  onCommit(fn: () => void | Promise<void>): void {
     this.commitCallbacks.push(fn);
   }
 
-  onRollback(fn: () => void): void {
+  onRollback(fn: () => void | Promise<void>): void {
     this.rollbackCallbacks.push(fn);
   }
 
-  flushOnCommitCallbacks(): void {
+  async flushOnCommitCallbacks(): Promise<void> {
     const callbacks = this.commitCallbacks.splice(0);
-    for (const fn of callbacks) {
-      fn();
-    }
+
+    const results = await Promise.allSettled(callbacks.map(async (cb) => cb()));
+
+    results.forEach((result) => {
+      if (result.status === 'rejected') {
+        Logger.error(
+          `Transaction onCommit Callback Error: ${result.reason}`,
+          result.reason.stack,
+        );
+      }
+    });
   }
 
-  flushOnRollbackCallbacks(): void {
+  async flushOnRollbackCallbacks(): Promise<void> {
     const callbacks = this.rollbackCallbacks.splice(0);
-    for (const fn of callbacks) {
-      fn();
-    }
+
+    const results = await Promise.allSettled(callbacks.map(async (cb) => cb()));
+
+    results.forEach((result) => {
+      if (result.status === 'rejected') {
+        Logger.error(
+          `Transaction onRollback Callback Error: ${result.reason}`,
+          result.reason.stack,
+        );
+      }
+    });
   }
 }

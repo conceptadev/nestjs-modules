@@ -1,0 +1,82 @@
+import {
+  createMockContext,
+  createMockOtpEntity,
+  createMockEventPublisher,
+  createMockOtpRepository,
+  createMockRepositoryResolver,
+  createMockTransaction,
+} from '../../../../__tests__/helpers/mock.helpers';
+import { Otp } from '../../../../domain/aggregates/otp';
+import { DeactivateOtpCommand } from '../../impl/deactivate-otp.command';
+import { DeactivateOtpHandler } from '../deactivate-otp.handler';
+
+describe(DeactivateOtpHandler.name, () => {
+  let handler: DeactivateOtpHandler;
+  let mockRepo: ReturnType<typeof createMockOtpRepository>;
+  let mockTx: ReturnType<typeof createMockTransaction>;
+
+  const ctx = createMockContext();
+
+  beforeEach(() => {
+    mockRepo = createMockOtpRepository();
+    const mockResolver = createMockRepositoryResolver(mockRepo);
+    mockTx = createMockTransaction();
+    const mockPublisher = createMockEventPublisher();
+
+    handler = new DeactivateOtpHandler(
+      mockResolver,
+      mockTx.transaction,
+      mockPublisher,
+    );
+  });
+
+  it('should deactivate an active OTP and save it', async () => {
+    const activeOtp = Otp.toInstance(createMockOtpEntity({ active: true }));
+    mockRepo.findActiveByAssignee.mockResolvedValue(activeOtp);
+
+    const command = new DeactivateOtpCommand(ctx, {
+      assigneeId: 'test-assignee',
+      category: 'test-category',
+    });
+
+    await handler.execute(command);
+
+    expect(mockRepo.findActiveByAssignee).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        assigneeId: 'test-assignee',
+        category: 'test-category',
+      }),
+    );
+    expect(mockRepo.save).toHaveBeenCalled();
+  });
+
+  it('should register onCommit and onRollback when OTP is found', async () => {
+    const activeOtp = Otp.toInstance(createMockOtpEntity({ active: true }));
+    mockRepo.findActiveByAssignee.mockResolvedValue(activeOtp);
+
+    const command = new DeactivateOtpCommand(ctx, {
+      assigneeId: 'test-assignee',
+      category: 'test-category',
+    });
+
+    await handler.execute(command);
+
+    expect(mockTx.trxHandle.onCommit).toHaveBeenCalled();
+    expect(mockTx.trxHandle.onRollback).toHaveBeenCalled();
+  });
+
+  it('should do nothing when no active OTP exists', async () => {
+    mockRepo.findActiveByAssignee.mockResolvedValue(null);
+
+    const command = new DeactivateOtpCommand(ctx, {
+      assigneeId: 'test-assignee',
+      category: 'test-category',
+    });
+
+    await handler.execute(command);
+
+    expect(mockRepo.save).not.toHaveBeenCalled();
+    expect(mockTx.trxHandle.onCommit).not.toHaveBeenCalled();
+  });
+});

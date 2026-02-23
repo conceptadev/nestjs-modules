@@ -1,4 +1,4 @@
-import { TransactionManagerInterface } from './transaction-manager.interface';
+import { TransactionManagerInterface } from '../../repository/interfaces/transaction-manager.interface';
 
 /**
  * Minimal context interface for transaction management.

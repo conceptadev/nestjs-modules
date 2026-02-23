@@ -344,14 +344,20 @@ describe(TransactionScope.name, () => {
       const order: number[] = [];
 
       await transaction.run(ctx, async (trx) => {
-        trx.onCommit(ctx, () => order.push(1));
+        trx.onCommit(ctx, () => {
+          order.push(1);
+        });
 
         await transaction.run(ctx, async (innerTrx) => {
-          innerTrx.onCommit(ctx, () => order.push(2));
+          innerTrx.onCommit(ctx, () => {
+            order.push(2);
+          });
           return 'inner';
         });
 
-        trx.onCommit(ctx, () => order.push(3));
+        trx.onCommit(ctx, () => {
+          order.push(3);
+        });
         return 'outer';
       });
 

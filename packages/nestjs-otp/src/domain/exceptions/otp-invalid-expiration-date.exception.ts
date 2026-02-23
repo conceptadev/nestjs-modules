@@ -1,0 +1,13 @@
+import { HttpStatus } from '@nestjs/common';
+
+import { OtpException } from './otp.exception';
+
+export class OtpInvalidExpirationDateException extends OtpException {
+  constructor() {
+    super({
+      message: 'Invalid expiresIn',
+      httpStatus: HttpStatus.BAD_REQUEST,
+    });
+    this.errorCode = 'OTP_INVALID_EXPIRES_IN';
+  }
+}

@@ -21,8 +21,8 @@ export class ArchiveCacheHandler
     const cacheRepo = this.repositoryResolver.resolve(ctx.entity);
 
     return this.txScope.run(ctx, async () => {
-      const cache = await cacheRepo.get({ id, ctx });
-      await cacheRepo.softRemove({ cache, ctx });
+      const cache = await cacheRepo.get(ctx, id);
+      await cacheRepo.softRemove(ctx, cache);
       return cache;
     });
   }

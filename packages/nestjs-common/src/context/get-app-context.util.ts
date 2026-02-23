@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { AppContextHost, APP_CONTEXT_KEY } from './app-context';
+import { AppContextHost, APP_CONTEXT_KEY } from './app-context.host';
 import { AppContextInterface } from './interfaces/app-context.interface';
 
 /**

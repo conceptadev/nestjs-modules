@@ -20,7 +20,7 @@ export class ClearCachesByAssigneeHandler
     const cacheRepo = this.repositoryResolver.resolve(ctx.entity);
 
     return this.txScope.run(ctx, async () => {
-      await cacheRepo.removeAllByAssignee({ assigneeId, ctx });
+      await cacheRepo.removeAllByAssignee(ctx, assigneeId);
     });
   }
 }

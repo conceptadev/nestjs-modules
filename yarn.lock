@@ -1773,16 +1773,29 @@ __metadata:
   resolution: "@concepta/nestjs-otp@workspace:packages/nestjs-otp"
   dependencies:
     "@concepta/nestjs-common": "npm:^7.0.0-alpha.10"
-    "@concepta/nestjs-typeorm-ext": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-repository": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-repository-typeorm": "npm:^7.0.0-alpha.10"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
+    "@faker-js/faker": "npm:^8.4.1"
     "@nestjs/common": "npm:^11.1.9"
     "@nestjs/config": "npm:^4.0.2"
+    "@nestjs/core": "npm:^11.1.9"
+    "@nestjs/cqrs": "npm:^11.0.0"
     "@nestjs/testing": "npm:^11.1.9"
     "@nestjs/typeorm": "npm:^11.0.0"
   peerDependencies:
+    "@concepta/typeorm-seeding": ^4.0.0
+    "@faker-js/faker": ^8.4.1
     class-transformer: "*"
     class-validator: "*"
     typeorm: ^0.3.0
+  peerDependenciesMeta:
+    "@concepta/typeorm-seeding":
+      optional: true
+    "@faker-js/faker":
+      optional: true
+    typeorm:
+      optional: true
   languageName: unknown
   linkType: soft
 

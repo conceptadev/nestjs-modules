@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { CacheModule } from '../cache.module';
+import { CacheRepositoryResolver } from '../infrastructure/persistence/cache-repository.resolver';
+import { CacheRepository } from '../infrastructure/persistence/cache.repository';
 
 import { AppModuleFixture } from './fixtures/app.module.fixture';
 
@@ -42,20 +44,18 @@ describe(CacheModule.name, () => {
   });
 
   describe('forRoot', () => {
-    it('should delegate to register', () => {
-      const spy = jest.spyOn(CacheModule, 'register');
-      CacheModule.forRoot({});
-      expect(spy).toHaveBeenCalledWith({});
-      spy.mockRestore();
+    it('should return a global dynamic module', () => {
+      const result = CacheModule.forRoot({});
+      expect(result.module).toBe(CacheModule);
+      expect(result.imports).toHaveLength(1);
     });
   });
 
   describe('forRootAsync', () => {
-    it('should delegate to registerAsync', () => {
-      const spy = jest.spyOn(CacheModule, 'registerAsync');
-      CacheModule.forRootAsync({});
-      expect(spy).toHaveBeenCalledWith({});
-      spy.mockRestore();
+    it('should return a global dynamic module', () => {
+      const result = CacheModule.forRootAsync({});
+      expect(result.module).toBe(CacheModule);
+      expect(result.imports).toHaveLength(1);
     });
   });
 
@@ -65,6 +65,17 @@ describe(CacheModule.name, () => {
       expect(result.module).toBe(CacheModule);
       expect(result.providers).toHaveLength(2);
       expect(result.exports).toHaveLength(2);
+    });
+
+    it('should resolve CacheRepository via CacheRepositoryResolver', async () => {
+      const testModule: TestingModule = await Test.createTestingModule({
+        imports: [AppModuleFixture],
+      }).compile();
+
+      const resolver = testModule.get(CacheRepositoryResolver);
+      const repo = resolver.resolve('userCache');
+
+      expect(repo).toBeInstanceOf(CacheRepository);
     });
   });
 });

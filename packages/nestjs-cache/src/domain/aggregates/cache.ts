@@ -7,6 +7,8 @@ import {
   CacheInterface,
   DomainFactory,
   DomainMappable,
+  EntityHeaderInterface,
+  EventContextHost,
 } from '@concepta/nestjs-common';
 
 import { CacheSettingsInterface } from '../../infrastructure/config/interfaces/cache-settings.interface';
@@ -62,13 +64,15 @@ export class Cache
   }
 
   static create(
+    eventContext: EventContextHost<EntityHeaderInterface>,
     dto: CacheCreatableInterface,
     settings: CacheSettingsInterface,
   ): Cache {
-    return Cache.createWithId(randomUUID(), dto, settings);
+    return Cache.createWithId(eventContext, randomUUID(), dto, settings);
   }
 
   static createWithId(
+    eventContext: EventContextHost<EntityHeaderInterface>,
     id: string,
     dto: CacheCreatableInterface,
     settings: CacheSettingsInterface,
@@ -92,7 +96,7 @@ export class Cache
       settings,
     );
 
-    cache.apply(new CacheCreatedEvent(cache.toPlain()));
+    cache.apply(new CacheCreatedEvent(eventContext, cache.toPlain()));
 
     return cache;
   }
@@ -112,7 +116,10 @@ export class Cache
     this.props = { ...entity };
   }
 
-  replace(dto: CacheCreatableInterface): void {
+  replace(
+    eventContext: EventContextHost<EntityHeaderInterface>,
+    dto: CacheCreatableInterface,
+  ): void {
     const { key, type, assigneeId, data, expiresIn } = dto;
     this.props = {
       id: this.props.id,
@@ -126,27 +133,33 @@ export class Cache
       dateDeleted: this.props.dateDeleted,
       version: this.props.version + 1,
     };
-    this.apply(new CacheReplacedEvent(this.toPlain()));
+    this.apply(new CacheReplacedEvent(eventContext, this.toPlain()));
   }
 
-  updateData(newData: string | null): void {
+  updateData(
+    eventContext: EventContextHost<EntityHeaderInterface>,
+    newData: string | null,
+  ): void {
     this.props = {
       ...this.props,
       data: newData,
       dateUpdated: new Date(),
       version: this.props.version + 1,
     };
-    this.apply(new CacheUpdatedEvent(this.toPlain()));
+    this.apply(new CacheUpdatedEvent(eventContext, this.toPlain()));
   }
 
-  extend(expiresIn?: string): void {
+  extend(
+    eventContext: EventContextHost<EntityHeaderInterface>,
+    expiresIn?: string,
+  ): void {
     this.props = {
       ...this.props,
       expirationDate: this.resolveExpirationDate(expiresIn),
       dateUpdated: new Date(),
       version: this.props.version + 1,
     };
-    this.apply(new CacheExtendedEvent(this.toPlain()));
+    this.apply(new CacheExtendedEvent(eventContext, this.toPlain()));
   }
 
   private resolveExpirationDate(expiresIn?: string | null): Date | null {

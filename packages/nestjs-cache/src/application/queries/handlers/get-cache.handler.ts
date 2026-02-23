@@ -13,6 +13,6 @@ export class GetCacheHandler implements IQueryHandler<GetCacheQuery> {
 
     const cacheRepo = this.repositoryResolver.resolve(ctx.entity);
 
-    return cacheRepo.get({ id, ctx });
+    return cacheRepo.get(ctx, id);
   }
 }

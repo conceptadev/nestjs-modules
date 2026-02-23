@@ -1,6 +1,7 @@
-import { CacheInterface } from '@concepta/nestjs-common';
+import { CacheInterface, Where } from '@concepta/nestjs-common';
 import { createMockRepository } from '@concepta/nestjs-common/testing';
 
+import { createMockContext } from '../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../domain/aggregates/cache';
 import { CacheSettingsInterface } from '../../config/interfaces/cache-settings.interface';
 import { CacheRepository } from '../cache.repository';
@@ -25,6 +26,8 @@ describe(CacheRepository.name, () => {
     typeof createMockRepository<CacheInterface>
   >;
   const settings: CacheSettingsInterface = { expiresIn: '1h' };
+  const w = Where.for<CacheInterface>();
+  const ctx = createMockContext();
 
   beforeEach(() => {
     mockRepoInterface = createMockRepository<CacheInterface>();
@@ -32,48 +35,56 @@ describe(CacheRepository.name, () => {
   });
 
   describe('get', () => {
-    it('should return a Cache when entity is found', async () => {
+    it('should query by id and return a Cache', async () => {
       mockRepoInterface.findOne.mockResolvedValue(mockEntity);
 
-      const result = await repo.get({ id: 'test-id' });
+      const result = await repo.get(ctx, 'test-id');
 
       expect(result).toBeInstanceOf(Cache);
       expect(result.id).toBe('test-id');
+      expect(mockRepoInterface.findOne).toHaveBeenCalledWith({
+        where: w.eq('id', 'test-id'),
+        ctx,
+      });
     });
 
     it('should throw CacheNotFoundException when entity is not found', async () => {
       mockRepoInterface.findOne.mockResolvedValue(null);
 
-      await expect(repo.get({ id: 'missing' })).rejects.toThrow(
+      await expect(repo.get(ctx, 'missing')).rejects.toThrow(
         CacheNotFoundException,
       );
     });
   });
 
   describe('findById', () => {
-    it('should return a Cache when entity is found', async () => {
+    it('should query by id and return a Cache', async () => {
       mockRepoInterface.findOne.mockResolvedValue(mockEntity);
 
-      const result = await repo.findById({ id: 'test-id' });
+      const result = await repo.findById(ctx, 'test-id');
 
       expect(result).toBeInstanceOf(Cache);
       expect(result!.id).toBe('test-id');
+      expect(mockRepoInterface.findOne).toHaveBeenCalledWith({
+        where: w.eq('id', 'test-id'),
+        ctx,
+      });
     });
 
     it('should return null when entity is not found', async () => {
       mockRepoInterface.findOne.mockResolvedValue(null);
 
-      const result = await repo.findById({ id: 'missing' });
+      const result = await repo.findById(ctx, 'missing');
 
       expect(result).toBeNull();
     });
   });
 
   describe('findOne', () => {
-    it('should return a Cache when entity matches', async () => {
+    it('should query by key, type, and assigneeId', async () => {
       mockRepoInterface.findOne.mockResolvedValue(mockEntity);
 
-      const result = await repo.findOne({
+      const result = await repo.findOne(ctx, {
         key: 'test-key',
         type: 'test-type',
         assigneeId: 'test-assignee',
@@ -81,12 +92,20 @@ describe(CacheRepository.name, () => {
 
       expect(result).toBeInstanceOf(Cache);
       expect(result!.key).toBe('test-key');
+      expect(mockRepoInterface.findOne).toHaveBeenCalledWith({
+        where: w.and(
+          w.eq('key', 'test-key'),
+          w.eq('type', 'test-type'),
+          w.eq('assigneeId', 'test-assignee'),
+        ),
+        ctx,
+      });
     });
 
     it('should return null when no entity matches', async () => {
       mockRepoInterface.findOne.mockResolvedValue(null);
 
-      const result = await repo.findOne({
+      const result = await repo.findOne(ctx, {
         key: 'no-match',
         type: 'no-match',
         assigneeId: 'no-match',
@@ -97,55 +116,91 @@ describe(CacheRepository.name, () => {
   });
 
   describe('findAllByAssignee', () => {
-    it('should return array of Cache instances', async () => {
+    it('should query by assigneeId', async () => {
       mockRepoInterface.find.mockResolvedValue([mockEntity, mockEntity]);
 
-      const result = await repo.findAllByAssignee({
-        assigneeId: 'test-assignee',
-      });
+      const result = await repo.findAllByAssignee(ctx, 'test-assignee');
 
       expect(result).toHaveLength(2);
       expect(result[0]).toBeInstanceOf(Cache);
+      expect(mockRepoInterface.find).toHaveBeenCalledWith({
+        where: w.eq('assigneeId', 'test-assignee'),
+        ctx,
+      });
     });
 
     it('should return empty array when no matches', async () => {
       mockRepoInterface.find.mockResolvedValue([]);
 
-      const result = await repo.findAllByAssignee({
-        assigneeId: 'no-match',
-      });
+      const result = await repo.findAllByAssignee(ctx, 'no-match');
 
       expect(result).toEqual([]);
     });
   });
 
   describe('save', () => {
-    it('should upsert and hydrate the cache', async () => {
+    it('should upsert the plain entity and hydrate the cache', async () => {
       const updatedEntity = { ...mockEntity, version: 2 };
       mockRepoInterface.upsert.mockResolvedValue(updatedEntity);
 
       const cache = Cache.toInstance(mockEntity, settings);
-      await repo.save({ cache });
+      const plainBeforeSave = cache.toPlain();
+      await repo.save(ctx, cache);
 
+      expect(mockRepoInterface.upsert).toHaveBeenCalledWith(plainBeforeSave, {
+        ctx,
+      });
       expect(cache.version).toBe(2);
     });
   });
 
   describe('remove', () => {
-    it('should delete the cache entity', async () => {
+    it('should delete the plain entity', async () => {
       mockRepoInterface.delete.mockResolvedValue(undefined as never);
 
       const cache = Cache.toInstance(mockEntity, settings);
-      await expect(repo.remove({ cache })).resolves.toBeUndefined();
+      await repo.remove(ctx, cache);
+
+      expect(mockRepoInterface.delete).toHaveBeenCalledWith(cache.toPlain(), {
+        ctx,
+      });
+    });
+  });
+
+  describe('removeAllByAssignee', () => {
+    it('should find and remove all caches for assignee', async () => {
+      mockRepoInterface.find.mockResolvedValue([mockEntity]);
+      mockRepoInterface.delete.mockResolvedValue(undefined as never);
+
+      await repo.removeAllByAssignee(ctx, 'test-assignee');
+
+      expect(mockRepoInterface.find).toHaveBeenCalledWith({
+        where: w.eq('assigneeId', 'test-assignee'),
+        ctx,
+      });
+      expect(mockRepoInterface.delete).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not call delete when no caches found', async () => {
+      mockRepoInterface.find.mockResolvedValue([]);
+
+      await repo.removeAllByAssignee(ctx, 'none');
+
+      expect(mockRepoInterface.delete).not.toHaveBeenCalled();
     });
   });
 
   describe('softRemove', () => {
-    it('should soft delete the cache entity', async () => {
+    it('should soft delete the plain entity', async () => {
       mockRepoInterface.softDelete.mockResolvedValue(undefined as never);
 
       const cache = Cache.toInstance(mockEntity, settings);
-      await expect(repo.softRemove({ cache })).resolves.toBeUndefined();
+      await repo.softRemove(ctx, cache);
+
+      expect(mockRepoInterface.softDelete).toHaveBeenCalledWith(
+        cache.toPlain(),
+        { ctx },
+      );
     });
   });
 });

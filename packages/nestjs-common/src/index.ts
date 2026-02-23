@@ -187,7 +187,7 @@ export { SpecificationInterface } from './hooks/interfaces/specification.interfa
 export { HookOption, HookWithSpec } from './hooks/hook.types';
 
 // Context host and decorators
-export { AppContextHost } from './context/app-context';
+export { AppContextHost } from './context/app-context.host';
 export { getAppContext } from './context/get-app-context.util';
 export { Ctx } from './context/ctx.decorator';
 
@@ -196,5 +196,12 @@ export { AppContextInterface } from './context/interfaces/app-context.interface'
 export { HookContextInterface } from './context/interfaces/hook-context.interface';
 export { TransactionContextInterface } from './context/interfaces/transaction-context.interface';
 export { RepositoryContextInterface } from './context/interfaces/repository-context.interface';
-export { TransactionInterface } from './context/interfaces/transaction.interface';
-export { TransactionManagerInterface } from './context/interfaces/transaction-manager.interface';
+export { TransactionInterface } from './repository/interfaces/transaction.interface';
+export { TransactionManagerInterface } from './repository/interfaces/transaction-manager.interface';
+
+export { EntityHeaderInterface } from './events/headers/interfaces/entity-header.interface';
+
+// Event context
+export { EventContextHost } from './events/event-context.host';
+export { EventContextBuilder } from './events/event-context-builder';
+export { EventContextInterface } from './events/interfaces/event-context-interface';

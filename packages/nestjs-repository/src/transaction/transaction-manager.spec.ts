@@ -276,23 +276,46 @@ describe(TransactionManager.name, () => {
   });
 
   describe('onCommit / flushOnCommitCallbacks', () => {
-    it('should execute callbacks in order on flush', () => {
+    it('should execute callbacks in order on flush', async () => {
       const order: number[] = [];
-      manager.onCommit(() => order.push(1));
-      manager.onCommit(() => order.push(2));
-      manager.onCommit(() => order.push(3));
+      manager.onCommit(() => {
+        order.push(1);
+      });
+      manager.onCommit(() => {
+        order.push(2);
+      });
+      manager.onCommit(() => {
+        order.push(3);
+      });
 
-      manager.flushOnCommitCallbacks();
+      await manager.flushOnCommitCallbacks();
 
       expect(order).toEqual([1, 2, 3]);
     });
 
-    it('should clear callbacks after flush', () => {
+    it('should execute async callbacks in order on flush', async () => {
+      const order: number[] = [];
+      manager.onCommit(async () => {
+        order.push(1);
+      });
+      manager.onCommit(() => {
+        order.push(2);
+      });
+      manager.onCommit(async () => {
+        order.push(3);
+      });
+
+      await manager.flushOnCommitCallbacks();
+
+      expect(order).toEqual([1, 2, 3]);
+    });
+
+    it('should clear callbacks after flush', async () => {
       const fn = jest.fn();
       manager.onCommit(fn);
 
-      manager.flushOnCommitCallbacks();
-      manager.flushOnCommitCallbacks();
+      await manager.flushOnCommitCallbacks();
+      await manager.flushOnCommitCallbacks();
 
       expect(fn).toHaveBeenCalledTimes(1);
     });
@@ -306,23 +329,46 @@ describe(TransactionManager.name, () => {
   });
 
   describe('onRollback / flushOnRollbackCallbacks', () => {
-    it('should execute callbacks in order on flush', () => {
+    it('should execute callbacks in order on flush', async () => {
       const order: number[] = [];
-      manager.onRollback(() => order.push(1));
-      manager.onRollback(() => order.push(2));
-      manager.onRollback(() => order.push(3));
+      manager.onRollback(() => {
+        order.push(1);
+      });
+      manager.onRollback(() => {
+        order.push(2);
+      });
+      manager.onRollback(() => {
+        order.push(3);
+      });
 
-      manager.flushOnRollbackCallbacks();
+      await manager.flushOnRollbackCallbacks();
 
       expect(order).toEqual([1, 2, 3]);
     });
 
-    it('should clear callbacks after flush', () => {
+    it('should execute async callbacks in order on flush', async () => {
+      const order: number[] = [];
+      manager.onRollback(async () => {
+        order.push(1);
+      });
+      manager.onRollback(() => {
+        order.push(2);
+      });
+      manager.onRollback(async () => {
+        order.push(3);
+      });
+
+      await manager.flushOnRollbackCallbacks();
+
+      expect(order).toEqual([1, 2, 3]);
+    });
+
+    it('should clear callbacks after flush', async () => {
       const fn = jest.fn();
       manager.onRollback(fn);
 
-      manager.flushOnRollbackCallbacks();
-      manager.flushOnRollbackCallbacks();
+      await manager.flushOnRollbackCallbacks();
+      await manager.flushOnRollbackCallbacks();
 
       expect(fn).toHaveBeenCalledTimes(1);
     });

@@ -122,13 +122,13 @@ export class TransactionScope {
         await manager.rollbackAll();
       } else {
         await manager.commitAll();
-        manager.flushOnCommitCallbacks();
+        await manager.flushOnCommitCallbacks();
       }
 
       return result;
     } catch (error) {
       await manager.rollbackAll();
-      manager.flushOnRollbackCallbacks();
+      await manager.flushOnRollbackCallbacks();
       throw error;
     }
   }
@@ -147,14 +147,20 @@ export class TransactionScope {
   /**
    * Register a callback to run after the transaction commits.
    */
-  onCommit(ctx: TransactionContextInterface, fn: () => void): void {
+  onCommit(
+    ctx: TransactionContextInterface,
+    fn: () => void | Promise<void>,
+  ): void {
     ctx.trx.onCommit(fn);
   }
 
   /**
    * Register a callback to run after the transaction rolls back.
    */
-  onRollback(ctx: TransactionContextInterface, fn: () => void): void {
+  onRollback(
+    ctx: TransactionContextInterface,
+    fn: () => void | Promise<void>,
+  ): void {
     ctx.trx.onRollback(fn);
   }
 

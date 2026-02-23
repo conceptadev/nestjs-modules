@@ -16,6 +16,6 @@ export class FindCachesByAssigneeHandler
 
     const cacheRepo = this.repositoryResolver.resolve(ctx.entity);
 
-    return cacheRepo.findAllByAssignee({ assigneeId, ctx });
+    return cacheRepo.findAllByAssignee(ctx, assigneeId);
   }
 }

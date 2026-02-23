@@ -1,7 +1,14 @@
 import { IEvent } from '@nestjs/cqrs';
 
-import { CacheInterface } from '@concepta/nestjs-common';
+import {
+  CacheInterface,
+  EntityHeaderInterface,
+  EventContextHost,
+} from '@concepta/nestjs-common';
 
 export class CacheExtendedEvent implements IEvent {
-  constructor(public readonly cache: CacheInterface) {}
+  constructor(
+    public readonly eventContext: EventContextHost<EntityHeaderInterface>,
+    public readonly cache: CacheInterface,
+  ) {}
 }

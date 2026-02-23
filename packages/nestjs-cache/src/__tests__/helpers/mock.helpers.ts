@@ -1,5 +1,7 @@
 import {
   CacheInterface,
+  EntityHeaderInterface,
+  EventContextHost,
   RepositoryContextInterface,
 } from '@concepta/nestjs-common';
 
@@ -66,6 +68,14 @@ export function createMockContext(
   entity = 'UserCache',
 ): RepositoryContextInterface {
   return { entity } as RepositoryContextInterface;
+}
+
+export function createMockEventContext(
+  entity = 'UserCache',
+): EventContextHost<EntityHeaderInterface> {
+  return EventContextHost.builder<EntityHeaderInterface>()
+    .setHeader('entity', entity)
+    .build();
 }
 
 export function createMockCacheEntity(

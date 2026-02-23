@@ -1,0 +1,37 @@
+import { ModuleRef } from '@nestjs/core';
+
+import { OtpEntityNotFoundException } from '../../exceptions/otp-entity-not-found.exception';
+import { OtpRepositoryResolver } from '../otp-repository.resolver';
+import { OtpRepository } from '../otp.repository';
+
+describe(OtpRepositoryResolver.name, () => {
+  let resolver: OtpRepositoryResolver;
+  let mockModuleRef: { get: jest.Mock };
+  const mockRepo = {} as OtpRepository;
+
+  beforeEach(() => {
+    mockModuleRef = { get: jest.fn() };
+    resolver = new OtpRepositoryResolver(mockModuleRef as unknown as ModuleRef);
+  });
+
+  it('should resolve a repository by entity key', () => {
+    mockModuleRef.get.mockReturnValue(mockRepo);
+
+    const result = resolver.resolve('userOtp');
+
+    expect(result).toBe(mockRepo);
+    expect(mockModuleRef.get).toHaveBeenCalledWith('OTP_REPOSITORY_USEROTP', {
+      strict: false,
+    });
+  });
+
+  it('should throw OtpEntityNotFoundException when entity is not registered', () => {
+    mockModuleRef.get.mockImplementation(() => {
+      throw new Error('not found');
+    });
+
+    expect(() => resolver.resolve('unknown')).toThrow(
+      OtpEntityNotFoundException,
+    );
+  });
+});

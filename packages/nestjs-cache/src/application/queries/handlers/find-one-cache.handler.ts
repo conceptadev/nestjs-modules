@@ -14,6 +14,6 @@ export class FindOneCacheHandler implements IQueryHandler<FindOneCacheQuery> {
 
     const cacheRepo = this.repositoryResolver.resolve(ctx.entity);
 
-    return cacheRepo.findOne({ key, type, assigneeId, ctx });
+    return cacheRepo.findOne(ctx, { key, type, assigneeId });
   }
 }

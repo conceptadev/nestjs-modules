@@ -1,6 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
+import {
+  EntityHeaderInterface,
+  EventContextHost,
+} from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { CACHE_MODULE_SETTINGS_TOKEN } from '../../../cache.constants';
@@ -24,12 +28,16 @@ export class CreateCacheHandler implements ICommandHandler<CreateCacheCommand> {
 
     const cacheRepo = this.repositoryResolver.resolve(ctx.entity);
 
+    const eventContext = EventContextHost.builder<EntityHeaderInterface>()
+      .setHeader('entity', ctx.entity)
+      .build();
+
     return this.txScope.run(ctx, async (trx) => {
       const cache = this.eventPublisher.mergeObjectContext(
-        Cache.create(dto, this.cacheSettings),
+        Cache.create(eventContext, dto, this.cacheSettings),
       );
 
-      await cacheRepo.save({ cache, ctx });
+      await cacheRepo.save(ctx, cache);
 
       trx.onCommit(ctx, () => cache.commit());
       trx.onRollback(ctx, () => cache.uncommit());

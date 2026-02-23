@@ -3,10 +3,13 @@ import {
   CacheInterface,
 } from '@concepta/nestjs-common';
 
+import { createMockEventContext } from '../../../__tests__/helpers/mock.helpers';
 import { CacheSettingsInterface } from '../../../infrastructure/config/interfaces/cache-settings.interface';
 import { Cache } from '../cache';
 
 describe(Cache.name, () => {
+  const eventContext = createMockEventContext();
+
   const settings: CacheSettingsInterface = {
     expiresIn: '1h',
   };
@@ -62,7 +65,7 @@ describe(Cache.name, () => {
 
   describe('create', () => {
     it('should create a Cache with expirationDate from settings default', () => {
-      const cache = Cache.create(validCreateDto, settings);
+      const cache = Cache.create(eventContext, validCreateDto, settings);
 
       expect(cache).toBeInstanceOf(Cache);
       expect(cache.key).toBe('testKey');
@@ -79,7 +82,7 @@ describe(Cache.name, () => {
         expiresIn: '2d',
       };
 
-      const cache = Cache.create(dto, settings);
+      const cache = Cache.create(eventContext, dto, settings);
 
       expect(cache.expirationDate).toBeInstanceOf(Date);
     });
@@ -87,13 +90,17 @@ describe(Cache.name, () => {
     it('should set expirationDate to null when neither dto nor settings provide expiresIn', () => {
       const noExpirySettings: CacheSettingsInterface = {};
 
-      const cache = Cache.create(validCreateDto, noExpirySettings);
+      const cache = Cache.create(
+        eventContext,
+        validCreateDto,
+        noExpirySettings,
+      );
 
       expect(cache.expirationDate).toBeNull();
     });
 
     it('should generate a uuid for id', () => {
-      const cache = Cache.create(validCreateDto, settings);
+      const cache = Cache.create(eventContext, validCreateDto, settings);
 
       expect(cache.id).toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
@@ -120,7 +127,7 @@ describe(Cache.name, () => {
     it('should update data and bump version', () => {
       const cache = Cache.toInstance(mockEntity, settings);
 
-      cache.updateData('newData');
+      cache.updateData(eventContext, 'newData');
 
       expect(cache.data).toBe('newData');
       expect(cache.version).toBe(mockEntity.version + 1);
@@ -130,7 +137,7 @@ describe(Cache.name, () => {
       const cache = Cache.toInstance(mockEntity, settings);
       const originalExpiration = cache.expirationDate;
 
-      cache.updateData('newData');
+      cache.updateData(eventContext, 'newData');
 
       expect(cache.expirationDate).toBe(originalExpiration);
     });
@@ -140,7 +147,7 @@ describe(Cache.name, () => {
     it('should update expirationDate and bump version', () => {
       const cache = Cache.toInstance(mockEntity, settings);
 
-      cache.extend('2h');
+      cache.extend(eventContext, '2h');
 
       expect(cache.expirationDate).toBeInstanceOf(Date);
       expect(cache.version).toBe(mockEntity.version + 1);
@@ -149,7 +156,7 @@ describe(Cache.name, () => {
     it('should use settings default when no expiresIn provided', () => {
       const cache = Cache.toInstance(mockEntity, settings);
 
-      cache.extend();
+      cache.extend(eventContext);
 
       expect(cache.expirationDate).toBeInstanceOf(Date);
       expect(cache.version).toBe(mockEntity.version + 1);
