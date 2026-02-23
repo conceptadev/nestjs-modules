@@ -2,7 +2,7 @@ import { Exclude, Expose, Type } from 'class-transformer';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { CrudCreateBatchDto } from '../../../crud/dto/crud-create-batch.dto';
+import { CrudCreateBatchDto } from '../../../infrastructure/dtos/crud-create-batch.dto';
 
 import { TestModelCreateDto } from './test-model-create.dto';
 

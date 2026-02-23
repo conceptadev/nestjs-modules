@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { CrudResponsePaginatedDto } from '../../../../crud/dto/crud-response-paginated.dto';
+import { CrudResponsePaginatedDto } from '../../../../infrastructure/dtos/crud-response-paginated.dto';
 
 import { ProjectDto } from './project.dto';
 

@@ -2,9 +2,9 @@ import { PlainLiteralObject } from '@nestjs/common';
 
 import { WhereCondition } from '@concepta/nestjs-common';
 
-import { CrudContextInterface } from '../../crud/interfaces/crud-context.interface';
-import { CrudResponsePaginatedInterface } from '../../crud/interfaces/crud-response-paginated.interface';
-import { CrudParsedQueryInterface } from '../../request/interfaces/crud-parsed-query.interface';
+import { CrudResponsePaginatedInterface } from '../../infrastructure/dtos/interfaces/crud-response-paginated.interface';
+import { CrudContextInterface } from '../../infrastructure/interceptors/interfaces/crud-context.interface';
+import { CrudParsedQueryInterface } from '../../infrastructure/request/interfaces/crud-parsed-query.interface';
 
 import { createTestContext } from './crud-federation-test-entities';
 import { HandlerSpy } from './crud-federation-test-setup';

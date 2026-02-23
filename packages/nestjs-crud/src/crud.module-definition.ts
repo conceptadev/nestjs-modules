@@ -7,18 +7,18 @@ import { ConfigModule } from '@nestjs/config';
 
 import { createSettingsProvider } from '@concepta/nestjs-common';
 
-import { crudDefaultConfig } from './config/crud-default.config';
-import { CrudAdapterResolver } from './crud/resolvers/crud-adapter.resolver';
-import { CrudOperationResolver } from './crud/resolvers/crud-operation.resolver';
-import { CrudLocalResolverService } from './crud/services/crud-local-resolver.service';
 import {
   CRUD_DEFAULT_RESOLVER_TOKEN,
   CRUD_MODULE_SETTINGS_TOKEN,
 } from './crud.constants';
-import { CrudModuleOptionsExtrasInterface } from './interfaces/crud-module-options-extras.interface';
-import { CrudModuleOptionsInterface } from './interfaces/crud-module-options.interface';
-import { CrudModuleSettingsInterface } from './interfaces/crud-module-settings.interface';
-import { CrudMetaview } from './services/crud-metaview.service';
+import { crudDefaultConfig } from './infrastructure/config/crud-default.config';
+import { CrudModuleOptionsExtrasInterface } from './infrastructure/config/interfaces/crud-module-options-extras.interface';
+import { CrudModuleOptionsInterface } from './infrastructure/config/interfaces/crud-module-options.interface';
+import { CrudModuleSettingsInterface } from './infrastructure/config/interfaces/crud-module-settings.interface';
+import { CrudAdapterResolver } from './infrastructure/resolvers/crud-adapter.resolver';
+import { CrudOperationResolver } from './infrastructure/resolvers/crud-operation.resolver';
+import { CrudLocalResolverService } from './infrastructure/services/crud-local-resolver.service';
+import { CrudMetaview } from './infrastructure/services/crud-metaview.service';
 
 const RAW_OPTIONS_TOKEN = Symbol('__CRUD_MODULE_RAW_OPTIONS_TOKEN__');
 

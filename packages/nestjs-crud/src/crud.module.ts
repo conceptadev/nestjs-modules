@@ -5,8 +5,8 @@ import {
   CrudModuleClass,
   CrudOptions,
 } from './crud.module-definition';
-import { CrudModuleForFeatureOptionsInterface } from './interfaces/crud-module-for-feature-options.interface';
-import { ConfigurableCrudBuilder } from './util/configurable-crud.builder';
+import { CrudModuleForFeatureOptionsInterface } from './infrastructure/config/interfaces/crud-module-for-feature-options.interface';
+import { ConfigurableCrudBuilder } from './infrastructure/utils/configurable-crud.builder';
 
 @Module({})
 export class CrudModule extends CrudModuleClass {

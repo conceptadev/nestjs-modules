@@ -1,6 +1,6 @@
 import { Operation } from '@concepta/nestjs-common';
 
-import { ConfigurableCrudBuilder } from '../../util/configurable-crud.builder';
+import { ConfigurableCrudBuilder } from '../../infrastructure/utils/configurable-crud.builder';
 import { CRUD_TEST_PHOTO_CCB_ENTITY_NAME } from '../crud-test.constants';
 import { PhotoCreateBatchDtoFixture } from '../photo/dto/photo-create-batch.dto.fixture';
 import { PhotoCreateDtoFixture } from '../photo/dto/photo-create.dto.fixture';

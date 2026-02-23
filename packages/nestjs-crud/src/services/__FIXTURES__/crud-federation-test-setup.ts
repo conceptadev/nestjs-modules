@@ -10,14 +10,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { getAppContext, Operation } from '@concepta/nestjs-common';
 
-import { CrudContextInterceptor } from '../../crud/interceptors/crud-context.interceptor';
-import { CrudContextInterface } from '../../crud/interfaces/crud-context.interface';
-import { CrudOptionsInterface } from '../../crud/interfaces/crud-options.interface';
-import { CrudResolverInterface } from '../../crud/interfaces/crud-resolver.interface';
-import { CrudLocalResolverService } from '../../crud/services/crud-local-resolver.service';
-import { QueryRelation } from '../../request/crud-query.types';
-import { CrudFederationService } from '../crud-federation.service';
-import { CrudMetaview } from '../crud-metaview.service';
+import { CrudContextInterceptor } from '../../infrastructure/interceptors/crud-context.interceptor';
+import { CrudContextInterface } from '../../infrastructure/interceptors/interfaces/crud-context.interface';
+import { QueryRelation } from '../../infrastructure/request/crud-query.types';
+import { CrudOptionsInterface } from '../../infrastructure/request/interfaces/crud-options.interface';
+import { CrudResolverInterface } from '../../infrastructure/resolvers/interfaces/crud-resolver.interface';
+import { CrudFederationService } from '../../infrastructure/services/crud-federation.service';
+import { CrudLocalResolverService } from '../../infrastructure/services/crud-local-resolver.service';
+import { CrudMetaview } from '../../infrastructure/services/crud-metaview.service';
 
 import {
   TestRoot,

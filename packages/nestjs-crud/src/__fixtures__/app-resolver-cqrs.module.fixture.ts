@@ -4,8 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { RepositoryModule } from '@concepta/nestjs-repository';
 
-import { CrudCqrsResolver } from '../crud/resolvers/crud-cqrs.resolver';
 import { CrudModule } from '../crud.module';
+import { CrudCqrsResolver } from '../infrastructure/resolvers/crud-cqrs.resolver';
 
 import { default as ormConfig } from './ormconfig.fixture';
 import { PhotoCcbModuleFixture } from './photo-ccb/photo-ccb.module.fixture';
