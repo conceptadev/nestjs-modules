@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { WhereOperator } from '@concepta/nestjs-common';
 
-import { CrudQueryException } from '../../domain/exceptions/crud-request-query.exception';
-
 import {
   isSortOrder,
   validateComparisonOperator,
@@ -12,7 +10,8 @@ import {
   validateParamOption,
   validateSort,
   validateUUID,
-} from './crud-query.validator';
+} from '../crud-query.validator';
+import { CrudQueryValidatorException } from '../exceptions/crud-query-validator.exception';
 
 describe('#request-query', () => {
   describe('#validator', () => {
@@ -22,15 +21,19 @@ describe('#request-query', () => {
       });
 
       it('should throw for empty array', () => {
-        expect(() => validateFields([])).toThrow(CrudQueryException);
+        expect(() => validateFields([])).toThrow(CrudQueryValidatorException);
       });
 
       it('should throw for non-array', () => {
-        expect(() => validateFields('name' as any)).toThrow(CrudQueryException);
+        expect(() => validateFields('name' as any)).toThrow(
+          CrudQueryValidatorException,
+        );
       });
 
       it('should throw for array with non-string elements', () => {
-        expect(() => validateFields([1, 2] as any)).toThrow(CrudQueryException);
+        expect(() => validateFields([1, 2] as any)).toThrow(
+          CrudQueryValidatorException,
+        );
       });
     });
 
@@ -55,20 +58,20 @@ describe('#request-query', () => {
 
       it('should throw for non-object value', () => {
         expect(() => validateCondition('bad' as any, 'filter')).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
 
       it('should throw for missing field', () => {
         expect(() =>
           validateCondition({ operator: '$eq' } as any, 'filter'),
-        ).toThrow(CrudQueryException);
+        ).toThrow(CrudQueryValidatorException);
       });
 
       it('should throw for empty field', () => {
         expect(() =>
           validateCondition({ field: '', operator: '$eq' } as any, 'filter'),
-        ).toThrow(CrudQueryException);
+        ).toThrow(CrudQueryValidatorException);
       });
 
       it('should throw for valid field but invalid operator', () => {
@@ -77,7 +80,7 @@ describe('#request-query', () => {
             { field: 'name', operator: 'bad' } as any,
             'filter',
           ),
-        ).toThrow(CrudQueryException);
+        ).toThrow(CrudQueryValidatorException);
       });
     });
 
@@ -96,13 +99,13 @@ describe('#request-query', () => {
 
       it('should throw for invalid operator', () => {
         expect(() => validateComparisonOperator('$invalid')).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
 
       it('should throw for empty string', () => {
         expect(() => validateComparisonOperator('')).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
     });
@@ -135,24 +138,26 @@ describe('#request-query', () => {
       });
 
       it('should throw for non-object', () => {
-        expect(() => validateSort('bad' as any)).toThrow(CrudQueryException);
+        expect(() => validateSort('bad' as any)).toThrow(
+          CrudQueryValidatorException,
+        );
       });
 
       it('should throw for missing field', () => {
         expect(() => validateSort({ order: 'ASC' } as any)).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
 
       it('should throw for empty field', () => {
         expect(() => validateSort({ field: '', order: 'ASC' })).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
 
       it('should throw for valid field but invalid order', () => {
         expect(() => validateSort({ field: 'name', order: 'INVALID' })).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
     });
@@ -168,19 +173,19 @@ describe('#request-query', () => {
 
       it('should throw for string value', () => {
         expect(() => validateNumeric('10' as any, 'limit')).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
 
       it('should throw for null', () => {
         expect(() => validateNumeric(null as any, 'page')).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
 
       it('should throw for undefined', () => {
         expect(() => validateNumeric(undefined as any, 'cache')).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
     });
@@ -200,28 +205,28 @@ describe('#request-query', () => {
 
       it('should throw for non-object options', () => {
         expect(() => validateParamOption(null as any, 'id')).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
 
       it('should throw for missing option name', () => {
         const options = { id: { field: 'id', type: 'uuid' as const } };
         expect(() => validateParamOption(options, 'missing')).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
 
       it('should throw for option missing field', () => {
         const options = { id: { type: 'uuid' } };
         expect(() => validateParamOption(options as any, 'id')).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
 
       it('should throw for option missing type', () => {
         const options = { id: { field: 'id' } };
         expect(() => validateParamOption(options as any, 'id')).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
     });
@@ -233,7 +238,7 @@ describe('#request-query', () => {
 
       it('should throw an error', () => {
         expect(validateUUID.bind(validateUUID, invalid)).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
       it('should pass, 1', () => {

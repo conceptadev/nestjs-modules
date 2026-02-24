@@ -3,12 +3,12 @@ import { MetadataScanner } from '@nestjs/core';
 
 import { createCommand } from '../../../application/utils/create-operation-classes';
 import { createCommandHandler } from '../../../application/utils/create-operation-handlers';
-import {
-  getControllerName,
-  hasExplicitConstructor,
-} from '../../../domain/utils/crud-util';
 import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver';
 import { CrudMetaview } from '../../services/crud-metaview.service';
+import {
+  hasExplicitConstructor,
+  getControllerName,
+} from '../../utils/crud-infra.utils';
 import { CrudCommandHandler } from '../routes/crud-command-handler.decorator';
 import { CrudCommand } from '../routes/crud-command.decorator';
 import { applyConstructorInjection } from '../util/apply-constructor-injection.decorator';

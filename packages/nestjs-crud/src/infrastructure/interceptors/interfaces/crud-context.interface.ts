@@ -7,12 +7,14 @@ import {
 } from '@concepta/nestjs-common';
 
 import { CrudParsedQueryInterface } from '../../request/interfaces/crud-parsed-query.interface';
+import { CrudSpecContextInterface } from '../../specifications/interfaces/crud-spec-context.interface';
 
 import { CrudContextOptionsInterface } from './crud-context-options.interface';
 
 export interface CrudContextInterface<
   T extends PlainLiteralObject = PlainLiteralObject,
-> extends RepositoryContextInterface {
+> extends RepositoryContextInterface,
+    CrudSpecContextInterface {
   /**
    * Route parameter values from URL path (e.g., `\{ id: 5, userId: 'abc' \}`).
    * Simple key-value object, not WhereCondition[].

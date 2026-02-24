@@ -2,8 +2,8 @@ import { PlainLiteralObject } from '@nestjs/common';
 import { MetadataScanner } from '@nestjs/core';
 import { ApiQuery } from '@nestjs/swagger';
 
-import { isReadOperation } from '../../../domain/utils/crud-util';
 import { CrudMetaview } from '../../services/crud-metaview.service';
+import { isReadOperation } from '../../utils/crud-infra.utils';
 import { Swagger } from '../../utils/swagger.helper';
 
 /**

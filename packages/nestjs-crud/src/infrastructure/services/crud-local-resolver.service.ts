@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
-import { CrudContextException } from '../../domain/exceptions/crud-context.exception';
+import { CrudContextException } from '../exceptions/crud-context.exception';
 import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
 import { CrudLocal } from '../interceptors/interfaces/crud-local.interface';
 

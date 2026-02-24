@@ -13,12 +13,6 @@ import {
 } from '@concepta/nestjs-repository';
 
 import { ConfigurableCrudOptionsTransformer } from '../../crud.types';
-import {
-  getControllerName,
-  isAdapterType,
-  isBodyOperation,
-  isReadOperation,
-} from '../../domain/utils/crud-util';
 import { CrudAdapter } from '../adapters/crud.adapter';
 import { CrudController } from '../decorators/controller/crud-controller.decorator';
 import { CrudInit } from '../decorators/controller/crud-init.decorator';
@@ -49,6 +43,12 @@ import { CrudResolverInterface } from '../resolvers/interfaces/crud-resolver.int
 import { CrudMetaview } from '../services/crud-metaview.service';
 
 import { createCrudAdapterProvider } from './create-crud-adapter-provider';
+import {
+  isBodyOperation,
+  isReadOperation,
+  getControllerName,
+  isAdapterType,
+} from './crud-infra.utils';
 import { CrudOperationOptions } from './crud-operation-options.type';
 import {
   ConfigurableCrudClassesMap,

@@ -19,7 +19,6 @@ import {
   isWhereCondition,
 } from '@concepta/nestjs-common';
 
-import { queryFilterIsArray } from '../../domain/utils/crud-util';
 import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
 import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';
 import { CrudContextOptionsInterface } from '../interceptors/interfaces/crud-context-options.interface';
@@ -28,6 +27,7 @@ import { CrudParamsOptionsInterface } from '../interfaces/crud-params-options.in
 import { SConditionConverter } from '../request/crud-scondition.converter';
 import { CrudParsedQueryInterface } from '../request/interfaces/crud-parsed-query.interface';
 import { CrudQueryOptionsInterface } from '../request/interfaces/crud-query-options.interface';
+import { queryFilterIsArray } from '../utils/crud-infra.utils';
 
 export class CrudAdapter<Entity extends PlainLiteralObject> {
   protected entityColumns: EntityColumn<Entity>[] = [];

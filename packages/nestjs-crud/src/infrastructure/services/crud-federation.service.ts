@@ -18,8 +18,8 @@ import {
   CRUD_FEDERATION_MAX_ITERATIONS,
   CRUD_FEDERATION_MAX_BUFFER_SIZE,
 } from '../../crud.constants';
-import { CrudFederationException } from '../../domain/exceptions/crud-federation.exception';
 import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';
+import { CrudFederationException } from '../exceptions/crud-federation.exception';
 import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
 import { QueryRelation } from '../request/crud-query.types';
 import { CrudResolverInterface } from '../resolvers/interfaces/crud-resolver.interface';

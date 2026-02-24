@@ -1,10 +1,9 @@
-import { CrudRequestBodyBatch } from '../decorators/routes/crud-request-body-batch.decorator';
-import { CrudRequestBody } from '../decorators/routes/crud-request-body.decorator';
-import { CrudResponseResource } from '../decorators/routes/crud-response-resource.decorator';
-import { CrudReturnRestored } from '../decorators/routes/crud-return-restored.decorator';
-import { CrudValidate } from '../decorators/routes/crud-validate.decorator';
-
-import { CrudMetaview } from './crud-metaview.service';
+import { CrudRequestBodyBatch } from '../../decorators/routes/crud-request-body-batch.decorator';
+import { CrudRequestBody } from '../../decorators/routes/crud-request-body.decorator';
+import { CrudResponseResource } from '../../decorators/routes/crud-response-resource.decorator';
+import { CrudReturnRestored } from '../../decorators/routes/crud-return-restored.decorator';
+import { CrudValidate } from '../../decorators/routes/crud-validate.decorator';
+import { CrudMetaview } from '../crud-metaview.service';
 
 describe('CrudMetaview', () => {
   const metaview = new CrudMetaview();

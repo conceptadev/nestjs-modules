@@ -9,10 +9,10 @@ import {
   WhereOperator,
 } from '@concepta/nestjs-common';
 
-import { TestCrudAdapter } from '../../__fixtures__/crud/adapters/test-crud.adapter';
-import { CrudContextOptionsInterface } from '../interceptors/interfaces/crud-context-options.interface';
-import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
-import { CrudParsedQueryInterface } from '../request/interfaces/crud-parsed-query.interface';
+import { TestCrudAdapter } from '../../../__fixtures__/crud/adapters/test-crud.adapter';
+import { CrudContextOptionsInterface } from '../../interceptors/interfaces/crud-context-options.interface';
+import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface';
+import { CrudParsedQueryInterface } from '../../request/interfaces/crud-parsed-query.interface';
 
 interface TestEntity {
   id: string;

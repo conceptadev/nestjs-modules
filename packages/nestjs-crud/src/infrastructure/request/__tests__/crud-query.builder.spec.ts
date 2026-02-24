@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import 'jest-extended';
-import { CrudQueryException } from '../../domain/exceptions/crud-request-query.exception';
-
-import { CrudQueryBuilder } from './crud-query.builder';
-import { CrudQueryBuilderOptionsInterface } from './interfaces/crud-query-builder-options.interface';
+import { CrudQueryBuilder } from '../crud-query.builder';
+import { CrudQueryValidatorException } from '../exceptions/crud-query-validator.exception';
+import { CrudQueryBuilderOptionsInterface } from '../interfaces/crud-query-builder-options.interface';
 
 const defaultOptions = { ...(CrudQueryBuilder as any)._options };
 
@@ -74,7 +73,7 @@ describe('#query', () => {
       });
       it('should throw an error', () => {
         expect((qb.select as any).bind(qb, [false])).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
       it('should set fields', () => {
@@ -90,17 +89,17 @@ describe('#query', () => {
       });
       it('should throw an error, 1', () => {
         expect((qb.setFilter as any).bind(qb, { field: 1 })).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
       it('should throw an error, 2', () => {
         expect(
           (qb.setFilter as any).bind(qb, { field: 'foo', operator: 'bar' }),
-        ).toThrow(CrudQueryException);
+        ).toThrow(CrudQueryValidatorException);
       });
       it('should throw an error, 3', () => {
         expect((qb.setFilter as any).bind(qb, [{}])).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
       it('should set filter, 1', () => {
@@ -147,16 +146,18 @@ describe('#query', () => {
       });
       it('should throw an error, 1', () => {
         expect((qb.setOr as any).bind(qb, { field: 1 })).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
       it('should throw an error, 2', () => {
         expect(
           (qb.setOr as any).bind(qb, { field: 'foo', operator: 'bar' }),
-        ).toThrow(CrudQueryException);
+        ).toThrow(CrudQueryValidatorException);
       });
       it('should throw an error, 3', () => {
-        expect((qb.setOr as any).bind(qb, [{}])).toThrow(CrudQueryException);
+        expect((qb.setOr as any).bind(qb, [{}])).toThrow(
+          CrudQueryValidatorException,
+        );
       });
       it('should set or, 1', () => {
         qb.setOr({ field: 'foo', operator: 'eq', value: 'bar' });
@@ -180,16 +181,18 @@ describe('#query', () => {
       });
       it('should throw an error, 1', () => {
         expect((qb.sortBy as any).bind(qb, { field: 1 })).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
       it('should throw an error, 2', () => {
         expect(
           (qb.sortBy as any).bind(qb, { field: 'foo', order: 'bar' }),
-        ).toThrow(CrudQueryException);
+        ).toThrow(CrudQueryValidatorException);
       });
       it('should throw an error, 3', () => {
-        expect((qb.sortBy as any).bind(qb, [{}])).toThrow(CrudQueryException);
+        expect((qb.sortBy as any).bind(qb, [{}])).toThrow(
+          CrudQueryValidatorException,
+        );
       });
       it('should set sort, 1', () => {
         qb.sortBy({ field: 'foo', order: 'ASC' });
@@ -222,7 +225,9 @@ describe('#query', () => {
         expect(qb.queryObject).toEqual({});
       });
       it('should throw an error', () => {
-        expect((qb.setLimit as any).bind(qb, {})).toThrow(CrudQueryException);
+        expect((qb.setLimit as any).bind(qb, {})).toThrow(
+          CrudQueryValidatorException,
+        );
       });
       it('should set limit', () => {
         qb.setLimit(10);
@@ -236,7 +241,9 @@ describe('#query', () => {
         expect(qb.queryObject).toEqual({});
       });
       it('should throw an error', () => {
-        expect((qb.setOffset as any).bind(qb, {})).toThrow(CrudQueryException);
+        expect((qb.setOffset as any).bind(qb, {})).toThrow(
+          CrudQueryValidatorException,
+        );
       });
       it('should set offset', () => {
         qb.setOffset(10);
@@ -250,7 +257,9 @@ describe('#query', () => {
         expect(qb.queryObject).toEqual({});
       });
       it('should throw an error', () => {
-        expect((qb.setPage as any).bind(qb, {})).toThrow(CrudQueryException);
+        expect((qb.setPage as any).bind(qb, {})).toThrow(
+          CrudQueryValidatorException,
+        );
       });
       it('should set page', () => {
         qb.setPage(10);
@@ -268,10 +277,12 @@ describe('#query', () => {
 
     describe('#cond', () => {
       it('should throw an error, 1', () => {
-        expect((qb as any).cond).toThrow(CrudQueryException);
+        expect((qb as any).cond).toThrow(CrudQueryValidatorException);
       });
       it('should throw an error, 2', () => {
-        expect((qb as any).cond.bind(qb, {})).toThrow(CrudQueryException);
+        expect((qb as any).cond.bind(qb, {})).toThrow(
+          CrudQueryValidatorException,
+        );
       });
       it('should return a filter string from an object', () => {
         const test = (qb as any).cond(

@@ -2,18 +2,14 @@ import { HttpStatus } from '@nestjs/common';
 
 import { RuntimeExceptionOptions } from '@concepta/nestjs-common';
 
-import { CrudException } from './crud.exception';
+import { CrudException } from '../../exceptions/crud.exception';
 
-/**
- * Crud context exception.
- */
-export class CrudContextException extends CrudException {
+export class CrudQueryValidatorException extends CrudException {
   constructor(options?: RuntimeExceptionOptions) {
     super({
-      safeMessage: 'Error on crud context processing',
       httpStatus: HttpStatus.BAD_REQUEST,
       ...options,
     });
-    this.errorCode = 'CRUD_CONTEXT_ERROR';
+    this.errorCode = 'CRUD_QUERY_VALIDATOR_ERROR';
   }
 }

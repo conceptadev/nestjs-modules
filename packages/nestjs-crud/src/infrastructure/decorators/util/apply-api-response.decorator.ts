@@ -11,9 +11,9 @@ import {
 import { Operation } from '@concepta/nestjs-common';
 
 import { DecoratorTargetObject } from '../../../crud.types';
-import { CrudException } from '../../../domain/exceptions/crud.exception';
 import { CrudInvalidResponseDto } from '../../dtos/crud-invalid-response.dto';
 import { CrudResponsePaginatedDto } from '../../dtos/crud-response-paginated.dto';
+import { CrudException } from '../../exceptions/crud.exception';
 import { CrudMetaview } from '../../services/crud-metaview.service';
 
 /**

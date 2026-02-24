@@ -1,7 +1,8 @@
 import { Operation } from '@concepta/nestjs-common';
 
-import { safeRequire } from '../../domain/utils/crud-util';
 import { CrudQueryBuilder } from '../request/crud-query.builder';
+
+import { safeRequire } from './crud-infra.utils';
 
 export const swagger = safeRequire('@nestjs/swagger', () =>
   // eslint-disable-next-line @typescript-eslint/no-require-imports

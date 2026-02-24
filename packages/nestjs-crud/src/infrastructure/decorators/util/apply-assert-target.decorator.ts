@@ -1,4 +1,4 @@
-import { CrudDecoratorException } from '../../../domain/exceptions/crud-decorator.exception';
+import { CrudDecoratorException } from '../../exceptions/crud-decorator.exception';
 import { CrudMetadataLookupTarget } from '../../services/crud-metadata.service';
 
 /**

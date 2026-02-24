@@ -1,9 +1,9 @@
 import { CRUD_MODULE_PARAM_BODY_METADATA } from '../../../crud.constants';
-import { getMethodHandler } from '../../../domain/utils/crud-util';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,
 } from '../../services/crud-metadata.service';
+import { getMethodHandler } from '../../utils/crud-infra.utils';
 
 import { CrudBodyMetadataInterface } from './interfaces/crud-body-metadata.interface';
 import { CrudBodyOptionsInterface } from './interfaces/crud-body-options.interface';

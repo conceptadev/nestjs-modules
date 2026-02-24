@@ -1,9 +1,5 @@
 import { Inject, Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 
-import {
-  getControllerName,
-  getDynamicAdapterToken,
-} from '../../domain/utils/crud-util';
 import { CrudAdapter } from '../../infrastructure/adapters/crud.adapter';
 import { CrudControllerEntityInterface } from '../../infrastructure/interfaces/crud-controller-entity.interface';
 import { CrudAdapterResolver } from '../../infrastructure/resolvers/crud-adapter.resolver';
@@ -11,6 +7,10 @@ import {
   CrudResolverInterface,
   CrudResolverStatic,
 } from '../../infrastructure/resolvers/interfaces/crud-resolver.interface';
+import {
+  getControllerName,
+  getDynamicAdapterToken,
+} from '../../infrastructure/utils/crud-infra.utils';
 import { CrudCommandHandlerInterface } from '../commands/interfaces/crud-command-handler.interface';
 import { CrudQueryHandler } from '../queries/handlers/crud-query.handler';
 

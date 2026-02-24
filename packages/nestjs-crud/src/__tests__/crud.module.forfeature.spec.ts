@@ -25,7 +25,6 @@ import { CrudUpdateHandler } from '../application/commands/handlers/crud-update.
 import { CrudListHandler } from '../application/queries/handlers/crud-list.handler';
 import { CrudListQuery } from '../application/queries/impl/crud-list.query';
 import { CrudModule } from '../crud.module';
-import { getDynamicAdapterToken } from '../domain/utils/crud-util';
 import { CrudAdapter } from '../infrastructure/adapters/crud.adapter';
 import { CrudController } from '../infrastructure/decorators/controller/crud-controller.decorator';
 import { CrudCreate } from '../infrastructure/decorators/operations/crud-create.decorator';
@@ -39,6 +38,7 @@ import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.re
 import { CrudOperationResolver } from '../infrastructure/resolvers/crud-operation.resolver';
 import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface';
 import { CrudMetaview } from '../infrastructure/services/crud-metaview.service';
+import { getDynamicAdapterToken } from '../infrastructure/utils/crud-infra.utils';
 
 import { CRUD_TEST_COMPANY_ENTITY_NAME } from '../__fixtures__/crud-test.constants';
 import { CompanyEntity } from '../__fixtures__/typeorm/company/company.entity';

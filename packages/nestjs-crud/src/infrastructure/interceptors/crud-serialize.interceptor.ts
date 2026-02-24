@@ -18,11 +18,11 @@ import {
 import { isFunction, isObject } from '@nestjs/common/utils/shared.utils';
 
 import { CRUD_MODULE_SETTINGS_TOKEN } from '../../crud.constants';
-import { CrudException } from '../../domain/exceptions/crud.exception';
 import { CrudModuleSettingsInterface } from '../config/interfaces/crud-module-settings.interface';
 import { CrudInvalidResponseDto } from '../dtos/crud-invalid-response.dto';
 import { CrudResponsePaginatedDto } from '../dtos/crud-response-paginated.dto';
 import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';
+import { CrudException } from '../exceptions/crud.exception';
 import { CrudSerializationOptionsInterface } from '../interfaces/crud-serialization-options.interface';
 import { CrudMetaview } from '../services/crud-metaview.service';
 import { crudIsPaginatedHelper } from '../utils/crud-is-paginated.helper';

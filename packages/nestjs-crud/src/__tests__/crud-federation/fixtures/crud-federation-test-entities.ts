@@ -2,11 +2,11 @@ import { PlainLiteralObject } from '@nestjs/common';
 
 import { AppContextHost, Operation } from '@concepta/nestjs-common';
 
-import { operationToAction } from '../../../domain/utils/crud-util';
 import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
 import { QueryRelation } from '../../../infrastructure/request/crud-query.types';
 import { CrudParsedQueryInterface } from '../../../infrastructure/request/interfaces/crud-parsed-query.interface';
 import { CrudRelationsInterface } from '../../../infrastructure/request/interfaces/crud-relations.interface';
+import { operationToAction } from '../../../infrastructure/utils/crud-infra.utils';
 
 // Mock entities
 export interface TestRoot extends PlainLiteralObject {

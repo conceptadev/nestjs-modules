@@ -6,33 +6,32 @@ import { Test } from '@nestjs/testing';
 
 import { ExceptionsFilter, Ctx, WhereOperator } from '@concepta/nestjs-common';
 
-import { TestModelCreateBatchDto } from '../../../__fixtures__/crud/dto/test-model-create-batch.dto';
-import { TestModelCreateDto } from '../../../__fixtures__/crud/dto/test-model-create.dto';
-import { TestModelUpdateDto } from '../../../__fixtures__/crud/dto/test-model-update.dto';
-import { TestModelDto } from '../../../__fixtures__/crud/models/test.model';
-import { CrudCreateBatchHandler } from '../../../application/commands/handlers/crud-create-batch.handler';
-import { CrudCreateHandler } from '../../../application/commands/handlers/crud-create.handler';
-import { CrudDeleteHandler } from '../../../application/commands/handlers/crud-delete.handler';
-import { CrudReplaceHandler } from '../../../application/commands/handlers/crud-replace.handler';
-import { CrudUpdateHandler } from '../../../application/commands/handlers/crud-update.handler';
-import { CrudListHandler } from '../../../application/queries/handlers/crud-list.handler';
-import { CrudReadHandler } from '../../../application/queries/handlers/crud-read.handler';
-import { CrudModule } from '../../../crud.module';
-import { CrudCreateBatchInterface } from '../../dtos/interfaces/crud-create-batch.interface';
-import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface';
-import { CrudQueryBuilder } from '../../request/crud-query.builder';
-import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver';
-import { CrudResolverInterface } from '../../resolvers/interfaces/crud-resolver.interface';
-import { CrudCreateBatch } from '../operations/crud-create-batch.decorator';
-import { CrudCreate } from '../operations/crud-create.decorator';
-import { CrudDelete } from '../operations/crud-delete.decorator';
-import { CrudList } from '../operations/crud-list.decorator';
-import { CrudRead } from '../operations/crud-read.decorator';
-import { CrudReplace } from '../operations/crud-replace.decorator';
-import { CrudUpdate } from '../operations/crud-update.decorator';
-import { CrudBody } from '../params/crud-body.decorator';
-
-import { CrudController } from './crud-controller.decorator';
+import { TestModelCreateBatchDto } from '../../../../__fixtures__/crud/dto/test-model-create-batch.dto';
+import { TestModelCreateDto } from '../../../../__fixtures__/crud/dto/test-model-create.dto';
+import { TestModelUpdateDto } from '../../../../__fixtures__/crud/dto/test-model-update.dto';
+import { TestModelDto } from '../../../../__fixtures__/crud/models/test.model';
+import { CrudCreateBatchHandler } from '../../../../application/commands/handlers/crud-create-batch.handler';
+import { CrudCreateHandler } from '../../../../application/commands/handlers/crud-create.handler';
+import { CrudDeleteHandler } from '../../../../application/commands/handlers/crud-delete.handler';
+import { CrudReplaceHandler } from '../../../../application/commands/handlers/crud-replace.handler';
+import { CrudUpdateHandler } from '../../../../application/commands/handlers/crud-update.handler';
+import { CrudListHandler } from '../../../../application/queries/handlers/crud-list.handler';
+import { CrudReadHandler } from '../../../../application/queries/handlers/crud-read.handler';
+import { CrudModule } from '../../../../crud.module';
+import { CrudCreateBatchInterface } from '../../../dtos/interfaces/crud-create-batch.interface';
+import { CrudContextInterface } from '../../../interceptors/interfaces/crud-context.interface';
+import { CrudQueryBuilder } from '../../../request/crud-query.builder';
+import { CrudAdapterResolver } from '../../../resolvers/crud-adapter.resolver';
+import { CrudResolverInterface } from '../../../resolvers/interfaces/crud-resolver.interface';
+import { CrudCreateBatch } from '../../operations/crud-create-batch.decorator';
+import { CrudCreate } from '../../operations/crud-create.decorator';
+import { CrudDelete } from '../../operations/crud-delete.decorator';
+import { CrudList } from '../../operations/crud-list.decorator';
+import { CrudRead } from '../../operations/crud-read.decorator';
+import { CrudReplace } from '../../operations/crud-replace.decorator';
+import { CrudUpdate } from '../../operations/crud-update.decorator';
+import { CrudBody } from '../../params/crud-body.decorator';
+import { CrudController } from '../crud-controller.decorator';
 
 describe('#crud', () => {
   describe('#base methods', () => {

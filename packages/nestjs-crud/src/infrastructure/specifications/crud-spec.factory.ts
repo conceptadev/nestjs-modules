@@ -8,9 +8,8 @@ import {
 } from '@concepta/nestjs-common';
 import { Spec } from '@concepta/nestjs-hook';
 
-import { CrudContextInterface } from '../../infrastructure/interceptors/interfaces/crud-context.interface';
-
 import { ActionSpecification } from './action.specification';
+import { CrudSpecContextInterface } from './interfaces/crud-spec-context.interface';
 import { OperationSpecification } from './operation.specification';
 
 /**
@@ -43,7 +42,7 @@ export const CrudSpec = {
    */
   operation: (
     ...operations: Operation[]
-  ): SpecificationInterface<CrudContextInterface> =>
+  ): SpecificationInterface<CrudSpecContextInterface> =>
     new OperationSpecification(operations),
 
   /**
@@ -53,7 +52,7 @@ export const CrudSpec = {
    */
   action: (
     ...actions: ActionEnum[]
-  ): SpecificationInterface<CrudContextInterface> =>
+  ): SpecificationInterface<CrudSpecContextInterface> =>
     new ActionSpecification(actions),
 
   // ═══════════════════════════════════════════════════════════════════
@@ -63,25 +62,25 @@ export const CrudSpec = {
   /**
    * Match CREATE action.
    */
-  isCreate: (): SpecificationInterface<CrudContextInterface> =>
+  isCreate: (): SpecificationInterface<CrudSpecContextInterface> =>
     new ActionSpecification([ActionEnum.CREATE]),
 
   /**
    * Match READ action.
    */
-  isRead: (): SpecificationInterface<CrudContextInterface> =>
+  isRead: (): SpecificationInterface<CrudSpecContextInterface> =>
     new ActionSpecification([ActionEnum.READ]),
 
   /**
    * Match UPDATE action.
    */
-  isUpdate: (): SpecificationInterface<CrudContextInterface> =>
+  isUpdate: (): SpecificationInterface<CrudSpecContextInterface> =>
     new ActionSpecification([ActionEnum.UPDATE]),
 
   /**
    * Match DELETE action.
    */
-  isDelete: (): SpecificationInterface<CrudContextInterface> =>
+  isDelete: (): SpecificationInterface<CrudSpecContextInterface> =>
     new ActionSpecification([ActionEnum.DELETE]),
 
   // ═══════════════════════════════════════════════════════════════════
@@ -92,20 +91,20 @@ export const CrudSpec = {
    * Match query operations (List, Read).
    * These operations read data without modification.
    */
-  isQuery: (): SpecificationInterface<CrudContextInterface> =>
+  isQuery: (): SpecificationInterface<CrudSpecContextInterface> =>
     new OperationSpecification([...ReadOperations]),
 
   /**
    * Match write operations (Create, CreateBatch, Update, Replace).
    * These operations modify data but don't delete.
    */
-  isWrite: (): SpecificationInterface<CrudContextInterface> =>
+  isWrite: (): SpecificationInterface<CrudSpecContextInterface> =>
     new OperationSpecification([...WriteOperations]),
 
   /**
    * Match all mutation operations (write + delete + restore).
    * Any operation that changes state.
    */
-  isMutation: (): SpecificationInterface<CrudContextInterface> =>
+  isMutation: (): SpecificationInterface<CrudSpecContextInterface> =>
     new OperationSpecification([...MutateOperations]),
 };

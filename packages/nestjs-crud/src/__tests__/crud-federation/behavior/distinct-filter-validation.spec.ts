@@ -1,6 +1,6 @@
 import { WhereOperator } from '@concepta/nestjs-common';
 
-import { CrudFederationException } from '../../../domain/exceptions/crud-federation.exception';
+import { CrudFederationException } from '../../../infrastructure/exceptions/crud-federation.exception';
 import { assertRelationQuery } from '../fixtures/crud-federation-test-assertions';
 import {
   createOneToManyForwardRelation,

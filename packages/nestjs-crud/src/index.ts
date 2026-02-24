@@ -85,11 +85,11 @@ export { CrudResponsePaginatedDto } from './infrastructure/dtos/crud-response-pa
 export { CrudCreateBatchDto } from './infrastructure/dtos/crud-create-batch.dto';
 
 // exceptions
-export { CrudException } from './domain/exceptions/crud.exception';
-export { CrudContextException } from './domain/exceptions/crud-context.exception';
-export { CrudDecoratorException } from './domain/exceptions/crud-decorator.exception';
-export { CrudFederationException } from './domain/exceptions/crud-federation.exception';
-export { CrudQueryException } from './domain/exceptions/crud-query.exception';
+export { CrudException } from './infrastructure/exceptions/crud.exception';
+export { CrudContextException } from './infrastructure/exceptions/crud-context.exception';
+export { CrudDecoratorException } from './infrastructure/exceptions/crud-decorator.exception';
+export { CrudFederationException } from './infrastructure/exceptions/crud-federation.exception';
+export { CrudQueryException } from './infrastructure/exceptions/crud-query.exception';
 
 // configurable crud builder
 export {
@@ -110,9 +110,10 @@ export { CrudOperationOptions } from './infrastructure/utils/crud-operation-opti
 export { Operation } from '@concepta/nestjs-common';
 
 // specifications
-export { CrudSpec } from './domain/specifications/crud-spec.factory';
-export { OperationSpecification } from './domain/specifications/operation.specification';
-export { ActionSpecification } from './domain/specifications/action.specification';
+export { CrudSpecContextInterface } from './infrastructure/specifications/interfaces/crud-spec-context.interface';
+export { CrudSpec } from './infrastructure/specifications/crud-spec.factory';
+export { OperationSpecification } from './infrastructure/specifications/operation.specification';
+export { ActionSpecification } from './infrastructure/specifications/action.specification';
 
 // resolvers
 export { CrudResolverInterface } from './infrastructure/resolvers/interfaces/crud-resolver.interface';

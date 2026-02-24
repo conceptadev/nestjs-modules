@@ -1,7 +1,7 @@
 import { ActionEnum } from '@concepta/nestjs-common';
 import { CompositeSpecification } from '@concepta/nestjs-hook';
 
-import { CrudContextInterface } from '../../infrastructure/interceptors/interfaces/crud-context.interface';
+import { CrudSpecContextInterface } from './interfaces/crud-spec-context.interface';
 
 /**
  * Specification that matches specific actions.
@@ -24,12 +24,12 @@ import { CrudContextInterface } from '../../infrastructure/interceptors/interfac
  * CrudSpec.isDelete()
  * ```
  */
-export class ActionSpecification extends CompositeSpecification<CrudContextInterface> {
+export class ActionSpecification extends CompositeSpecification<CrudSpecContextInterface> {
   constructor(private readonly actions: ActionEnum[]) {
     super();
   }
 
-  isSatisfiedBy(context: CrudContextInterface): boolean {
+  isSatisfiedBy(context: CrudSpecContextInterface): boolean {
     return this.actions.includes(context.action);
   }
 }

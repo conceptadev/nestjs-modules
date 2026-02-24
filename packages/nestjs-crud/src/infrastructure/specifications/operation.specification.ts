@@ -1,7 +1,7 @@
 import { Operation } from '@concepta/nestjs-common';
 import { CompositeSpecification } from '@concepta/nestjs-hook';
 
-import { CrudContextInterface } from '../../infrastructure/interceptors/interfaces/crud-context.interface';
+import { CrudSpecContextInterface } from './interfaces/crud-spec-context.interface';
 
 /**
  * Specification that matches specific CRUD operations.
@@ -19,12 +19,12 @@ import { CrudContextInterface } from '../../infrastructure/interceptors/interfac
  * CrudSpec.isWrite() // Create, CreateBatch, Update, Replace
  * ```
  */
-export class OperationSpecification extends CompositeSpecification<CrudContextInterface> {
+export class OperationSpecification extends CompositeSpecification<CrudSpecContextInterface> {
   constructor(private readonly operations: Operation[]) {
     super();
   }
 
-  isSatisfiedBy(context: CrudContextInterface): boolean {
+  isSatisfiedBy(context: CrudSpecContextInterface): boolean {
     return this.operations.includes(context.operation);
   }
 }

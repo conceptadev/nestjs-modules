@@ -1,8 +1,8 @@
-import { CrudQueryException } from '../../domain/exceptions/crud-request-query.exception';
-import { CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
-
-import { CrudQueryParser } from './crud-query.parser';
-import { CrudParsedQueryInterface } from './interfaces/crud-parsed-query.interface';
+import { CrudParamsOptionsInterface } from '../../interfaces/crud-params-options.interface';
+import { CrudQueryParser } from '../crud-query.parser';
+import { CrudQueryParserException } from '../exceptions/crud-query-parser.exception';
+import { CrudQueryValidatorException } from '../exceptions/crud-query-validator.exception';
+import { CrudParsedQueryInterface } from '../interfaces/crud-parsed-query.interface';
 
 class TestEntity {
   foo!: unknown;
@@ -75,11 +75,11 @@ describe('#request-query', () => {
         it('should throw an error, 1', () => {
           expect(
             qp.parseQuery.bind(qp, { filter: 'foo||$invalid||bar' }),
-          ).toThrow(CrudQueryException);
+          ).toThrow(CrudQueryValidatorException);
         });
         it('should throw an error, 2', () => {
           expect(qp.parseQuery.bind(qp, { filter: 'foo||$eq' })).toThrow(
-            CrudQueryException,
+            CrudQueryParserException,
           );
         });
         it('should set array, 1', () => {
@@ -415,12 +415,12 @@ describe('#request-query', () => {
         });
         it('should throw an error, 1', () => {
           expect(qp.parseQuery.bind(qp, { or: 'foo||$invalid||bar' })).toThrow(
-            CrudQueryException,
+            CrudQueryValidatorException,
           );
         });
         it('should throw an error, 2', () => {
           expect(qp.parseQuery.bind(qp, { or: 'foo||$eq' })).toThrow(
-            CrudQueryException,
+            CrudQueryParserException,
           );
         });
         it('should set array, 1', () => {
@@ -526,12 +526,12 @@ describe('#request-query', () => {
         });
         it('should throw an error, 1', () => {
           expect(qp.parseQuery.bind(qp, { sort: 'foo' })).toThrow(
-            CrudQueryException,
+            CrudQueryValidatorException,
           );
         });
         it('should throw an error, 2', () => {
           expect(qp.parseQuery.bind(qp, { sort: 'foo,boo' })).toThrow(
-            CrudQueryException,
+            CrudQueryValidatorException,
           );
         });
         it('should set array', () => {
@@ -571,7 +571,7 @@ describe('#request-query', () => {
         });
         it('should throw an error', () => {
           expect(qp.parseQuery.bind(qp, { limit: 'a' })).toThrow(
-            CrudQueryException,
+            CrudQueryValidatorException,
           );
         });
         it('should set value', () => {
@@ -594,7 +594,7 @@ describe('#request-query', () => {
         });
         it('should throw an error', () => {
           expect(qp.parseQuery.bind(qp, { offset: 'a' })).toThrow(
-            CrudQueryException,
+            CrudQueryValidatorException,
           );
         });
         it('should set value', () => {
@@ -617,7 +617,7 @@ describe('#request-query', () => {
         });
         it('should throw an error', () => {
           expect(qp.parseQuery.bind(qp, { page: ['a'] })).toThrow(
-            CrudQueryException,
+            CrudQueryValidatorException,
           );
         });
         it('should set value', () => {
@@ -640,7 +640,7 @@ describe('#request-query', () => {
         });
         it('should throw an error', () => {
           expect(qp.parseQuery.bind(qp, { cache: ['a'] })).toThrow(
-            CrudQueryException,
+            CrudQueryValidatorException,
           );
         });
         it('should set value', () => {
@@ -663,7 +663,7 @@ describe('#request-query', () => {
         });
         it('should throw an error', () => {
           expect(qp.parseQuery.bind(qp, { includeDeleted: 'a' })).toThrow(
-            CrudQueryException,
+            CrudQueryValidatorException,
           );
         });
         it('should set value', () => {
@@ -683,12 +683,12 @@ describe('#request-query', () => {
       });
       it('should throw an error, 1', () => {
         expect(qp.parseQuery.bind(qp, { s: 'invalid' })).toThrow(
-          CrudQueryException,
+          CrudQueryParserException,
         );
       });
       it('should throw an error, 2', () => {
         expect(qp.parseQuery.bind(qp, { s: 'true' })).toThrow(
-          CrudQueryException,
+          CrudQueryParserException,
         );
       });
       it('should parse search', () => {
@@ -719,21 +719,21 @@ describe('#request-query', () => {
         const params = { foo: 'bar' };
         const options: CrudParamsOptionsInterface<TestEntity> = {};
         expect(qp.parseParams.bind(qp, params, options)).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
       it('should throw an error, 2', () => {
         const params = { foo: 'bar' };
         const options = {};
         expect(qp.parseParams.bind(qp, params, options)).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
       it('should throw an error, 3', () => {
         const params = { foo: 'bar' };
         const options = { foo: {} };
         expect(qp.parseParams.bind(qp, params, options)).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
       it('should throw an error, 4', () => {
@@ -742,7 +742,7 @@ describe('#request-query', () => {
           foo: { field: 'number' },
         } as unknown as CrudParamsOptionsInterface<TestEntity>;
         expect(qp.parseParams.bind(qp, params, options)).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
       it('should throw an error, 5', () => {
@@ -751,7 +751,7 @@ describe('#request-query', () => {
           foo: { field: 'foo', type: 'number' },
         };
         expect(qp.parseParams.bind(qp, params, options)).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
       it('should throw an error, 6', () => {
@@ -760,7 +760,7 @@ describe('#request-query', () => {
           foo: { field: 'foo', type: 'uuid' },
         };
         expect(qp.parseParams.bind(qp, params, options)).toThrow(
-          CrudQueryException,
+          CrudQueryValidatorException,
         );
       });
       it('should set routeParams', () => {

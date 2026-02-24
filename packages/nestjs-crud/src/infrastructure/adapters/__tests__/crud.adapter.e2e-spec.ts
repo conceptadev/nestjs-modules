@@ -19,10 +19,9 @@ import {
 } from '@concepta/nestjs-repository-typeorm';
 import { TestEntityFixture } from '@concepta/nestjs-repository-typeorm/src/__fixtures__/repository/test.entity.fixture';
 
-import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
-import { CrudParsedQueryInterface } from '../request/interfaces/crud-parsed-query.interface';
-
-import { CrudAdapter } from './crud.adapter';
+import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface';
+import { CrudParsedQueryInterface } from '../../request/interfaces/crud-parsed-query.interface';
+import { CrudAdapter } from '../crud.adapter';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 

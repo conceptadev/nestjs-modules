@@ -1,4 +1,4 @@
-import { CrudFederationException } from '../../../domain/exceptions/crud-federation.exception';
+import { CrudFederationException } from '../../../infrastructure/exceptions/crud-federation.exception';
 import {
   setupCrudFederationTests,
   cleanupCrudFederationTests,

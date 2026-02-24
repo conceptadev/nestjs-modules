@@ -9,7 +9,6 @@ import {
   WhereConditionScalar,
 } from '@concepta/nestjs-common';
 
-import { CrudQueryException } from '../../domain/exceptions/crud-request-query.exception';
 import { CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
 import { hasValue, isDateString, isStringFull } from '../utils/validation';
 
@@ -24,6 +23,7 @@ import {
   validateSort,
   validateUUID,
 } from './crud-query.validator';
+import { CrudQueryParserException } from './exceptions/crud-query-parser.exception';
 import { CrudParsedQueryInterface } from './interfaces/crud-parsed-query.interface';
 import { CrudQueryBuilderOptionsInterface } from './interfaces/crud-query-builder-options.interface';
 
@@ -366,7 +366,7 @@ export class CrudQueryParser<Entity extends PlainLiteralObject>
 
       return data;
     } catch (_e) {
-      throw new CrudQueryException({
+      throw new CrudQueryParserException({
         message: 'Invalid search param. JSON expected',
       });
     }
@@ -431,7 +431,7 @@ export class CrudQueryParser<Entity extends PlainLiteralObject>
     value = this.parseValues(value);
 
     if (!isEmptyValue.some((name) => name === operator) && !hasValue(value)) {
-      throw new CrudQueryException({ message: `Invalid ${cond} value` });
+      throw new CrudQueryParserException({ message: `Invalid ${cond} value` });
     }
 
     const factory = CrudQueryParser.COND_FACTORY[operator];

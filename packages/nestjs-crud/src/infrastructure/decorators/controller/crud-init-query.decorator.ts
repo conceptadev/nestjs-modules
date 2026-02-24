@@ -3,12 +3,12 @@ import { MetadataScanner } from '@nestjs/core';
 
 import { createQuery } from '../../../application/utils/create-operation-classes';
 import { createQueryHandler } from '../../../application/utils/create-operation-handlers';
-import {
-  getControllerName,
-  hasExplicitConstructor,
-} from '../../../domain/utils/crud-util';
 import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver';
 import { CrudMetaview } from '../../services/crud-metaview.service';
+import {
+  hasExplicitConstructor,
+  getControllerName,
+} from '../../utils/crud-infra.utils';
 import { CrudQueryHandler } from '../routes/crud-query-handler.decorator';
 import { CrudQuery } from '../routes/crud-query.decorator';
 import { applyConstructorInjection } from '../util/apply-constructor-injection.decorator';

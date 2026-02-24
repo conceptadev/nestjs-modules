@@ -2,20 +2,25 @@ import {
   CallHandler,
   ExecutionContext,
   forwardRef,
+  HttpStatus,
   Inject,
   Injectable,
   NestInterceptor,
   PlainLiteralObject,
 } from '@nestjs/common';
 
-import { getAppContext, Operation } from '@concepta/nestjs-common';
+import {
+  getAppContext,
+  Operation,
+  RuntimeException,
+} from '@concepta/nestjs-common';
 
 import { ControllerTarget, MethodHandler } from '../../crud.types';
-import { CrudContextException } from '../../domain/exceptions/crud-context.exception';
-import { operationToAction } from '../../domain/utils/crud-util';
+import { CrudContextException } from '../exceptions/crud-context.exception';
 import { CrudQueryParser } from '../request/crud-query.parser';
 import { CrudLocalResolverService } from '../services/crud-local-resolver.service';
 import { CrudMetaview } from '../services/crud-metaview.service';
+import { operationToAction } from '../utils/crud-infra.utils';
 
 import { CrudContextInterface } from './interfaces/crud-context.interface';
 import { CrudRouteOptionsInterface } from './interfaces/crud-route-options.interface';
@@ -99,6 +104,10 @@ export class CrudContextInterceptor<
       return next.handle();
     } catch (error) {
       throw new CrudContextException({
+        httpStatus:
+          error instanceof RuntimeException
+            ? error.httpStatus
+            : HttpStatus.BAD_REQUEST,
         originalError: error,
       });
     }

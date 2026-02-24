@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 
-import { getDynamicAdapterToken } from '../../../domain/utils/crud-util';
+import { getDynamicAdapterToken } from '../../utils/crud-infra.utils';
 
 /**
  * Decorator to inject a CRUD adapter by entity name

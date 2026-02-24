@@ -10,11 +10,11 @@ import {
   WhereOperator,
 } from '@concepta/nestjs-common';
 
-import { CrudQueryException } from '../../domain/exceptions/crud-request-query.exception';
 import { CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
 import { isArrayStrings, isStringFull } from '../utils/validation';
 
 import { ComparisonOperator, CondOperator } from './crud-query.types';
+import { CrudQueryValidatorException } from './exceptions/crud-query-validator.exception';
 
 export const COMPARISON_OPERATORS: CondOperator[] = Object.values(CondOperator);
 
@@ -24,7 +24,7 @@ export function validateFields<T extends PlainLiteralObject>(
   fields: EntityColumn<T>[],
 ): void {
   if (!isArrayStrings(fields)) {
-    throw new CrudQueryException({
+    throw new CrudQueryValidatorException({
       message: 'Invalid fields. Array of strings expected',
     });
   }
@@ -35,12 +35,12 @@ export function validateCondition<T extends PlainLiteralObject>(
   cond: 'filter' | 'or',
 ): void {
   if (!isObject(val) || !isStringFull(val.field)) {
-    throw new CrudQueryException({
+    throw new CrudQueryValidatorException({
       message: `Invalid field type in ${cond} condition. String expected`,
     });
   }
   if (!Object.values(WhereOperator).includes(val.operator)) {
-    throw new CrudQueryException({
+    throw new CrudQueryValidatorException({
       message: `Invalid comparison operator. ${Object.values(WhereOperator).join()} expected`,
     });
   }
@@ -50,7 +50,7 @@ export function validateComparisonOperator(
   operator: string,
 ): asserts operator is ComparisonOperator {
   if (!COMPARISON_OPERATORS.some((op) => op === operator)) {
-    throw new CrudQueryException({
+    throw new CrudQueryValidatorException({
       message: `Invalid comparison operator. ${COMPARISON_OPERATORS.join()} expected`,
     });
   }
@@ -69,12 +69,12 @@ export function validateSort(sort: {
     'field' in sort === false ||
     !isStringFull(sort.field)
   ) {
-    throw new CrudQueryException({
+    throw new CrudQueryValidatorException({
       message: 'Invalid sort field. String expected',
     });
   }
   if (!isSortOrder(sort.order)) {
-    throw new CrudQueryException({
+    throw new CrudQueryValidatorException({
       message: `Invalid sort order. ${SORT_OPERATORS.join()} expected`,
     });
   }
@@ -85,7 +85,7 @@ export function validateNumeric(
   num: 'limit' | 'offset' | 'page' | 'cache' | 'includeDeleted' | string,
 ): void {
   if (!isNumber(val)) {
-    throw new CrudQueryException({
+    throw new CrudQueryValidatorException({
       message: `Invalid ${num}. Number expected`,
     });
   }
@@ -96,7 +96,7 @@ export function validateParamOption<T extends PlainLiteralObject>(
   name: string,
 ) {
   if (!isObject(options)) {
-    throw new CrudQueryException({
+    throw new CrudQueryValidatorException({
       message: `Invalid param ${name}. Invalid crud options`,
     });
   }
@@ -105,7 +105,7 @@ export function validateParamOption<T extends PlainLiteralObject>(
     return;
   }
   if (!isObject(option) || isNil(option.field) || isNil(option.type)) {
-    throw new CrudQueryException({
+    throw new CrudQueryValidatorException({
       message: 'Invalid param option in Crud',
     });
   }
@@ -113,7 +113,7 @@ export function validateParamOption<T extends PlainLiteralObject>(
 
 export function validateUUID(str: string, name: string) {
   if (!isUUID(str)) {
-    throw new CrudQueryException({
+    throw new CrudQueryValidatorException({
       message: `Invalid param ${name}. UUID string expected`,
     });
   }

@@ -2,7 +2,7 @@ import { HttpException, PlainLiteralObject } from '@nestjs/common';
 
 import { DeepPartial } from '@concepta/nestjs-common';
 
-import { CrudQueryException } from '../../../domain/exceptions/crud-query.exception';
+import { CrudQueryException } from '../../../infrastructure/exceptions/crud-query.exception';
 import { CrudCreateCommand } from '../impl/crud-create.command';
 
 import { CrudWithBodyCommandHandler } from './crud-with-body-command.handler';
