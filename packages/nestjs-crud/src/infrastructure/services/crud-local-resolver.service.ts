@@ -70,6 +70,31 @@ export class CrudLocalResolverService {
   }
 
   /**
+   * Execute transform hooks on CrudLocal providers sequentially.
+   *
+   * Called after the controller method returns a response.
+   * Runs in the same order as resolve.
+   *
+   * @param context - NestJS ExecutionContext
+   * @param crudContext - The CrudContext with fully resolved locals
+   * @param localClasses - Array of CrudLocal class references
+   */
+  async transform<T extends PlainLiteralObject>(
+    context: ExecutionContext,
+    crudContext: CrudContextInterface<T>,
+    localClasses: CrudLocal[] | undefined,
+  ): Promise<void> {
+    if (!localClasses || localClasses.length === 0) {
+      return;
+    }
+
+    for (const LocalClass of localClasses) {
+      const resolver = this.moduleRef.get(LocalClass, { strict: false });
+      await resolver.transform(context, crudContext);
+    }
+  }
+
+  /**
    * Validate that all CrudLocal classes have unique KEY values.
    * Throws if duplicate keys are detected.
    */

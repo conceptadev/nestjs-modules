@@ -1,3 +1,6 @@
+import { Observable } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+
 import {
   CallHandler,
   ExecutionContext,
@@ -37,7 +40,10 @@ export class CrudContextInterceptor<
     private localResolverService: CrudLocalResolverService,
   ) {}
 
-  async intercept(context: ExecutionContext, next: CallHandler) {
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<unknown>> {
     const req = context.switchToHttp().getRequest();
     const ctx = getAppContext<CrudContextInterface<T>>(req);
 
@@ -101,7 +107,13 @@ export class CrudContextInterceptor<
       const localClasses = this.reflectionService.getLocals(target, handler);
       await this.localResolverService.resolve(context, ctx, localClasses);
 
-      return next.handle();
+      // Execute transforms after the controller response
+      return next.handle().pipe(
+        mergeMap(async (response) => {
+          await this.localResolverService.transform(context, ctx, localClasses);
+          return response;
+        }),
+      );
     } catch (error) {
       throw new CrudContextException({
         httpStatus:

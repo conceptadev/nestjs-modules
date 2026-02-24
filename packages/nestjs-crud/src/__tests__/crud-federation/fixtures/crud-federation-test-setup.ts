@@ -1,4 +1,5 @@
 import { mock } from 'jest-mock-extended';
+import { lastValueFrom, of } from 'rxjs';
 
 import {
   CallHandler,
@@ -141,8 +142,9 @@ export const setupCrudFederationTests =
     // Create interceptor with mocked services
     const mockReflectionService = mock<CrudMetaview<TestRoot>>();
     const mockLocalResolverService = mock<CrudLocalResolverService>();
-    // Configure mock to resolve (no CrudLocal resolvers in tests)
+    // Configure mocks (no CrudLocal resolvers in tests)
     mockLocalResolverService.resolve.mockResolvedValue(undefined);
+    mockLocalResolverService.transform.mockResolvedValue(undefined);
     const interceptor = new CrudContextInterceptor<TestRoot>(
       mockReflectionService,
       mockLocalResolverService,
@@ -186,8 +188,13 @@ export const setupCrudFederationTests =
       mockHttpContext.getRequest.mockReturnValue(req);
       mockContext.switchToHttp.mockReturnValue(mockHttpContext);
 
+      // Mock call handler that returns an observable
+      const mockCallHandler = mock<CallHandler>();
+      mockCallHandler.handle.mockReturnValue(of(undefined));
+
       // Execute interceptor - it will mutate req
-      await interceptor.intercept(mockContext, mock<CallHandler>());
+      const result$ = await interceptor.intercept(mockContext, mockCallHandler);
+      await lastValueFrom(result$);
 
       // Return the transformed context from the request
       return getAppContext<CrudContextInterface<TestRoot>>(req);

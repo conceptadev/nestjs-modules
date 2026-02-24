@@ -12,6 +12,8 @@ export interface CrudLocalInterface<
   /**
    * Resolve local data for the current request.
    *
+   * Called before the controller method executes.
+   *
    * @param context - NestJS ExecutionContext (access to request, response, user, etc.)
    * @param crudContext - The built CrudContext with parsed params and current locals
    * @returns The value to store in locals[KEY]
@@ -20,6 +22,20 @@ export interface CrudLocalInterface<
     context: ExecutionContext,
     crudContext: CrudContextInterface<Entity>,
   ): Promise<T>;
+
+  /**
+   * Transform hook called after the controller method returns a response.
+   *
+   * Called in the same order as resolve, after the response is produced.
+   * Implementations that do not need response-side behavior should no-op.
+   *
+   * @param context - NestJS ExecutionContext (access to request, response, user, etc.)
+   * @param crudContext - The CrudContext with fully resolved locals
+   */
+  transform<Entity extends PlainLiteralObject = PlainLiteralObject>(
+    context: ExecutionContext,
+    crudContext: CrudContextInterface<Entity>,
+  ): Promise<void>;
 }
 
 /**

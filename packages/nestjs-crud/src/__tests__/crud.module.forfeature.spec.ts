@@ -810,6 +810,8 @@ describe('CrudModule.forFeature', () => {
    * crudContext.locals. Demonstrates the request context enrichment pattern.
    */
   describe('CrudLocal resolver integration', () => {
+    const transformSpy = jest.fn();
+
     @Injectable()
     class CurrentUserLocal
       implements CrudLocalInterface<{ firstName: string; lastName: string }>
@@ -821,6 +823,13 @@ describe('CrudModule.forFeature', () => {
         _crudContext: CrudContextInterface,
       ): Promise<{ firstName: string; lastName: string }> {
         return { firstName: 'John', lastName: 'Doe' };
+      }
+
+      async transform(
+        context: ExecutionContext,
+        crudContext: CrudContextInterface,
+      ): Promise<void> {
+        transformSpy(context, crudContext.locals);
       }
     }
 
@@ -905,6 +914,19 @@ describe('CrudModule.forFeature', () => {
       expect(res.status).toBe(200);
       expect(crudResolverReadSpy).toHaveBeenCalledTimes(1);
       expect(crudResolverReadSpy.mock.calls[0][0].locals).toEqual({
+        currentUser: { firstName: 'John', lastName: 'Doe' },
+      });
+    });
+
+    it('should call transform after the controller response', async () => {
+      transformSpy.mockClear();
+      const server = app.getHttpServer();
+      const res = await request(server).get('/company-e/1');
+
+      expect(res.status).toBe(200);
+      expect(transformSpy).toHaveBeenCalledTimes(1);
+      expect(transformSpy.mock.calls[0][0]).toBeDefined(); // ExecutionContext
+      expect(transformSpy.mock.calls[0][1]).toEqual({
         currentUser: { firstName: 'John', lastName: 'Doe' },
       });
     });
