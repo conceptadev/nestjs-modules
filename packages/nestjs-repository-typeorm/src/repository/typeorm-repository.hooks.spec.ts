@@ -768,13 +768,13 @@ describe('TypeOrmRepository Hooks', () => {
   // ===========================================================================
 
   describe('hook data modification', () => {
-    it('should allow BeforeCreate to modify entity data', async () => {
-      // Create a hook that modifies data
+    it('should preserve caller original data over hook modifications on write', async () => {
+      // Hook tries to override lastName, but preserve strategy keeps the original
       @RepoHook()
       class ModifyingHook {
         @BeforeCreate()
         async beforeCreate(data: DeepPartial<TestEntityFixture>) {
-          return { ...data, lastName: 'Modified by hook' };
+          return { ...data, lastName: 'Hook tried to override' };
         }
       }
 
@@ -806,7 +806,51 @@ describe('TypeOrmRepository Hooks', () => {
         },
       );
 
-      expect(result.lastName).toBe('Modified by hook');
+      // preserve strategy: caller's original data wins
+      expect(result.lastName).toBe('Original');
+    });
+
+    it('should allow hooks to add new fields on write', async () => {
+      // Hook adds a field that was NOT in the caller's original data
+      @RepoHook()
+      class AddFieldHook {
+        @BeforeCreate()
+        async beforeCreate(data: DeepPartial<TestEntityFixture>) {
+          return { ...data, lastName: 'Added by hook' };
+        }
+      }
+
+      const localModule = await Test.createTestingModule({
+        imports: [
+          TypeOrmModule.forRoot(ormConfig),
+          HookModule.forRoot({}),
+          RepositoryModule.forFeature({
+            module: TypeOrmRepositoryModule,
+            entities: [
+              {
+                key: TEST_ENTITY_TOKEN,
+                entity: TestEntityFixture,
+              },
+            ],
+          }),
+        ],
+        providers: [AddFieldHook],
+      }).compile();
+
+      const repo = localModule.get<TypeOrmRepository<TestEntityFixture>>(
+        getDynamicRepositoryToken(TEST_ENTITY_TOKEN),
+      );
+
+      // Caller does NOT provide lastName — hook can add it
+      const result = await repo.create(
+        { firstName: 'Alice' },
+        {
+          ctx: createHookContext(AddFieldHook),
+        },
+      );
+
+      expect(result.firstName).toBe('Alice');
+      expect(result.lastName).toBe('Added by hook');
     });
 
     it('should allow BeforeFind to add where conditions', async () => {

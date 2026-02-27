@@ -38,6 +38,11 @@ export {
 export { TransactionInterceptor } from './interceptors/transaction.interceptor';
 
 // ═══════════════════════════════════════════════════════════════════
+// Permeators
+// ═══════════════════════════════════════════════════════════════════
+export { RepoPermeatorFactory } from './hooks/repo-permeator-factory';
+
+// ═══════════════════════════════════════════════════════════════════
 // Hooks
 // ═══════════════════════════════════════════════════════════════════
 
@@ -81,7 +86,7 @@ export {
   AfterTransitionMethod,
   BeforeDestroyMethod,
   AfterDestroyMethod,
-} from './hooks/types/hook-method.types';
+} from './hooks/hook-method.types';
 
 // Hook decorators
 export {
@@ -127,4 +132,4 @@ export {
   AfterSoftDelete,
   BeforeRestore,
   AfterRestore,
-} from './hooks/decorators/repository-hook.decorators';
+} from './hooks/repository-hook.decorators';

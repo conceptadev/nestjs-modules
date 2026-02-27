@@ -1848,6 +1848,7 @@ __metadata:
     "@nestjs/common": "npm:^11.1.9"
     "@nestjs/testing": "npm:^11.1.9"
     "@nestjs/typeorm": "npm:^11.0.0"
+    "@tsyche/membrane": "npm:^0.7.0"
     sqlite3: "npm:^5.1.4"
     zod: "npm:^3"
   peerDependencies:
@@ -1866,6 +1867,7 @@ __metadata:
     "@nestjs/common": "npm:^11.1.9"
     "@nestjs/core": "npm:^11.1.9"
     "@nestjs/testing": "npm:^11.1.9"
+    "@tsyche/membrane": "npm:^0.7.0"
   peerDependencies:
     class-transformer: "*"
     class-validator: "*"
@@ -5680,6 +5682,13 @@ __metadata:
   version: 1.0.4
   resolution: "@tsconfig/node16@npm:1.0.4"
   checksum: 10c0/05f8f2734e266fb1839eb1d57290df1664fe2aa3b0fdd685a9035806daa635f7519bf6d5d9b33f6e69dd545b8c46bd6e2b5c79acb2b1f146e885f7f11a42a5bb
+  languageName: node
+  linkType: hard
+
+"@tsyche/membrane@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@tsyche/membrane@npm:0.7.0"
+  checksum: 10c0/671128088ad473793106bf77be34810e9d0ff30482482fac2262c2a86a362eefda07886658a7ada416195c062099bf2ee98562ec8b1429d6f66731b20107ab42
   languageName: node
   linkType: hard
 

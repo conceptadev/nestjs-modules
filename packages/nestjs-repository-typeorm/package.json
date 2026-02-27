@@ -17,6 +17,7 @@
     "@concepta/nestjs-repository": "^7.0.0-alpha.10",
     "@nestjs/common": "^11.1.9",
     "@nestjs/typeorm": "^11.0.0",
+    "@tsyche/membrane": "^0.7.0",
     "zod": "^3"
   },
   "devDependencies": {

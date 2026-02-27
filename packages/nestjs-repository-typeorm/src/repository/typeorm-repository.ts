@@ -34,13 +34,9 @@ import {
   WhereCondition,
   WhereOperator,
   isWhereCondition,
-  ModelQueryException,
 } from '@concepta/nestjs-common';
 import { HookResolverService } from '@concepta/nestjs-hook';
-import {
-  RepoHookMethodKey,
-  RepositoryAdapter,
-} from '@concepta/nestjs-repository';
+import { RepositoryAdapter } from '@concepta/nestjs-repository';
 
 import { TypeOrmEntityNameException } from '../exceptions/typeorm-entity-name.exception';
 
@@ -257,161 +253,51 @@ export class TypeOrmRepository<
   // ═══════════════════════════════════════════════════════════════════════════
 
   async find(options: RepositoryFindOptions<Entity> = {}): Promise<Entity[]> {
-    const ctx = options.ctx;
-
-    try {
-      // Before hooks
-      let scopedOptions = await this.runHooks(
-        RepoHookMethodKey.BEFORE_READ,
-        options,
-        ctx,
-      );
-      scopedOptions = await this.runHooks(
-        RepoHookMethodKey.BEFORE_FIND,
-        scopedOptions,
-        ctx,
-      );
-
-      // Execute
-      const findOptions = this.buildNativeFindManyOptions(scopedOptions);
-      const repo = await this.getRepo(ctx);
-      let scopedResult = await repo.find(findOptions);
-
-      // After hooks
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_FIND,
-        scopedResult,
-        ctx,
-      );
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_READ,
-        scopedResult,
-        ctx,
-      );
-
-      return scopedResult;
-    } catch (e) {
-      throw new ModelQueryException(this.metadata.name, {
-        originalError: e,
-      });
-    }
+    return this.permeator.find.permeate(
+      options,
+      async (scoped) => {
+        const repo = await this.getRepo(options.ctx);
+        return repo.find(this.buildNativeFindManyOptions(scoped));
+      },
+      options.ctx,
+    );
   }
 
   async findOne(
     options: RepositoryFindOneOptions<Entity>,
   ): Promise<Entity | null> {
-    const ctx = options.ctx;
-
-    try {
-      // Before hooks
-      let scopedOptions = await this.runHooks(
-        RepoHookMethodKey.BEFORE_READ,
-        options,
-        ctx,
-      );
-      scopedOptions = await this.runHooks(
-        RepoHookMethodKey.BEFORE_FIND_ONE,
-        scopedOptions,
-        ctx,
-      );
-
-      // Execute
-      const findOptions = this.buildNativeFindOneOptions(scopedOptions);
-      const repo = await this.getRepo(ctx);
-      let scopedResult = await repo.findOne(findOptions);
-
-      // After hooks
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_FIND_ONE,
-        scopedResult,
-        ctx,
-      );
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_READ,
-        scopedResult,
-        ctx,
-      );
-
-      return scopedResult;
-    } catch (e) {
-      throw new ModelQueryException(this.metadata.name, {
-        originalError: e,
-      });
-    }
+    return this.permeator.findOne.permeate(
+      options,
+      async (scoped) => {
+        const repo = await this.getRepo(options.ctx);
+        return repo.findOne(this.buildNativeFindOneOptions(scoped));
+      },
+      options.ctx,
+    );
   }
 
   async count(options: RepositoryFindOptions<Entity> = {}): Promise<number> {
-    const ctx = options.ctx;
-
-    try {
-      // Before hooks
-      let scopedOptions = await this.runHooks(
-        RepoHookMethodKey.BEFORE_READ,
-        options,
-        ctx,
-      );
-      scopedOptions = await this.runHooks(
-        RepoHookMethodKey.BEFORE_COUNT,
-        scopedOptions,
-        ctx,
-      );
-
-      // Execute
-      const findOptions = this.buildNativeFindManyOptions(scopedOptions);
-      const repo = await this.getRepo(ctx);
-      let scopedResult = await repo.count(findOptions);
-
-      // After hooks (no AFTER_READ — result is a number, not entity data)
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_COUNT,
-        scopedResult,
-        ctx,
-      );
-
-      return scopedResult;
-    } catch (e) {
-      throw new ModelQueryException(this.metadata.name, {
-        originalError: e,
-      });
-    }
+    return this.permeator.count.permeate(
+      options,
+      async (scoped) => {
+        const repo = await this.getRepo(options.ctx);
+        return repo.count(this.buildNativeFindManyOptions(scoped));
+      },
+      options.ctx,
+    );
   }
 
   async findAndCount(
     options: RepositoryFindOptions<Entity> = {},
   ): Promise<[Entity[], number]> {
-    const ctx = options.ctx;
-
-    try {
-      // Before hooks
-      let scopedOptions = await this.runHooks(
-        RepoHookMethodKey.BEFORE_READ,
-        options,
-        ctx,
-      );
-      scopedOptions = await this.runHooks(
-        RepoHookMethodKey.BEFORE_FIND_AND_COUNT,
-        scopedOptions,
-        ctx,
-      );
-
-      // Execute
-      const findOptions = this.buildNativeFindManyOptions(scopedOptions);
-      const repo = await this.getRepo(ctx);
-      let scopedResult = await repo.findAndCount(findOptions);
-
-      // After hooks (no AFTER_READ — result is [Entity[], number], not entity data)
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_FIND_AND_COUNT,
-        scopedResult,
-        ctx,
-      );
-
-      return scopedResult;
-    } catch (e) {
-      throw new ModelQueryException(this.metadata.name, {
-        originalError: e,
-      });
-    }
+    return this.permeator.findAndCount.permeate(
+      options,
+      async (scoped) => {
+        const repo = await this.getRepo(options.ctx);
+        return repo.findAndCount(this.buildNativeFindManyOptions(scoped));
+      },
+      options.ctx,
+    );
   }
 
   // Create operations
@@ -420,88 +306,30 @@ export class TypeOrmRepository<
     entity: DeepPartial<Entity>,
     options?: RepositoryCreateOptions,
   ): Promise<Entity> {
-    const ctx = options?.ctx;
-
-    try {
-      // Before hooks
-      let scopedEntity = await this.runHooks(
-        RepoHookMethodKey.BEFORE_WRITE,
-        entity,
-        ctx,
-      );
-      scopedEntity = await this.runHooks(
-        RepoHookMethodKey.BEFORE_CREATE,
-        scopedEntity,
-        ctx,
-      );
-
-      // Execute
-      const repo = await this.getRepo(ctx);
-      this.markDirty(ctx);
-      let scopedResult = await repo.save(scopedEntity);
-
-      // After hooks
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_CREATE,
-        scopedResult,
-        ctx,
-      );
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_WRITE,
-        scopedResult,
-        ctx,
-      );
-
-      return scopedResult;
-    } catch (e) {
-      throw new ModelQueryException(this.metadata.name, {
-        originalError: e,
-      });
-    }
+    return this.permeator.create.permeate(
+      entity,
+      async (scoped) => {
+        const repo = await this.getRepo(options?.ctx);
+        this.markDirty(options?.ctx);
+        return repo.save(scoped);
+      },
+      options?.ctx,
+    );
   }
 
   async createMany(
     entities: DeepPartial<Entity>[],
     options?: RepositoryCreateOptions,
   ): Promise<Entity[]> {
-    const ctx = options?.ctx;
-
-    try {
-      // Before hooks
-      let scopedEntities = await this.runHooks(
-        RepoHookMethodKey.BEFORE_WRITE,
-        entities,
-        ctx,
-      );
-      scopedEntities = await this.runHooks(
-        RepoHookMethodKey.BEFORE_CREATE_MANY,
-        scopedEntities,
-        ctx,
-      );
-
-      // Execute
-      const repo = await this.getRepo(ctx);
-      this.markDirty(ctx);
-      let scopedResult = await repo.save(scopedEntities);
-
-      // After hooks
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_CREATE_MANY,
-        scopedResult,
-        ctx,
-      );
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_WRITE,
-        scopedResult,
-        ctx,
-      );
-
-      return scopedResult;
-    } catch (e) {
-      throw new ModelQueryException(this.metadata.name, {
-        originalError: e,
-      });
-    }
+    return this.permeator.createMany.permeate(
+      entities,
+      async (scoped) => {
+        const repo = await this.getRepo(options?.ctx);
+        this.markDirty(options?.ctx);
+        return repo.save(scoped);
+      },
+      options?.ctx,
+    );
   }
 
   // Update operations
@@ -511,112 +339,54 @@ export class TypeOrmRepository<
     data: DeepPartial<Entity>,
     options?: RepositoryUpdateOptions,
   ): Promise<Entity> {
-    const ctx = options?.ctx;
-
-    try {
-      // Before hooks
-      let scopedData = await this.runHooks(
-        RepoHookMethodKey.BEFORE_WRITE,
-        data,
-        ctx,
-      );
-      scopedData = await this.runHooks(
-        RepoHookMethodKey.BEFORE_UPDATE,
-        scopedData,
-        ctx,
-      );
-
-      // Execute
-      const repo = await this.getRepo(ctx);
-      this.markDirty(ctx);
-      const merged = repo.merge(entity, scopedData);
-      let scopedResult = await repo.save(merged);
-
-      // After hooks
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_UPDATE,
-        scopedResult,
-        ctx,
-      );
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_WRITE,
-        scopedResult,
-        ctx,
-      );
-
-      return scopedResult;
-    } catch (e) {
-      throw new ModelQueryException(this.metadata.name, {
-        originalError: e,
-      });
-    }
+    return this.permeator.update.permeate(
+      data,
+      async (scoped) => {
+        const repo = await this.getRepo(options?.ctx);
+        this.markDirty(options?.ctx);
+        const merged = repo.merge(entity, scoped);
+        return repo.save(merged);
+      },
+      options?.ctx,
+    );
   }
 
   async upsert(
     entity: DeepPartial<Entity>,
     options?: RepositoryUpsertOptions,
   ): Promise<Entity> {
-    const ctx = options?.ctx;
+    return this.permeator.upsert.permeate(
+      entity,
+      async (scoped) => {
+        const repo = await this.getRepo(options?.ctx);
+        this.markDirty(options?.ctx);
+        const conflictPaths = this.getPrimaryColumns();
+        const insertResult = await repo.upsert(scoped, conflictPaths);
 
-    try {
-      // Before hooks
-      let scopedEntity = await this.runHooks(
-        RepoHookMethodKey.BEFORE_WRITE,
-        entity,
-        ctx,
-      );
-      scopedEntity = await this.runHooks(
-        RepoHookMethodKey.BEFORE_UPSERT,
-        scopedEntity,
-        ctx,
-      );
+        const identifiers = insertResult.identifiers[0] ?? {};
+        const primaryKeys: Partial<Record<keyof Entity, Entity[keyof Entity]>> =
+          {};
 
-      // Execute
-      const repo = await this.getRepo(ctx);
-      this.markDirty(ctx);
-      const conflictPaths = this.getPrimaryColumns();
-      const insertResult = await repo.upsert(scopedEntity, conflictPaths);
+        for (const col of conflictPaths) {
+          const value = identifiers[col] ?? scoped[col];
 
-      // Build primary key lookup from InsertResult identifiers,
-      // falling back to the input entity for pre-set keys
-      const identifiers = insertResult.identifiers[0] ?? {};
-      const primaryKeys: Partial<Record<keyof Entity, Entity[keyof Entity]>> =
-        {};
+          if (value === undefined) {
+            throw new Error(`Upsert requires primary key "${col}" to be set`);
+          }
 
-      for (const col of conflictPaths) {
-        const value = identifiers[col] ?? scopedEntity[col];
-
-        if (value === undefined) {
-          throw new Error(`Upsert requires primary key "${col}" to be set`);
+          primaryKeys[col] = value;
         }
 
-        primaryKeys[col] = value;
-      }
+        const result = await repo.findOne({ where: primaryKeys });
 
-      let scopedResult = await repo.findOne({ where: primaryKeys });
+        if (!result) {
+          throw new Error('Upsert failed: entity not found after upsert');
+        }
 
-      if (!scopedResult) {
-        throw new Error('Upsert failed: entity not found after upsert');
-      }
-
-      // After hooks
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_UPSERT,
-        scopedResult,
-        ctx,
-      );
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_WRITE,
-        scopedResult,
-        ctx,
-      );
-
-      return scopedResult;
-    } catch (e) {
-      throw new ModelQueryException(this.metadata.name, {
-        originalError: e,
-      });
-    }
+        return result;
+      },
+      options?.ctx,
+    );
   }
 
   async replace(
@@ -624,45 +394,16 @@ export class TypeOrmRepository<
     data: DeepPartial<Entity>,
     options?: RepositoryUpdateOptions,
   ): Promise<Entity> {
-    const ctx = options?.ctx;
-
-    try {
-      // Before hooks
-      let scopedData = await this.runHooks(
-        RepoHookMethodKey.BEFORE_WRITE,
-        data,
-        ctx,
-      );
-      scopedData = await this.runHooks(
-        RepoHookMethodKey.BEFORE_REPLACE,
-        scopedData,
-        ctx,
-      );
-
-      // Execute
-      const repo = await this.getRepo(ctx);
-      this.markDirty(ctx);
-      const replaced = repo.merge(entity, scopedData);
-      let scopedResult = await repo.save(replaced);
-
-      // After hooks
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_REPLACE,
-        scopedResult,
-        ctx,
-      );
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_WRITE,
-        scopedResult,
-        ctx,
-      );
-
-      return scopedResult;
-    } catch (e) {
-      throw new ModelQueryException(this.metadata.name, {
-        originalError: e,
-      });
-    }
+    return this.permeator.replace.permeate(
+      data,
+      async (scoped) => {
+        const repo = await this.getRepo(options?.ctx);
+        this.markDirty(options?.ctx);
+        const replaced = repo.merge(entity, scoped);
+        return repo.save(replaced);
+      },
+      options?.ctx,
+    );
   }
 
   // Delete operations
@@ -671,132 +412,45 @@ export class TypeOrmRepository<
     entity: Entity,
     options?: RepositoryDeleteOptions,
   ): Promise<Entity> {
-    const ctx = options?.ctx;
-
-    try {
-      // Before hooks
-      let scopedEntity = await this.runHooks(
-        RepoHookMethodKey.BEFORE_DESTROY,
-        entity,
-        ctx,
-      );
-      scopedEntity = await this.runHooks(
-        RepoHookMethodKey.BEFORE_DELETE,
-        scopedEntity,
-        ctx,
-      );
-
-      // Execute (TypeORM uses `remove` for hard delete)
-      const repo = await this.getRepo(ctx);
-      this.markDirty(ctx);
-      let scopedResult = await repo.remove(scopedEntity);
-
-      // After hooks
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_DELETE,
-        scopedResult,
-        ctx,
-      );
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_DESTROY,
-        scopedResult,
-        ctx,
-      );
-
-      return scopedResult;
-    } catch (e) {
-      throw new ModelQueryException(this.metadata.name, {
-        originalError: e,
-      });
-    }
+    return this.permeator.delete.permeate(
+      entity,
+      async (scoped) => {
+        const repo = await this.getRepo(options?.ctx);
+        this.markDirty(options?.ctx);
+        return repo.remove(scoped);
+      },
+      options?.ctx,
+    );
   }
 
   async softDelete(
     entity: Entity,
     options?: RepositoryDeleteOptions,
   ): Promise<Entity> {
-    const ctx = options?.ctx;
-
-    try {
-      // Before hooks
-      let scopedEntity = await this.runHooks(
-        RepoHookMethodKey.BEFORE_TRANSITION,
-        entity,
-        ctx,
-      );
-      scopedEntity = await this.runHooks(
-        RepoHookMethodKey.BEFORE_SOFT_DELETE,
-        scopedEntity,
-        ctx,
-      );
-
-      // Execute (TypeORM uses `softRemove` for soft delete)
-      const repo = await this.getRepo(ctx);
-      this.markDirty(ctx);
-      let scopedResult = await repo.softRemove(scopedEntity);
-
-      // After hooks
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_SOFT_DELETE,
-        scopedResult,
-        ctx,
-      );
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_TRANSITION,
-        scopedResult,
-        ctx,
-      );
-
-      return scopedResult;
-    } catch (e) {
-      throw new ModelQueryException(this.metadata.name, {
-        originalError: e,
-      });
-    }
+    return this.permeator.softDelete.permeate(
+      entity,
+      async (scoped) => {
+        const repo = await this.getRepo(options?.ctx);
+        this.markDirty(options?.ctx);
+        return repo.softRemove(scoped);
+      },
+      options?.ctx,
+    );
   }
 
   async restore(
     entity: Entity,
     options?: RepositoryRestoreOptions,
   ): Promise<Entity> {
-    const ctx = options?.ctx;
-
-    try {
-      // Before hooks
-      let scopedEntity = await this.runHooks(
-        RepoHookMethodKey.BEFORE_TRANSITION,
-        entity,
-        ctx,
-      );
-      scopedEntity = await this.runHooks(
-        RepoHookMethodKey.BEFORE_RESTORE,
-        scopedEntity,
-        ctx,
-      );
-
-      // Execute
-      const repo = await this.getRepo(ctx);
-      this.markDirty(ctx);
-      let scopedResult = await repo.recover(scopedEntity);
-
-      // After hooks
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_RESTORE,
-        scopedResult,
-        ctx,
-      );
-      scopedResult = await this.runHooks(
-        RepoHookMethodKey.AFTER_TRANSITION,
-        scopedResult,
-        ctx,
-      );
-
-      return scopedResult;
-    } catch (e) {
-      throw new ModelQueryException(this.metadata.name, {
-        originalError: e,
-      });
-    }
+    return this.permeator.restore.permeate(
+      entity,
+      async (scoped) => {
+        const repo = await this.getRepo(options?.ctx);
+        this.markDirty(options?.ctx);
+        return repo.recover(scoped);
+      },
+      options?.ctx,
+    );
   }
 
   // Utility methods

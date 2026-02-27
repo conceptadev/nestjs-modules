@@ -15,7 +15,8 @@
     "@concepta/nestjs-common": "^7.0.0-alpha.10",
     "@concepta/nestjs-hook": "^7.0.0-alpha.10",
     "@nestjs/common": "^11.1.9",
-    "@nestjs/core": "^11.1.9"
+    "@nestjs/core": "^11.1.9",
+    "@tsyche/membrane": "^0.7.0"
   },
   "devDependencies": {
     "@nestjs/testing": "^11.1.9"

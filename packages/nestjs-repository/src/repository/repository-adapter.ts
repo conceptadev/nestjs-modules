@@ -22,7 +22,8 @@ import {
 } from '@concepta/nestjs-common';
 import { HookMethodKeyType, HookResolverService } from '@concepta/nestjs-hook';
 
-import { RepoHook } from '../hooks/decorators/repository-hook.decorators';
+import { RepoPermeatorFactory } from '../hooks/repo-permeator-factory';
+import { RepoHook } from '../hooks/repository-hook.decorators';
 
 /**
  * Abstract repository adapter that implements DTO transformation.
@@ -47,7 +48,19 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
 {
   abstract readonly metadata: RepositoryMetadataInterface<Entity>;
 
+  private _permeator?: RepoPermeatorFactory<Entity>;
+
   constructor(protected readonly hookResolver?: HookResolverService) {}
+
+  protected get permeator(): RepoPermeatorFactory<Entity> {
+    if (!this._permeator) {
+      this._permeator = new RepoPermeatorFactory<Entity>(
+        this.runHooks.bind(this),
+        this.metadata.name,
+      );
+    }
+    return this._permeator;
+  }
 
   // Query operations
 
