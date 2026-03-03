@@ -1,3 +1,5 @@
+import { Column, Entity } from 'typeorm';
+
 import {
   BadRequestException,
   NotFoundException,
@@ -14,14 +16,28 @@ import {
 } from '@concepta/nestjs-common';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import {
+  CommonSqliteEntity,
   TypeOrmRepository,
   TypeOrmRepositoryModule,
 } from '@concepta/nestjs-repository-typeorm';
-import { TestEntityFixture } from '@concepta/nestjs-repository-typeorm/src/__fixtures__/repository/test.entity.fixture';
 
+import { mockCrudParsedQuery } from '../../../__fixtures__/crud/mocks/crud-parsed-query.mock';
+import { CompanyEntity } from '../../../__fixtures__/typeorm/company/company.entity';
+import { ProjectEntity } from '../../../__fixtures__/typeorm/project/project.entity';
+import { UserEntity } from '../../../__fixtures__/typeorm/users/user.entity';
 import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface';
-import { CrudParsedQueryInterface } from '../../request/interfaces/crud-parsed-query.interface';
 import { CrudAdapter } from '../crud.adapter';
+
+// ─── Entity ─────────────────────────────────────────────────────────────────
+
+@Entity()
+class TestEntityFixture extends CommonSqliteEntity {
+  @Column()
+  firstName!: string;
+
+  @Column({ nullable: true })
+  lastName!: string;
+}
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -29,28 +45,13 @@ const ENTITY_TOKEN = 'test-adapter-entity';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-function emptyQuery(): CrudParsedQueryInterface<TestEntityFixture> {
-  return {
-    fields: [],
-    search: undefined,
-    filter: [],
-    or: [],
-    sort: [],
-    limit: undefined,
-    offset: undefined,
-    page: undefined,
-    cache: undefined,
-    includeDeleted: undefined,
-  };
-}
-
 function ctx(
   overrides?: Partial<CrudContextInterface<TestEntityFixture>>,
 ): CrudContextInterface<TestEntityFixture> {
   return {
     entity: 'TestEntityFixture',
     params: {},
-    query: emptyQuery(),
+    query: mockCrudParsedQuery(),
     options: {},
     operation: Operation.List,
     action: ActionEnum.READ,
@@ -152,7 +153,7 @@ describe('CrudAdapter (e2e)', () => {
 
       const result = await adapter.list(
         ctx({
-          query: { ...emptyQuery(), limit: 2, offset: 0 },
+          query: { ...mockCrudParsedQuery(), limit: 2, offset: 0 },
           options: { query: {} },
         }),
       );
@@ -170,7 +171,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             sort: [{ field: 'firstName', order: 'ASC' }],
           },
           options: { query: {} },
@@ -206,7 +207,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('firstName', 'Alice')],
           },
           options: { query: {} },
@@ -225,7 +226,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             or: [
               Where.eq('firstName', 'Alice'),
               Where.eq('firstName', 'Charlie'),
@@ -247,7 +248,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [
               Where.eq('firstName', 'Alice'),
               Where.eq('lastName', 'Smith'),
@@ -269,7 +270,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             search: {
               lastName: 'Smith',
               $or: [{ firstName: 'Alice' }, { firstName: 'Bob' }],
@@ -292,7 +293,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.contains('firstName', 'Ali')],
           },
           options: { query: {} },
@@ -309,7 +310,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.starts('firstName', 'Ali')],
           },
           options: { query: {} },
@@ -328,7 +329,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.ends('firstName', 'ice')],
           },
           options: { query: {} },
@@ -346,7 +347,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.in('firstName', ['Alice', 'Charlie'])],
           },
           options: { query: {} },
@@ -363,7 +364,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.ne('firstName', 'Alice')],
           },
           options: { query: {} },
@@ -382,7 +383,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.notIn('firstName', ['Alice', 'Bob'])],
           },
           options: { query: {} },
@@ -401,7 +402,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.notContains('firstName', 'Ali')],
           },
           options: { query: {} },
@@ -419,7 +420,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.isNull('lastName')],
           },
           options: { query: {} },
@@ -437,7 +438,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.notNull('lastName')],
           },
           options: { query: {} },
@@ -455,7 +456,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.isNull('lastName')],
           },
           options: { query: {} },
@@ -480,7 +481,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.gt('version', 1), Where.lt('version', 3)],
           },
           options: { query: {} },
@@ -499,7 +500,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.gte('version', 2)],
           },
           options: { query: {} },
@@ -518,7 +519,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.lte('version', 1)],
           },
           options: { query: {} },
@@ -543,7 +544,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.between('version', 1, 2)],
           },
           options: { query: {} },
@@ -558,7 +559,7 @@ describe('CrudAdapter (e2e)', () => {
 
       const result = await adapter.list(
         ctx({
-          query: emptyQuery(),
+          query: mockCrudParsedQuery(),
           options: { query: {} },
         }),
       );
@@ -574,7 +575,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('firstName', 'Alice')],
           },
           options: { query: {} },
@@ -592,7 +593,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [
               Where.contains('firstName', 'A'),
               Where.contains('firstName', 'lice'),
@@ -613,7 +614,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.isNull('lastName')],
           },
           options: { query: {} },
@@ -631,7 +632,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.list(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             or: [Where.isNull('lastName'), Where.eq('lastName', 'Smith')],
           },
           options: { query: {} },
@@ -655,7 +656,7 @@ describe('CrudAdapter (e2e)', () => {
       await repository.softDelete(entity);
 
       const result = await adapter.list(
-        ctx({ query: { ...emptyQuery(), includeDeleted: 1 } }),
+        ctx({ query: { ...mockCrudParsedQuery(), includeDeleted: 1 } }),
       );
 
       expect(result.data).toHaveLength(1);
@@ -686,7 +687,7 @@ describe('CrudAdapter (e2e)', () => {
 
       const result = await adapter.list(
         ctx({
-          query: { ...emptyQuery(), fields: ['firstName'] },
+          query: { ...mockCrudParsedQuery(), fields: ['firstName'] },
           options: { query: { persist: ['lastName'] } },
         }),
       );
@@ -707,7 +708,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.read(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('id', entity.id)],
           },
         }),
@@ -721,7 +722,7 @@ describe('CrudAdapter (e2e)', () => {
         adapter.read(
           ctx({
             query: {
-              ...emptyQuery(),
+              ...mockCrudParsedQuery(),
               filter: [Where.eq('id', 'nonexistent-id')],
             },
           }),
@@ -736,7 +737,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.read(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('id', entity.id)],
             includeDeleted: 1,
           },
@@ -755,7 +756,7 @@ describe('CrudAdapter (e2e)', () => {
         adapter.read(
           ctx({
             query: {
-              ...emptyQuery(),
+              ...mockCrudParsedQuery(),
               filter: [Where.eq('id', entity.id)],
             },
           }),
@@ -834,7 +835,7 @@ describe('CrudAdapter (e2e)', () => {
         ctx({
           params: { id: entity.id },
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('id', entity.id)],
           },
         }),
@@ -851,7 +852,7 @@ describe('CrudAdapter (e2e)', () => {
           ctx({
             params: { id: 'nonexistent' },
             query: {
-              ...emptyQuery(),
+              ...mockCrudParsedQuery(),
               filter: [Where.eq('id', 'nonexistent')],
             },
           }),
@@ -873,7 +874,7 @@ describe('CrudAdapter (e2e)', () => {
         ctx({
           params: { id: entity.id },
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('id', entity.id)],
           },
         }),
@@ -896,7 +897,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.delete(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('id', entity.id)],
           },
         }),
@@ -911,7 +912,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.delete(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('id', entity.id)],
           },
           options: { route: { returnDeleted: true } },
@@ -928,7 +929,7 @@ describe('CrudAdapter (e2e)', () => {
       await adapter.delete(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('id', entity.id)],
           },
         }),
@@ -953,7 +954,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.softDelete(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('id', entity.id)],
           },
         }),
@@ -968,7 +969,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.softDelete(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('id', entity.id)],
           },
           options: { route: { returnDeleted: true } },
@@ -985,7 +986,7 @@ describe('CrudAdapter (e2e)', () => {
       await adapter.softDelete(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('id', entity.id)],
           },
         }),
@@ -1012,7 +1013,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.restore(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('id', entity.id)],
           },
         }),
@@ -1028,7 +1029,7 @@ describe('CrudAdapter (e2e)', () => {
       const result = await adapter.restore(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('id', entity.id)],
           },
           options: { route: { returnRestored: true } },
@@ -1046,7 +1047,7 @@ describe('CrudAdapter (e2e)', () => {
       await adapter.restore(
         ctx({
           query: {
-            ...emptyQuery(),
+            ...mockCrudParsedQuery(),
             filter: [Where.eq('id', entity.id)],
           },
         }),
@@ -1057,6 +1058,319 @@ describe('CrudAdapter (e2e)', () => {
       });
       expect(found).not.toBeNull();
       expect(found!.dateDeleted).toBeNull();
+    });
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CrudAdapter relations (e2e)
+// ═══════════════════════════════════════════════════════════════════════════
+
+describe('CrudAdapter relations (e2e)', () => {
+  const COMPANY_TOKEN = 'relation-company';
+  const USER_TOKEN = 'relation-user';
+  const PROJECT_TOKEN = 'relation-project';
+
+  let moduleFixture: TestingModule;
+  let companyRepo: TypeOrmRepository<CompanyEntity>;
+  let userRepo: TypeOrmRepository<UserEntity>;
+  let projectRepo: TypeOrmRepository<ProjectEntity>;
+  let adapter: CrudAdapter<CompanyEntity>;
+
+  function relCtx(
+    overrides?: Partial<CrudContextInterface<CompanyEntity>>,
+  ): CrudContextInterface<CompanyEntity> {
+    return {
+      entity: 'CompanyEntity',
+      params: {},
+      query: mockCrudParsedQuery(),
+      options: {},
+      operation: Operation.List,
+      action: ActionEnum.READ,
+      locals: {},
+      ...overrides,
+    } as CrudContextInterface<CompanyEntity>;
+  }
+
+  beforeEach(async () => {
+    moduleFixture = await Test.createTestingModule({
+      imports: [
+        TypeOrmModule.forRoot({
+          type: 'sqlite',
+          database: ':memory:',
+          synchronize: true,
+          entities: [CompanyEntity, UserEntity, ProjectEntity],
+        }),
+        RepositoryModule.forRoot({}),
+        RepositoryModule.forFeature({
+          module: TypeOrmRepositoryModule,
+          entities: [
+            { key: COMPANY_TOKEN, entity: CompanyEntity },
+            { key: USER_TOKEN, entity: UserEntity },
+            { key: PROJECT_TOKEN, entity: ProjectEntity },
+          ],
+        }),
+      ],
+    }).compile();
+
+    companyRepo = moduleFixture.get<TypeOrmRepository<CompanyEntity>>(
+      getDynamicRepositoryToken(COMPANY_TOKEN),
+    );
+    userRepo = moduleFixture.get<TypeOrmRepository<UserEntity>>(
+      getDynamicRepositoryToken(USER_TOKEN),
+    );
+    projectRepo = moduleFixture.get<TypeOrmRepository<ProjectEntity>>(
+      getDynamicRepositoryToken(PROJECT_TOKEN),
+    );
+
+    adapter = new CrudAdapter(companyRepo);
+  });
+
+  afterEach(async () => {
+    await moduleFixture?.close();
+  });
+
+  async function seedCompany(
+    name: string,
+    domain: string,
+  ): Promise<CompanyEntity> {
+    return companyRepo.create({
+      name,
+      domain,
+      description: `${name} description`,
+    });
+  }
+
+  async function seedUser(
+    email: string,
+    companyId: number,
+  ): Promise<UserEntity> {
+    return userRepo.create({
+      email,
+      isActive: true,
+      firstName: email.split('@')[0],
+      lastName: null,
+      companyId,
+    });
+  }
+
+  async function seedProject(
+    projectName: string,
+    companyId: number,
+  ): Promise<ProjectEntity> {
+    return projectRepo.create({ name: projectName, companyId });
+  }
+
+  function usersRelationCtx(): Partial<CrudContextInterface<CompanyEntity>> {
+    return {
+      options: {
+        query: {
+          relations: {
+            rootKey: 'id',
+            relations: [
+              {
+                property: 'users',
+                cardinality: 'many',
+                entity: 'UserEntity',
+                primaryKey: 'id',
+                foreignKey: 'companyId',
+              },
+            ] as never,
+          },
+        },
+      },
+    };
+  }
+
+  function projectsRelationCtx(): Partial<CrudContextInterface<CompanyEntity>> {
+    return {
+      options: {
+        query: {
+          relations: {
+            rootKey: 'id',
+            relations: [
+              {
+                property: 'projects',
+                cardinality: 'many',
+                entity: 'ProjectEntity',
+                primaryKey: 'id',
+                foreignKey: 'companyId',
+              },
+            ] as never,
+          },
+        },
+      },
+    };
+  }
+
+  function bothRelationsCtx(): Partial<CrudContextInterface<CompanyEntity>> {
+    return {
+      options: {
+        query: {
+          relations: {
+            rootKey: 'id',
+            relations: [
+              {
+                property: 'users',
+                cardinality: 'many',
+                entity: 'UserEntity',
+                primaryKey: 'id',
+                foreignKey: 'companyId',
+              },
+              {
+                property: 'projects',
+                cardinality: 'many',
+                entity: 'ProjectEntity',
+                primaryKey: 'id',
+                foreignKey: 'companyId',
+              },
+            ] as never,
+          },
+        },
+      },
+    };
+  }
+
+  describe('list', () => {
+    it('should populate users with single join', async () => {
+      const company = await seedCompany('Acme', 'acme.com');
+      await seedUser('alice@acme.com', company.id!);
+      await seedUser('bob@acme.com', company.id!);
+
+      const result = await adapter.list(relCtx(usersRelationCtx()));
+
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].users).toHaveLength(2);
+      const emails = result.data[0].users!.map((u) => u.email).sort();
+      expect(emails).toEqual(['alice@acme.com', 'bob@acme.com']);
+    });
+
+    it('should populate projects with single join', async () => {
+      const company = await seedCompany('Acme', 'acme.com');
+      await seedProject('Alpha', company.id!);
+      await seedProject('Beta', company.id!);
+
+      const result = await adapter.list(relCtx(projectsRelationCtx()));
+
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].projects).toHaveLength(2);
+      const names = result.data[0].projects!.map((p) => p.name).sort();
+      expect(names).toEqual(['Alpha', 'Beta']);
+    });
+
+    it('should populate both users and projects with two joins', async () => {
+      const company = await seedCompany('Acme', 'acme.com');
+      await seedUser('alice@acme.com', company.id!);
+      await seedProject('Alpha', company.id!);
+
+      const result = await adapter.list(relCtx(bothRelationsCtx()));
+
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].users).toHaveLength(1);
+      expect(result.data[0].users![0].email).toBe('alice@acme.com');
+      expect(result.data[0].projects).toHaveLength(1);
+      expect(result.data[0].projects![0].name).toBe('Alpha');
+    });
+
+    it('should return companies without relations when no config', async () => {
+      const company = await seedCompany('Acme', 'acme.com');
+      await seedUser('alice@acme.com', company.id!);
+      await seedProject('Alpha', company.id!);
+
+      const result = await adapter.list(relCtx());
+
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].users).toBeUndefined();
+      expect(result.data[0].projects).toBeUndefined();
+    });
+  });
+
+  describe('read', () => {
+    it('should return single entity with both relations', async () => {
+      const company = await seedCompany('Acme', 'acme.com');
+      await seedUser('alice@acme.com', company.id!);
+      await seedProject('Alpha', company.id!);
+
+      const result = await adapter.read(
+        relCtx({
+          ...bothRelationsCtx(),
+          query: {
+            ...mockCrudParsedQuery(),
+            filter: [Where.eq('id', company.id)],
+          },
+        }),
+      );
+
+      expect(result.name).toBe('Acme');
+      expect(result.users).toHaveLength(1);
+      expect(result.users![0].email).toBe('alice@acme.com');
+      expect(result.projects).toHaveLength(1);
+      expect(result.projects![0].name).toBe('Alpha');
+    });
+  });
+
+  describe('relation sort', () => {
+    it('should sort by relation field ASC', async () => {
+      const zebra = await seedCompany('Zebra Inc', 'zebra.com');
+      const alpha = await seedCompany('Alpha Corp', 'alpha.com');
+      await seedUser('zara@zebra.com', zebra.id!);
+      await seedUser('alice@alpha.com', alpha.id!);
+
+      const result = await adapter.list(
+        relCtx({
+          ...usersRelationCtx(),
+          query: mockCrudParsedQuery<PlainLiteralObject>({
+            sort: [{ field: 'email', order: 'ASC', relation: 'users' }],
+          }),
+        }),
+      );
+
+      expect(result.data).toHaveLength(2);
+      expect(result.data[0].name).toBe('Alpha Corp');
+      expect(result.data[1].name).toBe('Zebra Inc');
+    });
+
+    it('should sort by relation field DESC', async () => {
+      const zebra = await seedCompany('Zebra Inc', 'zebra.com');
+      const alpha = await seedCompany('Alpha Corp', 'alpha.com');
+      await seedUser('zara@zebra.com', zebra.id!);
+      await seedUser('alice@alpha.com', alpha.id!);
+
+      const result = await adapter.list(
+        relCtx({
+          ...usersRelationCtx(),
+          query: mockCrudParsedQuery<PlainLiteralObject>({
+            sort: [{ field: 'email', order: 'DESC', relation: 'users' }],
+          }),
+        }),
+      );
+
+      expect(result.data).toHaveLength(2);
+      expect(result.data[0].name).toBe('Zebra Inc');
+      expect(result.data[1].name).toBe('Alpha Corp');
+    });
+
+    it('should combine root sort with relation sort', async () => {
+      const zebra = await seedCompany('Zebra Inc', 'zebra.com');
+      const alpha = await seedCompany('Alpha Corp', 'alpha.com');
+      await seedUser('zara@zebra.com', zebra.id!);
+      await seedUser('alice@alpha.com', alpha.id!);
+
+      const result = await adapter.list(
+        relCtx({
+          ...usersRelationCtx(),
+          query: mockCrudParsedQuery<PlainLiteralObject>({
+            sort: [
+              { field: 'name', order: 'ASC' },
+              { field: 'email', order: 'DESC', relation: 'users' },
+            ],
+          }),
+        }),
+      );
+
+      expect(result.data).toHaveLength(2);
+      expect(result.data[0].name).toBe('Alpha Corp');
+      expect(result.data[1].name).toBe('Zebra Inc');
     });
   });
 });

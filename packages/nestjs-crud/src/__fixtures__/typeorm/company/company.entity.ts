@@ -3,9 +3,11 @@ import {
   Column,
   PrimaryGeneratedColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 import { BaseEntity } from '../base-entity';
+import { ProjectEntity } from '../project/project.entity';
 import { UserEntity } from '../users/user.entity';
 
 @Entity('companies')
@@ -25,5 +27,9 @@ export class CompanyEntity extends BaseEntity {
   @DeleteDateColumn({ nullable: true })
   deletedAt?: Date;
 
+  @OneToMany(() => UserEntity, (user) => user.company)
   users?: UserEntity[];
+
+  @OneToMany(() => ProjectEntity, (project) => project.company)
+  projects?: ProjectEntity[];
 }

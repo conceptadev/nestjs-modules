@@ -47,6 +47,7 @@ export { CrudCommand } from './infrastructure/decorators/routes/crud-command.dec
 export { CrudCommandHandler } from './infrastructure/decorators/routes/crud-command-handler.decorator';
 export { CrudExclude } from './infrastructure/decorators/routes/crud-exclude.decorator';
 export { CrudFilter } from './infrastructure/decorators/routes/crud-filter.decorator';
+export { CrudJoin } from './infrastructure/decorators/routes/crud-join.decorator';
 export { CrudLimit } from './infrastructure/decorators/routes/crud-limit.decorator';
 export { CrudMaxLimit } from './infrastructure/decorators/routes/crud-max-limit.decorator';
 export { CrudEntity } from './infrastructure/decorators/routes/crud-entity.decorator';

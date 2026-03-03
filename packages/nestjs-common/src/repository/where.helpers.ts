@@ -1,5 +1,7 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
+import { RuntimeException } from '../exceptions/runtime.exception';
+
 import {
   WhereClause,
   WhereCompound,
@@ -9,7 +11,11 @@ import {
   WhereConditionPair,
   WhereConditionScalar,
 } from './interfaces/where-clause.interface';
-import { WhereCompoundOperator, WhereOperator } from './repository.types';
+import {
+  EntityColumn,
+  WhereCompoundOperator,
+  WhereOperator,
+} from './repository.types';
 
 /**
  * Where clause builder with both static and instance APIs.
@@ -32,117 +38,117 @@ export class Where<Entity extends PlainLiteralObject = PlainLiteralObject> {
   // ═══════════════════════════════════════════════════════════════════════════
 
   static eq<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: unknown,
   ): WhereConditionScalar<E> {
     return { field, operator: WhereOperator.EQ, value };
   }
 
   static ne<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: unknown,
   ): WhereConditionScalar<E> {
     return { field, operator: WhereOperator.NE, value };
   }
 
   static gt<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: unknown,
   ): WhereConditionScalar<E> {
     return { field, operator: WhereOperator.GT, value };
   }
 
   static gte<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: unknown,
   ): WhereConditionScalar<E> {
     return { field, operator: WhereOperator.GTE, value };
   }
 
   static lt<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: unknown,
   ): WhereConditionScalar<E> {
     return { field, operator: WhereOperator.LT, value };
   }
 
   static lte<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: unknown,
   ): WhereConditionScalar<E> {
     return { field, operator: WhereOperator.LTE, value };
   }
 
   static contains<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: string,
   ): WhereConditionScalar<E> {
     return { field, operator: WhereOperator.CONTAINS, value };
   }
 
   static notContains<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: string,
   ): WhereConditionScalar<E> {
     return { field, operator: WhereOperator.NCONTAINS, value };
   }
 
   static starts<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: string,
   ): WhereConditionScalar<E> {
     return { field, operator: WhereOperator.STARTS, value };
   }
 
   static notStarts<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: string,
   ): WhereConditionScalar<E> {
     return { field, operator: WhereOperator.NSTARTS, value };
   }
 
   static ends<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: string,
   ): WhereConditionScalar<E> {
     return { field, operator: WhereOperator.ENDS, value };
   }
 
   static notEnds<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: string,
   ): WhereConditionScalar<E> {
     return { field, operator: WhereOperator.NENDS, value };
   }
 
   static in<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: unknown[],
   ): WhereConditionArray<E> {
     return { field, operator: WhereOperator.IN, value };
   }
 
   static notIn<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     value: unknown[],
   ): WhereConditionArray<E> {
     return { field, operator: WhereOperator.NIN, value };
   }
 
   static isNull<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
   ): WhereConditionNullary<E> {
     return { field, operator: WhereOperator.IS_NULL };
   }
 
   static notNull<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
   ): WhereConditionNullary<E> {
     return { field, operator: WhereOperator.NOT_NULL };
   }
 
   static between<E extends PlainLiteralObject = PlainLiteralObject>(
-    field: keyof E & string,
+    field: EntityColumn<E>,
     from: unknown,
     to: unknown,
   ): WhereConditionPair<E> {
@@ -181,118 +187,146 @@ export class Where<Entity extends PlainLiteralObject = PlainLiteralObject> {
     return { ...condition, relation };
   }
 
+  /**
+   * Parse a dot-notation field and tag the condition with the extracted relation.
+   *
+   * @example
+   * ```typescript
+   * Where.relDot('blog.status', Where.eq('status', 'active'))
+   * // => { field: 'status', operator: 'eq', value: 'active', relation: 'blog' }
+   * ```
+   */
+  static relDot<
+    E extends PlainLiteralObject = PlainLiteralObject,
+    C extends WhereCondition<E> = WhereCondition<E>,
+  >(dotField: string, condition: C): C {
+    const parts = dotField.split('.');
+    if (parts.length === 1) return condition;
+    if (parts.length !== 2 || !parts[0]) {
+      throw new RuntimeException({
+        message: 'relDot expects "relation.field" dot notation, got "%s"',
+        messageParams: [
+          String(dotField)
+            .replace(/[^\w.]/g, '')
+            .substring(0, 100),
+        ],
+      });
+    }
+    return { ...condition, relation: parts[0] };
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // Instance API (field names checked against Entity)
   // ═══════════════════════════════════════════════════════════════════════════
 
   eq(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: unknown,
   ): WhereConditionScalar<Entity> {
     return Where.eq(field, value);
   }
 
   ne(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: unknown,
   ): WhereConditionScalar<Entity> {
     return Where.ne(field, value);
   }
 
   gt(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: unknown,
   ): WhereConditionScalar<Entity> {
     return Where.gt(field, value);
   }
 
   gte(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: unknown,
   ): WhereConditionScalar<Entity> {
     return Where.gte(field, value);
   }
 
   lt(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: unknown,
   ): WhereConditionScalar<Entity> {
     return Where.lt(field, value);
   }
 
   lte(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: unknown,
   ): WhereConditionScalar<Entity> {
     return Where.lte(field, value);
   }
 
   contains(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: string,
   ): WhereConditionScalar<Entity> {
     return Where.contains(field, value);
   }
 
   notContains(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: string,
   ): WhereConditionScalar<Entity> {
     return Where.notContains(field, value);
   }
 
   starts(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: string,
   ): WhereConditionScalar<Entity> {
     return Where.starts(field, value);
   }
 
   notStarts(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: string,
   ): WhereConditionScalar<Entity> {
     return Where.notStarts(field, value);
   }
 
   ends(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: string,
   ): WhereConditionScalar<Entity> {
     return Where.ends(field, value);
   }
 
   notEnds(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: string,
   ): WhereConditionScalar<Entity> {
     return Where.notEnds(field, value);
   }
 
   in(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: unknown[],
   ): WhereConditionArray<Entity> {
     return Where.in(field, value);
   }
 
   notIn(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     value: unknown[],
   ): WhereConditionArray<Entity> {
     return Where.notIn(field, value);
   }
 
-  isNull(field: keyof Entity & string): WhereConditionNullary<Entity> {
+  isNull(field: EntityColumn<Entity>): WhereConditionNullary<Entity> {
     return Where.isNull(field);
   }
 
-  notNull(field: keyof Entity & string): WhereConditionNullary<Entity> {
+  notNull(field: EntityColumn<Entity>): WhereConditionNullary<Entity> {
     return Where.notNull(field);
   }
 
   between(
-    field: keyof Entity & string,
+    field: EntityColumn<Entity>,
     from: unknown,
     to: unknown,
   ): WhereConditionPair<Entity> {
@@ -312,6 +346,13 @@ export class Where<Entity extends PlainLiteralObject = PlainLiteralObject> {
     condition: C,
   ): C {
     return Where.rel(relation, condition);
+  }
+
+  relDot<C extends WhereCondition<Entity> = WhereCondition<Entity>>(
+    dotField: string,
+    condition: C,
+  ): C {
+    return Where.relDot(dotField, condition);
   }
 
   /**

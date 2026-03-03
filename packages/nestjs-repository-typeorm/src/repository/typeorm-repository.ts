@@ -14,12 +14,17 @@ import {
   Not,
   Repository,
   EntityManager,
+  FindOptionsRelations,
+  FindManyOptions,
+  FindOptionsOrder,
+  FindOneOptions,
 } from 'typeorm';
 
 import { PlainLiteralObject } from '@nestjs/common';
 
 import {
   DeepPartial,
+  JoinClause,
   RepositoryContextInterface,
   RepositoryMetadataInterface,
   RepositoryFindOptions,
@@ -28,6 +33,7 @@ import {
   RepositoryUpdateOptions,
   RepositoryUpsertOptions,
   RepositoryDeleteOptions,
+  RepositoryOrderOptions,
   RepositoryRestoreOptions,
   RuntimeException,
   WhereClause,
@@ -36,11 +42,27 @@ import {
   isWhereCondition,
 } from '@concepta/nestjs-common';
 import { HookResolverService } from '@concepta/nestjs-hook';
-import { RepositoryAdapter } from '@concepta/nestjs-repository';
+import {
+  RelationActionConfig,
+  RepositoryAdapter,
+} from '@concepta/nestjs-repository';
 
 import { TypeOrmEntityNameException } from '../exceptions/typeorm-entity-name.exception';
 
-import { buildEntity, buildColumns } from './typeorm-options.schema';
+import {
+  buildEntity,
+  buildColumns,
+  buildRelations,
+} from './typeorm-options.schema';
+
+/**
+ * Options for constructing a TypeOrmRepository.
+ */
+export interface TypeOrmRepositoryOptions {
+  transactionKey?: string;
+  hookResolver?: HookResolverService;
+  relationsConfig?: Record<string, RelationActionConfig>;
+}
 
 /**
  * TypeORM implementation of RepositoryInterface.
@@ -51,19 +73,11 @@ export class TypeOrmRepository<
 > extends RepositoryAdapter<Entity> {
   readonly metadata: RepositoryMetadataInterface<Entity>;
 
-  /**
-   * Constructor
-   *
-   * @param repo - TypeORM repository instance
-   * @param transactionKey - optional key for looking up transaction (e.g., "typeorm:default")
-   * @param hookResolver - optional hook resolver service
-   */
   constructor(
     private readonly repo: Repository<Entity>,
-    private readonly transactionKey?: string,
-    hookResolver?: HookResolverService,
+    private readonly options: TypeOrmRepositoryOptions = {},
   ) {
-    super(hookResolver);
+    super(options.hookResolver);
 
     const entityName = repo.metadata?.name || repo.metadata?.targetName;
 
@@ -73,11 +87,15 @@ export class TypeOrmRepository<
 
     const entityType = buildEntity(repo.target, entityName);
     const columns = buildColumns<Entity>(repo.metadata.columns);
+    const relations = repo.metadata.relations
+      ? buildRelations(repo.metadata.relations, options.relationsConfig)
+      : [];
 
     this.metadata = {
       name: entityName,
       type: entityType,
       columns,
+      relations,
     };
   }
 
@@ -88,8 +106,8 @@ export class TypeOrmRepository<
   protected async getRepo(
     ctx?: RepositoryContextInterface,
   ): Promise<Repository<Entity>> {
-    if (this.transactionKey && ctx?.trx) {
-      const tx = await ctx.trx.getOrStart(this.transactionKey);
+    if (this.options.transactionKey && ctx?.trx) {
+      const tx = await ctx.trx.getOrStart(this.options.transactionKey);
       return tx.getClient<EntityManager>().getRepository(this.metadata.type);
     }
     return this.repo;
@@ -99,8 +117,8 @@ export class TypeOrmRepository<
    * Mark the transaction as dirty (write operation occurred)
    */
   protected markDirty(ctx?: RepositoryContextInterface): void {
-    if (this.transactionKey) {
-      ctx?.trx?.get(this.transactionKey)?.markDirty();
+    if (this.options.transactionKey) {
+      ctx?.trx?.get(this.options.transactionKey)?.markDirty();
     }
   }
 
@@ -127,45 +145,44 @@ export class TypeOrmRepository<
   /**
    * Convert an AND-branch of WhereClause leaves into a single
    * TypeORM FindOptionsWhere. Same-field conditions are merged
-   * with TypeORM And().
+   * with TypeORM And(). Relation-tagged conditions are nested
+   * under their relation key.
    */
   protected branchToFindOptionsWhere(
     leaves: WhereClause[],
   ): FindOptionsWhere<Entity> {
-    const result: Record<string, FindOperator<unknown>> = {};
+    const fields: Record<string, FindOperator<unknown>> = {};
+    const relations: Record<string, Record<string, FindOperator<unknown>>> = {};
 
     for (const leaf of leaves) {
-      const entries = this.leafToFindOperatorEntries(leaf);
-      for (const [field, op] of entries) {
-        if (result[field] !== undefined) {
-          result[field] = And(result[field], op);
-        } else {
-          result[field] = op;
-        }
+      if (!isWhereCondition(leaf)) continue;
+
+      const op = this.toFindOperator(leaf);
+
+      if (leaf.relation) {
+        const nested = (relations[leaf.relation] ??= {});
+        nested[leaf.field] = nested[leaf.field]
+          ? And(nested[leaf.field], op)
+          : op;
+      } else {
+        const existing = fields[leaf.field];
+        fields[leaf.field] = existing ? And(existing, op) : op;
       }
     }
 
-    return result as FindOptionsWhere<Entity>;
-  }
-
-  /**
-   * Convert a leaf WhereCondition to [field, FindOperator] pair.
-   */
-  protected leafToFindOperatorEntries(
-    leaf: WhereClause,
-  ): [string, FindOperator<unknown>][] {
-    if (isWhereCondition(leaf)) {
-      return [[leaf.field, this.toFindOperator(leaf)]];
-    }
-
-    return [];
+    return Object.assign<
+      FindOptionsWhere<Entity>,
+      Record<string, FindOperator<unknown>>,
+      Record<string, Record<string, FindOperator<unknown>>>
+    >({}, fields, relations);
   }
 
   /**
    * Map a WhereCondition to a TypeORM FindOperator.
    */
   protected toFindOperator(cond: WhereCondition): FindOperator<unknown> {
-    switch (cond.operator) {
+    const { operator } = cond;
+    switch (operator) {
       case WhereOperator.EQ:
         return Equal(cond.value);
       case WhereOperator.NE:
@@ -200,12 +217,36 @@ export class TypeOrmRepository<
         return Not(IsNull());
       case WhereOperator.BETWEEN:
         return Between(cond.value[0], cond.value[1]);
-      default:
+      default: {
+        const _exhaustive: never = operator;
+        void _exhaustive;
         throw new RuntimeException({
           message: 'Unknown where operator "%s"',
-          messageParams: [(cond as WhereCondition).operator],
+          messageParams: [operator],
         });
+      }
     }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // JoinClause → TypeORM relations
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Translate JoinClause[] into TypeORM FindOptionsRelations.
+   */
+  protected translateJoin(
+    join?: JoinClause[],
+  ): FindOptionsRelations<Entity> | undefined {
+    if (!join?.length) return undefined;
+    const relations: Record<string, boolean> = {};
+    for (const j of join) {
+      relations[j.relation] = true;
+    }
+    return Object.assign<FindOptionsRelations<Entity>, Record<string, boolean>>(
+      {},
+      relations,
+    );
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -217,17 +258,11 @@ export class TypeOrmRepository<
    */
   protected buildNativeFindManyOptions(
     options: RepositoryFindOptions<Entity>,
-  ): import('typeorm').FindManyOptions<Entity> {
-    const where = this.translateWhere(options.where);
+  ): FindManyOptions<Entity> {
     return {
-      select: options.select as (keyof Entity & string)[] | undefined,
-      where,
-      order: options.order as
-        | import('typeorm').FindOptionsOrder<Entity>
-        | undefined,
+      ...this.buildNativeFindBaseOptions(options),
       skip: options.skip,
       take: options.take,
-      withDeleted: options.withDeleted,
     };
   }
 
@@ -236,14 +271,27 @@ export class TypeOrmRepository<
    */
   protected buildNativeFindOneOptions(
     options: RepositoryFindOneOptions<Entity>,
-  ): import('typeorm').FindOneOptions<Entity> {
+  ): FindOneOptions<Entity> {
+    return this.buildNativeFindBaseOptions(options);
+  }
+
+  private buildNativeFindBaseOptions(
+    options: RepositoryFindOneOptions<Entity>,
+  ): FindOneOptions<Entity> {
+    const resolvedJoin = this.resolveJoinClauses(options.join);
     const where = this.translateWhere(options.where);
+    const relations = this.translateJoin(resolvedJoin);
+    const order = options.order
+      ? Object.assign<FindOptionsOrder<Entity>, RepositoryOrderOptions<Entity>>(
+          {},
+          options.order,
+        )
+      : undefined;
     return {
-      select: options.select as (keyof Entity & string)[] | undefined,
+      select: options.select,
       where,
-      order: options.order as
-        | import('typeorm').FindOptionsOrder<Entity>
-        | undefined,
+      relations,
+      order,
       withDeleted: options.withDeleted,
     };
   }

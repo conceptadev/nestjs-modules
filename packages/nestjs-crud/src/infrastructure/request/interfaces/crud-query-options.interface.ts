@@ -1,6 +1,10 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { EntityColumn, SortCondition } from '@concepta/nestjs-common';
+import {
+  EntityColumn,
+  JoinClause,
+  SortCondition,
+} from '@concepta/nestjs-common';
 
 import { QueryFilterOption } from '../query-filter-option.type';
 
@@ -18,5 +22,6 @@ export interface CrudQueryOptionsInterface<
   limit?: number;
   maxLimit?: number;
   cache?: number | false;
+  join?: JoinClause[];
   relations?: CrudRelationsInterface<T, Relations>;
 }

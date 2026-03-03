@@ -21,6 +21,8 @@ export interface CrudQueryHandlerInterface<
 
   hasRelations(context: CrudContextInterface<Entity>): boolean;
 
+  useFederation(context: CrudContextInterface<Entity>): boolean;
+
   execute(
     query: CrudQueryInterface<Entity>,
   ): Promise<Entity | CrudResponsePaginatedInterface<Entity>>;

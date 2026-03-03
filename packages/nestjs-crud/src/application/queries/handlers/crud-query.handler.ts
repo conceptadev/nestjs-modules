@@ -2,6 +2,7 @@ import { PlainLiteralObject } from '@nestjs/common';
 
 import { CrudAdapter } from '../../../infrastructure/adapters/crud.adapter';
 import { CrudResponsePaginatedInterface } from '../../../infrastructure/dtos/interfaces/crud-response-paginated.interface';
+import { CrudQueryException } from '../../../infrastructure/exceptions/crud-query.exception';
 import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
 import { CrudFederationService } from '../../../infrastructure/services/crud-federation.service';
 import { CrudQueryHandlerInterface } from '../interfaces/crud-query-handler.interface';
@@ -31,9 +32,21 @@ export class CrudQueryHandler<
     return relations.length > 0;
   }
 
+  /**
+   * Check if federation should be used for this query.
+   * Requires both: federation service is available AND `federated: true` is set.
+   */
+  useFederation(context: CrudContextInterface<Entity>): boolean {
+    if (!this.federationService) return false;
+    const relationsConfig = context.options?.query?.relations;
+    return !!relationsConfig?.federated && this.hasRelations(context);
+  }
+
   execute(
     _query: CrudQueryInterface<Entity>,
   ): Promise<Entity | CrudResponsePaginatedInterface<Entity>> {
-    throw new Error('Method not implemented');
+    throw new CrudQueryException(this.crudAdapter.entityName(), {
+      message: 'Subclass must implement execute()',
+    });
   }
 }

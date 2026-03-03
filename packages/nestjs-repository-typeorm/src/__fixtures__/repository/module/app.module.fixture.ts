@@ -3,7 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { RepositoryModule } from '@concepta/nestjs-repository';
 
-import { ormConfig } from './ormconfig.fixture';
+import { ormConfig } from '../config/ormconfig.fixture';
+
 import { TestModuleFixture } from './test.module.fixture';
 
 @Module({

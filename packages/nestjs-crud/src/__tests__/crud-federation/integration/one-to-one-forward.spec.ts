@@ -1,6 +1,6 @@
 import { Where } from '@concepta/nestjs-common';
 
-import { createPaginatedResponse } from '../fixtures/crud-federation-mock-helpers';
+import { createPaginatedResponse } from '../../../__fixtures__/crud/mocks/crud-paginated-response.mock';
 import {
   assertHandlerCallCounts,
   assertResultStructure,

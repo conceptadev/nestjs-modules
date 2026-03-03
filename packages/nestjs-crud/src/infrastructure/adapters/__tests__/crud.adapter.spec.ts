@@ -1,18 +1,12 @@
-import { BadRequestException, Type } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 
-import {
-  ActionEnum,
-  AppContextHost,
-  Operation,
-  RepositoryInterface,
-  Where,
-  WhereOperator,
-} from '@concepta/nestjs-common';
+import { SortOrder, Where, WhereOperator } from '@concepta/nestjs-common';
+import { createMockRepository } from '@concepta/nestjs-common/testing';
 
 import { TestCrudAdapter } from '../../../__fixtures__/crud/adapters/test-crud.adapter';
+import { mockCrudContext } from '../../../__fixtures__/crud/mocks/crud-context.mock';
+import { mockCrudParsedQuery } from '../../../__fixtures__/crud/mocks/crud-parsed-query.mock';
 import { CrudContextOptionsInterface } from '../../interceptors/interfaces/crud-context-options.interface';
-import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface';
-import { CrudParsedQueryInterface } from '../../request/interfaces/crud-parsed-query.interface';
 
 interface TestEntity {
   id: string;
@@ -26,73 +20,21 @@ class TestEntityClass {
   age!: number;
 }
 
-function createMockRepository(): RepositoryInterface<TestEntity> {
-  return {
-    metadata: {
+describe('CrudAdapter', () => {
+  let adapter: TestCrudAdapter<TestEntity>;
+
+  beforeAll(() => {
+    const repo = createMockRepository<TestEntity>({
       name: 'TestEntity',
-      type: TestEntityClass as Type<TestEntity>,
+      type: TestEntityClass as never,
       columns: [
         { name: 'id', isPrimary: true, isRemoveDate: false },
         { name: 'name', isPrimary: false, isRemoveDate: false },
         { name: 'age', isPrimary: false, isRemoveDate: false },
       ],
-    },
-    find: jest.fn(),
-    findOne: jest.fn(),
-    count: jest.fn(),
-    findAndCount: jest.fn(),
-    create: jest.fn(),
-    createMany: jest.fn(),
-    update: jest.fn(),
-    upsert: jest.fn(),
-    replace: jest.fn(),
-    delete: jest.fn(),
-    softDelete: jest.fn(),
-    restore: jest.fn(),
-    transform: jest.fn(),
-    merge: jest.fn(),
-    prepare: jest.fn((dto) => dto as TestEntity),
-  };
-}
-
-function makeQuery(
-  overrides: Partial<CrudParsedQueryInterface<TestEntity>> = {},
-): CrudParsedQueryInterface<TestEntity> {
-  return {
-    fields: [],
-    search: undefined,
-    filter: [],
-    or: [],
-    sort: [],
-    limit: undefined,
-    offset: undefined,
-    page: undefined,
-    cache: undefined,
-    includeDeleted: undefined,
-    ...overrides,
-  };
-}
-
-function makeContext(
-  overrides: Partial<CrudContextInterface<TestEntity>> = {},
-): CrudContextInterface<TestEntity> {
-  return AppContextHost.merge<CrudContextInterface<TestEntity>>(() => ({
-    entity: overrides.entity ?? 'TestEntity',
-    params: overrides.params ?? {},
-    query: overrides.query ?? makeQuery(),
-    options: overrides.options ?? {},
-    operation: overrides.operation ?? Operation.Read,
-    action: overrides.action ?? ActionEnum.READ,
-    locals: overrides.locals ?? {},
-    hooks: overrides.hooks ?? [],
-  }));
-}
-
-describe('CrudAdapter', () => {
-  let adapter: TestCrudAdapter<TestEntity>;
-
-  beforeAll(() => {
-    adapter = new TestCrudAdapter(createMockRepository());
+    });
+    repo.prepare.mockImplementation((dto) => dto as TestEntity);
+    adapter = new TestCrudAdapter(repo);
   });
 
   describe('entityName', () => {
@@ -157,61 +99,69 @@ describe('CrudAdapter', () => {
 
   describe('getTake', () => {
     it('should return query.limit when no maxLimit', () => {
-      expect(adapter.getTake(makeQuery({ limit: 25 }), {})).toEqual(25);
+      expect(adapter.getTake(mockCrudParsedQuery({ limit: 25 }), {})).toEqual(
+        25,
+      );
     });
 
     it('should cap query.limit to maxLimit', () => {
       expect(
-        adapter.getTake(makeQuery({ limit: 100 }), { maxLimit: 50 }),
+        adapter.getTake(mockCrudParsedQuery({ limit: 100 }), { maxLimit: 50 }),
       ).toEqual(50);
     });
 
     it('should return query.limit when under maxLimit', () => {
       expect(
-        adapter.getTake(makeQuery({ limit: 10 }), { maxLimit: 50 }),
+        adapter.getTake(mockCrudParsedQuery({ limit: 10 }), { maxLimit: 50 }),
       ).toEqual(10);
     });
 
     it('should fall back to options.limit when no query.limit', () => {
-      expect(adapter.getTake(makeQuery(), { limit: 20 })).toEqual(20);
+      expect(adapter.getTake(mockCrudParsedQuery(), { limit: 20 })).toEqual(20);
     });
 
     it('should cap options.limit to maxLimit', () => {
       expect(
-        adapter.getTake(makeQuery(), { limit: 100, maxLimit: 50 }),
+        adapter.getTake(mockCrudParsedQuery(), { limit: 100, maxLimit: 50 }),
       ).toEqual(50);
     });
 
     it('should return options.limit when under maxLimit', () => {
-      expect(adapter.getTake(makeQuery(), { limit: 10, maxLimit: 50 })).toEqual(
-        10,
-      );
+      expect(
+        adapter.getTake(mockCrudParsedQuery(), { limit: 10, maxLimit: 50 }),
+      ).toEqual(10);
     });
 
     it('should return maxLimit when no query.limit and no options.limit', () => {
-      expect(adapter.getTake(makeQuery(), { maxLimit: 50 })).toEqual(50);
+      expect(adapter.getTake(mockCrudParsedQuery(), { maxLimit: 50 })).toEqual(
+        50,
+      );
     });
 
     it('should return null when no limits set', () => {
-      expect(adapter.getTake(makeQuery(), {})).toBeNull();
+      expect(adapter.getTake(mockCrudParsedQuery(), {})).toBeNull();
     });
   });
 
   describe('getSkip', () => {
     it('should calculate skip from page and take', () => {
-      expect(adapter.getSkip(makeQuery({ page: 3 }), 10)).toEqual(20);
+      expect(adapter.getSkip(mockCrudParsedQuery({ page: 3 }), 10)).toEqual(20);
     });
 
     it('should return offset when no page', () => {
-      expect(adapter.getSkip(makeQuery({ offset: 15 }), 10)).toEqual(15);
+      expect(adapter.getSkip(mockCrudParsedQuery({ offset: 15 }), 10)).toEqual(
+        15,
+      );
     });
 
     it('should return null when no page and no offset', () => {
-      expect(adapter.getSkip(makeQuery(), 10)).toBeNull();
+      expect(adapter.getSkip(mockCrudParsedQuery(), 10)).toBeNull();
     });
 
     it('should return null when page is set but take is null', () => {
-      expect(adapter.getSkip(makeQuery({ page: 2 }), null)).toBeNull();
+      expect(
+        adapter.getSkip(mockCrudParsedQuery({ page: 2 }), null),
+      ).toBeNull();
     });
   });
 
@@ -308,20 +258,20 @@ describe('CrudAdapter', () => {
 
   describe('prepareEntityBeforeSave', () => {
     it('should return undefined for non-object input', () => {
-      const ctx = makeContext();
+      const ctx = mockCrudContext();
       expect(
         adapter.prepareEntityBeforeSave(null as never, ctx),
       ).toBeUndefined();
     });
 
     it('should return undefined for empty object', () => {
-      const ctx = makeContext();
+      const ctx = mockCrudContext();
       expect(adapter.prepareEntityBeforeSave({} as never, ctx)).toBeUndefined();
     });
 
     it('should return entity with dto field values', () => {
       const dto = { id: '1', name: 'Test' } as TestEntity;
-      const ctx = makeContext();
+      const ctx = mockCrudContext();
       const result = adapter.prepareEntityBeforeSave(dto, ctx);
       expect(result).toBeDefined();
       expect(result?.id).toEqual('1');
@@ -330,7 +280,7 @@ describe('CrudAdapter', () => {
 
     it('should apply matching route params to entity', () => {
       const dto = { id: '1', name: 'Test' } as TestEntity;
-      const context = makeContext({ params: { id: 'overridden' } });
+      const context = mockCrudContext({ params: { id: 'overridden' } });
       const result = adapter.prepareEntityBeforeSave(dto, context);
       expect(result).toBeDefined();
       expect(result?.id).toEqual('overridden');
@@ -338,7 +288,7 @@ describe('CrudAdapter', () => {
 
     it('should ignore route params not present in dto', () => {
       const dto = { name: 'Test' } as TestEntity;
-      const context = makeContext({
+      const context = mockCrudContext({
         params: { id: 'should-not-appear' },
       });
       const result = adapter.prepareEntityBeforeSave(dto, context);
@@ -350,26 +300,26 @@ describe('CrudAdapter', () => {
 
   describe('buildWhere', () => {
     it('should return undefined when no conditions exist', () => {
-      const ctx = makeContext();
+      const ctx = mockCrudContext();
       expect(adapter.exposedBuildWhere(ctx)).toBeUndefined();
     });
 
     it('should convert single param to eq condition', () => {
-      const ctx = makeContext({ params: { id: '5' } });
+      const ctx = mockCrudContext({ params: { id: '5' } });
       expect(adapter.exposedBuildWhere(ctx)).toEqual(Where.eq('id', '5'));
     });
 
     it('should combine multiple params with and', () => {
-      const ctx = makeContext({ params: { id: '1', name: 'test' } });
+      const ctx = mockCrudContext({ params: { id: '1', name: 'test' } });
       expect(adapter.exposedBuildWhere(ctx)).toEqual(
         Where.and(Where.eq('id', '1'), Where.eq('name', 'test')),
       );
     });
 
     it('should combine params and query.filter with and', () => {
-      const ctx = makeContext({
+      const ctx = mockCrudContext({
         params: { id: '5' },
-        query: makeQuery({
+        query: mockCrudParsedQuery({
           filter: [{ field: 'name', operator: WhereOperator.EQ, value: 'foo' }],
         }),
       });
@@ -380,7 +330,7 @@ describe('CrudAdapter', () => {
 
     describe('options.query.filter', () => {
       it('should convert WhereCondition[] to where conditions', () => {
-        const ctx = makeContext({
+        const ctx = mockCrudContext({
           options: {
             query: {
               filter: [
@@ -395,7 +345,7 @@ describe('CrudAdapter', () => {
       });
 
       it('should treat non-array truthy filter as SCondition', () => {
-        const ctx = makeContext({
+        const ctx = mockCrudContext({
           options: {
             query: {
               filter: { name: { $eq: 'admin' } },
@@ -408,7 +358,7 @@ describe('CrudAdapter', () => {
       });
 
       it('should ignore empty WhereCondition[] options filter', () => {
-        const ctx = makeContext({
+        const ctx = mockCrudContext({
           options: { query: { filter: [] } },
         });
         expect(adapter.exposedBuildWhere(ctx)).toBeUndefined();
@@ -417,8 +367,10 @@ describe('CrudAdapter', () => {
 
     describe('query.search', () => {
       it('should convert query.search SCondition to where', () => {
-        const ctx = makeContext({
-          query: makeQuery({ search: { name: { $contains: 'foo' } } }),
+        const ctx = mockCrudContext({
+          query: mockCrudParsedQuery({
+            search: { name: { $contains: 'foo' } },
+          }),
         });
         expect(adapter.exposedBuildWhere(ctx)).toEqual(
           Where.contains('name', 'foo'),
@@ -426,8 +378,8 @@ describe('CrudAdapter', () => {
       });
 
       it('should use query.search even when filters are present', () => {
-        const ctx = makeContext({
-          query: makeQuery({
+        const ctx = mockCrudContext({
+          query: mockCrudParsedQuery({
             search: { name: { $contains: 'foo' } },
             filter: [{ field: 'id', operator: WhereOperator.EQ, value: 1 }],
           }),
@@ -441,8 +393,8 @@ describe('CrudAdapter', () => {
 
     describe('query.filter', () => {
       it('should convert single filter to where', () => {
-        const ctx = makeContext({
-          query: makeQuery({
+        const ctx = mockCrudContext({
+          query: mockCrudParsedQuery({
             filter: [
               { field: 'name', operator: WhereOperator.EQ, value: 'foo' },
             ],
@@ -452,8 +404,8 @@ describe('CrudAdapter', () => {
       });
 
       it('should convert multiple filters to and where', () => {
-        const ctx = makeContext({
-          query: makeQuery({
+        const ctx = mockCrudContext({
+          query: mockCrudParsedQuery({
             filter: [
               { field: 'name', operator: WhereOperator.EQ, value: 'foo' },
               { field: 'id', operator: WhereOperator.GT, value: 5 },
@@ -468,8 +420,8 @@ describe('CrudAdapter', () => {
 
     describe('query.or', () => {
       it('should convert single or to where', () => {
-        const ctx = makeContext({
-          query: makeQuery({
+        const ctx = mockCrudContext({
+          query: mockCrudParsedQuery({
             or: [{ field: 'name', operator: WhereOperator.EQ, value: 'bar' }],
           }),
         });
@@ -479,8 +431,8 @@ describe('CrudAdapter', () => {
 
     describe('filter + or combined', () => {
       it('should create or with single filter and single or', () => {
-        const ctx = makeContext({
-          query: makeQuery({
+        const ctx = mockCrudContext({
+          query: mockCrudParsedQuery({
             filter: [
               { field: 'name', operator: WhereOperator.EQ, value: 'foo' },
             ],
@@ -493,8 +445,8 @@ describe('CrudAdapter', () => {
       });
 
       it('should create or with and groups for multiple filters and ors', () => {
-        const ctx = makeContext({
-          query: makeQuery({
+        const ctx = mockCrudContext({
+          query: mockCrudParsedQuery({
             filter: [
               { field: 'name', operator: WhereOperator.EQ, value: 'foo' },
               { field: 'id', operator: WhereOperator.GT, value: 1 },
@@ -512,6 +464,277 @@ describe('CrudAdapter', () => {
           ),
         );
       });
+    });
+  });
+
+  describe('buildJoin', () => {
+    it('should return undefined when no relations config', () => {
+      const ctx = mockCrudContext();
+      expect(adapter.exposedBuildJoin(ctx)).toBeUndefined();
+    });
+
+    it('should return undefined when relations array is empty', () => {
+      const ctx = mockCrudContext({
+        options: {
+          query: {
+            relations: {
+              rootKey: 'id',
+              relations: [] as never,
+            },
+          },
+        },
+      });
+      expect(adapter.exposedBuildJoin(ctx)).toBeUndefined();
+    });
+
+    it('should map relations to JoinClause array', () => {
+      const ctx = mockCrudContext({
+        options: {
+          query: {
+            relations: {
+              rootKey: 'id',
+              relations: [
+                {
+                  property: 'posts',
+                  cardinality: 'many',
+                  entity: 'PostEntity',
+                  join: 'LEFT' as const,
+                  primaryKey: 'id',
+                  foreignKey: 'authorId',
+                },
+              ] as never,
+            },
+          },
+        },
+      });
+      expect(adapter.exposedBuildJoin(ctx)).toEqual([
+        {
+          relation: 'posts',
+          joinType: 'LEFT',
+          cardinality: 'many',
+        },
+      ]);
+    });
+
+    it('should map multiple relations', () => {
+      const ctx = mockCrudContext({
+        options: {
+          query: {
+            relations: {
+              rootKey: 'id',
+              relations: [
+                {
+                  property: 'posts',
+                  cardinality: 'many',
+                  entity: 'PostEntity',
+                  join: 'LEFT' as const,
+                  primaryKey: 'id',
+                  foreignKey: 'authorId',
+                },
+                {
+                  property: 'profile',
+                  cardinality: 'one',
+                  entity: 'ProfileEntity',
+                  join: 'INNER' as const,
+                  primaryKey: 'id',
+                  foreignKey: 'userId',
+                },
+              ] as never,
+            },
+          },
+        },
+      });
+      const result = adapter.exposedBuildJoin(ctx);
+      expect(result).toHaveLength(2);
+      expect(result).toEqual([
+        { relation: 'posts', joinType: 'LEFT', cardinality: 'many' },
+        { relation: 'profile', joinType: 'INNER', cardinality: 'one' },
+      ]);
+    });
+
+    it('should return explicit join clauses when query.join is provided', () => {
+      const ctx = mockCrudContext({
+        options: {
+          query: {
+            join: [{ relation: 'comments', joinType: 'LEFT' }],
+          },
+        },
+      });
+      expect(adapter.exposedBuildJoin(ctx)).toEqual([
+        { relation: 'comments', joinType: 'LEFT' },
+      ]);
+    });
+
+    it('should prefer explicit join over relations-derived join', () => {
+      const ctx = mockCrudContext({
+        options: {
+          query: {
+            join: [{ relation: 'tags', joinType: 'INNER' }],
+            relations: {
+              rootKey: 'id',
+              relations: [
+                {
+                  property: 'posts',
+                  cardinality: 'many',
+                  entity: 'PostEntity',
+                  join: 'LEFT' as const,
+                  primaryKey: 'id',
+                  foreignKey: 'authorId',
+                },
+              ] as never,
+            },
+          },
+        },
+      });
+      const result = adapter.exposedBuildJoin(ctx);
+      expect(result).toEqual([{ relation: 'tags', joinType: 'INNER' }]);
+    });
+
+    it('should fall back to relations when join is empty array', () => {
+      const ctx = mockCrudContext({
+        options: {
+          query: {
+            join: [],
+            relations: {
+              rootKey: 'id',
+              relations: [
+                {
+                  property: 'posts',
+                  cardinality: 'many',
+                  entity: 'PostEntity',
+                  join: 'LEFT' as const,
+                  primaryKey: 'id',
+                  foreignKey: 'authorId',
+                },
+              ] as never,
+            },
+          },
+        },
+      });
+      expect(adapter.exposedBuildJoin(ctx)).toEqual([
+        { relation: 'posts', joinType: 'LEFT', cardinality: 'many' },
+      ]);
+    });
+  });
+
+  describe('buildOrderClause', () => {
+    it('should return empty object when no sort', () => {
+      expect(
+        adapter.exposedBuildOrderClause(mockCrudParsedQuery(), {}),
+      ).toEqual({});
+    });
+
+    it('should build order from query sort', () => {
+      const query = mockCrudParsedQuery({
+        sort: [{ field: 'name', order: SortOrder.ASC }],
+      });
+      expect(adapter.exposedBuildOrderClause(query, {})).toEqual({
+        name: SortOrder.ASC,
+      });
+    });
+
+    it('should build order from options sort when query sort is empty', () => {
+      expect(
+        adapter.exposedBuildOrderClause(mockCrudParsedQuery(), {
+          sort: [{ field: 'name', order: SortOrder.DESC }],
+        }),
+      ).toEqual({ name: SortOrder.DESC });
+    });
+
+    it('should prefer query sort over options sort', () => {
+      const query = mockCrudParsedQuery({
+        sort: [{ field: 'name', order: SortOrder.ASC }],
+      });
+      expect(
+        adapter.exposedBuildOrderClause(query, {
+          sort: [{ field: 'name', order: SortOrder.DESC }],
+        }),
+      ).toEqual({ name: SortOrder.ASC });
+    });
+
+    it('should build nested order for relation sort', () => {
+      const query = mockCrudParsedQuery({
+        sort: [{ field: 'name', order: SortOrder.ASC, relation: 'blog' }],
+      });
+      expect(adapter.exposedBuildOrderClause(query, {})).toEqual({
+        blog: { name: SortOrder.ASC },
+      });
+    });
+
+    it('should combine root and relation sorts', () => {
+      const query = mockCrudParsedQuery({
+        sort: [
+          { field: 'name', order: SortOrder.ASC },
+          { field: 'age', order: SortOrder.DESC, relation: 'posts' },
+        ],
+      });
+      expect(adapter.exposedBuildOrderClause(query, {})).toEqual({
+        name: SortOrder.ASC,
+        posts: { age: SortOrder.DESC },
+      });
+    });
+
+    it('should group multiple fields under same relation', () => {
+      const query = mockCrudParsedQuery({
+        sort: [
+          { field: 'name', order: SortOrder.ASC, relation: 'posts' },
+          { field: 'age', order: SortOrder.DESC, relation: 'posts' },
+        ],
+      });
+      expect(adapter.exposedBuildOrderClause(query, {})).toEqual({
+        posts: { name: SortOrder.ASC, age: SortOrder.DESC },
+      });
+    });
+  });
+
+  describe('validateWhereFields', () => {
+    it('should not throw for undefined clause', () => {
+      expect(() => adapter.exposedValidateWhereFields(undefined)).not.toThrow();
+    });
+
+    it('should not throw for valid root entity field', () => {
+      expect(() =>
+        adapter.exposedValidateWhereFields(Where.eq('name', 'foo')),
+      ).not.toThrow();
+    });
+
+    it('should throw for invalid root entity field', () => {
+      expect(() =>
+        adapter.exposedValidateWhereFields(Where.eq('unknown', 'foo')),
+      ).toThrow(BadRequestException);
+    });
+
+    it('should skip validation for relation-tagged condition', () => {
+      const condition = Where.rel('posts', Where.eq('title', 'hello'));
+      expect(() => adapter.exposedValidateWhereFields(condition)).not.toThrow();
+    });
+
+    it('should validate compound clause recursively', () => {
+      const clause = Where.and(
+        Where.eq('name', 'foo'),
+        Where.eq('invalid', 'bar'),
+      );
+      expect(() => adapter.exposedValidateWhereFields(clause)).toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should pass compound clause mixing relation and valid root conditions', () => {
+      const clause = Where.and(
+        Where.eq('name', 'foo'),
+        Where.rel('posts', Where.eq('title', 'hello')),
+      );
+      expect(() => adapter.exposedValidateWhereFields(clause)).not.toThrow();
+    });
+
+    it('should throw for invalid field inside compound with relation conditions', () => {
+      const clause = Where.and(
+        Where.eq('unknown', 'foo'),
+        Where.rel('posts', Where.eq('title', 'hello')),
+      );
+      expect(() => adapter.exposedValidateWhereFields(clause)).toThrow(
+        BadRequestException,
+      );
     });
   });
 });

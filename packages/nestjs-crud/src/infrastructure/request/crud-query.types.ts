@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { EntityColumn, WhereCondition } from '@concepta/nestjs-common';
+import { EntityColumn, Where, WhereCondition } from '@concepta/nestjs-common';
 
 import { CrudQueryOptionsInterface } from './interfaces/crud-query-options.interface';
 
@@ -30,6 +30,39 @@ export enum CondOperator {
 }
 
 export type ComparisonOperator = `${CondOperator}`;
+
+/**
+ * Shared factory map from $-prefixed wire operators to WhereCondition builders.
+ *
+ * Used by both CrudQueryParser (URL query string parsing) and
+ * SConditionConverter (JSON search parsing). Callers handle their
+ * own input validation before invoking these factories.
+ */
+export const COND_OPERATOR_FACTORY: Record<
+  CondOperator,
+  (field: string, value: unknown) => WhereCondition
+> = {
+  [CondOperator.EQUALS]: (f, v) => Where.eq(f, v),
+  [CondOperator.NOT_EQUALS]: (f, v) => Where.ne(f, v),
+  [CondOperator.GREATER_THAN]: (f, v) => Where.gt(f, v),
+  [CondOperator.LOWER_THAN]: (f, v) => Where.lt(f, v),
+  [CondOperator.GREATER_THAN_EQUALS]: (f, v) => Where.gte(f, v),
+  [CondOperator.LOWER_THAN_EQUALS]: (f, v) => Where.lte(f, v),
+  [CondOperator.STARTS]: (f, v) => Where.starts(f, String(v)),
+  [CondOperator.NOT_STARTS]: (f, v) => Where.notStarts(f, String(v)),
+  [CondOperator.ENDS]: (f, v) => Where.ends(f, String(v)),
+  [CondOperator.NOT_ENDS]: (f, v) => Where.notEnds(f, String(v)),
+  [CondOperator.CONTAINS]: (f, v) => Where.contains(f, String(v)),
+  [CondOperator.NOT_CONTAINS]: (f, v) => Where.notContains(f, String(v)),
+  [CondOperator.IN]: (f, v) => Where.in(f, Array.isArray(v) ? v : []),
+  [CondOperator.NOT_IN]: (f, v) => Where.notIn(f, Array.isArray(v) ? v : []),
+  [CondOperator.IS_NULL]: (f) => Where.isNull(f),
+  [CondOperator.NOT_NULL]: (f) => Where.notNull(f),
+  [CondOperator.BETWEEN]: (f, v) => {
+    const arr = Array.isArray(v) ? v : [];
+    return Where.between(f, arr[0], arr[1]);
+  },
+};
 
 // new search
 export type SPrimitivesVal = string | number | boolean;
@@ -95,7 +128,7 @@ type QueryRelationBase<
   /**
    * The property name in the root (anchor) entity that holds the relation.
    */
-  property: EntityColumn<Entity> & string;
+  property: EntityColumn<Entity>;
   /**
    * Filter to ensure uniqueness for many-cardinality relationships when sorting.
    * Required for relation sorting on 'many' relationships to guarantee at most
@@ -128,11 +161,11 @@ export type QueryRelation<
         /**
          * The primary key field name in the root entity (target of the reference)
          */
-        primaryKey: EntityColumn<Entity> & string;
+        primaryKey: EntityColumn<Entity>;
         /**
          * The foreign key field name in the relation entity (holds the reference)
          */
-        foreignKey: EntityColumn<Relation> & string;
+        foreignKey: EntityColumn<Relation>;
       }
     // Root ownership: root[foreignKey] -> relation[primaryKey]
     | {
@@ -140,10 +173,10 @@ export type QueryRelation<
         /**
          * The primary key field name in the relation entity (target of the reference)
          */
-        primaryKey: EntityColumn<Relation> & string;
+        primaryKey: EntityColumn<Relation>;
         /**
          * The foreign key field name in the root entity (holds the reference)
          */
-        foreignKey: EntityColumn<Entity> & string;
+        foreignKey: EntityColumn<Entity>;
       }
   );

@@ -10,6 +10,7 @@ import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-clas
 
 import { getDynamicRepositoryToken } from '@concepta/nestjs-common';
 import { HookResolverService } from '@concepta/nestjs-hook';
+import { RelationActionConfig } from '@concepta/nestjs-repository';
 
 import { TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface';
 import { TypeOrmRepository } from './repository/typeorm-repository';
@@ -54,9 +55,13 @@ export function createTypeOrmRepository<E extends PlainLiteralObject>(
   repo: Repository<E>,
   dataSource?: string,
   hookResolver?: HookResolverService,
+  relationsConfig?: Record<string, RelationActionConfig>,
 ): TypeOrmRepository<E> {
-  const transactionKey = resolveTransactionKey(dataSource);
-  return new TypeOrmRepository(repo, transactionKey, hookResolver);
+  return new TypeOrmRepository(repo, {
+    transactionKey: resolveTransactionKey(dataSource),
+    hookResolver,
+    relationsConfig,
+  });
 }
 
 /**
@@ -74,7 +79,7 @@ export const OPTIONAL_HOOK_RESOLVER_INJECT = {
 export function createTypeOrmProvider<E extends PlainLiteralObject>(
   options: TypeOrmProviderOptionsInterface<E>,
 ): Provider {
-  const { key, entity, dataSource, factory } = options;
+  const { key, entity, dataSource, factory, relations } = options;
   const dsName = resolveDataSourceName(dataSource);
   const dsToken = resolveTokenName(dsName);
 
@@ -83,7 +88,12 @@ export function createTypeOrmProvider<E extends PlainLiteralObject>(
       provide: getDynamicRepositoryToken(key),
       inject: [getDataSourceToken(dsToken), OPTIONAL_HOOK_RESOLVER_INJECT],
       useFactory: (ds: DataSource, hookResolver?: HookResolverService) => {
-        return createTypeOrmRepository(factory(ds), dsName, hookResolver);
+        return createTypeOrmRepository(
+          factory(ds),
+          dsName,
+          hookResolver,
+          relations,
+        );
       },
     };
   } else {
@@ -94,7 +104,7 @@ export function createTypeOrmProvider<E extends PlainLiteralObject>(
         OPTIONAL_HOOK_RESOLVER_INJECT,
       ],
       useFactory: (repo: Repository<E>, hookResolver?: HookResolverService) => {
-        return createTypeOrmRepository(repo, dsName, hookResolver);
+        return createTypeOrmRepository(repo, dsName, hookResolver, relations);
       },
     };
   }

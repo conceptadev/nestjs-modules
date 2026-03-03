@@ -11,7 +11,10 @@ export { RepositoryAdapter } from './repository/repository-adapter';
 // ═══════════════════════════════════════════════════════════════════
 // Repository Implementation Interfaces
 // ═══════════════════════════════════════════════════════════════════
-export { RepositoryProviderOptions } from './interfaces/repository-provider-options.interface';
+export {
+  RelationActionConfig,
+  RepositoryProviderOptions,
+} from './interfaces/repository-provider-options.interface';
 export {
   RepositoryModuleInterface,
   DynamicRepositoryModule,

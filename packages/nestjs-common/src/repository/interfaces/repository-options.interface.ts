@@ -3,6 +3,7 @@ import { PlainLiteralObject } from '@nestjs/common';
 import { RepositoryContextInterface } from '../../context/interfaces/repository-context.interface';
 import { SortOrder } from '../repository.types';
 
+import { JoinClause } from './join-clause.interface';
 import { WhereClause } from './where-clause.interface';
 
 /**
@@ -16,10 +17,16 @@ export interface RepositoryBaseOptions<
 
 /**
  * Order options keyed by entity field.
+ * Supports nested ordering for relations (e.g., `{ blog: { status: 'ASC' } }`).
+ *
+ * Uses a string index signature because sort fields arrive as parsed strings
+ * from query parameters and may include relation keys that are not on the entity type.
  */
-export type RepositoryOrderOptions<Entity extends PlainLiteralObject> = Partial<
-  Record<keyof Entity, SortOrder>
->;
+export interface RepositoryOrderOptions<
+  Entity extends PlainLiteralObject = PlainLiteralObject,
+> {
+  [K: string]: SortOrder | RepositoryOrderOptions<Entity>;
+}
 
 /**
  * Options for finding a single entity.
@@ -29,6 +36,7 @@ export interface RepositoryFindOneOptions<
 > extends RepositoryBaseOptions {
   select?: (keyof Entity)[];
   where?: WhereClause;
+  join?: JoinClause[];
   order?: RepositoryOrderOptions<Entity>;
   withDeleted?: boolean;
 }

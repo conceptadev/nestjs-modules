@@ -1,6 +1,6 @@
 import { DataSourceOptions } from 'typeorm';
 
-import { TestEntityFixture } from './test.entity.fixture';
+import { TestEntityFixture } from '../entity/test.entity.fixture';
 
 export const ormConfig: DataSourceOptions = {
   type: 'sqlite',

@@ -1,4 +1,10 @@
-import { Entity, Column, DeleteDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  DeleteDateColumn,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 
 import { BaseEntity } from '../base-entity';
 import { CompanyEntity } from '../company/company.entity';
@@ -25,5 +31,10 @@ export class UserEntity extends BaseEntity {
   deletedAt?: Date;
 
   userProfile?: UserProfileEntity;
-  company?: CompanyEntity[];
+
+  @ManyToOne(() => CompanyEntity, (company) => company.users, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'companyId' })
+  company?: CompanyEntity;
 }

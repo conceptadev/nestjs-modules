@@ -31,6 +31,7 @@ import {
 import { CrudEntity } from '../decorators/routes/crud-entity.decorator';
 import { CrudExclude } from '../decorators/routes/crud-exclude.decorator';
 import { CrudFilter } from '../decorators/routes/crud-filter.decorator';
+import { CrudJoin } from '../decorators/routes/crud-join.decorator';
 import { CrudLimit } from '../decorators/routes/crud-limit.decorator';
 import { UseCrudLocals } from '../decorators/routes/crud-locals.decorator';
 import { CrudMaxLimit } from '../decorators/routes/crud-max-limit.decorator';
@@ -94,6 +95,7 @@ export class CrudMetaview<
         limit: CrudMetadata.getHierarchy(CrudLimit, handler, target),
         maxLimit: CrudMetadata.getHierarchy(CrudMaxLimit, handler, target),
         cache: CrudMetadata.getHierarchy(CrudCache, handler, target),
+        join: CrudMetadata.getHierarchyArray(CrudJoin, handler, target),
         relations: CrudMetadata.getHierarchy(CrudRelations, handler, target),
       },
     };

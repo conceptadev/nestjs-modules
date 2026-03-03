@@ -13,9 +13,9 @@ import {
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
 import { TestModelServiceFixture } from '../__fixtures__/model/test-model.service.fixture';
-import { AppModuleFixture } from '../__fixtures__/repository/app.module.fixture';
-import { TestEntityFixture } from '../__fixtures__/repository/test.entity.fixture';
-import { TestFactoryFixture } from '../__fixtures__/repository/test.factory.fixture';
+import { TestEntityFixture } from '../__fixtures__/repository/entity/test.entity.fixture';
+import { TestFactoryFixture } from '../__fixtures__/repository/factory/test.factory.fixture';
+import { AppModuleFixture } from '../__fixtures__/repository/module/app.module.fixture';
 
 describe(ModelService, () => {
   const WRONG_UUID = '3bfd065e-0c30-11ed-861d-0242ac120002';

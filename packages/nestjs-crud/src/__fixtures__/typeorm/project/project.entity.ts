@@ -1,6 +1,7 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, JoinColumn, ManyToOne } from 'typeorm';
 
 import { BaseEntity } from '../base-entity';
+import { CompanyEntity } from '../company/company.entity';
 
 @Entity('projects')
 export class ProjectEntity extends BaseEntity {
@@ -15,4 +16,10 @@ export class ProjectEntity extends BaseEntity {
 
   @Column({ nullable: false })
   companyId?: number;
+
+  @ManyToOne(() => CompanyEntity, (company) => company.projects, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'companyId' })
+  company?: CompanyEntity;
 }

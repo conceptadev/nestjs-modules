@@ -1,8 +1,8 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
 /**
- * Creates a standard paginated response matching the service's expected format
- * Uses sensible defaults - only specify limit when testing buffer behavior
+ * Creates a standard paginated response matching the service's expected format.
+ * Uses sensible defaults - only specify limit when testing buffer behavior.
  */
 export const createPaginatedResponse = <T extends PlainLiteralObject>(
   data: T[],
@@ -12,7 +12,7 @@ export const createPaginatedResponse = <T extends PlainLiteralObject>(
     total?: number;
   } = {},
 ) => {
-  const limit = options.limit ?? 10; // Sane default, matches typical request limits
+  const limit = options.limit ?? 10;
   const page = options.page ?? 1;
   const total = options.total ?? data.length;
   const pageCount = Math.ceil(total / limit);

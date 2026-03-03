@@ -13,10 +13,7 @@ export class CrudReadHandler<
     const { context } = query;
 
     try {
-      if (this.hasRelations(context)) {
-        if (!this.federationService) {
-          throw new Error('Federation service required for relation queries');
-        }
+      if (this.useFederation(context) && this.federationService) {
         return await this.federationService.read(context);
       } else {
         return await this.crudAdapter.read(context);

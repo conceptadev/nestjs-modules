@@ -1,71 +1,14 @@
-import {
-  FindManyOptions,
-  FindOneOptions,
-  FindOptionsWhere,
-  EntityTarget,
-} from 'typeorm';
+import { EntityTarget } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
-import { z } from 'zod';
+import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
 
 import { Type, PlainLiteralObject } from '@nestjs/common';
 
-import { RepositoryColumnMetadataInterface } from '@concepta/nestjs-common';
-
-/**
- * Schema for FindOptionsWhere validation.
- */
-const FindWhereSchema = z.union([
-  z.record(z.any()),
-  z.array(z.record(z.any())),
-]);
-
-/**
- * Schema for FindOneOptions validation.
- */
-const FindOneSchema = z
-  .object({
-    select: z.array(z.string()).optional(),
-    where: FindWhereSchema.optional(),
-    order: z.record(z.any()).optional(),
-    withDeleted: z.boolean().optional(),
-  })
-  .passthrough() satisfies z.ZodType<FindOneOptions>;
-
-/**
- * Schema for FindManyOptions validation.
- */
-const FindManySchema = FindOneSchema.extend({
-  skip: z.number().optional(),
-  take: z.number().optional(),
-  relations: z.union([z.array(z.string()), z.record(z.any())]).optional(),
-}).passthrough() satisfies z.ZodType<FindManyOptions>;
-
-/**
- * Type guard for FindOptionsWhere.
- */
-export function isFindOptionsWhere<Entity extends PlainLiteralObject>(
-  input: unknown,
-): input is FindOptionsWhere<Entity> {
-  return FindWhereSchema.safeParse(input).success;
-}
-
-/**
- * Type guard for TypeORM FindOneOptions.
- */
-export function isFindOneOptions<Entity>(
-  input: unknown,
-): input is FindOneOptions<Entity> {
-  return FindOneSchema.safeParse(input).success;
-}
-
-/**
- * Type guard for TypeORM FindManyOptions.
- */
-export function isFindManyOptions<Entity>(
-  input: unknown,
-): input is FindManyOptions<Entity> {
-  return FindManySchema.safeParse(input).success;
-}
+import {
+  RepositoryColumnMetadataInterface,
+  RepositoryRelationMetadataInterface,
+} from '@concepta/nestjs-common';
+import { RelationActionConfig } from '@concepta/nestjs-repository';
 
 /**
  * Type guard that validates EntityTarget satisfies Type<Entity>.
@@ -102,4 +45,213 @@ export function buildColumns<Entity extends PlainLiteralObject>(
       isRemoveDate: col.isDeleteDate,
     };
   });
+}
+
+/**
+ * Map TypeORM relation metadata to ORM-agnostic relation metadata.
+ *
+ * Handles owning/non-owning sides and M:N junction tables.
+ * Skips relations where required FK metadata is unavailable.
+ *
+ * @param relations - TypeORM relation metadata array
+ * @param relationsConfig - optional per-relation action config from forFeature()
+ */
+export function buildRelations(
+  relations: RelationMetadata[],
+  relationsConfig?: Record<string, RelationActionConfig>,
+): RepositoryRelationMetadataInterface[] {
+  const result: RepositoryRelationMetadataInterface[] = [];
+
+  for (const rel of relations) {
+    const mapped = mapRelation(rel);
+    if (mapped) {
+      const cfg = relationsConfig?.[mapped.name];
+      result.push(
+        cfg
+          ? { ...mapped, onDelete: cfg.onDelete, onUpdate: cfg.onUpdate }
+          : mapped,
+      );
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Determine cardinality from the perspective of the entity owning the property.
+ */
+function getCardinality(rel: RelationMetadata): 'one' | 'many' {
+  if (rel.isOneToMany || rel.isManyToMany) return 'many';
+  return 'one';
+}
+
+/**
+ * Map a single TypeORM RelationMetadata to our agnostic format.
+ * Returns undefined if required metadata is unavailable.
+ */
+function mapRelation(
+  rel: RelationMetadata,
+): RepositoryRelationMetadataInterface | undefined {
+  const name = rel.propertyName;
+  const targetEntity = rel.inverseEntityMetadata.name;
+
+  if (rel.isManyToMany) {
+    return mapManyToMany(rel, name, targetEntity);
+  }
+
+  const cardinality = getCardinality(rel);
+
+  if (rel.isOwning) {
+    return mapOwning(rel, name, targetEntity, cardinality);
+  }
+
+  return mapNonOwning(rel, name, targetEntity, cardinality);
+}
+
+/**
+ * Map an owning-side relation (many-to-one or one-to-one owner).
+ * joinColumns live on the current entity.
+ */
+function mapOwning(
+  rel: RelationMetadata,
+  name: string,
+  targetEntity: string,
+  cardinality: 'one' | 'many',
+): RepositoryRelationMetadataInterface | undefined {
+  const joinCol = rel.joinColumns[0];
+  if (!joinCol) return undefined;
+
+  const referencedCol = joinCol.referencedColumn;
+  if (!referencedCol) return undefined;
+
+  return {
+    name,
+    targetEntity,
+    cardinality,
+    on: {
+      from: joinCol.propertyName,
+      to: referencedCol.propertyName,
+    },
+  };
+}
+
+/**
+ * Map a non-owning-side relation (one-to-many or one-to-one NOT owner).
+ * Must look at the inverse relation's joinColumns and swap from/to.
+ */
+function mapNonOwning(
+  rel: RelationMetadata,
+  name: string,
+  targetEntity: string,
+  cardinality: 'one' | 'many',
+): RepositoryRelationMetadataInterface | undefined {
+  const inverse = rel.inverseRelation;
+  if (!inverse) return undefined;
+
+  const inverseJoinCol = inverse.joinColumns[0];
+  if (!inverseJoinCol) return undefined;
+
+  const referencedCol = inverseJoinCol.referencedColumn;
+  if (!referencedCol) return undefined;
+
+  // Swapped: our PK is what they reference, their FK is the join column
+  return {
+    name,
+    targetEntity,
+    cardinality,
+    on: {
+      from: referencedCol.propertyName,
+      to: inverseJoinCol.propertyName,
+    },
+  };
+}
+
+/**
+ * Map a many-to-many relation (owning or non-owning side).
+ * Junction table metadata provides through info.
+ */
+function mapManyToMany(
+  rel: RelationMetadata,
+  name: string,
+  targetEntity: string,
+): RepositoryRelationMetadataInterface | undefined {
+  if (rel.isManyToManyOwner) {
+    return mapManyToManyOwner(rel, name, targetEntity);
+  }
+  return mapManyToManyNonOwner(rel, name, targetEntity);
+}
+
+/**
+ * Map M:N owning side. joinColumns/inverseJoinColumns are junction columns.
+ */
+function mapManyToManyOwner(
+  rel: RelationMetadata,
+  name: string,
+  targetEntity: string,
+): RepositoryRelationMetadataInterface | undefined {
+  const junctionMeta = rel.junctionEntityMetadata;
+  if (!junctionMeta) return undefined;
+
+  const sourceJoinCol = rel.joinColumns[0];
+  const targetJoinCol = rel.inverseJoinColumns[0];
+  if (!sourceJoinCol || !targetJoinCol) return undefined;
+
+  const sourceRef = sourceJoinCol.referencedColumn;
+  const targetRef = targetJoinCol.referencedColumn;
+  if (!sourceRef || !targetRef) return undefined;
+
+  return {
+    name,
+    targetEntity,
+    cardinality: 'many',
+    on: {
+      from: sourceRef.propertyName,
+      to: targetRef.propertyName,
+    },
+    through: {
+      relation: junctionMeta.name,
+      fromKey: sourceJoinCol.propertyName,
+      toKey: targetJoinCol.propertyName,
+    },
+  };
+}
+
+/**
+ * Map M:N non-owning side. Must read from the inverse (owning) relation's
+ * junction metadata, swapping source/target perspective.
+ */
+function mapManyToManyNonOwner(
+  rel: RelationMetadata,
+  name: string,
+  targetEntity: string,
+): RepositoryRelationMetadataInterface | undefined {
+  const inverse = rel.inverseRelation;
+  if (!inverse) return undefined;
+
+  const junctionMeta = inverse.junctionEntityMetadata;
+  if (!junctionMeta) return undefined;
+
+  // From the owner's perspective: joinColumns → owner, inverseJoinColumns → us
+  const theirJoinCol = inverse.joinColumns[0];
+  const ourJoinCol = inverse.inverseJoinColumns[0];
+  if (!theirJoinCol || !ourJoinCol) return undefined;
+
+  const ourRef = ourJoinCol.referencedColumn;
+  const theirRef = theirJoinCol.referencedColumn;
+  if (!ourRef || !theirRef) return undefined;
+
+  return {
+    name,
+    targetEntity,
+    cardinality: 'many',
+    on: {
+      from: ourRef.propertyName,
+      to: theirRef.propertyName,
+    },
+    through: {
+      relation: junctionMeta.name,
+      fromKey: ourJoinCol.propertyName,
+      toKey: theirJoinCol.propertyName,
+    },
+  };
 }

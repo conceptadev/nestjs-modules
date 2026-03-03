@@ -2,7 +2,7 @@ import { PlainLiteralObject } from '@nestjs/common';
 
 import { DeepPartial } from '../../utils/deep-partial';
 
-import { RepositoryMetadataInterface } from './repository-column-metadata.interface';
+import { RepositoryMetadataInterface } from './repository-metadata.interface';
 import {
   RepositoryCreateOptions,
   RepositoryDeleteOptions,

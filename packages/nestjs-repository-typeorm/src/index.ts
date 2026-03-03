@@ -4,7 +4,6 @@ export { TypeOrmRepositoryModule } from './typeorm-repository.module';
 // Repository
 export { TypeOrmRepository } from './repository/typeorm-repository';
 export { TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface';
-export { isFindOptionsWhere } from './repository/typeorm-options.schema';
 
 // Transaction
 export { TypeOrmTransaction } from './transaction/typeorm-transaction';

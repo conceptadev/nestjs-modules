@@ -9,10 +9,12 @@ import { isObject, isUndefined } from '@nestjs/common/utils/shared.utils';
 import {
   DeepPartial,
   EntityColumn,
+  JoinClause,
   RepositoryInterface,
   RepositoryFindOptions,
   RepositoryFindOneOptions,
   RepositoryOrderOptions,
+  SortOrder,
   Where,
   WhereClause,
   WhereCondition,
@@ -28,6 +30,7 @@ import { SConditionConverter } from '../request/crud-scondition.converter';
 import { CrudParsedQueryInterface } from '../request/interfaces/crud-parsed-query.interface';
 import { CrudQueryOptionsInterface } from '../request/interfaces/crud-query-options.interface';
 import { queryFilterIsArray } from '../utils/crud-infra.utils';
+import { sanitizeForMessage } from '../utils/validation';
 
 export class CrudAdapter<Entity extends PlainLiteralObject> {
   protected entityColumns: EntityColumn<Entity>[] = [];
@@ -188,7 +191,9 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
       return true;
     }
 
-    throw new BadRequestException(`Invalid column '${cond.field}' value`);
+    throw new BadRequestException(
+      `Invalid column '${sanitizeForMessage(cond.field)}' value`,
+    );
   }
 
   /**
@@ -217,6 +222,7 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
 
   /**
    * Build order clause for FindOptions.
+   * Supports relation sorts via nested objects (e.g., `{ blog: { status: 'ASC' } }`).
    */
   protected buildOrderClause(
     query: CrudParsedQueryInterface<Entity>,
@@ -230,12 +236,50 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
           : [];
 
     const order: RepositoryOrderOptions<Entity> = {};
+    const relationSorts: {
+      [relation: string]: { [field: string]: SortOrder };
+    } = {};
 
     for (const s of sort) {
-      (order as Record<string, string>)[s.field as string] = s.order;
+      if (s.relation) {
+        if (!relationSorts[s.relation]) {
+          relationSorts[s.relation] = {};
+        }
+        relationSorts[s.relation][s.field] = s.order;
+      } else {
+        order[s.field] = s.order;
+      }
+    }
+
+    for (const [relation, fields] of Object.entries(relationSorts)) {
+      order[relation] = fields;
     }
 
     return order;
+  }
+
+  /**
+   * Build JoinClause[] from CRUD context.
+   *
+   * Prefers explicit `@CrudJoin` clauses when present.
+   * Falls back to deriving from `@CrudRelations` config.
+   */
+  protected buildJoin(
+    context: CrudContextInterface<Entity>,
+  ): JoinClause[] | undefined {
+    // Prefer explicit @CrudJoin
+    const explicitJoin = context.options?.query?.join;
+    if (explicitJoin?.length) return explicitJoin;
+
+    // Fall back to deriving from @CrudRelations
+    const relations = context.options?.query?.relations?.relations ?? [];
+    if (!relations.length) return undefined;
+
+    return relations.map((rel) => ({
+      relation: rel.property,
+      joinType: rel.join,
+      cardinality: rel.cardinality,
+    }));
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -440,9 +484,12 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
     const includeDeleted =
       withDeleted || (this.entityHasDeleteColumn && query.includeDeleted === 1);
 
+    const join = this.buildJoin(context);
+
     const findOptions: RepositoryFindOneOptions<Entity> = {
       ctx: context,
       where,
+      join,
       withDeleted: includeDeleted || undefined,
     };
 
@@ -490,9 +537,13 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
     const withDeleted =
       this.entityHasDeleteColumn && query.includeDeleted === 1;
 
+    // Build join clauses from relations config
+    const join = this.buildJoin(context);
+
     return {
       ctx: context,
       where,
+      join,
       select: select.length > 0 ? select : undefined,
       order: Object.keys(order).length > 0 ? order : undefined,
       take: take || undefined,
@@ -572,9 +623,12 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
     if (!clause) return;
 
     if (isWhereCondition(clause)) {
+      // Skip relation-tagged conditions — they target joined entities
+      if (clause.relation) return;
+
       if (!this.isEntityColumn(clause.field)) {
         throw new BadRequestException(
-          `Invalid filter field '${clause.field}' for entity '${this.entityName()}'`,
+          `Invalid filter field '${sanitizeForMessage(clause.field)}' for entity '${this.entityName()}'`,
         );
       }
     } else {

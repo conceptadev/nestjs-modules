@@ -2,6 +2,7 @@ import { PlainLiteralObject, Type } from '@nestjs/common';
 
 import {
   DeepPartial,
+  JoinClause,
   RepositoryMetadataInterface,
   RepositoryFindOptions,
   RepositoryFindOneOptions,
@@ -10,6 +11,7 @@ import {
   RepositoryUpsertOptions,
   RepositoryDeleteOptions,
   RepositoryRestoreOptions,
+  RuntimeException,
   Where,
   WhereClause,
 } from '@concepta/nestjs-common';
@@ -40,6 +42,25 @@ class TestRepositoryAdapter extends RepositoryAdapter<TestEntity> {
       { name: 'id', isPrimary: true, isRemoveDate: false },
       { name: 'name', isPrimary: false, isRemoveDate: false },
       { name: 'version', isPrimary: false, isRemoveDate: false },
+    ],
+    relations: [
+      {
+        name: 'posts',
+        targetEntity: 'PostEntity',
+        cardinality: 'many' as const,
+        on: { from: 'id', to: 'authorId' },
+      },
+      {
+        name: 'tags',
+        targetEntity: 'TagEntity',
+        cardinality: 'many' as const,
+        on: { from: 'id', to: 'id' },
+        through: {
+          relation: 'entity_tags',
+          fromKey: 'entityId',
+          toKey: 'tagId',
+        },
+      },
     ],
   };
 
@@ -119,6 +140,10 @@ class TestRepositoryAdapter extends RepositoryAdapter<TestEntity> {
     throw new Error('not implemented');
   }
 
+  exposedResolveJoinClauses(join?: JoinClause[]): JoinClause[] | undefined {
+    return this.resolveJoinClauses(join);
+  }
+
   exposedToDnf(clause: WhereClause): WhereClause[][] {
     return this.toDnf(clause);
   }
@@ -135,6 +160,82 @@ describe(RepositoryAdapter.name, () => {
 
   beforeEach(() => {
     adapter = new TestRepositoryAdapter();
+  });
+
+  describe('resolveJoinClauses', () => {
+    it('should return undefined for undefined input', () => {
+      expect(adapter.exposedResolveJoinClauses(undefined)).toBeUndefined();
+    });
+
+    it('should return undefined for empty array', () => {
+      expect(adapter.exposedResolveJoinClauses([])).toBeUndefined();
+    });
+
+    it('should resolve single join from metadata', () => {
+      const result = adapter.exposedResolveJoinClauses([{ relation: 'posts' }]);
+      expect(result).toEqual([
+        {
+          relation: 'posts',
+          on: { from: 'id', to: 'authorId' },
+          cardinality: 'many',
+        },
+      ]);
+    });
+
+    it('should resolve two joins at once', () => {
+      const result = adapter.exposedResolveJoinClauses([
+        { relation: 'posts' },
+        { relation: 'tags' },
+      ]);
+      expect(result).toEqual([
+        {
+          relation: 'posts',
+          on: { from: 'id', to: 'authorId' },
+          cardinality: 'many',
+        },
+        {
+          relation: 'tags',
+          on: { from: 'id', to: 'id' },
+          cardinality: 'many',
+          through: {
+            relation: 'entity_tags',
+            fromKey: 'entityId',
+            toKey: 'tagId',
+          },
+        },
+      ]);
+    });
+
+    it('should fill in through for M2M relation', () => {
+      const result = adapter.exposedResolveJoinClauses([{ relation: 'tags' }]);
+      expect(result![0].through).toEqual({
+        relation: 'entity_tags',
+        fromKey: 'entityId',
+        toKey: 'tagId',
+      });
+    });
+
+    it('should preserve explicit on (pass-through)', () => {
+      const explicit = {
+        relation: 'posts',
+        on: { from: 'customId', to: 'customFk' },
+      };
+      const result = adapter.exposedResolveJoinClauses([explicit]);
+      expect(result).toEqual([explicit]);
+    });
+
+    it('should prefer clause cardinality over metadata', () => {
+      const result = adapter.exposedResolveJoinClauses([
+        { relation: 'posts', cardinality: 'one' },
+      ]);
+      expect(result![0].cardinality).toBe('one');
+    });
+
+    it('should throw RuntimeException for unknown relation', () => {
+      expect(() => {
+        adapter.exposedResolveJoinClauses([{ relation: 'nonexistent' }]);
+      }).toThrow(RuntimeException);
+    });
   });
 
   describe('toDnf', () => {

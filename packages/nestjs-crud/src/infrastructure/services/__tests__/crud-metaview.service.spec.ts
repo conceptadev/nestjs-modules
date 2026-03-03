@@ -1,3 +1,4 @@
+import { CrudJoin } from '../../decorators/routes/crud-join.decorator';
 import { CrudRequestBodyBatch } from '../../decorators/routes/crud-request-body-batch.decorator';
 import { CrudRequestBody } from '../../decorators/routes/crud-request-body.decorator';
 import { CrudResponseResource } from '../../decorators/routes/crud-response-resource.decorator';
@@ -151,6 +152,57 @@ describe('CrudMetaview', () => {
       const handler = TestController.prototype.testMethod;
       const result = metaview.getResponseResource(TestController, handler);
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe('getContextOptions (join)', () => {
+    it('should resolve join from class decorator', () => {
+      @CrudJoin([{ relation: 'posts' }])
+      class TestController {
+        testMethod() {}
+      }
+
+      const handler = TestController.prototype.testMethod;
+      const result = metaview.getContextOptions(TestController, handler);
+      expect(result.query?.join).toEqual([{ relation: 'posts' }]);
+    });
+
+    it('should resolve join from method decorator', () => {
+      class TestController {
+        @CrudJoin([{ relation: 'profile', joinType: 'INNER' }])
+        testMethod() {}
+      }
+
+      const handler = TestController.prototype.testMethod;
+      const result = metaview.getContextOptions(TestController, handler);
+      expect(result.query?.join).toEqual([
+        { relation: 'profile', joinType: 'INNER' },
+      ]);
+    });
+
+    it('should merge class and method join with deduplication by relation', () => {
+      @CrudJoin([{ relation: 'posts', joinType: 'LEFT' }, { relation: 'tags' }])
+      class TestController {
+        @CrudJoin([{ relation: 'posts', joinType: 'INNER' }])
+        testMethod() {}
+      }
+
+      const handler = TestController.prototype.testMethod;
+      const result = metaview.getContextOptions(TestController, handler);
+      expect(result.query?.join).toEqual([
+        { relation: 'posts', joinType: 'INNER' },
+        { relation: 'tags' },
+      ]);
+    });
+
+    it('should return undefined when not decorated', () => {
+      class TestController {
+        testMethod() {}
+      }
+
+      const handler = TestController.prototype.testMethod;
+      const result = metaview.getContextOptions(TestController, handler);
+      expect(result.query?.join).toBeUndefined();
     });
   });
 });

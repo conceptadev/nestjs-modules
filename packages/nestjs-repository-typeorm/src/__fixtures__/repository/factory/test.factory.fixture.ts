@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Factory } from '@concepta/typeorm-seeding';
 
-import { TestEntityFixture } from './test.entity.fixture';
+import { TestEntityFixture } from '../entity/test.entity.fixture';
 
 /**
  * Test factory

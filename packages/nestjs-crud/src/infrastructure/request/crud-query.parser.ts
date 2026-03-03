@@ -10,10 +10,15 @@ import {
 } from '@concepta/nestjs-common';
 
 import { CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
-import { hasValue, isDateString, isStringFull } from '../utils/validation';
+import {
+  hasValue,
+  isDateString,
+  isStringFull,
+  sanitizeForMessage,
+} from '../utils/validation';
 
 import { CrudQueryBuilder } from './crud-query.builder';
-import { SCondition } from './crud-query.types';
+import { COND_OPERATOR_FACTORY, SCondition } from './crud-query.types';
 import { splitSortString } from './crud-query.utils';
 import {
   validateComparisonOperator,
@@ -108,12 +113,21 @@ export class CrudQueryParser<Entity extends PlainLiteralObject>
         const searchData = this._query[this.getParamNames('search')[0]];
         this.search = this.parseSearchQueryParam(searchData);
         if (isNil(this.search)) {
-          this.filter = this.parseFilterQueryParam();
-          this.or = this.parseOrQueryParam();
+          this.filter = this.parseFlatQueryParam(
+            'filter',
+            this.conditionParser.bind(this, 'filter'),
+          );
+          this.or = this.parseFlatQueryParam(
+            'or',
+            this.conditionParser.bind(this, 'or'),
+          );
         }
         this.fields =
           this.parseQueryParam('fields', this.fieldsParser.bind(this))[0] || [];
-        this.sort = this.parseSortQueryParam();
+        this.sort = this.parseFlatQueryParam(
+          'sort',
+          this.sortParser.bind(this),
+        );
         this.limit = this.parseQueryParam(
           'limit',
           this.numericParser.bind(this, 'limit'),
@@ -195,56 +209,22 @@ export class CrudQueryParser<Entity extends PlainLiteralObject>
     return [];
   }
 
-  private getFilterParamValues(
-    value: NonNullable<
-      CrudQueryBuilderOptionsInterface['paramNamesMap']
-    >['filter'],
-  ): WhereCondition<Entity>[] {
-    const parser = this.conditionParser.bind(this, 'filter');
-
-    if (typeof value === 'string' && isStringFull(value)) {
-      return [parser.call(this, value)];
-    }
-
-    if (Array.isArray(value) && value.length) {
-      return value.map((val) => parser(val));
-    }
-
-    return [];
-  }
-
-  private getOrParamValues(
-    value: NonNullable<CrudQueryBuilderOptionsInterface['paramNamesMap']>['or'],
-  ): WhereCondition<Entity>[] {
-    const parser = this.conditionParser.bind(this, 'or');
-
-    if (typeof value === 'string' && isStringFull(value)) {
-      return [parser.call(this, value)];
-    }
-
-    if (Array.isArray(value) && value.length) {
-      return value.map((val) => parser(val));
-    }
-
-    return [];
-  }
-
-  private getSortParamValues(
-    value: NonNullable<
-      CrudQueryBuilderOptionsInterface['paramNamesMap']
-    >['sort'],
-  ): SortCondition<Entity>[] {
-    const parser = this.sortParser.bind(this);
-
-    if (typeof value === 'string' && isStringFull(value)) {
-      return [parser.call(this, value)];
-    }
-
-    if (Array.isArray(value) && value.length) {
-      return value.map((val) => parser(val));
-    }
-
-    return [];
+  private parseFlatQueryParam<R>(
+    type: keyof NonNullable<CrudQueryBuilderOptionsInterface['paramNamesMap']>,
+    parser: (data: string) => R,
+  ): R[] {
+    const param = this.getParamNames(type);
+    if (!param.length) return [];
+    return param.flatMap((name) => {
+      const value = this._query[name];
+      if (typeof value === 'string' && isStringFull(value)) {
+        return [parser(value)];
+      }
+      if (Array.isArray(value) && value.length) {
+        return value.map((val) => parser(val));
+      }
+      return [];
+    });
   }
 
   private parseQueryParam<
@@ -254,66 +234,10 @@ export class CrudQueryParser<Entity extends PlainLiteralObject>
     R extends CrudParsedQueryInterface<Entity>[U],
   >(type: U, parser: (data: string) => R): R[] {
     const param = this.getParamNames(type);
-
-    if (Array.isArray(param) && param.length) {
-      return param.reduce(
-        (a: R[], name) => [
-          ...a,
-          ...this.getParamValues<U, R>(this._query[name], parser),
-        ],
-        [],
-      );
-    }
-
-    return [];
-  }
-
-  private parseFilterQueryParam(): WhereCondition<Entity>[] {
-    const param = this.getParamNames('filter');
-
-    if (Array.isArray(param) && param.length) {
-      return param.reduce(
-        (a: WhereCondition<Entity>[], name) => [
-          ...a,
-          ...this.getFilterParamValues(this._query[name]),
-        ],
-        [],
-      );
-    }
-
-    return [];
-  }
-
-  private parseOrQueryParam(): WhereCondition<Entity>[] {
-    const param = this.getParamNames('or');
-
-    if (Array.isArray(param) && param.length) {
-      return param.reduce(
-        (a: WhereCondition<Entity>[], name) => [
-          ...a,
-          ...this.getOrParamValues(this._query[name]),
-        ],
-        [],
-      );
-    }
-
-    return [];
-  }
-
-  private parseSortQueryParam(): SortCondition<Entity>[] {
-    const param = this.getParamNames('sort');
-
-    if (Array.isArray(param) && param.length) {
-      return param.reduce(
-        (a: SortCondition<Entity>[], name) => [
-          ...a,
-          ...this.getSortParamValues(this._query[name]),
-        ],
-        [],
-      );
-    }
-
-    return [];
+    if (!param.length) return [];
+    return param.flatMap((name) =>
+      this.getParamValues<U, R>(this._query[name], parser),
+    );
   }
 
   private parseValue(val: string) {
@@ -372,36 +296,6 @@ export class CrudQueryParser<Entity extends PlainLiteralObject>
     }
   }
 
-  /**
-   * Maps $-prefixed wire format operators to WhereCondition factory functions.
-   * Each factory produces the correctly-typed discriminated union variant.
-   */
-  private static readonly COND_FACTORY: Record<
-    string,
-    (field: string, value: unknown) => WhereCondition
-  > = {
-    $eq: (f, v) => Where.eq(f, v),
-    $ne: (f, v) => Where.ne(f, v),
-    $gt: (f, v) => Where.gt(f, v),
-    $lt: (f, v) => Where.lt(f, v),
-    $gte: (f, v) => Where.gte(f, v),
-    $lte: (f, v) => Where.lte(f, v),
-    $starts: (f, v) => Where.starts(f, String(v)),
-    $nstarts: (f, v) => Where.notStarts(f, String(v)),
-    $ends: (f, v) => Where.ends(f, String(v)),
-    $nends: (f, v) => Where.notEnds(f, String(v)),
-    $contains: (f, v) => Where.contains(f, String(v)),
-    $ncontains: (f, v) => Where.notContains(f, String(v)),
-    $in: (f, v) => Where.in(f, Array.isArray(v) ? v : []),
-    $nin: (f, v) => Where.notIn(f, Array.isArray(v) ? v : []),
-    $null: (f) => Where.isNull(f),
-    $nnull: (f) => Where.notNull(f),
-    $between: (f, v) => {
-      const arr = Array.isArray(v) ? v : [];
-      return Where.between(f, arr[0], arr[1]);
-    },
-  };
-
   private conditionParser(
     cond: 'filter' | 'or',
     data: string,
@@ -414,6 +308,11 @@ export class CrudQueryParser<Entity extends PlainLiteralObject>
 
     if (param[0].includes('.')) {
       const parts = param[0].split('.');
+      if (parts.length !== 2 || !parts[0] || !parts[1]) {
+        throw new CrudQueryParserException({
+          message: `Invalid ${sanitizeForMessage(cond)} field format: expected 'relation.field'`,
+        });
+      }
       [relation, field] = parts;
     } else {
       field = param[0];
@@ -431,10 +330,12 @@ export class CrudQueryParser<Entity extends PlainLiteralObject>
     value = this.parseValues(value);
 
     if (!isEmptyValue.some((name) => name === operator) && !hasValue(value)) {
-      throw new CrudQueryParserException({ message: `Invalid ${cond} value` });
+      throw new CrudQueryParserException({
+        message: `Invalid ${sanitizeForMessage(cond)} value`,
+      });
     }
 
-    const factory = CrudQueryParser.COND_FACTORY[operator];
+    const factory = COND_OPERATOR_FACTORY[operator];
     let condition = factory(field, value);
 
     if (relation) {

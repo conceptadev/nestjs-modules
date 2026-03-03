@@ -82,6 +82,16 @@ export type WhereConditionArr<
 > = [EntityColumn<T>, WhereOperator, unknown?];
 
 /**
+ * Relation action types for onDelete / onUpdate behavior.
+ *
+ * - `delegate` — defer to native schema settings (default)
+ * - `cascade` — adapter handles it (guarantees hooks/events run)
+ * - `restrict` — throw error if related records exist
+ * - `setNull` — set FK to null, leaving orphans
+ */
+export type RelationAction = 'delegate' | 'cascade' | 'restrict' | 'setNull';
+
+/**
  * Sort order constants.
  */
 export const SortOrder = {

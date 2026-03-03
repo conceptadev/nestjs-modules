@@ -95,10 +95,9 @@ export { UpdateOneInterface } from './model/interfaces/mutate/update-one.interfa
 // Repository interfaces
 export { RepositoryInterface } from './repository/interfaces/repository.interface';
 export { RepositoryEntityOptionInterface } from './repository/interfaces/repository-entity-option.interface';
-export {
-  RepositoryColumnMetadataInterface,
-  RepositoryMetadataInterface,
-} from './repository/interfaces/repository-column-metadata.interface';
+export { RepositoryColumnMetadataInterface } from './repository/interfaces/repository-column-metadata.interface';
+export { RepositoryMetadataInterface } from './repository/interfaces/repository-metadata.interface';
+export { RepositoryRelationMetadataInterface } from './repository/interfaces/repository-relation-metadata.interface';
 
 // Repository option types (replaces RepositoryInternals)
 export {
@@ -122,12 +121,16 @@ export {
   WherePairOperator,
   WhereCompoundOperator,
   WhereConditionArr,
+  RelationAction,
   SortOrder,
   SortConditionArr,
 } from './repository/repository.types';
 
 // Sort condition interface
 export { SortCondition } from './repository/interfaces/sort-condition.interface';
+
+// Join clause interface
+export { JoinClause } from './repository/interfaces/join-clause.interface';
 
 // Where clause interfaces
 export {

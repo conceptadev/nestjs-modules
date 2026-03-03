@@ -22,3 +22,12 @@ const ISO_DATE_REGEX =
 
 export const isDateString = (val: string): boolean =>
   isStringFull(val) && ISO_DATE_REGEX.test(val) && !isNaN(Date.parse(val));
+
+/**
+ * Sanitize a user-supplied value for safe inclusion in error messages.
+ * Strips HTML-sensitive characters and truncates to a reasonable length.
+ */
+export const sanitizeForMessage = (val: unknown, maxLength = 100): string =>
+  String(val)
+    .replace(/[<>"'&`\r\n\0]/g, '')
+    .substring(0, maxLength);

@@ -6,12 +6,12 @@ import {
   InjectDynamicRepository,
 } from '@concepta/nestjs-common';
 
+import { TEST_ENTITY_TOKEN } from '../repository/config/test.constants.fixture';
 import { TestCreateDtoFixture } from '../repository/dto/test-create.dto.fixture';
 import { TestUpdateDtoFixture } from '../repository/dto/test-update.dto.fixture';
+import { TestEntityFixture } from '../repository/entity/test.entity.fixture';
 import { TestCreatableInterfaceFixture } from '../repository/interface/test-creatable.interface.fixture';
 import { TestUpdatableInterfaceFixture } from '../repository/interface/test-updatable.interface.fixture';
-import { TEST_ENTITY_TOKEN } from '../repository/test.constants.fixture';
-import { TestEntityFixture } from '../repository/test.entity.fixture';
 
 @Injectable()
 export class TestModelServiceFixture extends ModelService<

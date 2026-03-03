@@ -3,7 +3,14 @@ import { isObject } from '@nestjs/common/utils/shared.utils';
 
 import { Where, WhereClause } from '@concepta/nestjs-common';
 
-import { CondOperator, SCondition, SFieldOperator } from './crud-query.types';
+import { sanitizeForMessage } from '../utils/validation';
+
+import {
+  COND_OPERATOR_FACTORY,
+  CondOperator,
+  SCondition,
+  SFieldOperator,
+} from './crud-query.types';
 import { COMPARISON_OPERATORS } from './crud-query.validator';
 
 /**
@@ -161,60 +168,38 @@ export class SConditionConverter {
 
   /**
    * Map a CondOperator ($-prefixed) to a WhereClause.
+   * Validates array/pair inputs before delegating to the shared factory.
    */
   private static mapCondOperator(
     field: string,
-    operator: CondOperator | string,
+    operator: CondOperator,
     value: unknown,
   ): WhereClause {
-    switch (operator) {
-      case '$eq':
-        return Where.eq(field, value);
-      case '$ne':
-        return Where.ne(field, value);
-      case '$gt':
-        return Where.gt(field, value);
-      case '$lt':
-        return Where.lt(field, value);
-      case '$gte':
-        return Where.gte(field, value);
-      case '$lte':
-        return Where.lte(field, value);
-      case '$starts':
-        return Where.starts(field, String(value));
-      case '$nstarts':
-        return Where.notStarts(field, String(value));
-      case '$ends':
-        return Where.ends(field, String(value));
-      case '$nends':
-        return Where.notEnds(field, String(value));
-      case '$contains':
-        return Where.contains(field, String(value));
-      case '$ncontains':
-        return Where.notContains(field, String(value));
-      case '$in':
-        if (!Array.isArray(value)) {
-          throw new BadRequestException('$in requires array');
-        }
-        return Where.in(field, value);
-      case '$nin':
-        if (!Array.isArray(value)) {
-          throw new BadRequestException('$nin requires array');
-        }
-        return Where.notIn(field, value);
-      case '$null':
-        return Where.isNull(field);
-      case '$nnull':
-        return Where.notNull(field);
-      case '$between':
-        if (Array.isArray(value) && value.length === 2) {
-          return Where.between(field, value[0], value[1]);
-        }
+    if (
+      (operator === CondOperator.IN || operator === CondOperator.NOT_IN) &&
+      !Array.isArray(value)
+    ) {
+      throw new BadRequestException(
+        `${sanitizeForMessage(operator)} requires array`,
+      );
+    }
+
+    if (operator === CondOperator.BETWEEN) {
+      if (!Array.isArray(value) || value.length !== 2) {
         throw new BadRequestException(
           'BETWEEN operator requires an array with two elements',
         );
-      default:
-        throw new BadRequestException(`Unknown filter operator '${operator}'`);
+      }
     }
+
+    const factory = COND_OPERATOR_FACTORY[operator];
+
+    if (!factory) {
+      throw new BadRequestException(
+        `Unknown filter operator '${sanitizeForMessage(operator)}'`,
+      );
+    }
+
+    return factory(field, value);
   }
 }

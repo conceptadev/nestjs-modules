@@ -6,6 +6,7 @@ import { isObject } from '@nestjs/common/utils/shared.utils';
 import {
   DeepPartial,
   HookContextInterface,
+  JoinClause,
   RepositoryInterface,
   RepositoryMetadataInterface,
   RepositoryFindOptions,
@@ -15,6 +16,7 @@ import {
   RepositoryUpsertOptions,
   RepositoryDeleteOptions,
   RepositoryRestoreOptions,
+  RuntimeException,
   WhereClause,
   WhereCompoundOperator,
   isWhereCondition,
@@ -161,6 +163,42 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // JoinClause resolution (ORM-agnostic)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Resolve incomplete JoinClauses using repository relation metadata.
+   * Fills in `on` (and optionally `through`/`cardinality`) when omitted.
+   *
+   * Called by ORM adapters before translating to native find options.
+   */
+  protected resolveJoinClauses(join?: JoinClause[]): JoinClause[] | undefined {
+    if (!join?.length) return undefined;
+
+    const relMap = new Map(this.metadata.relations?.map((r) => [r.name, r]));
+
+    return join.map((j) => {
+      if (j.on) return j;
+
+      const rel = relMap.get(j.relation);
+
+      if (!rel) {
+        throw new RuntimeException({
+          message: 'Unknown relation "%s" on entity "%s"',
+          messageParams: [j.relation, this.metadata.name],
+        });
+      }
+
+      return {
+        ...j,
+        on: rel.on,
+        cardinality: j.cardinality ?? rel.cardinality,
+        through: j.through ?? rel.through,
+      };
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // WhereClause AST helpers (ORM-agnostic)
   // ═══════════════════════════════════════════════════════════════════════════
 
@@ -196,6 +234,8 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     }
   }
 
+  protected static readonly MAX_DNF_BRANCHES = 50;
+
   /**
    * Compute cartesian product of AND-groups of OR-branches.
    * Distributes AND over OR at the AST level.
@@ -210,6 +250,12 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
       const newResult: WhereClause[][] = [];
       for (const existing of result) {
         for (const next of nextGroup) {
+          if (newResult.length >= RepositoryAdapter.MAX_DNF_BRANCHES) {
+            throw new RuntimeException({
+              message: 'Where clause too complex: exceeded %d DNF branches',
+              messageParams: [RepositoryAdapter.MAX_DNF_BRANCHES],
+            });
+          }
           newResult.push([...existing, ...next]);
         }
       }
