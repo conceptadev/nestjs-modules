@@ -1,6 +1,6 @@
 {
   "name": "@concepta/nestjs-repository",
-  "version": "7.0.0-alpha.10",
+  "version": "8.0.0-alpha.0",
   "description": "Rockets NestJS Repository",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
