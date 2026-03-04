@@ -4,7 +4,6 @@ export { CrudModule } from './crud.module';
 // interfaces
 export { CrudContextInterface } from './infrastructure/interceptors/interfaces/crud-context.interface';
 export { CrudParsedQueryInterface } from './infrastructure/request/interfaces/crud-parsed-query.interface';
-export { CrudFederationFetchOptionsInterface } from './infrastructure/services/interfaces/crud-federation-fetch-options.interface';
 export { CrudResponsePaginatedInterface } from './infrastructure/dtos/interfaces/crud-response-paginated.interface';
 export { CrudResponseMetrics } from './infrastructure/dtos/interfaces/crud-response-metrics.interface';
 export { CrudCreateBatchInterface } from './infrastructure/dtos/interfaces/crud-create-batch.interface';
@@ -56,7 +55,6 @@ export { CrudParams } from './infrastructure/decorators/routes/crud-params.decor
 export { CrudPersist } from './infrastructure/decorators/routes/crud-persist.decorator';
 export { CrudQuery } from './infrastructure/decorators/routes/crud-query.decorator';
 export { CrudQueryHandler } from './infrastructure/decorators/routes/crud-query-handler.decorator';
-export { CrudRelations } from './infrastructure/decorators/routes/crud-relations.decorator';
 export { CrudRequestBody } from './infrastructure/decorators/routes/crud-request-body.decorator';
 export { CrudRequestBodyBatch } from './infrastructure/decorators/routes/crud-request-body-batch.decorator';
 export { CrudResponseResource } from './infrastructure/decorators/routes/crud-response-resource.decorator';
@@ -78,9 +76,6 @@ export { CrudApiParam } from './infrastructure/decorators/openapi/crud-api-param
 export { CrudApiQuery } from './infrastructure/decorators/openapi/crud-api-query.decorator';
 export { CrudApiResponse } from './infrastructure/decorators/openapi/crud-api-response.decorator';
 
-// classes
-export { CrudFederationService } from './infrastructure/services/crud-federation.service';
-
 // dto
 export { CrudResponsePaginatedDto } from './infrastructure/dtos/crud-response-paginated.dto';
 export { CrudCreateBatchDto } from './infrastructure/dtos/crud-create-batch.dto';
@@ -89,7 +84,6 @@ export { CrudCreateBatchDto } from './infrastructure/dtos/crud-create-batch.dto'
 export { CrudException } from './infrastructure/exceptions/crud.exception';
 export { CrudContextException } from './infrastructure/exceptions/crud-context.exception';
 export { CrudDecoratorException } from './infrastructure/exceptions/crud-decorator.exception';
-export { CrudFederationException } from './infrastructure/exceptions/crud-federation.exception';
 export { CrudQueryException } from './infrastructure/exceptions/crud-query.exception';
 
 // configurable crud builder

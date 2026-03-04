@@ -6,6 +6,11 @@ import { getDynamicRepositoryToken } from '@concepta/nestjs-common';
 import { RepositoryDuplicateKeyException } from '../exceptions/repository-duplicate-key.exception';
 import { RepositoryModule } from '../repository.module';
 
+import {
+  REPOSITORY_REGISTRY,
+  RepositoryRegistryService,
+} from './repository-registry.service';
+
 // Mock entity classes
 class UserEntity {}
 class OrderEntity {}
@@ -69,6 +74,45 @@ describe('RepositoryRegistryService', () => {
     const app = moduleRef.createNestApplication();
 
     await expect(app.init()).rejects.toThrow(RepositoryDuplicateKeyException);
+
+    await app.close();
+  });
+
+  it('should look up registry item by entity name after bootstrap', async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [
+        RepositoryModule.forRoot({}),
+        RepositoryModule.forFeature({
+          module: MockRepositoryModule,
+          entities: [
+            { key: 'users', entity: UserEntity },
+            { key: 'orders', entity: OrderEntity },
+          ],
+        }),
+      ],
+    }).compile();
+
+    const app = moduleRef.createNestApplication();
+    await app.init();
+
+    const registry =
+      moduleRef.get<RepositoryRegistryService>(REPOSITORY_REGISTRY);
+
+    const userItem = registry.getByEntityName('UserEntity');
+    expect(userItem).toEqual({
+      key: 'users',
+      entityName: 'UserEntity',
+      moduleName: 'MockRepositoryModule',
+    });
+
+    const orderItem = registry.getByEntityName('OrderEntity');
+    expect(orderItem).toEqual({
+      key: 'orders',
+      entityName: 'OrderEntity',
+      moduleName: 'MockRepositoryModule',
+    });
+
+    expect(registry.getByEntityName('NonExistent')).toBeUndefined();
 
     await app.close();
   });

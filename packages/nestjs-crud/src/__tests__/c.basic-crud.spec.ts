@@ -44,8 +44,7 @@ import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.re
 import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface';
 import { createCrudAdapterProvider } from '../infrastructure/utils/create-crud-adapter-provider';
 
-import { createCrudOperationClasses } from './crud-federation/fixtures/create-crud-operation-classes.fixture';
-
+import { createCrudOperationClasses } from '../__fixtures__/crud/create-crud-operation-classes.fixture';
 import {
   CRUD_TEST_COMPANY_ENTITY_NAME,
   CRUD_TEST_DEVICE_ENTITY_NAME,

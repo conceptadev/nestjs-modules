@@ -7,17 +7,12 @@ import { CrudQueryHandler } from './crud-query.handler';
 
 export class CrudReadHandler<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Relations extends PlainLiteralObject[] = PlainLiteralObject[],
-> extends CrudQueryHandler<Entity, Relations> {
+> extends CrudQueryHandler<Entity> {
   async execute(query: CrudReadQuery<Entity>): Promise<Entity> {
     const { context } = query;
 
     try {
-      if (this.useFederation(context) && this.federationService) {
-        return await this.federationService.read(context);
-      } else {
-        return await this.crudAdapter.read(context);
-      }
+      return await this.crudAdapter.read(context);
     } catch (e) {
       if (e instanceof HttpException) {
         throw e;

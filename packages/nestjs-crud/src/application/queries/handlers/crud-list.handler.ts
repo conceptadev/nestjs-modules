@@ -8,19 +8,14 @@ import { CrudQueryHandler } from './crud-query.handler';
 
 export class CrudListHandler<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Relations extends PlainLiteralObject[] = PlainLiteralObject[],
-> extends CrudQueryHandler<Entity, Relations> {
+> extends CrudQueryHandler<Entity> {
   async execute(
     query: CrudListQuery<Entity>,
   ): Promise<CrudResponsePaginatedInterface<Entity>> {
     const { context } = query;
 
     try {
-      if (this.useFederation(context) && this.federationService) {
-        return await this.federationService.list(context);
-      } else {
-        return await this.crudAdapter.list(context);
-      }
+      return await this.crudAdapter.list(context);
     } catch (e) {
       if (e instanceof HttpException) {
         throw e;

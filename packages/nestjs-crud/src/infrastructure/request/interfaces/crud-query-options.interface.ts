@@ -8,12 +8,7 @@ import {
 
 import { QueryFilterOption } from '../query-filter-option.type';
 
-import { CrudRelationsInterface } from './crud-relations.interface';
-
-export interface CrudQueryOptionsInterface<
-  T extends PlainLiteralObject,
-  Relations extends PlainLiteralObject[] = PlainLiteralObject[],
-> {
+export interface CrudQueryOptionsInterface<T extends PlainLiteralObject> {
   allow?: EntityColumn<T>[];
   exclude?: EntityColumn<T>[];
   persist?: EntityColumn<T>[];
@@ -23,5 +18,4 @@ export interface CrudQueryOptionsInterface<
   maxLimit?: number;
   cache?: number | false;
   join?: JoinClause[];
-  relations?: CrudRelationsInterface<T, Relations>;
 }

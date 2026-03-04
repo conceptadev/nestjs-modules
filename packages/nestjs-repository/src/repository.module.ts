@@ -2,8 +2,13 @@ import { Module, DynamicModule, Provider } from '@nestjs/common';
 
 import { getDynamicRepositoryToken } from '@concepta/nestjs-common';
 
+import {
+  FEDERATION_ORCHESTRATOR,
+  FederationOrchestrator,
+} from './federation/federation-orchestrator.service';
 import { RepositoryFeatureOptions } from './interfaces/repository-feature-options.interface';
 import { DynamicRepositoryModule } from './interfaces/repository-module.interface';
+import { RepositoryAdapter } from './repository/repository-adapter';
 import { RepositoryModuleClass } from './repository.module-definition';
 import {
   RepositoryRegistryService,
@@ -66,17 +71,26 @@ export class RepositoryModule extends RepositoryModuleClass {
       `REPOSITORY_REGISTRATION_${moduleName}_${Date.now()}`,
     );
 
+    const repoTokens = entities.map((e) => getDynamicRepositoryToken(e.key));
+
     providers.push({
       provide: registrationToken,
-      inject: [{ token: REPOSITORY_REGISTRY, optional: true }],
-      useFactory: (registry?: RepositoryRegistryService) => {
-        if (registry) {
-          for (const entity of entities) {
-            registry.register({
-              key: entity.key,
-              entityName: entity.entity.name,
-              moduleName,
-            });
+      inject: [REPOSITORY_REGISTRY, FEDERATION_ORCHESTRATOR, ...repoTokens],
+      useFactory: (
+        registry: RepositoryRegistryService,
+        orchestrator: FederationOrchestrator,
+        ...repos: unknown[]
+      ) => {
+        for (const entity of entities) {
+          registry.register({
+            key: entity.key,
+            entityName: entity.entity.name,
+            moduleName,
+          });
+        }
+        for (const repo of repos) {
+          if (repo instanceof RepositoryAdapter) {
+            repo.setFederationOrchestrator(orchestrator);
           }
         }
         return true;

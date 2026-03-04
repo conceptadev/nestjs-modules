@@ -47,7 +47,6 @@ import {
   CrudQuery,
   CrudQueryDecoratorOptionsInterface,
 } from '../decorators/routes/crud-query.decorator';
-import { CrudRelations } from '../decorators/routes/crud-relations.decorator';
 import { CrudRequestBodyBatch } from '../decorators/routes/crud-request-body-batch.decorator';
 import { CrudRequestBody } from '../decorators/routes/crud-request-body.decorator';
 import { CrudResolver } from '../decorators/routes/crud-resolver.decorator';
@@ -96,7 +95,6 @@ export class CrudMetaview<
         maxLimit: CrudMetadata.getHierarchy(CrudMaxLimit, handler, target),
         cache: CrudMetadata.getHierarchy(CrudCache, handler, target),
         join: CrudMetadata.getHierarchyArray(CrudJoin, handler, target),
-        relations: CrudMetadata.getHierarchy(CrudRelations, handler, target),
       },
     };
   }

@@ -335,7 +335,7 @@ export class TypeOrmRepository<
     );
   }
 
-  async findAndCount(
+  protected async doFindAndCount(
     options: RepositoryFindOptions<Entity> = {},
   ): Promise<[Entity[], number]> {
     return this.permeator.findAndCount.permeate(

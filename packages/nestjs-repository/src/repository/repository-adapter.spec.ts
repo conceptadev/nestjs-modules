@@ -75,7 +75,7 @@ class TestRepositoryAdapter extends RepositoryAdapter<TestEntity> {
   count(_options?: RepositoryFindOptions<TestEntity>): Promise<number> {
     throw new Error('not implemented');
   }
-  findAndCount(
+  protected doFindAndCount(
     _options?: RepositoryFindOptions<TestEntity>,
   ): Promise<[TestEntity[], number]> {
     throw new Error('not implemented');

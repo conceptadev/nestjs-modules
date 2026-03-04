@@ -10,190 +10,209 @@ import { ExceptionsFilter, Ctx } from '@concepta/nestjs-common';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
-import { CrudListQuery } from '../application/queries/impl/crud-list.query';
-import { CrudReadQuery } from '../application/queries/impl/crud-read.query';
+import { CrudListHandler } from '../application/queries/handlers/crud-list.handler';
+import { createQueryHandler } from '../application/utils/create-operation-handlers';
 import { CrudModule } from '../crud.module';
 import { CrudAdapter } from '../infrastructure/adapters/crud.adapter';
 import { CrudController } from '../infrastructure/decorators/controller/crud-controller.decorator';
 import { CrudList } from '../infrastructure/decorators/operations/crud-list.decorator';
-import { CrudRead } from '../infrastructure/decorators/operations/crud-read.decorator';
+import { CrudJoin } from '../infrastructure/decorators/routes/crud-join.decorator';
 import { CrudLimit } from '../infrastructure/decorators/routes/crud-limit.decorator';
-import { CrudRelations } from '../infrastructure/decorators/routes/crud-relations.decorator';
 import { CrudSort } from '../infrastructure/decorators/routes/crud-sort.decorator';
 import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/crud-context.interface';
 import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver';
 import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface';
 import { createCrudAdapterProvider } from '../infrastructure/utils/create-crud-adapter-provider';
 
+import { createCrudOperationClasses } from '../__fixtures__/crud/create-crud-operation-classes.fixture';
 import {
   CRUD_TEST_COMPANY_ENTITY_NAME,
   CRUD_TEST_USER_ENTITY_NAME,
-  CRUD_TEST_USER_PROFILE_ENTITY_NAME,
 } from '../__fixtures__/crud-test.constants';
 import { CompanyEntity } from '../__fixtures__/typeorm/company/company.entity';
+import { CompanyPaginatedDto } from '../__fixtures__/typeorm/company/dto/company-paginated.dto';
+import { CompanyDto } from '../__fixtures__/typeorm/company/dto/company.dto';
 import { ormSqliteConfig } from '../__fixtures__/typeorm/orm.sqlite.config';
 import { Seeds } from '../__fixtures__/typeorm/seeds';
-import { UserProfileEntity } from '../__fixtures__/typeorm/user-profile/user-profile.entity';
 import { UserEntity } from '../__fixtures__/typeorm/users/user.entity';
 
-// tslint:disable:max-classes-per-file no-shadowed-variable
-describe.skip('#crud-typeorm', () => {
-  describe('#basic crud respects global limit', () => {
-    let app: INestApplication;
-    let server: ReturnType<INestApplication['getHttpServer']>;
+const CompanyOps = createCrudOperationClasses<CompanyEntity>(
+  CRUD_TEST_COMPANY_ENTITY_NAME,
+);
+const UserOps = createCrudOperationClasses<UserEntity>(
+  CRUD_TEST_USER_ENTITY_NAME,
+);
 
-    @CrudController({
-      path: 'companies0',
-      entity: CRUD_TEST_COMPANY_ENTITY_NAME,
-      adapter: CrudAdapter,
-    })
-    @CrudLimit(3)
-    @CrudSort([{ field: 'id', order: 'ASC' }])
-    @CrudRelations<CompanyEntity, [UserEntity]>({
-      rootKey: 'id',
-      relations: [
-        {
-          join: 'INNER',
-          cardinality: 'many',
-          entity: CRUD_TEST_USER_ENTITY_NAME,
-          property: 'users',
-          primaryKey: 'id',
-          foreignKey: 'companyId',
-        },
-      ],
-    })
-    class CompaniesController0 {
-      constructor(
-        @Inject(CrudAdapterResolver)
-        public crudResolver: CrudResolverInterface,
-      ) {}
+const CompanyListHandler = createQueryHandler({
+  entity: CRUD_TEST_COMPANY_ENTITY_NAME,
+  baseClass: CrudListHandler,
+  queryClass: CompanyOps.CrudListQuery,
+});
+const UserListHandler = createQueryHandler({
+  entity: CRUD_TEST_USER_ENTITY_NAME,
+  baseClass: CrudListHandler,
+  queryClass: UserOps.CrudListQuery,
+});
 
-      @CrudList({ query: CrudListQuery })
-      list(@Ctx() context: CrudContextInterface<CompanyEntity>) {
-        return this.crudResolver.list(context);
-      }
+/**
+ * E2E tests for federated CRUD queries through the controller layer.
+ *
+ * Company → Users is a one-to-many relationship. With `federated: true`
+ * in forFeature(), the orchestrator issues separate queries and hydrates
+ * the results — no DB-level JOIN.
+ */
+describe('#federated-crud', () => {
+  let app: INestApplication;
+  let server: ReturnType<INestApplication['getHttpServer']>;
+
+  @CrudController({
+    path: 'companies',
+    entity: CRUD_TEST_COMPANY_ENTITY_NAME,
+    adapter: CrudAdapter,
+    response: { resource: CompanyDto, paginated: CompanyPaginatedDto },
+  })
+  @CrudJoin([{ relation: 'users' }])
+  @CrudSort([{ field: 'id', order: 'ASC' }])
+  @CrudLimit(10)
+  class CompaniesController {
+    constructor(
+      @Inject(CrudAdapterResolver)
+      public crudResolver: CrudResolverInterface,
+    ) {}
+
+    @CrudList({ query: CompanyOps.CrudListQuery })
+    list(@Ctx() context: CrudContextInterface<CompanyEntity>) {
+      return this.crudResolver.list(context);
     }
+  }
 
-    @CrudController({
-      path: 'users',
-      entity: CRUD_TEST_USER_ENTITY_NAME,
-      adapter: CrudAdapter,
-    })
-    @CrudSort([{ field: 'id', order: 'ASC' }])
-    @CrudRelations<UserEntity, [UserProfileEntity]>({
-      rootKey: 'id',
-      relations: [
-        {
-          cardinality: 'one',
-          entity: CRUD_TEST_USER_PROFILE_ENTITY_NAME,
-          property: 'userProfile',
-          primaryKey: 'id',
-          foreignKey: 'userId',
-        },
-      ],
-    })
-    class UsersController {
-      constructor(
-        @Inject(CrudAdapterResolver)
-        public crudResolver: CrudResolverInterface,
-      ) {}
-
-      @CrudList({ query: CrudListQuery })
-      list(@Ctx() context: CrudContextInterface<UserEntity>) {
-        return this.crudResolver.list(context);
-      }
-
-      @CrudRead({ query: CrudReadQuery })
-      read(@Ctx() context: CrudContextInterface<UserEntity>) {
-        return this.crudResolver.read(context);
-      }
-    }
-
-    beforeAll(async () => {
-      const fixture = await Test.createTestingModule({
-        imports: [
-          TypeOrmModule.forRoot(ormSqliteConfig),
-          RepositoryModule.forRoot({}),
-          RepositoryModule.forFeature({
-            module: TypeOrmRepositoryModule,
-            entities: [
-              { key: CRUD_TEST_COMPANY_ENTITY_NAME, entity: CompanyEntity },
-              { key: CRUD_TEST_USER_ENTITY_NAME, entity: UserEntity },
-              {
-                key: CRUD_TEST_USER_PROFILE_ENTITY_NAME,
-                entity: UserProfileEntity,
+  beforeAll(async () => {
+    const fixture = await Test.createTestingModule({
+      imports: [
+        TypeOrmModule.forRoot(ormSqliteConfig),
+        RepositoryModule.forRoot({}),
+        RepositoryModule.forFeature({
+          module: TypeOrmRepositoryModule,
+          entities: [
+            {
+              key: CRUD_TEST_COMPANY_ENTITY_NAME,
+              entity: CompanyEntity,
+              relations: {
+                users: { federated: true },
               },
-            ],
-          }),
-          CrudModule.forRoot({}),
-        ],
-        controllers: [CompaniesController0, UsersController],
-        providers: [
-          { provide: APP_FILTER, useClass: ExceptionsFilter },
-          createCrudAdapterProvider({
-            entity: CRUD_TEST_COMPANY_ENTITY_NAME,
-            adapter: CrudAdapter,
-          }),
-          createCrudAdapterProvider({
-            entity: CRUD_TEST_USER_ENTITY_NAME,
-            adapter: CrudAdapter,
-          }),
-          createCrudAdapterProvider({
-            entity: CRUD_TEST_USER_PROFILE_ENTITY_NAME,
-            adapter: CrudAdapter,
-          }),
-        ],
-      }).compile();
+            },
+            { key: CRUD_TEST_USER_ENTITY_NAME, entity: UserEntity },
+          ],
+        }),
+        CrudModule.forRoot({}),
+      ],
+      controllers: [CompaniesController],
+      providers: [
+        { provide: APP_FILTER, useClass: ExceptionsFilter },
+        createCrudAdapterProvider({
+          entity: CRUD_TEST_COMPANY_ENTITY_NAME,
+          adapter: CrudAdapter,
+        }),
+        createCrudAdapterProvider({
+          entity: CRUD_TEST_USER_ENTITY_NAME,
+          adapter: CrudAdapter,
+        }),
+        CompanyListHandler,
+        UserListHandler,
+      ],
+    }).compile();
 
-      app = fixture.createNestApplication();
+    app = fixture.createNestApplication();
+    await app.init();
+    server = app.getHttpServer();
 
-      await app.init();
-      server = app.getHttpServer();
+    const datasource = app.get<DataSource>(getDataSourceToken());
+    const seeds = new Seeds();
+    await seeds.up(datasource.createQueryRunner());
+  });
 
-      const datasource = app.get<DataSource>(getDataSourceToken());
-      const seeds = new Seeds();
-      await seeds.up(datasource.createQueryRunner());
+  afterAll(async () => {
+    await app.close();
+  });
+
+  describe('#list with federated join', () => {
+    it('should hydrate users array on each company', async () => {
+      const res = await request(server).get('/companies?limit=10').expect(200);
+
+      // Pagination metadata
+      expect(res.body.count).toBe(9);
+      expect(res.body.total).toBe(9);
+      expect(res.body.page).toBe(1);
+      expect(res.body.pageCount).toBe(1);
+      expect(res.body.limit).toBe(10);
+      expect(res.body.data).toHaveLength(9);
+
+      // Company 1 has users 1-10 (10 users)
+      expect(res.body.data[0].id).toBe(1);
+      expect(res.body.data[0].name).toBe('Name1');
+      expect(res.body.data[0].users).toHaveLength(10);
+      expect(res.body.data[0].users[0].email).toBe('1@email.com');
+      expect(res.body.data[0].users[0].companyId).toBe(1);
+
+      // Company 2 has users 11-21 (11 users)
+      expect(res.body.data[1].id).toBe(2);
+      expect(res.body.data[1].name).toBe('Name2');
+      expect(res.body.data[1].users).toHaveLength(11);
+      expect(res.body.data[1].users[0].email).toBe('11@email.com');
+      expect(res.body.data[1].users[0].companyId).toBe(2);
+
+      // Companies 3-8, 10 have no users → empty array (LEFT JOIN)
+      for (let i = 2; i < 9; i++) {
+        expect(res.body.data[i].users).toEqual([]);
+      }
     });
 
-    afterAll(async () => {
-      await app.close();
+    it('should return correct pagination with federation (page 1)', async () => {
+      const res = await request(server)
+        .get('/companies?limit=5&page=1')
+        .expect(200);
+
+      expect(res.body.count).toBe(5);
+      expect(res.body.total).toBe(9);
+      expect(res.body.page).toBe(1);
+      expect(res.body.pageCount).toBe(2);
+      expect(res.body.limit).toBe(5);
+      expect(res.body.data).toHaveLength(5);
+
+      // Page 1: companies 1-5 (sorted by id ASC)
+      expect(res.body.data[0].id).toBe(1);
+      expect(res.body.data[0].users).toHaveLength(10);
+      expect(res.body.data[1].id).toBe(2);
+      expect(res.body.data[1].users).toHaveLength(11);
+      expect(res.body.data[2].id).toBe(3);
+      expect(res.body.data[2].users).toEqual([]);
+      expect(res.body.data[3].id).toBe(4);
+      expect(res.body.data[3].users).toEqual([]);
+      expect(res.body.data[4].id).toBe(5);
+      expect(res.body.data[4].users).toEqual([]);
     });
 
-    describe('#getAll', () => {
-      it('should return an array of all company entities', (done) => {
-        request(server)
-          .get(
-            '/companies0?filter=name||$starts||Name&filter=users.isActive||$eq||true',
-          )
-          .end((_, res) => {
-            expect(res.status).toBe(200);
-            expect(res.body.data.length).toBe(3);
-            expect(res.body.page).toBe(1);
-            done();
-          });
-      });
-      it.only('should return an array of all user entities', (done) => {
-        request(server)
-          .get(
-            // '/users?sort[]=userProfile.nickName,DESC&page=2&limit=10',
-            '/users?filter[]=email||$starts||5&filter[]=userProfile.favoriteColor||$eq||Orange&page=1&limit=10',
-            // '/users?sort[]=email,DESC&page=1&limit=10',
-          )
-          .end((_, res) => {
-            expect(res.status).toBe(200);
-            expect(res.body.data).toBe({});
-            done();
-          });
-      });
-      it('should return one user entity', (done) => {
-        request(server)
-          .get('/users/1')
-          .end((_, res) => {
-            expect(res.status).toBe(200);
-            expect(res.body).toBe({});
-            done();
-          });
-      });
+    it('should return correct pagination with federation (page 2)', async () => {
+      const res = await request(server)
+        .get('/companies?limit=5&page=2')
+        .expect(200);
+
+      expect(res.body.count).toBe(4);
+      expect(res.body.total).toBe(9);
+      expect(res.body.page).toBe(2);
+      expect(res.body.pageCount).toBe(2);
+      expect(res.body.limit).toBe(5);
+      expect(res.body.data).toHaveLength(4);
+
+      // Page 2: companies 6-8, 10 (company 9 soft-deleted)
+      expect(res.body.data[0].id).toBe(6);
+      expect(res.body.data[0].users).toEqual([]);
+      expect(res.body.data[1].id).toBe(7);
+      expect(res.body.data[1].users).toEqual([]);
+      expect(res.body.data[2].id).toBe(8);
+      expect(res.body.data[2].users).toEqual([]);
+      expect(res.body.data[3].id).toBe(10);
+      expect(res.body.data[3].users).toEqual([]);
     });
   });
 });

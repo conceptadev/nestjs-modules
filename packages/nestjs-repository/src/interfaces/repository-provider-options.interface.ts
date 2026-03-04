@@ -1,16 +1,22 @@
 import { Type, PlainLiteralObject } from '@nestjs/common';
 
-import { RelationAction } from '@concepta/nestjs-common';
+import { RelationAction, WhereCondition } from '@concepta/nestjs-common';
 
 /**
- * Per-relation action configuration for onDelete / onUpdate behavior.
+ * Per-relation configuration for forFeature() registration.
  *
- * Currently only 'delegate' is supported (defer to native schema).
- * The type will expand as more actions are implemented.
+ * Supports onDelete/onUpdate behavior and federation settings.
  */
 export interface RelationActionConfig {
   onDelete?: Extract<RelationAction, 'delegate'>;
   onUpdate?: Extract<RelationAction, 'delegate'>;
+  /** Use separate queries instead of DB joins for this relation. */
+  federated?: boolean;
+  /**
+   * Required for many-cardinality federated relations with sorts/filters.
+   * Ensures exactly one relation entity per root for deterministic ordering.
+   */
+  distinctFilter?: WhereCondition<PlainLiteralObject>;
 }
 
 /**

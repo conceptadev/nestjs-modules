@@ -2,7 +2,6 @@ import { PlainLiteralObject } from '@nestjs/common';
 
 import { CrudAdapter } from '../../../infrastructure/adapters/crud.adapter';
 import { CrudResponsePaginatedInterface } from '../../../infrastructure/dtos/interfaces/crud-response-paginated.interface';
-import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
 
 import { CrudQueryInterface } from './crud-query.interface';
 
@@ -18,10 +17,6 @@ export interface CrudQueryHandlerInterface<
   _Relations extends PlainLiteralObject[] = PlainLiteralObject[],
 > {
   crudAdapter: CrudAdapter<Entity>;
-
-  hasRelations(context: CrudContextInterface<Entity>): boolean;
-
-  useFederation(context: CrudContextInterface<Entity>): boolean;
 
   execute(
     query: CrudQueryInterface<Entity>,

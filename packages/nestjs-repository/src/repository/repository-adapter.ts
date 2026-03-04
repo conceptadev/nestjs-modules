@@ -24,6 +24,7 @@ import {
 } from '@concepta/nestjs-common';
 import { HookMethodKeyType, HookResolverService } from '@concepta/nestjs-hook';
 
+import { FederationOrchestrator } from '../federation/federation-orchestrator.service';
 import { RepoPermeatorFactory } from '../hooks/repo-permeator-factory';
 import { RepoHook } from '../hooks/repository-hook.decorators';
 
@@ -51,8 +52,18 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
   abstract readonly metadata: RepositoryMetadataInterface<Entity>;
 
   private _permeator?: RepoPermeatorFactory<Entity>;
+  private _federationOrchestrator?: FederationOrchestrator;
 
   constructor(protected readonly hookResolver?: HookResolverService) {}
+
+  /**
+   * Set the federation orchestrator for this repository.
+   * When set, `findAndCount` will delegate to the orchestrator
+   * for queries that include federated joins.
+   */
+  setFederationOrchestrator(orchestrator: FederationOrchestrator): void {
+    this._federationOrchestrator = orchestrator;
+  }
 
   protected get permeator(): RepoPermeatorFactory<Entity> {
     if (!this._permeator) {
@@ -74,7 +85,23 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
 
   abstract count(options?: RepositoryFindOptions<Entity>): Promise<number>;
 
-  abstract findAndCount(
+  /**
+   * Find entities and return with total count.
+   *
+   * When a federation orchestrator is set and the query includes
+   * joins targeting `federated: true` relations, delegates to the
+   * orchestrator for cross-entity query orchestration.
+   */
+  async findAndCount(
+    options?: RepositoryFindOptions<Entity>,
+  ): Promise<[Entity[], number]> {
+    if (this._federationOrchestrator && this.hasFederatedJoins(options?.join)) {
+      return this._federationOrchestrator.findAndCount(this, options);
+    }
+    return this.doFindAndCount(options);
+  }
+
+  protected abstract doFindAndCount(
     options?: RepositoryFindOptions<Entity>,
   ): Promise<[Entity[], number]>;
 
@@ -160,6 +187,21 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.metadata.columns
       .filter((col) => col.isPrimary)
       .map((col) => col.name);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Federation helpers
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Check if any requested joins target federated relations.
+   */
+  private hasFederatedJoins(join?: JoinClause[]): boolean {
+    if (!join?.length || !this.metadata.relations?.length) return false;
+    const joinNames = new Set(join.map((j) => j.relation));
+    return this.metadata.relations.some(
+      (r) => r.federated && joinNames.has(r.name),
+    );
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

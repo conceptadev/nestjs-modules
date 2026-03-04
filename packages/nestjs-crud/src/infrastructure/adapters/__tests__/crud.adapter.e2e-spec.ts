@@ -1165,18 +1165,7 @@ describe('CrudAdapter relations (e2e)', () => {
     return {
       options: {
         query: {
-          relations: {
-            rootKey: 'id',
-            relations: [
-              {
-                property: 'users',
-                cardinality: 'many',
-                entity: 'UserEntity',
-                primaryKey: 'id',
-                foreignKey: 'companyId',
-              },
-            ] as never,
-          },
+          join: [{ relation: 'users', joinType: 'LEFT' }],
         },
       },
     };
@@ -1186,18 +1175,7 @@ describe('CrudAdapter relations (e2e)', () => {
     return {
       options: {
         query: {
-          relations: {
-            rootKey: 'id',
-            relations: [
-              {
-                property: 'projects',
-                cardinality: 'many',
-                entity: 'ProjectEntity',
-                primaryKey: 'id',
-                foreignKey: 'companyId',
-              },
-            ] as never,
-          },
+          join: [{ relation: 'projects', joinType: 'LEFT' }],
         },
       },
     };
@@ -1207,25 +1185,10 @@ describe('CrudAdapter relations (e2e)', () => {
     return {
       options: {
         query: {
-          relations: {
-            rootKey: 'id',
-            relations: [
-              {
-                property: 'users',
-                cardinality: 'many',
-                entity: 'UserEntity',
-                primaryKey: 'id',
-                foreignKey: 'companyId',
-              },
-              {
-                property: 'projects',
-                cardinality: 'many',
-                entity: 'ProjectEntity',
-                primaryKey: 'id',
-                foreignKey: 'companyId',
-              },
-            ] as never,
-          },
+          join: [
+            { relation: 'users', joinType: 'LEFT' },
+            { relation: 'projects', joinType: 'LEFT' },
+          ],
         },
       },
     };

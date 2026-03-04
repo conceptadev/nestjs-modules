@@ -4,6 +4,10 @@ import {
   Provider,
 } from '@nestjs/common';
 
+import {
+  FEDERATION_ORCHESTRATOR,
+  FederationOrchestrator,
+} from './federation/federation-orchestrator.service';
 import { TransactionInterceptor } from './interceptors/transaction.interceptor';
 import { RepositoryModuleOptionsInterface } from './interfaces/repository-module-options.interface';
 import { REPOSITORY_MODULE_OPTIONS } from './repository.constants';
@@ -61,6 +65,10 @@ export function createRepositoryProviders(options: {
       provide: REPOSITORY_REGISTRY,
       useClass: RepositoryRegistryService,
     },
+    {
+      provide: FEDERATION_ORCHESTRATOR,
+      useClass: FederationOrchestrator,
+    },
     TransactionScope,
     TransactionalRunner,
     TransactionInterceptor,
@@ -78,6 +86,7 @@ export function createRepositoryExports(): (
     REPOSITORY_MODULE_OPTIONS,
     TRANSACTION_FACTORY_REGISTRY,
     REPOSITORY_REGISTRY,
+    FEDERATION_ORCHESTRATOR,
     TransactionScope,
     TransactionalRunner,
     TransactionInterceptor,

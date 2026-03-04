@@ -18,6 +18,10 @@ export class RepositoryRegistryService implements OnApplicationBootstrap {
     string,
     Readonly<RepositoryRegistryItem>
   >();
+  private readonly entityIndex = new Map<
+    string,
+    Readonly<RepositoryRegistryItem>
+  >();
   private readonly pending: Readonly<RepositoryRegistryItem>[] = [];
 
   /**
@@ -25,6 +29,17 @@ export class RepositoryRegistryService implements OnApplicationBootstrap {
    */
   register(item: RepositoryRegistryItem): void {
     this.pending.push(Object.freeze({ ...item }));
+  }
+
+  /**
+   * Look up a registry item by entity name.
+   *
+   * Available after application bootstrap.
+   */
+  getByEntityName(
+    entityName: string,
+  ): Readonly<RepositoryRegistryItem> | undefined {
+    return this.entityIndex.get(entityName);
   }
 
   /**
@@ -46,6 +61,7 @@ export class RepositoryRegistryService implements OnApplicationBootstrap {
         });
       } else {
         this.registry.set(item.key, item);
+        this.entityIndex.set(item.entityName, item);
       }
     }
 

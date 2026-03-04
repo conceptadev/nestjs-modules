@@ -15,7 +15,7 @@ import { CrudContextInterface } from '../../interceptors/interfaces/crud-context
  * - CrudCqrsResolver: uses QueryBus/CommandBus (full CQRS)
  *
  * Methods are generic to allow the same resolver instance to handle
- * multiple entity types (e.g., in federation scenarios).
+ * multiple entity types.
  */
 export interface CrudResolverInterface {
   list<Entity extends PlainLiteralObject>(

@@ -1,7 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 
 import { mockCrudContext } from '../../../../__fixtures__/crud/mocks/crud-context.mock';
-import { createMockFederationService } from '../../../../__fixtures__/crud/mocks/crud-federation-service.mock';
 import { CrudQueryException } from '../../../../infrastructure/exceptions/crud-query.exception';
 import { CrudReadQuery } from '../../impl/crud-read.query';
 import { CrudReadHandler } from '../crud-read.handler';
@@ -10,7 +9,6 @@ import {
   TestCrudAdapter,
   TestEntity,
   createTestAdapter,
-  relationsWithPosts,
 } from './fixtures/query-handler-test.fixtures';
 
 describe('CrudReadHandler', () => {
@@ -21,7 +19,7 @@ describe('CrudReadHandler', () => {
   });
 
   describe('execute', () => {
-    it('should delegate to crudAdapter.read() when no federation', async () => {
+    it('should delegate to crudAdapter.read()', async () => {
       const handler = new CrudReadHandler<TestEntity>(adapter);
       const context = mockCrudContext<TestEntity>();
       const entity: TestEntity = { id: '1', name: 'Alice' };
@@ -32,26 +30,6 @@ describe('CrudReadHandler', () => {
 
       expect(result).toEqual(entity);
       expect(adapter.read).toHaveBeenCalledWith(context);
-    });
-
-    it('should delegate to federationService.read() when federation is configured', async () => {
-      const federationService = createMockFederationService<TestEntity>();
-      const handler = new CrudReadHandler(adapter, federationService);
-      const context = mockCrudContext<TestEntity>({
-        options: {
-          query: {
-            relations: { ...relationsWithPosts, federated: true },
-          },
-        },
-      });
-      const entity: TestEntity = { id: '2', name: 'Bob' };
-
-      federationService.read.mockResolvedValueOnce(entity);
-
-      const result = await handler.execute(new CrudReadQuery(context));
-
-      expect(result).toEqual(entity);
-      expect(federationService.read).toHaveBeenCalledWith(context);
     });
 
     it('should re-throw HttpException as-is', async () => {

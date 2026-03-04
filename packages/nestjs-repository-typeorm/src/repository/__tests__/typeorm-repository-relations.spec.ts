@@ -341,6 +341,51 @@ describe('buildRelations', () => {
     });
   });
 
+  it('should merge relationsConfig federation settings into mapped relation', () => {
+    const rel = mockRelationMetadata({
+      propertyName: 'posts',
+      inverseEntityMetadata: { name: 'PostEntity' },
+      isOneToMany: true,
+      isOwning: false,
+      inverseRelation: {
+        joinColumns: [
+          {
+            propertyName: 'authorId',
+            referencedColumn: { propertyName: 'id' },
+          },
+        ],
+      },
+    });
+
+    const result = buildRelations([rel], {
+      posts: {
+        federated: true,
+        distinctFilter: {
+          field: 'published',
+          operator: 'eq',
+          value: true,
+        },
+      },
+    });
+
+    expect(result).toEqual([
+      {
+        name: 'posts',
+        targetEntity: 'PostEntity',
+        cardinality: 'many',
+        on: { from: 'id', to: 'authorId' },
+        onDelete: undefined,
+        onUpdate: undefined,
+        federated: true,
+        distinctFilter: {
+          field: 'published',
+          operator: 'eq',
+          value: true,
+        },
+      },
+    ]);
+  });
+
   it('should map multiple relations', () => {
     const owning = mockRelationMetadata({
       propertyName: 'author',

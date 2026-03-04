@@ -394,6 +394,7 @@ describe('TypeOrmRepository Hooks', () => {
       imports: [
         TypeOrmModule.forRoot(ormConfig),
         HookModule.forRoot({}),
+        RepositoryModule.forRoot({}),
         RepositoryModule.forFeature({
           module: TypeOrmRepositoryModule,
           entities: [
@@ -780,6 +781,7 @@ describe('TypeOrmRepository Hooks', () => {
         imports: [
           TypeOrmModule.forRoot(ormConfig),
           HookModule.forRoot({}),
+          RepositoryModule.forRoot({}),
           RepositoryModule.forFeature({
             module: TypeOrmRepositoryModule,
             entities: [
@@ -822,6 +824,7 @@ describe('TypeOrmRepository Hooks', () => {
         imports: [
           TypeOrmModule.forRoot(ormConfig),
           HookModule.forRoot({}),
+          RepositoryModule.forRoot({}),
           RepositoryModule.forFeature({
             module: TypeOrmRepositoryModule,
             entities: [
@@ -869,6 +872,7 @@ describe('TypeOrmRepository Hooks', () => {
         imports: [
           TypeOrmModule.forRoot(ormConfig),
           HookModule.forRoot({}),
+          RepositoryModule.forRoot({}),
           RepositoryModule.forFeature({
             module: TypeOrmRepositoryModule,
             entities: [
@@ -940,6 +944,7 @@ describe('TypeOrmRepository Hooks', () => {
         imports: [
           TypeOrmModule.forRoot(ormConfig),
           HookModule.forRoot({}),
+          RepositoryModule.forRoot({}),
           RepositoryModule.forFeature({
             module: TypeOrmRepositoryModule,
             entities: [

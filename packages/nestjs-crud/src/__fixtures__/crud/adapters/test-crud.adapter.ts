@@ -1,7 +1,6 @@
 import { Injectable, PlainLiteralObject } from '@nestjs/common';
 
 import {
-  JoinClause,
   RepositoryInterface,
   RepositoryOrderOptions,
   WhereClause,
@@ -30,10 +29,6 @@ export class TestCrudAdapter<
 
   exposedBuildWhere(context: CrudContextInterface<T>): WhereClause | undefined {
     return this.buildWhere(context);
-  }
-
-  exposedBuildJoin(context: CrudContextInterface<T>): JoinClause[] | undefined {
-    return this.buildJoin(context);
   }
 
   exposedBuildOrderClause(

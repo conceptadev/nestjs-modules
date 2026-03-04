@@ -9,7 +9,6 @@ import { isObject, isUndefined } from '@nestjs/common/utils/shared.utils';
 import {
   DeepPartial,
   EntityColumn,
-  JoinClause,
   RepositoryInterface,
   RepositoryFindOptions,
   RepositoryFindOneOptions,
@@ -258,30 +257,6 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
     return order;
   }
 
-  /**
-   * Build JoinClause[] from CRUD context.
-   *
-   * Prefers explicit `@CrudJoin` clauses when present.
-   * Falls back to deriving from `@CrudRelations` config.
-   */
-  protected buildJoin(
-    context: CrudContextInterface<Entity>,
-  ): JoinClause[] | undefined {
-    // Prefer explicit @CrudJoin
-    const explicitJoin = context.options?.query?.join;
-    if (explicitJoin?.length) return explicitJoin;
-
-    // Fall back to deriving from @CrudRelations
-    const relations = context.options?.query?.relations?.relations ?? [];
-    if (!relations.length) return undefined;
-
-    return relations.map((rel) => ({
-      relation: rel.property,
-      joinType: rel.join,
-      cardinality: rel.cardinality,
-    }));
-  }
-
   // ═══════════════════════════════════════════════════════════════════════════
   // Entity preparation
   // ═══════════════════════════════════════════════════════════════════════════
@@ -484,12 +459,10 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
     const includeDeleted =
       withDeleted || (this.entityHasDeleteColumn && query.includeDeleted === 1);
 
-    const join = this.buildJoin(context);
-
     const findOptions: RepositoryFindOneOptions<Entity> = {
       ctx: context,
       where,
-      join,
+      join: context.options?.query?.join,
       withDeleted: includeDeleted || undefined,
     };
 
@@ -537,13 +510,10 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
     const withDeleted =
       this.entityHasDeleteColumn && query.includeDeleted === 1;
 
-    // Build join clauses from relations config
-    const join = this.buildJoin(context);
-
     return {
       ctx: context,
       where,
-      join,
+      join: context.options?.query?.join,
       select: select.length > 0 ? select : undefined,
       order: Object.keys(order).length > 0 ? order : undefined,
       take: take || undefined,

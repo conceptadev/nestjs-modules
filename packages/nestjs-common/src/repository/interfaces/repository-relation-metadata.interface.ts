@@ -1,4 +1,8 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import { RelationAction } from '../repository.types';
+
+import { WhereCondition } from './where-clause.interface';
 
 /**
  * ORM-agnostic relation metadata for repository introspection.
@@ -31,4 +35,14 @@ export interface RepositoryRelationMetadataInterface {
   onDelete?: RelationAction;
   /** Action to take on related records when the source entity's PK is updated. */
   onUpdate?: RelationAction;
+  /** Use separate queries instead of DB joins for this relation (federation). */
+  federated?: boolean;
+  /**
+   * Required for many-cardinality federated relations with sorts/filters.
+   * Ensures exactly one relation entity per root for deterministic ordering.
+   *
+   * TODO: Evaluate applying distinctFilter to standard (non-federated) relation
+   * queries as well, where many-cardinality joins can produce duplicate rows.
+   */
+  distinctFilter?: WhereCondition<PlainLiteralObject>;
 }

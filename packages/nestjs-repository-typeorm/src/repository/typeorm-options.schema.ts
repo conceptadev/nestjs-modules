@@ -68,7 +68,13 @@ export function buildRelations(
       const cfg = relationsConfig?.[mapped.name];
       result.push(
         cfg
-          ? { ...mapped, onDelete: cfg.onDelete, onUpdate: cfg.onUpdate }
+          ? {
+              ...mapped,
+              onDelete: cfg.onDelete,
+              onUpdate: cfg.onUpdate,
+              federated: cfg.federated,
+              distinctFilter: cfg.distinctFilter,
+            }
           : mapped,
       );
     }
