@@ -101,7 +101,6 @@ export { RepositoryRelationMetadataInterface } from './repository/interfaces/rep
 
 // Repository option types (replaces RepositoryInternals)
 export {
-  RepositoryOrderOptions,
   RepositoryFindOneOptions,
   RepositoryFindOptions,
   RepositoryCreateOptions,
@@ -123,11 +122,16 @@ export {
   WhereConditionArr,
   RelationAction,
   SortOrder,
-  SortConditionArr,
+  OrderSortKey,
+  OrderSortKeyArr,
+  OrderClause,
 } from './repository/repository.types';
 
-// Sort condition interface
-export { SortCondition } from './repository/interfaces/sort-condition.interface';
+// Order sort key interfaces
+export {
+  OrderSortKeyAsc,
+  OrderSortKeyDesc,
+} from './repository/interfaces/order-sort-key.interface';
 
 // Join clause interface
 export { JoinClause } from './repository/interfaces/join-clause.interface';
@@ -150,6 +154,12 @@ export {
 
 // Where clause helpers
 export { Where } from './repository/where.helpers';
+
+// Order clause helpers
+export { OrderBy } from './repository/order-by.helpers';
+
+// Join clause helpers
+export { Join } from './repository/join.helpers';
 
 // Repository utils
 export { getDynamicRepositoryToken } from './repository/utils/get-dynamic-repository-token';

@@ -5,7 +5,7 @@ import {
   JoinClause,
   RepositoryFindOptions,
   RepositoryInterface,
-  RepositoryOrderOptions,
+  OrderClause,
   RepositoryRelationMetadataInterface,
   Where,
   getDynamicRepositoryToken,
@@ -539,7 +539,7 @@ export class FederationOrchestrator {
    * Get the set of relation names present as sort keys in the order options.
    */
   private getSortedRelationNames(
-    order: RepositoryOrderOptions | undefined,
+    order: OrderClause | undefined,
     relations: FederatedRelation[],
   ): Set<string> {
     if (!order) return new Set();
@@ -547,13 +547,9 @@ export class FederationOrchestrator {
     const relationNames = new Set(relations.map((r) => r.name));
     const sorted = new Set<string>();
 
-    for (const [key, value] of Object.entries(order)) {
-      if (
-        typeof value === 'object' &&
-        value !== null &&
-        relationNames.has(key)
-      ) {
-        sorted.add(key);
+    for (const key of order) {
+      if (key.relation && relationNames.has(key.relation)) {
+        sorted.add(key.relation);
       }
     }
 

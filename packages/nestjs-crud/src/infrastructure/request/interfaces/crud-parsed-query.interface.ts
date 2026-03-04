@@ -2,7 +2,7 @@ import { PlainLiteralObject } from '@nestjs/common';
 
 import {
   EntityColumn,
-  SortCondition,
+  OrderSortKey,
   WhereCondition,
 } from '@concepta/nestjs-common';
 
@@ -20,7 +20,7 @@ export interface CrudParsedQueryInterface<T extends PlainLiteralObject> {
   search: SCondition<T> | undefined;
   filter: WhereCondition<T>[];
   or: WhereCondition<T>[];
-  sort: SortCondition<T>[];
+  sort: OrderSortKey<T>[];
   limit: number | undefined;
   offset: number | undefined;
   page: number | undefined;

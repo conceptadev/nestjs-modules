@@ -557,7 +557,7 @@ describe('FederationOrchestrator - Inner Join Behavior', () => {
           value: 'active',
           relation: 'relations',
         },
-        order: { relations: { title: 'ASC' } },
+        order: [{ field: 'title', order: 'ASC', relation: 'relations' }],
         join: [{ relation: 'relations' }],
         take: 10,
         skip: 0,
@@ -569,7 +569,9 @@ describe('FederationOrchestrator - Inner Join Behavior', () => {
 
       // Discovery call has sort
       const discoveryCall = peerRepo.findAndCount.mock.calls[0][0];
-      expect(discoveryCall?.order).toEqual({ title: 'ASC' });
+      expect(discoveryCall?.order).toEqual([
+        { field: 'title', order: 'ASC', relation: 'relations' },
+      ]);
 
       // Root ordering follows relation sort: rootId 2, 1, 3
       expect(result).toHaveLength(3);

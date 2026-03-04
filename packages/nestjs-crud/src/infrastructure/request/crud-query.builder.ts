@@ -10,8 +10,8 @@ import {
 
 import {
   EntityColumn,
-  SortCondition,
-  SortConditionArr,
+  OrderSortKey,
+  OrderSortKeyArr,
   WhereCondition,
   WhereConditionArr,
 } from '@concepta/nestjs-common';
@@ -160,9 +160,9 @@ export class CrudQueryBuilder<
 
   sortBy(
     s:
-      | SortCondition<Entity>
-      | SortConditionArr<Entity>
-      | Array<SortCondition<Entity> | SortConditionArr<Entity>>,
+      | OrderSortKey<Entity>
+      | OrderSortKeyArr<Entity>
+      | Array<OrderSortKey<Entity> | OrderSortKeyArr<Entity>>,
   ): this {
     if (!isNil(s)) {
       const param = this.checkQueryObjectParam('sort', []);
@@ -234,10 +234,8 @@ export class CrudQueryBuilder<
     );
   }
 
-  private addSortBy(
-    s: SortCondition<Entity> | SortConditionArr<Entity>,
-  ): string {
-    const sort: SortCondition<Entity> = Array.isArray(s)
+  private addSortBy(s: OrderSortKey<Entity> | OrderSortKeyArr<Entity>): string {
+    const sort: OrderSortKey<Entity> = Array.isArray(s)
       ? { field: s[0], order: s[1] }
       : s;
     validateSort(sort);
@@ -305,10 +303,10 @@ export class CrudQueryBuilder<
 
   private isSortArray(
     s:
-      | SortCondition<Entity>
-      | SortConditionArr<Entity>
-      | Array<SortCondition<Entity> | SortConditionArr<Entity>>,
-  ): s is Array<SortCondition<Entity> | SortConditionArr<Entity>> {
+      | OrderSortKey<Entity>
+      | OrderSortKeyArr<Entity>
+      | Array<OrderSortKey<Entity> | OrderSortKeyArr<Entity>>,
+  ): s is Array<OrderSortKey<Entity> | OrderSortKeyArr<Entity>> {
     return Array.isArray(s) && !isString(s[0]);
   }
 

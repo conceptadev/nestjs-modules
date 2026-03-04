@@ -2,8 +2,8 @@ import { PlainLiteralObject } from '@nestjs/common';
 
 import {
   EntityColumn,
-  SortCondition,
-  SortConditionArr,
+  OrderSortKey,
+  OrderSortKeyArr,
   WhereCondition,
   WhereConditionArr,
 } from '@concepta/nestjs-common';
@@ -24,9 +24,9 @@ export interface CrudCreateQueryParamsInterface<
     | WhereConditionArr<T>
     | Array<WhereCondition<T> | WhereConditionArr<T>>;
   sort?:
-    | SortCondition<T>
-    | SortConditionArr<T>
-    | Array<SortCondition<T> | SortConditionArr<T>>;
+    | OrderSortKey<T>
+    | OrderSortKeyArr<T>
+    | Array<OrderSortKey<T> | OrderSortKeyArr<T>>;
   limit?: number;
   offset?: number;
   page?: number;

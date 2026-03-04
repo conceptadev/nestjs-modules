@@ -30,12 +30,14 @@ describe('analyzeExecution', () => {
 
   it('should select ROOT_FIRST when no relation sorts or filters', () => {
     const filterAnalyzer = new FilterAnalyzer(undefined, [posts], new Set());
-    const result = analyzeExecution(filterAnalyzer, { createdAt: 'DESC' }, [
-      posts,
-    ]);
+    const result = analyzeExecution(
+      filterAnalyzer,
+      [{ field: 'createdAt', order: 'DESC' }],
+      [posts],
+    );
 
     expect(result.strategy).toBe(FederationStrategy.ROOT_FIRST);
-    expect(result.rootOrder).toEqual({ createdAt: 'DESC' });
+    expect(result.rootOrder).toEqual([{ field: 'createdAt', order: 'DESC' }]);
     expect(result.relationOrders.size).toBe(0);
     expect(result.sortedRelationNames.size).toBe(0);
   });
@@ -48,13 +50,15 @@ describe('analyzeExecution', () => {
     );
     const result = analyzeExecution(
       filterAnalyzer,
-      { posts: { title: 'ASC' } },
+      [{ field: 'title', order: 'ASC', relation: 'posts' }],
       [postsWithDistinct],
     );
 
     expect(result.strategy).toBe(FederationStrategy.RELATION_FIRST);
     expect(result.rootOrder).toBeUndefined();
-    expect(result.relationOrders.get('posts')).toEqual({ title: 'ASC' });
+    expect(result.relationOrders.get('posts')).toEqual([
+      { field: 'title', order: 'ASC', relation: 'posts' },
+    ]);
     expect(result.drivingRelation).toBe(postsWithDistinct);
   });
 
@@ -80,12 +84,17 @@ describe('analyzeExecution', () => {
     );
     const result = analyzeExecution(
       filterAnalyzer,
-      { createdAt: 'DESC', posts: { title: 'ASC' } },
+      [
+        { field: 'createdAt', order: 'DESC' },
+        { field: 'title', order: 'ASC', relation: 'posts' },
+      ],
       [postsWithDistinct],
     );
 
-    expect(result.rootOrder).toEqual({ createdAt: 'DESC' });
-    expect(result.relationOrders.get('posts')).toEqual({ title: 'ASC' });
+    expect(result.rootOrder).toEqual([{ field: 'createdAt', order: 'DESC' }]);
+    expect(result.relationOrders.get('posts')).toEqual([
+      { field: 'title', order: 'ASC', relation: 'posts' },
+    ]);
   });
 
   it('should throw when sorting on many-cardinality relation without distinctFilter', () => {
@@ -100,9 +109,11 @@ describe('analyzeExecution', () => {
     );
 
     expect(() =>
-      analyzeExecution(filterAnalyzer, { posts: { title: 'ASC' } }, [
-        manyRelation,
-      ]),
+      analyzeExecution(
+        filterAnalyzer,
+        [{ field: 'title', order: 'ASC', relation: 'posts' }],
+        [manyRelation],
+      ),
     ).toThrow(FederationException);
   });
 
@@ -123,9 +134,11 @@ describe('analyzeExecution', () => {
     );
 
     expect(() =>
-      analyzeExecution(filterAnalyzer, { posts: { title: 'ASC' } }, [
-        manyWithFilter,
-      ]),
+      analyzeExecution(
+        filterAnalyzer,
+        [{ field: 'title', order: 'ASC', relation: 'posts' }],
+        [manyWithFilter],
+      ),
     ).not.toThrow();
   });
 
@@ -141,9 +154,11 @@ describe('analyzeExecution', () => {
     );
 
     expect(() =>
-      analyzeExecution(filterAnalyzer, { profile: { bio: 'ASC' } }, [
-        oneRelation,
-      ]),
+      analyzeExecution(
+        filterAnalyzer,
+        [{ field: 'bio', order: 'ASC', relation: 'profile' }],
+        [oneRelation],
+      ),
     ).not.toThrow();
   });
 
@@ -162,7 +177,7 @@ describe('analyzeExecution', () => {
 
     const result = analyzeExecution(
       filterAnalyzer,
-      { posts: { title: 'ASC' } },
+      [{ field: 'title', order: 'ASC', relation: 'posts' }],
       [postsWithDistinct, comments],
     );
 

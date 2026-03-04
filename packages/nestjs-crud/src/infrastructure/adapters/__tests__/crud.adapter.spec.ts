@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 
-import { SortOrder, Where, WhereOperator } from '@concepta/nestjs-common';
+import { Where, WhereOperator } from '@concepta/nestjs-common';
 import { createMockRepository } from '@concepta/nestjs-common/testing';
 
 import { TestCrudAdapter } from '../../../__fixtures__/crud/adapters/test-crud.adapter';
@@ -463,76 +463,6 @@ describe('CrudAdapter', () => {
             Where.and(Where.eq('name', 'bar'), Where.lt('id', 10)),
           ),
         );
-      });
-    });
-  });
-
-  describe('buildOrderClause', () => {
-    it('should return empty object when no sort', () => {
-      expect(
-        adapter.exposedBuildOrderClause(mockCrudParsedQuery(), {}),
-      ).toEqual({});
-    });
-
-    it('should build order from query sort', () => {
-      const query = mockCrudParsedQuery({
-        sort: [{ field: 'name', order: SortOrder.ASC }],
-      });
-      expect(adapter.exposedBuildOrderClause(query, {})).toEqual({
-        name: SortOrder.ASC,
-      });
-    });
-
-    it('should build order from options sort when query sort is empty', () => {
-      expect(
-        adapter.exposedBuildOrderClause(mockCrudParsedQuery(), {
-          sort: [{ field: 'name', order: SortOrder.DESC }],
-        }),
-      ).toEqual({ name: SortOrder.DESC });
-    });
-
-    it('should prefer query sort over options sort', () => {
-      const query = mockCrudParsedQuery({
-        sort: [{ field: 'name', order: SortOrder.ASC }],
-      });
-      expect(
-        adapter.exposedBuildOrderClause(query, {
-          sort: [{ field: 'name', order: SortOrder.DESC }],
-        }),
-      ).toEqual({ name: SortOrder.ASC });
-    });
-
-    it('should build nested order for relation sort', () => {
-      const query = mockCrudParsedQuery({
-        sort: [{ field: 'name', order: SortOrder.ASC, relation: 'blog' }],
-      });
-      expect(adapter.exposedBuildOrderClause(query, {})).toEqual({
-        blog: { name: SortOrder.ASC },
-      });
-    });
-
-    it('should combine root and relation sorts', () => {
-      const query = mockCrudParsedQuery({
-        sort: [
-          { field: 'name', order: SortOrder.ASC },
-          { field: 'age', order: SortOrder.DESC, relation: 'posts' },
-        ],
-      });
-      expect(adapter.exposedBuildOrderClause(query, {})).toEqual({
-        name: SortOrder.ASC,
-        posts: { age: SortOrder.DESC },
-      });
-    });
-
-    it('should group multiple fields under same relation', () => {
-      const query = mockCrudParsedQuery({
-        sort: [
-          { field: 'name', order: SortOrder.ASC, relation: 'posts' },
-          { field: 'age', order: SortOrder.DESC, relation: 'posts' },
-        ],
-      });
-      expect(adapter.exposedBuildOrderClause(query, {})).toEqual({
-        posts: { name: SortOrder.ASC, age: SortOrder.DESC },
       });
     });
   });

@@ -3,7 +3,7 @@ import { PlainLiteralObject } from '@nestjs/common';
 import {
   EntityColumn,
   JoinClause,
-  SortCondition,
+  OrderSortKey,
 } from '@concepta/nestjs-common';
 
 import { QueryFilterOption } from '../query-filter-option.type';
@@ -13,7 +13,7 @@ export interface CrudQueryOptionsInterface<T extends PlainLiteralObject> {
   exclude?: EntityColumn<T>[];
   persist?: EntityColumn<T>[];
   filter?: QueryFilterOption<T>;
-  sort?: SortCondition<T>[];
+  sort?: OrderSortKey<T>[];
   limit?: number;
   maxLimit?: number;
   cache?: number | false;

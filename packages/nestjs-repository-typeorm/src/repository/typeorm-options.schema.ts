@@ -1,10 +1,11 @@
-import { EntityTarget } from 'typeorm';
+import { EntityTarget, FindOptionsOrder } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
 
 import { Type, PlainLiteralObject } from '@nestjs/common';
 
 import {
+  OrderClause,
   RepositoryColumnMetadataInterface,
   RepositoryRelationMetadataInterface,
 } from '@concepta/nestjs-common';
@@ -260,4 +261,50 @@ function mapManyToManyNonOwner(
       toKey: theirJoinCol.propertyName,
     },
   };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// OrderClause → TypeORM FindOptionsOrder
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Type guard: validates a string is a valid TypeORM sort direction.
+ */
+export function isOrderValue(value: string): value is 'ASC' | 'DESC' {
+  return value === 'ASC' || value === 'DESC';
+}
+
+/**
+ * Build TypeORM FindOptionsOrder from an OrderClause.
+ *
+ * Preserves array order — JavaScript objects maintain insertion order
+ * for string keys, which TypeORM uses to determine sort priority.
+ *
+ * Each entry is validated by {@link isOrderValue} during construction.
+ */
+export function buildOrder<Entity extends PlainLiteralObject>(
+  keys: OrderClause<Entity>,
+): FindOptionsOrder<Entity> | undefined {
+  if (keys.length === 0) return undefined;
+
+  const result: Record<string, string | Record<string, string>> = {};
+  let hasEntries = false;
+
+  for (const key of keys) {
+    if (!isOrderValue(key.order)) continue;
+    hasEntries = true;
+
+    if (key.relation) {
+      const existing = result[key.relation];
+      const nested = typeof existing === 'object' ? existing : {};
+      nested[key.field] = key.order;
+      result[key.relation] = nested;
+    } else {
+      result[key.field] = key.order;
+    }
+  }
+
+  if (!hasEntries) return undefined;
+
+  return Object.assign<FindOptionsOrder<Entity>, typeof result>({}, result);
 }

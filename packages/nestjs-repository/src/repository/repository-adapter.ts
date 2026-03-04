@@ -333,8 +333,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * Resolve incomplete JoinClauses using repository relation metadata.
-   * Fills in `on` (and optionally `through`/`cardinality`) when omitted.
+   * Validate JoinClauses against repository relation metadata.
    *
    * Called by ORM adapters before translating to native find options.
    */
@@ -343,25 +342,16 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
 
     const relMap = new Map(this.metadata.relations?.map((r) => [r.name, r]));
 
-    return join.map((j) => {
-      if (j.on) return j;
-
-      const rel = relMap.get(j.relation);
-
-      if (!rel) {
+    for (const j of join) {
+      if (!relMap.has(j.relation)) {
         throw new RuntimeException({
           message: 'Unknown relation "%s" on entity "%s"',
           messageParams: [j.relation, this.metadata.name],
         });
       }
+    }
 
-      return {
-        ...j,
-        on: rel.on,
-        cardinality: j.cardinality ?? rel.cardinality,
-        through: j.through ?? rel.through,
-      };
-    });
+    return join;
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

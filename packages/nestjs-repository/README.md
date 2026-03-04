@@ -18,11 +18,14 @@ control, and a two-level repository hook system.
 - [Module Registration](#module-registration)
 - [Architecture Overview](#architecture-overview)
 - [Repository Adapter](#repository-adapter)
+- [Relations and Joins](#relations-and-joins)
 - [Where Clause Builder](#where-clause-builder)
+- [Order Clause Builder](#order-clause-builder)
 - [Transaction Management](#transaction-management)
 - [Transactional Decorator](#transactional-decorator)
 - [Repository Hooks](#repository-hooks)
 - [Repository Registry](#repository-registry)
+- [Federation](#federation)
 - [Injecting Repositories](#injecting-repositories)
 - [Exceptions](#exceptions)
 
@@ -208,6 +211,118 @@ class TypeOrmRepository<Entity> extends RepositoryAdapter<Entity> {
 }
 ```
 
+## Relations and Joins
+
+Repository find options accept a `join` array of `JoinClause` entries to load
+related entities alongside the root query.
+
+### JoinClause
+
+Each `JoinClause` describes how to join a related entity:
+
+```ts
+interface JoinClause {
+  relation: string;           // relation name (must match entity metadata)
+  joinType?: 'LEFT' | 'INNER';  // default: 'LEFT'
+}
+```
+
+Structural properties (`on`, `through`, `cardinality`) are resolved
+automatically from entity relation metadata by `RepositoryAdapter.resolveJoinClauses()`.
+
+### Join Helper
+
+The `Join` helper from `@concepta/nestjs-common` builds `JoinClause` arrays:
+
+```ts
+import { Join } from '@concepta/nestjs-common';
+
+// Load a single relation (LEFT join by default)
+const [users, total] = await userRepo.findAndCount({
+  ...Join.join(Join.left('company')),
+});
+// users[0].company → Company | null
+
+// Multiple relations with different join types
+const [users, total] = await userRepo.findAndCount({
+  ...Join.join(
+    Join.left('posts'),
+    Join.inner('company'),
+  ),
+});
+
+// Many-to-many (junction configured in relation metadata)
+const [users, total] = await userRepo.findAndCount({
+  ...Join.join(Join.left('roles')),
+});
+```
+
+### Join Methods
+
+| Method | Description |
+| --- | --- |
+| `left(relation)` | LEFT JOIN (default — includes rows with no match) |
+| `inner(relation)` | INNER JOIN (excludes rows with no match) |
+| `join(...clauses)` | Wrap join clauses into `{ join: clauses }` for passing to `find()` |
+
+### Filtering by Relations
+
+Use `Where.rel()` to filter by fields on a related entity. The relation
+must be included in the join:
+
+```ts
+const w = Where.for<UserEntity>();
+
+const [users, total] = await userRepo.findAndCount({
+  ...Join.join(Join.left('posts')),
+  ...w.where(
+    w.and(
+      w.eq('status', 'active'),
+      w.rel('posts', Where.eq<PostEntity>('published', true)),
+    ),
+  ),
+});
+```
+
+### Sorting by Relations
+
+Use `OrderBy.rel()` to sort by fields on a related entity:
+
+```ts
+const o = OrderBy.for<UserEntity>();
+
+const [users, total] = await userRepo.findAndCount({
+  ...Join.join(Join.left('posts')),
+  ...o.order(
+    o.rel('posts', OrderBy.desc<PostEntity>('createdAt')),
+    o.asc('name'),
+  ),
+});
+```
+
+### Relation Metadata
+
+Relation metadata is populated automatically by the ORM driver (e.g.,
+`TypeOrmRepository` reads TypeORM's `RelationMetadata`). You can also
+configure per-relation behavior in `forFeature()`:
+
+```ts
+RepositoryModule.forFeature({
+  module: TypeOrmRepositoryModule,
+  entities: [{
+    key: 'users',
+    entity: UserEntity,
+    relations: {
+      posts: { federated: true },        // use separate queries
+      company: { onDelete: 'delegate' }, // defer to DB cascade settings
+    },
+  }],
+});
+```
+
+Relations marked `federated: true` use separate queries instead of SQL
+JOINs. See [Federation](#federation) for details.
+
 ## Where Clause Builder
 
 The `Where` helper from `@concepta/nestjs-common` builds ORM-agnostic
@@ -315,27 +430,24 @@ const orders = await orderRepo.find(
 );
 ```
 
-### Relation Conditions (In Progress)
+### Relation Conditions
 
-> Relation-based filtering via `rel()` is under active development. The
-> builder API is available, but driver-level translation support is not yet
-> complete.
-
-Use `rel()` to tag a condition with a relation name. When fully implemented,
-the driver will translate this into a relation-aware query (e.g., a JOIN
-condition in SQL):
+Use `rel()` to tag a condition with a relation name. The condition is applied
+as a filter on the related entity (see [Filtering by Relations](#filtering-by-relations)):
 
 ```ts
 const w = Where.for<OrderEntity>();
 
-const orders = await orderRepo.find(
-  w.where(
+// Filter orders by customer tier
+const orders = await orderRepo.findAndCount({
+  ...Join.join(Join.left('customer')),
+  ...w.where(
     w.and(
       w.eq('status', 'active'),
       w.rel('customer', Where.eq<CustomerEntity>('tier', 'gold')),
     ),
   ),
-);
+});
 ```
 
 ### Condition Operators
@@ -374,6 +486,94 @@ const orders = await orderRepo.find(
 | `where(clause)` | Wrap a `WhereClause` into `{ where: clause }` for passing to `find()` |
 | `rel(relation, condition)` | Tag a condition with a relation name |
 | `for<Entity>()` | Create a typed builder with field name checking |
+
+## Order Clause Builder
+
+The `OrderBy` helper from `@concepta/nestjs-common` builds ORM-agnostic
+`OrderClause` arrays that `RepositoryAdapter` implementations translate
+into driver-specific sort options.
+
+### Static API
+
+Pass the entity type as a generic parameter on each call:
+
+```ts
+import { OrderBy } from '@concepta/nestjs-common';
+
+// Single sort
+const users = await userRepo.find(
+  OrderBy.order(OrderBy.asc<UserEntity>('name')),
+);
+
+// Multiple sorts (priority follows array order)
+const users = await userRepo.find(
+  OrderBy.order(
+    OrderBy.desc<UserEntity>('createdAt'),
+    OrderBy.asc<UserEntity>('name'),
+  ),
+);
+```
+
+### Typed Builder API
+
+Bind the entity type once with `OrderBy.for<Entity>()`. All subsequent calls
+type-check field names against the entity:
+
+```ts
+import { OrderBy } from '@concepta/nestjs-common';
+
+const o = OrderBy.for<UserEntity>();
+
+const users = await userRepo.find(
+  o.order(o.desc('createdAt'), o.asc('name')),
+);
+```
+
+### Relation Sorting
+
+Use `rel()` to sort by a field on a related entity (see
+[Sorting by Relations](#sorting-by-relations)):
+
+```ts
+// Sort users by post title, then by creation date
+const users = await userRepo.findAndCount({
+  ...Join.join(Join.left('posts')),
+  ...OrderBy.order(
+    OrderBy.rel('posts', OrderBy.asc<PostEntity>('title')),
+    OrderBy.desc<UserEntity>('createdAt'),
+  ),
+});
+```
+
+### Sort Methods
+
+| Method | Description |
+| --- | --- |
+| `asc(field)` | Ascending sort |
+| `desc(field)` | Descending sort |
+
+### Utility Methods
+
+| Method | Description |
+| --- | --- |
+| `order(...keys)` | Wrap sort keys into `{ order: keys }` for passing to `find()` |
+| `rel(relation, key)` | Tag a sort key with a relation name |
+| `relDot(dotField, key)` | Extract relation from `"relation.field"` dot notation |
+| `for<Entity>()` | Create a typed builder with field name checking |
+
+### Combining Where + OrderBy
+
+Spread both helpers into find options:
+
+```ts
+const w = Where.for<OrderEntity>();
+const o = OrderBy.for<OrderEntity>();
+
+const orders = await orderRepo.find({
+  ...w.where(w.eq('status', 'active')),
+  ...o.order(o.desc('createdAt')),
+});
+```
 
 ### Passing Context
 
@@ -731,6 +931,67 @@ RepositoryModule.forFeature({
 // Throws: Duplicate repository keys: "users" (registered for UserEntity, attempted for AdminEntity)
 ```
 
+## Federation
+
+When a relation is marked `federated: true` (see
+[Relation Metadata](#relation-metadata)), the `FederationOrchestrator`
+intercepts `findAndCount` calls and executes **separate queries** for the
+root entity and each relation instead of using SQL JOINs. Results are
+hydrated together transparently.
+
+This is useful when:
+- JOINs produce expensive Cartesian products
+- Relations live in different datasources
+- Precise pagination control is needed (JOINs inflate row counts)
+
+### How It Works
+
+The caller uses the same `join`, `Where.rel()`, and `OrderBy.rel()` APIs
+described in [Relations and Joins](#relations-and-joins). The orchestrator
+analyzes the query and picks a strategy:
+
+| Strategy | When | Flow |
+| --- | --- | --- |
+| **ROOT_FIRST** | No relation filters or sorts | Query root → fetch relations in parallel → hydrate |
+| **RELATION_FIRST** | Has relation filters or sorts | Query relations → discover root IDs → fetch constrained roots → hydrate |
+
+ROOT_FIRST is the common case: one root query plus one query per relation,
+all relations fetched in parallel.
+
+RELATION_FIRST handles queries that filter or sort by relation fields. It
+iteratively queries the driving relation to discover matching root entity
+IDs, then fetches only those roots.
+
+### distinctFilter
+
+For many-cardinality federated relations that use sorts or filters, provide
+a `distinctFilter` to ensure one relation entity per root (required for
+deterministic ordering):
+
+```ts
+relations: {
+  posts: {
+    federated: true,
+    distinctFilter: Where.eq('isPrimary', true),
+  },
+},
+```
+
+### Constants
+
+| Constant | Default | Description |
+| --- | --- | --- |
+| `FEDERATION_DEFAULT_LIMIT` | 10 | Default page size when none specified |
+| `FEDERATION_MAX_ITERATIONS` | 10 | Max iterations for relation-first constraint discovery |
+| `FEDERATION_MAX_BUFFER_SIZE` | 1000 | Max offset before aborting iterative discovery |
+
+### Limitations
+
+- OR conditions across federated relations are not supported (throws
+  `FederationException`)
+- Only `findAndCount` is federated; `find`, `findOne`, and `count` use
+  standard ORM queries
+
 ## Injecting Repositories
 
 Use `@InjectDynamicRepository()` from `@concepta/nestjs-common` to inject
@@ -762,3 +1023,4 @@ The injection token is derived from the `key` provided in
 | `RepositoryDuplicateKeyException` | Duplicate repository keys detected at bootstrap |
 | `TransactionRequiredException` | `MANDATORY` propagation requires a transaction but none exists |
 | `TransactionTimeoutException` | Transaction exceeded timeout duration |
+| `FederationException` | Unsupported federated query (e.g., OR across federated relations) |

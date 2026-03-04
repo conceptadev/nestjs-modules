@@ -3,7 +3,7 @@ import { isNil, isObject } from '@nestjs/common/utils/shared.utils';
 
 import {
   EntityColumn,
-  SortCondition,
+  OrderSortKey,
   Where,
   WhereCondition,
   WhereConditionScalar,
@@ -48,7 +48,7 @@ export class CrudQueryParser<Entity extends PlainLiteralObject>
 
   public or: WhereCondition<Entity>[] = [];
 
-  public sort: SortCondition<Entity>[] = [];
+  public sort: OrderSortKey<Entity>[] = [];
 
   public limit: number | undefined;
 
@@ -347,7 +347,7 @@ export class CrudQueryParser<Entity extends PlainLiteralObject>
     return condition;
   }
 
-  private sortParser(data: string): SortCondition<Entity> {
+  private sortParser(data: string): OrderSortKey<Entity> {
     const sort = splitSortString(data, this._options.delimStr);
     validateSort(sort);
     return sort;

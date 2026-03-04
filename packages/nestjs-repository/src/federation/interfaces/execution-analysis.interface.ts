@@ -1,4 +1,4 @@
-import { RepositoryOrderOptions } from '@concepta/nestjs-common';
+import { OrderClause } from '@concepta/nestjs-common';
 
 import { FederatedRelation, FederationStrategy } from '../federation.types';
 import { FilterAnalyzer } from '../filter-analyzer';
@@ -9,10 +9,10 @@ import { FilterAnalyzer } from '../filter-analyzer';
 export interface ExecutionAnalysis {
   /** Whether to query roots first or relations first. */
   strategy: FederationStrategy;
-  /** Order options for the root query (relation keys removed). */
-  rootOrder: RepositoryOrderOptions | undefined;
-  /** Order options keyed by relation name for peer queries. */
-  relationOrders: Map<string, RepositoryOrderOptions>;
+  /** Order sort keys for the root query (relation keys removed). */
+  rootOrder: OrderClause | undefined;
+  /** Order sort keys keyed by relation name for peer queries. */
+  relationOrders: Map<string, OrderClause>;
   /** First relation with sorts or filters (drives RELATION_FIRST iteration). */
   drivingRelation: FederatedRelation | undefined;
   /** Relation names that appear as sort keys. */

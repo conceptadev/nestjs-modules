@@ -87,7 +87,7 @@ describe('FederationOrchestrator - No Relations Query', () => {
 
     // ACT
     const [result, total] = await orchestrator.findAndCount(rootRepo, {
-      order: { name: 'ASC' },
+      order: [{ field: 'name', order: 'ASC' }],
       take: 10,
       skip: 0,
     });
@@ -95,7 +95,7 @@ describe('FederationOrchestrator - No Relations Query', () => {
     // ASSERT
     expect(rootRepo.findAndCount).toHaveBeenCalledTimes(1);
     const callOptions = rootRepo.findAndCount.mock.calls[0][0];
-    expect(callOptions?.order).toEqual({ name: 'ASC' });
+    expect(callOptions?.order).toEqual([{ field: 'name', order: 'ASC' }]);
     expect(result).toHaveLength(3);
     expect(total).toBe(3);
     expect(result.map((r) => r.id)).toEqual([3, 1, 2]);

@@ -34,7 +34,7 @@ describe('FederationOrchestrator - Relation Sort Validation', () => {
       // ACT & ASSERT
       const error = await orchestrator
         .findAndCount(rootRepo, {
-          order: { relations: { title: 'ASC' } },
+          order: [{ field: 'title', order: 'ASC', relation: 'relations' }],
           join: [{ relation: 'relations' }],
           take: 10,
           skip: 0,
@@ -70,7 +70,7 @@ describe('FederationOrchestrator - Relation Sort Validation', () => {
             value: 'active',
             relation: 'relations',
           },
-          order: { relations: { priority: 'DESC' } },
+          order: [{ field: 'priority', order: 'DESC', relation: 'relations' }],
           join: [{ relation: 'relations' }],
           take: 10,
           skip: 0,
@@ -105,7 +105,7 @@ describe('FederationOrchestrator - Relation Sort Validation', () => {
             value: 'active',
             relation: 'relations',
           },
-          order: { relations: { title: 'ASC' } },
+          order: [{ field: 'title', order: 'ASC', relation: 'relations' }],
           join: [{ relation: 'relations' }],
           take: 10,
           skip: 0,
@@ -151,7 +151,7 @@ describe('FederationOrchestrator - Relation Sort Validation', () => {
               },
             ],
           },
-          order: { relations: { createdAt: 'DESC' } },
+          order: [{ field: 'createdAt', order: 'DESC', relation: 'relations' }],
           join: [{ relation: 'relations' }],
           take: 10,
           skip: 0,
@@ -180,7 +180,7 @@ describe('FederationOrchestrator - Relation Sort Validation', () => {
       // ACT & ASSERT
       const error = await orchestrator
         .findAndCount(rootRepo, {
-          order: { relations: { priority: 'DESC' } },
+          order: [{ field: 'priority', order: 'DESC', relation: 'relations' }],
           join: [{ relation: 'relations' }],
           take: 10,
           skip: 0,
@@ -214,7 +214,7 @@ describe('FederationOrchestrator - Relation Sort Validation', () => {
             operator: WhereOperator.CONTAINS,
             value: 'Project',
           },
-          order: { relations: { title: 'ASC' } },
+          order: [{ field: 'title', order: 'ASC', relation: 'relations' }],
           join: [{ relation: 'relations' }],
           take: 10,
           skip: 0,
@@ -248,7 +248,7 @@ describe('FederationOrchestrator - Relation Sort Validation', () => {
 
       // ACT - Should not throw
       const [result] = await orchestrator.findAndCount(rootRepo, {
-        order: { relations: { title: 'ASC' } },
+        order: [{ field: 'title', order: 'ASC', relation: 'relations' }],
         join: [{ relation: 'relations' }],
         take: 10,
         skip: 0,
@@ -287,7 +287,7 @@ describe('FederationOrchestrator - Relation Sort Validation', () => {
           value: 'active',
           relation: 'relations',
         },
-        order: { relations: { priority: 'DESC' } },
+        order: [{ field: 'priority', order: 'DESC', relation: 'relations' }],
         join: [{ relation: 'relations' }],
         take: 10,
         skip: 0,

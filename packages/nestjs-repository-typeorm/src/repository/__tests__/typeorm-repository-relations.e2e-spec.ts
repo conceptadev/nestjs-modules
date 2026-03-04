@@ -75,33 +75,10 @@ describe('TypeOrmRepository (relations)', () => {
   });
 
   describe('resolveJoinClauses', () => {
-    it('should resolve minimal JoinClause from metadata', () => {
-      const resolved = authorRepo['resolveJoinClauses']([
-        { relation: 'posts' },
-      ]);
-      expect(resolved).toEqual([
-        {
-          relation: 'posts',
-          on: { from: 'id', to: 'authorId' },
-          cardinality: 'many',
-        },
-      ]);
-    });
-
-    it('should pass through JoinClause with explicit on', () => {
-      const explicit = {
-        relation: 'posts',
-        on: { from: 'customId', to: 'customFk' },
-      };
-      const resolved = authorRepo['resolveJoinClauses']([explicit]);
-      expect(resolved).toEqual([explicit]);
-    });
-
-    it('should prefer clause cardinality over metadata', () => {
-      const resolved = authorRepo['resolveJoinClauses']([
-        { relation: 'posts', cardinality: 'one' },
-      ]);
-      expect(resolved![0].cardinality).toBe('one');
+    it('should pass through valid join clauses', () => {
+      const input = [{ relation: 'posts' }];
+      const resolved = authorRepo['resolveJoinClauses'](input);
+      expect(resolved).toBe(input);
     });
 
     it('should throw RuntimeException for unknown relation', () => {
@@ -116,38 +93,6 @@ describe('TypeOrmRepository (relations)', () => {
 
     it('should return undefined for undefined input', () => {
       expect(authorRepo['resolveJoinClauses'](undefined)).toBeUndefined();
-    });
-
-    it('should resolve M2M owning-side join with through metadata', () => {
-      const resolved = tagRepo['resolveJoinClauses']([{ relation: 'posts' }]);
-      expect(resolved).toEqual([
-        {
-          relation: 'posts',
-          on: { from: 'id', to: 'id' },
-          cardinality: 'many',
-          through: {
-            relation: 'post_tags',
-            fromKey: 'tagEntityFixtureId',
-            toKey: 'postEntityFixtureId',
-          },
-        },
-      ]);
-    });
-
-    it('should resolve M2M non-owning-side join with through metadata', () => {
-      const resolved = postRepo['resolveJoinClauses']([{ relation: 'tags' }]);
-      expect(resolved).toEqual([
-        {
-          relation: 'tags',
-          on: { from: 'id', to: 'id' },
-          cardinality: 'many',
-          through: {
-            relation: 'post_tags',
-            fromKey: 'postEntityFixtureId',
-            toKey: 'tagEntityFixtureId',
-          },
-        },
-      ]);
     });
   });
 
@@ -518,7 +463,7 @@ describe('TypeOrmRepository (relations)', () => {
     it('should sort by relation field ASC', async () => {
       const results = await postRepo.find({
         join: [{ relation: 'author' }],
-        order: { author: { name: 'ASC' } },
+        order: [{ field: 'name', order: 'ASC', relation: 'author' }],
       });
 
       expect(results).toHaveLength(2);
@@ -529,7 +474,7 @@ describe('TypeOrmRepository (relations)', () => {
     it('should sort by relation field DESC', async () => {
       const results = await postRepo.find({
         join: [{ relation: 'author' }],
-        order: { author: { name: 'DESC' } },
+        order: [{ field: 'name', order: 'DESC', relation: 'author' }],
       });
 
       expect(results).toHaveLength(2);
@@ -545,7 +490,10 @@ describe('TypeOrmRepository (relations)', () => {
 
       const results = await postRepo.find({
         join: [{ relation: 'author' }],
-        order: { author: { name: 'ASC' }, title: 'DESC' },
+        order: [
+          { field: 'name', order: 'ASC', relation: 'author' },
+          { field: 'title', order: 'DESC' },
+        ],
       });
 
       expect(results).toHaveLength(3);
@@ -560,7 +508,7 @@ describe('TypeOrmRepository (relations)', () => {
       const result = await postRepo.findOne({
         where: Where.eq('id', alicePost.id),
         join: [{ relation: 'author' }],
-        order: { author: { name: 'ASC' } },
+        order: [{ field: 'name', order: 'ASC', relation: 'author' }],
       });
 
       expect(result).toBeDefined();

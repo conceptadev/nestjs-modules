@@ -7,7 +7,7 @@ import { Test } from '@nestjs/testing';
 import {
   Ctx,
   RepositoryInterface,
-  SortConditionArr,
+  OrderSortKeyArr,
   WhereConditionArr,
 } from '@concepta/nestjs-common';
 
@@ -171,7 +171,7 @@ describe('#crud', () => {
       const page = 2;
       const limit = 10;
       const fields = ['a', 'b', 'c'];
-      const sorts: SortConditionArr<TestModelDto>[] = [
+      const sorts: OrderSortKeyArr<TestModelDto>[] = [
         ['firstName', 'ASC'],
         ['lastName', 'DESC'],
       ];

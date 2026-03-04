@@ -16,7 +16,6 @@ import {
   EntityManager,
   FindOptionsRelations,
   FindManyOptions,
-  FindOptionsOrder,
   FindOneOptions,
 } from 'typeorm';
 
@@ -33,7 +32,6 @@ import {
   RepositoryUpdateOptions,
   RepositoryUpsertOptions,
   RepositoryDeleteOptions,
-  RepositoryOrderOptions,
   RepositoryRestoreOptions,
   RuntimeException,
   WhereClause,
@@ -52,6 +50,7 @@ import { TypeOrmEntityNameException } from '../exceptions/typeorm-entity-name.ex
 import {
   buildEntity,
   buildColumns,
+  buildOrder,
   buildRelations,
 } from './typeorm-options.schema';
 
@@ -281,12 +280,7 @@ export class TypeOrmRepository<
     const resolvedJoin = this.resolveJoinClauses(options.join);
     const where = this.translateWhere(options.where);
     const relations = this.translateJoin(resolvedJoin);
-    const order = options.order
-      ? Object.assign<FindOptionsOrder<Entity>, RepositoryOrderOptions<Entity>>(
-          {},
-          options.order,
-        )
-      : undefined;
+    const order = buildOrder<Entity>(options.order ?? []);
     return {
       select: options.select,
       where,

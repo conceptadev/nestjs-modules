@@ -1,4 +1,4 @@
-import { RepositoryOrderOptions } from '@concepta/nestjs-common';
+import { OrderClause, OrderSortKey } from '@concepta/nestjs-common';
 
 import { FederationException } from './exceptions/federation.exception';
 import { FederatedRelation, FederationStrategy } from './federation.types';
@@ -9,7 +9,7 @@ export { ExecutionAnalysis } from './interfaces/execution-analysis.interface';
 
 /**
  * Analyze the query to determine execution strategy and separate
- * root vs relation order options.
+ * root vs relation order sort keys.
  *
  * Strategy selection:
  * - ROOT_FIRST: No relation sorts or filters. Fetch roots, then enrich.
@@ -18,7 +18,7 @@ export { ExecutionAnalysis } from './interfaces/execution-analysis.interface';
  */
 export function analyzeExecution(
   filterAnalyzer: FilterAnalyzer,
-  order: RepositoryOrderOptions | undefined,
+  order: OrderClause | undefined,
   relations: FederatedRelation[],
 ): ExecutionAnalysis {
   const { rootOrder, relationOrders, sortedRelationNames, drivingRelation } =
@@ -50,21 +50,21 @@ export function analyzeExecution(
 }
 
 /**
- * Separate RepositoryOrderOptions into root vs relation parts.
+ * Separate OrderClause into root vs relation parts.
  *
- * Top-level keys matching a federated relation name (with object values)
+ * Sort keys whose `relation` matches a federated relation name
  * are extracted as relation orders. Everything else is a root order.
  */
 function separateOrder(
-  order: RepositoryOrderOptions | undefined,
+  order: OrderClause | undefined,
   relations: FederatedRelation[],
 ): {
-  rootOrder: RepositoryOrderOptions | undefined;
-  relationOrders: Map<string, RepositoryOrderOptions>;
+  rootOrder: OrderClause | undefined;
+  relationOrders: Map<string, OrderClause>;
   sortedRelationNames: Set<string>;
   drivingRelation: FederatedRelation | undefined;
 } {
-  if (!order) {
+  if (!order || order.length === 0) {
     return {
       rootOrder: undefined,
       relationOrders: new Map(),
@@ -74,28 +74,29 @@ function separateOrder(
   }
 
   const relationsByName = new Map(relations.map((r) => [r.name, r]));
-  const rootOrder: RepositoryOrderOptions = {};
-  const relationOrders = new Map<string, RepositoryOrderOptions>();
+  const rootKeys: OrderSortKey[] = [];
+  const relationOrders = new Map<string, OrderSortKey[]>();
   const sortedRelationNames = new Set<string>();
   let drivingRelation: FederatedRelation | undefined;
 
-  for (const [key, value] of Object.entries(order)) {
-    const relation =
-      typeof value === 'object' && value !== null
-        ? relationsByName.get(key)
-        : undefined;
+  for (const key of order) {
+    const relation = key.relation
+      ? relationsByName.get(key.relation)
+      : undefined;
 
-    if (relation) {
-      relationOrders.set(key, value as RepositoryOrderOptions);
-      sortedRelationNames.add(key);
+    if (relation && key.relation) {
+      const arr = relationOrders.get(key.relation) ?? [];
+      arr.push(key);
+      relationOrders.set(key.relation, arr);
+      sortedRelationNames.add(key.relation);
       if (!drivingRelation) drivingRelation = relation;
     } else {
-      rootOrder[key] = value;
+      rootKeys.push(key);
     }
   }
 
   return {
-    rootOrder: Object.keys(rootOrder).length > 0 ? rootOrder : undefined,
+    rootOrder: rootKeys.length > 0 ? rootKeys : undefined,
     relationOrders,
     sortedRelationNames,
     drivingRelation,

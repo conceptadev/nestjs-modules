@@ -43,7 +43,7 @@ describe('FederationOrchestrator - Root Sort Strategy', () => {
 
       // ACT
       const [result, total] = await orchestrator.findAndCount(rootRepo, {
-        order: { name: 'ASC' },
+        order: [{ field: 'name', order: 'ASC' }],
         join: [{ relation: 'relations' }],
         take: 10,
         skip: 0,
@@ -61,7 +61,7 @@ describe('FederationOrchestrator - Root Sort Strategy', () => {
       // Root query: LEFT JOIN = no filter constraints, just sort
       const rootCall = rootRepo.findAndCount.mock.calls[0][0];
       expect(rootCall?.where).toBeUndefined();
-      expect(rootCall?.order).toEqual({ name: 'ASC' });
+      expect(rootCall?.order).toEqual([{ field: 'name', order: 'ASC' }]);
       expect(rootCall?.take).toBe(10);
       expect(rootCall?.skip).toBe(0);
 
@@ -100,7 +100,7 @@ describe('FederationOrchestrator - Root Sort Strategy', () => {
 
       // ACT
       const [result, total] = await orchestrator.findAndCount(rootRepo, {
-        order: { id: 'DESC' },
+        order: [{ field: 'id', order: 'DESC' }],
         join: [{ relation: 'relations' }],
         take: 5,
         skip: 0,
@@ -118,7 +118,7 @@ describe('FederationOrchestrator - Root Sort Strategy', () => {
       // Root query: sort by id DESC
       const rootCall = rootRepo.findAndCount.mock.calls[0][0];
       expect(rootCall?.where).toBeUndefined();
-      expect(rootCall?.order).toEqual({ id: 'DESC' });
+      expect(rootCall?.order).toEqual([{ field: 'id', order: 'DESC' }]);
 
       // Result verification
       expect(total).toBe(5);
@@ -160,7 +160,10 @@ describe('FederationOrchestrator - Root Sort Strategy', () => {
 
       // ACT
       const [result, total] = await orchestrator.findAndCount(rootRepo, {
-        order: { name: 'ASC', id: 'DESC' },
+        order: [
+          { field: 'name', order: 'ASC' },
+          { field: 'id', order: 'DESC' },
+        ],
         join: [{ relation: 'relations' }],
         take: 10,
         skip: 0,
@@ -173,7 +176,10 @@ describe('FederationOrchestrator - Root Sort Strategy', () => {
       // Root query: multi-field sort
       const rootCall = rootRepo.findAndCount.mock.calls[0][0];
       expect(rootCall?.where).toBeUndefined();
-      expect(rootCall?.order).toEqual({ name: 'ASC', id: 'DESC' });
+      expect(rootCall?.order).toEqual([
+        { field: 'name', order: 'ASC' },
+        { field: 'id', order: 'DESC' },
+      ]);
 
       // Result verification
       expect(total).toBe(3);
@@ -217,7 +223,7 @@ describe('FederationOrchestrator - Root Sort Strategy', () => {
       // ACT
       const [result, total] = await orchestrator.findAndCount(rootRepo, {
         where: { field: 'name', operator: WhereOperator.CONTAINS, value: 'A' },
-        order: { name: 'ASC' },
+        order: [{ field: 'name', order: 'ASC' }],
         join: [{ relation: 'relations' }],
         take: 10,
       });
@@ -229,7 +235,7 @@ describe('FederationOrchestrator - Root Sort Strategy', () => {
         operator: WhereOperator.CONTAINS,
         value: 'A',
       });
-      expect(rootCall?.order).toEqual({ name: 'ASC' });
+      expect(rootCall?.order).toEqual([{ field: 'name', order: 'ASC' }]);
 
       expect(total).toBe(1);
       expect(result).toHaveLength(1);

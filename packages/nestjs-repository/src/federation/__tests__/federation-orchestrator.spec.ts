@@ -271,7 +271,7 @@ describe('FederationOrchestrator', () => {
 
       await orchestrator.findAndCount(rootRepo, {
         where: { field: 'name', operator: WhereOperator.EQ, value: 'Alice' },
-        order: { createdAt: 'DESC' },
+        order: [{ field: 'createdAt', order: 'DESC' }],
         join: [{ relation: 'posts' }],
         take: 5,
         skip: 0,
@@ -284,7 +284,7 @@ describe('FederationOrchestrator', () => {
         operator: WhereOperator.EQ,
         value: 'Alice',
       });
-      expect(rootCall?.order).toEqual({ createdAt: 'DESC' });
+      expect(rootCall?.order).toEqual([{ field: 'createdAt', order: 'DESC' }]);
       expect(rootCall?.join).toBeUndefined();
     });
 
@@ -442,7 +442,7 @@ describe('FederationOrchestrator', () => {
       ]);
 
       const [data] = await orchestrator.findAndCount(rootRepo, {
-        order: { posts: { title: 'ASC' } },
+        order: [{ field: 'title', order: 'ASC', relation: 'posts' }],
         join: [{ relation: 'posts' }],
       });
 
@@ -477,13 +477,15 @@ describe('FederationOrchestrator', () => {
       ]);
 
       await orchestrator.findAndCount(rootRepo, {
-        order: { posts: { title: 'ASC' } },
+        order: [{ field: 'title', order: 'ASC', relation: 'posts' }],
         join: [{ relation: 'posts' }],
       });
 
       // First peer call (discovery) should include order
       const discoveryCall = postRepo.findAndCount.mock.calls[0][0];
-      expect(discoveryCall?.order).toEqual({ title: 'ASC' });
+      expect(discoveryCall?.order).toEqual([
+        { field: 'title', order: 'ASC', relation: 'posts' },
+      ]);
     });
   });
 
@@ -746,7 +748,7 @@ describe('FederationOrchestrator', () => {
 
       await expect(
         orchestrator.findAndCount(rootRepo, {
-          order: { posts: { title: 'ASC' } },
+          order: [{ field: 'title', order: 'ASC', relation: 'posts' }],
           join: [{ relation: 'posts' }],
         }),
       ).rejects.toThrow(FederationException);

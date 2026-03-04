@@ -57,7 +57,7 @@ describe('FederationOrchestrator - Relation Sort Strategy', () => {
 
       // ACT
       const [result, total] = await orchestrator.findAndCount(rootRepo, {
-        order: { relations: { title: 'ASC' } },
+        order: [{ field: 'title', order: 'ASC', relation: 'relations' }],
         join: [{ relation: 'relations' }],
         take: 10,
         skip: 0,
@@ -90,7 +90,9 @@ describe('FederationOrchestrator - Relation Sort Strategy', () => {
           },
         ],
       });
-      expect(discoveryCall?.order).toEqual({ title: 'ASC' });
+      expect(discoveryCall?.order).toEqual([
+        { field: 'title', order: 'ASC', relation: 'relations' },
+      ]);
       expect(discoveryCall?.take).toBe(10);
       expect(discoveryCall?.skip).toBe(0);
 
@@ -195,7 +197,7 @@ describe('FederationOrchestrator - Relation Sort Strategy', () => {
           value: 5,
           relation: 'relations',
         },
-        order: { relations: { priority: 'DESC' } },
+        order: [{ field: 'priority', order: 'DESC', relation: 'relations' }],
         join: [{ relation: 'relations' }],
         take: 10,
         skip: 0,
@@ -234,7 +236,9 @@ describe('FederationOrchestrator - Relation Sort Strategy', () => {
           },
         ],
       });
-      expect(discoveryCall?.order).toEqual({ priority: 'DESC' });
+      expect(discoveryCall?.order).toEqual([
+        { field: 'priority', order: 'DESC', relation: 'relations' },
+      ]);
       expect(discoveryCall?.take).toBe(10);
       expect(discoveryCall?.skip).toBe(0);
 
@@ -284,7 +288,7 @@ describe('FederationOrchestrator - Relation Sort Strategy', () => {
 
       // ACT
       const [result, total] = await orchestrator.findAndCount(rootRepo, {
-        order: { relations: { priority: 'DESC' } },
+        order: [{ field: 'priority', order: 'DESC', relation: 'relations' }],
         join: [{ relation: 'relations' }],
         take: 10,
         skip: 0,
@@ -329,7 +333,7 @@ describe('FederationOrchestrator - Relation Sort Strategy', () => {
           value: 'archived',
           relation: 'relations',
         },
-        order: { relations: { title: 'ASC' } },
+        order: [{ field: 'title', order: 'ASC', relation: 'relations' }],
         join: [{ relation: 'relations' }],
         take: 10,
         skip: 0,
@@ -375,7 +379,7 @@ describe('FederationOrchestrator - Relation Sort Strategy', () => {
 
       // ACT
       const [result, total] = await orchestrator.findAndCount(rootRepo, {
-        order: { relations: { title: 'ASC' } },
+        order: [{ field: 'title', order: 'ASC', relation: 'relations' }],
         join: [{ relation: 'relations' }],
         take: 5,
         skip: 0,
@@ -387,7 +391,9 @@ describe('FederationOrchestrator - Relation Sort Strategy', () => {
 
       // Discovery call (call 0): pagination take=5, skip=0
       const discoveryCall = peerRepo.findAndCount.mock.calls[0][0];
-      expect(discoveryCall?.order).toEqual({ title: 'ASC' });
+      expect(discoveryCall?.order).toEqual([
+        { field: 'title', order: 'ASC', relation: 'relations' },
+      ]);
       expect(discoveryCall?.take).toBe(5);
       expect(discoveryCall?.skip).toBe(0);
 
@@ -437,7 +443,7 @@ describe('FederationOrchestrator - Relation Sort Strategy', () => {
 
       // ACT
       const [result, total] = await orchestrator.findAndCount(rootRepo, {
-        order: { relations: { title: 'ASC' } },
+        order: [{ field: 'title', order: 'ASC', relation: 'relations' }],
         join: [{ relation: 'relations' }],
         take: 5,
         skip: 5,
@@ -449,7 +455,9 @@ describe('FederationOrchestrator - Relation Sort Strategy', () => {
 
       // Discovery call (call 0): pagination take=5, skip=5
       const discoveryCall = peerRepo.findAndCount.mock.calls[0][0];
-      expect(discoveryCall?.order).toEqual({ title: 'ASC' });
+      expect(discoveryCall?.order).toEqual([
+        { field: 'title', order: 'ASC', relation: 'relations' },
+      ]);
       expect(discoveryCall?.take).toBe(5);
       expect(discoveryCall?.skip).toBe(5);
 

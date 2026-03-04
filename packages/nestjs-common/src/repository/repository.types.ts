@@ -1,5 +1,10 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
+import {
+  OrderSortKeyAsc,
+  OrderSortKeyDesc,
+} from './interfaces/order-sort-key.interface';
+
 /**
  * Column name type — narrows to `keyof T & string` when an entity is provided.
  */
@@ -102,8 +107,20 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
 
 /**
- * Tuple shorthand for a sort condition: `[field, order]`.
+ * A sort key on a single entity field — discriminated union on `order`.
  */
-export type SortConditionArr<
-  T extends PlainLiteralObject = PlainLiteralObject,
-> = [EntityColumn<T>, SortOrder];
+export type OrderSortKey<T extends PlainLiteralObject = PlainLiteralObject> =
+  | OrderSortKeyAsc<T>
+  | OrderSortKeyDesc<T>;
+
+/**
+ * Tuple shorthand for an order sort key: `[field, order]`.
+ */
+export type OrderSortKeyArr<T extends PlainLiteralObject = PlainLiteralObject> =
+  [EntityColumn<T>, SortOrder];
+
+/**
+ * An ordered list of sort keys — the ORDER BY clause.
+ */
+export type OrderClause<T extends PlainLiteralObject = PlainLiteralObject> =
+  OrderSortKey<T>[];

@@ -175,64 +175,16 @@ describe(RepositoryAdapter.name, () => {
       expect(adapter.exposedResolveJoinClauses([])).toBeUndefined();
     });
 
-    it('should resolve single join from metadata', () => {
-      const result = adapter.exposedResolveJoinClauses([{ relation: 'posts' }]);
-      expect(result).toEqual([
-        {
-          relation: 'posts',
-          on: { from: 'id', to: 'authorId' },
-          cardinality: 'many',
-        },
-      ]);
+    it('should pass through valid join clauses', () => {
+      const input: JoinClause[] = [{ relation: 'posts' }];
+      const result = adapter.exposedResolveJoinClauses(input);
+      expect(result).toBe(input);
     });
 
-    it('should resolve two joins at once', () => {
-      const result = adapter.exposedResolveJoinClauses([
-        { relation: 'posts' },
-        { relation: 'tags' },
-      ]);
-      expect(result).toEqual([
-        {
-          relation: 'posts',
-          on: { from: 'id', to: 'authorId' },
-          cardinality: 'many',
-        },
-        {
-          relation: 'tags',
-          on: { from: 'id', to: 'id' },
-          cardinality: 'many',
-          through: {
-            relation: 'entity_tags',
-            fromKey: 'entityId',
-            toKey: 'tagId',
-          },
-        },
-      ]);
-    });
-
-    it('should fill in through for M2M relation', () => {
-      const result = adapter.exposedResolveJoinClauses([{ relation: 'tags' }]);
-      expect(result![0].through).toEqual({
-        relation: 'entity_tags',
-        fromKey: 'entityId',
-        toKey: 'tagId',
-      });
-    });
-
-    it('should preserve explicit on (pass-through)', () => {
-      const explicit = {
-        relation: 'posts',
-        on: { from: 'customId', to: 'customFk' },
-      };
-      const result = adapter.exposedResolveJoinClauses([explicit]);
-      expect(result).toEqual([explicit]);
-    });
-
-    it('should prefer clause cardinality over metadata', () => {
-      const result = adapter.exposedResolveJoinClauses([
-        { relation: 'posts', cardinality: 'one' },
-      ]);
-      expect(result![0].cardinality).toBe('one');
+    it('should validate multiple joins', () => {
+      const input: JoinClause[] = [{ relation: 'posts' }, { relation: 'tags' }];
+      const result = adapter.exposedResolveJoinClauses(input);
+      expect(result).toBe(input);
     });
 
     it('should throw RuntimeException for unknown relation', () => {

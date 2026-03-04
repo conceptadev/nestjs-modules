@@ -12,8 +12,6 @@ import {
   RepositoryInterface,
   RepositoryFindOptions,
   RepositoryFindOneOptions,
-  RepositoryOrderOptions,
-  SortOrder,
   Where,
   WhereClause,
   WhereCondition,
@@ -217,44 +215,6 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
 
     const uniqueFields = new Set<keyof Entity>(selectArray);
     return Array.from(uniqueFields);
-  }
-
-  /**
-   * Build order clause for FindOptions.
-   * Supports relation sorts via nested objects (e.g., `{ blog: { status: 'ASC' } }`).
-   */
-  protected buildOrderClause(
-    query: CrudParsedQueryInterface<Entity>,
-    options: CrudQueryOptionsInterface<Entity>,
-  ): RepositoryOrderOptions<Entity> {
-    const sort =
-      query.sort && query.sort.length
-        ? query.sort
-        : options.sort && options.sort.length
-          ? options.sort
-          : [];
-
-    const order: RepositoryOrderOptions<Entity> = {};
-    const relationSorts: {
-      [relation: string]: { [field: string]: SortOrder };
-    } = {};
-
-    for (const s of sort) {
-      if (s.relation) {
-        if (!relationSorts[s.relation]) {
-          relationSorts[s.relation] = {};
-        }
-        relationSorts[s.relation][s.field] = s.order;
-      } else {
-        order[s.field] = s.order;
-      }
-    }
-
-    for (const [relation, fields] of Object.entries(relationSorts)) {
-      order[relation] = fields;
-    }
-
-    return order;
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -499,7 +459,8 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
     const select = this.getSelectFields(query, queryOptions);
 
     // Build order clause
-    const order = this.buildOrderClause(query, queryOptions);
+    const order =
+      query.sort.length > 0 ? query.sort : (queryOptions.sort ?? []);
 
     // Calculate pagination
     const take = this.getTake(query, queryOptions);
@@ -515,7 +476,7 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
       where,
       join: context.options?.query?.join,
       select: select.length > 0 ? select : undefined,
-      order: Object.keys(order).length > 0 ? order : undefined,
+      order: order.length > 0 ? order : undefined,
       take: take || undefined,
       skip: skip || undefined,
       withDeleted: withDeleted || undefined,

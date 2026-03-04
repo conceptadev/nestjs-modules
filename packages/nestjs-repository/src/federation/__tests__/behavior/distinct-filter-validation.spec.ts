@@ -34,7 +34,7 @@ describe('FederationOrchestrator - distinctFilter Validation', () => {
       // ACT & ASSERT
       const error = await orchestrator
         .findAndCount(rootRepo, {
-          order: { relations: { title: 'ASC' } },
+          order: [{ field: 'title', order: 'ASC', relation: 'relations' }],
           join: [{ relation: 'relations' }],
           take: 10,
           skip: 0,
@@ -83,7 +83,7 @@ describe('FederationOrchestrator - distinctFilter Validation', () => {
 
       // ACT
       const [result, total] = await orchestrator.findAndCount(rootRepo, {
-        order: { relations: { title: 'ASC' } },
+        order: [{ field: 'title', order: 'ASC', relation: 'relations' }],
         join: [{ relation: 'relations' }],
         take: 3,
         skip: 0,
@@ -134,7 +134,7 @@ describe('FederationOrchestrator - distinctFilter Validation', () => {
 
       // ACT
       const [result, total] = await orchestrator.findAndCount(rootRepo, {
-        order: { relations: { title: 'ASC' } },
+        order: [{ field: 'title', order: 'ASC', relation: 'relations' }],
         join: [{ relation: 'relations' }],
         take: 10,
         skip: 0,
@@ -192,7 +192,7 @@ describe('FederationOrchestrator - distinctFilter Validation', () => {
 
       // ACT - Should not throw (one-to-one doesn't need distinctFilter)
       const [result, total] = await orchestrator.findAndCount(rootRepo, {
-        order: { profile: { title: 'ASC' } },
+        order: [{ field: 'title', order: 'ASC', relation: 'profile' }],
         join: [{ relation: 'profile' }],
         take: 10,
         skip: 0,
