@@ -1462,7 +1462,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-cache@workspace:packages/nestjs-cache"
   dependencies:
-    "@concepta/nestjs-access-control": "npm:^7.0.0-alpha.10"
     "@concepta/nestjs-common": "npm:^7.0.0-alpha.10"
     "@concepta/nestjs-crud": "npm:^7.0.0-alpha.10"
     "@concepta/nestjs-hook": "npm:^7.0.0-alpha.10"
