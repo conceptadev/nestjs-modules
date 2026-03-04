@@ -64,15 +64,19 @@ class TestRepositoryAdapter extends RepositoryAdapter<TestEntity> {
     ],
   };
 
-  find(_options?: RepositoryFindOptions<TestEntity>): Promise<TestEntity[]> {
+  protected doFind(
+    _options?: RepositoryFindOptions<TestEntity>,
+  ): Promise<TestEntity[]> {
     throw new Error('not implemented');
   }
-  findOne(
+  protected doFindOne(
     _options: RepositoryFindOneOptions<TestEntity>,
   ): Promise<TestEntity | null> {
     throw new Error('not implemented');
   }
-  count(_options?: RepositoryFindOptions<TestEntity>): Promise<number> {
+  protected doCount(
+    _options?: RepositoryFindOptions<TestEntity>,
+  ): Promise<number> {
     throw new Error('not implemented');
   }
   protected doFindAndCount(
@@ -80,51 +84,51 @@ class TestRepositoryAdapter extends RepositoryAdapter<TestEntity> {
   ): Promise<[TestEntity[], number]> {
     throw new Error('not implemented');
   }
-  create(
+  protected doCreate(
     _entity: DeepPartial<TestEntity>,
     _options?: RepositoryCreateOptions,
   ): Promise<TestEntity> {
     throw new Error('not implemented');
   }
-  createMany(
+  protected doCreateMany(
     _entities: DeepPartial<TestEntity>[],
     _options?: RepositoryCreateOptions,
   ): Promise<TestEntity[]> {
     throw new Error('not implemented');
   }
-  update(
+  protected doUpdate(
     _entity: TestEntity,
     _data: DeepPartial<TestEntity>,
     _options?: RepositoryUpdateOptions,
   ): Promise<TestEntity> {
     throw new Error('not implemented');
   }
-  upsert(
+  protected doUpsert(
     _entity: DeepPartial<TestEntity>,
     _options?: RepositoryUpsertOptions,
   ): Promise<TestEntity> {
     throw new Error('not implemented');
   }
-  replace(
+  protected doReplace(
     _entity: TestEntity,
     _data: DeepPartial<TestEntity>,
     _options?: RepositoryUpdateOptions,
   ): Promise<TestEntity> {
     throw new Error('not implemented');
   }
-  delete(
+  protected doDelete(
     _entity: TestEntity,
     _options?: RepositoryDeleteOptions,
   ): Promise<TestEntity> {
     throw new Error('not implemented');
   }
-  softDelete(
+  protected doSoftDelete(
     _entity: TestEntity,
     _options?: RepositoryDeleteOptions,
   ): Promise<TestEntity> {
     throw new Error('not implemented');
   }
-  restore(
+  protected doRestore(
     _entity: TestEntity,
     _options?: RepositoryRestoreOptions,
   ): Promise<TestEntity> {

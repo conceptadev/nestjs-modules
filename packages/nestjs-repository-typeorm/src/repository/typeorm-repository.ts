@@ -300,205 +300,136 @@ export class TypeOrmRepository<
   // Query operations
   // ═══════════════════════════════════════════════════════════════════════════
 
-  async find(options: RepositoryFindOptions<Entity> = {}): Promise<Entity[]> {
-    return this.permeator.find.permeate(
-      options,
-      async (scoped) => {
-        const repo = await this.getRepo(options.ctx);
-        return repo.find(this.buildNativeFindManyOptions(scoped));
-      },
-      options.ctx,
-    );
+  protected async doFind(
+    options: RepositoryFindOptions<Entity> = {},
+  ): Promise<Entity[]> {
+    const repo = await this.getRepo(options.ctx);
+    return repo.find(this.buildNativeFindManyOptions(options));
   }
 
-  async findOne(
+  protected async doFindOne(
     options: RepositoryFindOneOptions<Entity>,
   ): Promise<Entity | null> {
-    return this.permeator.findOne.permeate(
-      options,
-      async (scoped) => {
-        const repo = await this.getRepo(options.ctx);
-        return repo.findOne(this.buildNativeFindOneOptions(scoped));
-      },
-      options.ctx,
-    );
+    const repo = await this.getRepo(options.ctx);
+    return repo.findOne(this.buildNativeFindOneOptions(options));
   }
 
-  async count(options: RepositoryFindOptions<Entity> = {}): Promise<number> {
-    return this.permeator.count.permeate(
-      options,
-      async (scoped) => {
-        const repo = await this.getRepo(options.ctx);
-        return repo.count(this.buildNativeFindManyOptions(scoped));
-      },
-      options.ctx,
-    );
+  protected async doCount(
+    options: RepositoryFindOptions<Entity> = {},
+  ): Promise<number> {
+    const repo = await this.getRepo(options.ctx);
+    return repo.count(this.buildNativeFindManyOptions(options));
   }
 
   protected async doFindAndCount(
     options: RepositoryFindOptions<Entity> = {},
   ): Promise<[Entity[], number]> {
-    return this.permeator.findAndCount.permeate(
-      options,
-      async (scoped) => {
-        const repo = await this.getRepo(options.ctx);
-        return repo.findAndCount(this.buildNativeFindManyOptions(scoped));
-      },
-      options.ctx,
-    );
+    const repo = await this.getRepo(options.ctx);
+    return repo.findAndCount(this.buildNativeFindManyOptions(options));
   }
 
   // Create operations
 
-  async create(
+  protected async doCreate(
     entity: DeepPartial<Entity>,
     options?: RepositoryCreateOptions,
   ): Promise<Entity> {
-    return this.permeator.create.permeate(
-      entity,
-      async (scoped) => {
-        const repo = await this.getRepo(options?.ctx);
-        this.markDirty(options?.ctx);
-        return repo.save(scoped);
-      },
-      options?.ctx,
-    );
+    const repo = await this.getRepo(options?.ctx);
+    this.markDirty(options?.ctx);
+    return repo.save(entity);
   }
 
-  async createMany(
+  protected async doCreateMany(
     entities: DeepPartial<Entity>[],
     options?: RepositoryCreateOptions,
   ): Promise<Entity[]> {
-    return this.permeator.createMany.permeate(
-      entities,
-      async (scoped) => {
-        const repo = await this.getRepo(options?.ctx);
-        this.markDirty(options?.ctx);
-        return repo.save(scoped);
-      },
-      options?.ctx,
-    );
+    const repo = await this.getRepo(options?.ctx);
+    this.markDirty(options?.ctx);
+    return repo.save(entities);
   }
 
   // Update operations
 
-  async update(
+  protected async doUpdate(
     entity: Entity,
     data: DeepPartial<Entity>,
     options?: RepositoryUpdateOptions,
   ): Promise<Entity> {
-    return this.permeator.update.permeate(
-      data,
-      async (scoped) => {
-        const repo = await this.getRepo(options?.ctx);
-        this.markDirty(options?.ctx);
-        const merged = repo.merge(entity, scoped);
-        return repo.save(merged);
-      },
-      options?.ctx,
-    );
+    const repo = await this.getRepo(options?.ctx);
+    this.markDirty(options?.ctx);
+    const merged = repo.merge(entity, data);
+    return repo.save(merged);
   }
 
-  async upsert(
+  protected async doUpsert(
     entity: DeepPartial<Entity>,
     options?: RepositoryUpsertOptions,
   ): Promise<Entity> {
-    return this.permeator.upsert.permeate(
-      entity,
-      async (scoped) => {
-        const repo = await this.getRepo(options?.ctx);
-        this.markDirty(options?.ctx);
-        const conflictPaths = this.getPrimaryColumns();
-        const insertResult = await repo.upsert(scoped, conflictPaths);
+    const repo = await this.getRepo(options?.ctx);
+    this.markDirty(options?.ctx);
+    const conflictPaths = this.getPrimaryColumns();
+    const insertResult = await repo.upsert(entity, conflictPaths);
 
-        const identifiers = insertResult.identifiers[0] ?? {};
-        const primaryKeys: Partial<Record<keyof Entity, Entity[keyof Entity]>> =
-          {};
+    const identifiers = insertResult.identifiers[0] ?? {};
+    const primaryKeys: Partial<Record<keyof Entity, Entity[keyof Entity]>> = {};
 
-        for (const col of conflictPaths) {
-          const value = identifiers[col] ?? scoped[col];
+    for (const col of conflictPaths) {
+      const value = identifiers[col] ?? entity[col];
 
-          if (value === undefined) {
-            throw new Error(`Upsert requires primary key "${col}" to be set`);
-          }
+      if (value === undefined) {
+        throw new Error(`Upsert requires primary key "${col}" to be set`);
+      }
 
-          primaryKeys[col] = value;
-        }
+      primaryKeys[col] = value;
+    }
 
-        const result = await repo.findOne({ where: primaryKeys });
+    const result = await repo.findOne({ where: primaryKeys });
 
-        if (!result) {
-          throw new Error('Upsert failed: entity not found after upsert');
-        }
+    if (!result) {
+      throw new Error('Upsert failed: entity not found after upsert');
+    }
 
-        return result;
-      },
-      options?.ctx,
-    );
+    return result;
   }
 
-  async replace(
+  protected async doReplace(
     entity: Entity,
     data: DeepPartial<Entity>,
     options?: RepositoryUpdateOptions,
   ): Promise<Entity> {
-    return this.permeator.replace.permeate(
-      data,
-      async (scoped) => {
-        const repo = await this.getRepo(options?.ctx);
-        this.markDirty(options?.ctx);
-        const replaced = repo.merge(entity, scoped);
-        return repo.save(replaced);
-      },
-      options?.ctx,
-    );
+    const repo = await this.getRepo(options?.ctx);
+    this.markDirty(options?.ctx);
+    const replaced = repo.merge(entity, data);
+    return repo.save(replaced);
   }
 
   // Delete operations
 
-  async delete(
+  protected async doDelete(
     entity: Entity,
     options?: RepositoryDeleteOptions,
   ): Promise<Entity> {
-    return this.permeator.delete.permeate(
-      entity,
-      async (scoped) => {
-        const repo = await this.getRepo(options?.ctx);
-        this.markDirty(options?.ctx);
-        return repo.remove(scoped);
-      },
-      options?.ctx,
-    );
+    const repo = await this.getRepo(options?.ctx);
+    this.markDirty(options?.ctx);
+    return repo.remove(entity);
   }
 
-  async softDelete(
+  protected async doSoftDelete(
     entity: Entity,
     options?: RepositoryDeleteOptions,
   ): Promise<Entity> {
-    return this.permeator.softDelete.permeate(
-      entity,
-      async (scoped) => {
-        const repo = await this.getRepo(options?.ctx);
-        this.markDirty(options?.ctx);
-        return repo.softRemove(scoped);
-      },
-      options?.ctx,
-    );
+    const repo = await this.getRepo(options?.ctx);
+    this.markDirty(options?.ctx);
+    return repo.softRemove(entity);
   }
 
-  async restore(
+  protected async doRestore(
     entity: Entity,
     options?: RepositoryRestoreOptions,
   ): Promise<Entity> {
-    return this.permeator.restore.permeate(
-      entity,
-      async (scoped) => {
-        const repo = await this.getRepo(options?.ctx);
-        this.markDirty(options?.ctx);
-        return repo.recover(scoped);
-      },
-      options?.ctx,
-    );
+    const repo = await this.getRepo(options?.ctx);
+    this.markDirty(options?.ctx);
+    return repo.recover(entity);
   }
 
   // Utility methods

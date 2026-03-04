@@ -77,13 +77,43 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
 
   // Query operations
 
-  abstract find(options?: RepositoryFindOptions<Entity>): Promise<Entity[]>;
+  async find(options: RepositoryFindOptions<Entity> = {}): Promise<Entity[]> {
+    return this.permeator.find.permeate(
+      options,
+      (scoped) => this.doFind(scoped),
+      options.ctx,
+    );
+  }
 
-  abstract findOne(
+  protected abstract doFind(
+    options?: RepositoryFindOptions<Entity>,
+  ): Promise<Entity[]>;
+
+  async findOne(
+    options: RepositoryFindOneOptions<Entity>,
+  ): Promise<Entity | null> {
+    return this.permeator.findOne.permeate(
+      options,
+      (scoped) => this.doFindOne(scoped),
+      options.ctx,
+    );
+  }
+
+  protected abstract doFindOne(
     options: RepositoryFindOneOptions<Entity>,
   ): Promise<Entity | null>;
 
-  abstract count(options?: RepositoryFindOptions<Entity>): Promise<number>;
+  async count(options: RepositoryFindOptions<Entity> = {}): Promise<number> {
+    return this.permeator.count.permeate(
+      options,
+      (scoped) => this.doCount(scoped),
+      options.ctx,
+    );
+  }
+
+  protected abstract doCount(
+    options?: RepositoryFindOptions<Entity>,
+  ): Promise<number>;
 
   /**
    * Find entities and return with total count.
@@ -93,12 +123,16 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
    * orchestrator for cross-entity query orchestration.
    */
   async findAndCount(
-    options?: RepositoryFindOptions<Entity>,
+    options: RepositoryFindOptions<Entity> = {},
   ): Promise<[Entity[], number]> {
     if (this._federationOrchestrator && this.hasFederatedJoins(options?.join)) {
       return this._federationOrchestrator.findAndCount(this, options);
     }
-    return this.doFindAndCount(options);
+    return this.permeator.findAndCount.permeate(
+      options,
+      (scoped) => this.doFindAndCount(scoped),
+      options.ctx,
+    );
   }
 
   protected abstract doFindAndCount(
@@ -107,30 +141,87 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
 
   // Create operations
 
-  abstract create(
+  async create(
+    entity: DeepPartial<Entity>,
+    options?: RepositoryCreateOptions,
+  ): Promise<Entity> {
+    return this.permeator.create.permeate(
+      entity,
+      (scoped) => this.doCreate(scoped, options),
+      options?.ctx,
+    );
+  }
+
+  protected abstract doCreate(
     entity: DeepPartial<Entity>,
     options?: RepositoryCreateOptions,
   ): Promise<Entity>;
 
-  abstract createMany(
+  async createMany(
+    entities: DeepPartial<Entity>[],
+    options?: RepositoryCreateOptions,
+  ): Promise<Entity[]> {
+    return this.permeator.createMany.permeate(
+      entities,
+      (scoped) => this.doCreateMany(scoped, options),
+      options?.ctx,
+    );
+  }
+
+  protected abstract doCreateMany(
     entities: DeepPartial<Entity>[],
     options?: RepositoryCreateOptions,
   ): Promise<Entity[]>;
 
   // Update operations
 
-  abstract update(
+  async update(
+    entity: Entity,
+    data: DeepPartial<Entity>,
+    options?: RepositoryUpdateOptions,
+  ): Promise<Entity> {
+    return this.permeator.update.permeate(
+      data,
+      (scoped) => this.doUpdate(entity, scoped, options),
+      options?.ctx,
+    );
+  }
+
+  protected abstract doUpdate(
     entity: Entity,
     data: DeepPartial<Entity>,
     options?: RepositoryUpdateOptions,
   ): Promise<Entity>;
 
-  abstract upsert(
+  async upsert(
+    entity: DeepPartial<Entity>,
+    options?: RepositoryUpsertOptions,
+  ): Promise<Entity> {
+    return this.permeator.upsert.permeate(
+      entity,
+      (scoped) => this.doUpsert(scoped, options),
+      options?.ctx,
+    );
+  }
+
+  protected abstract doUpsert(
     entity: DeepPartial<Entity>,
     options?: RepositoryUpsertOptions,
   ): Promise<Entity>;
 
-  abstract replace(
+  async replace(
+    entity: Entity,
+    data: DeepPartial<Entity>,
+    options?: RepositoryUpdateOptions,
+  ): Promise<Entity> {
+    return this.permeator.replace.permeate(
+      data,
+      (scoped) => this.doReplace(entity, scoped, options),
+      options?.ctx,
+    );
+  }
+
+  protected abstract doReplace(
     entity: Entity,
     data: DeepPartial<Entity>,
     options?: RepositoryUpdateOptions,
@@ -138,17 +229,50 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
 
   // Delete operations
 
-  abstract delete(
+  async delete(
+    entity: Entity,
+    options?: RepositoryDeleteOptions,
+  ): Promise<Entity> {
+    return this.permeator.delete.permeate(
+      entity,
+      (scoped) => this.doDelete(scoped, options),
+      options?.ctx,
+    );
+  }
+
+  protected abstract doDelete(
     entity: Entity,
     options?: RepositoryDeleteOptions,
   ): Promise<Entity>;
 
-  abstract softDelete(
+  async softDelete(
+    entity: Entity,
+    options?: RepositoryDeleteOptions,
+  ): Promise<Entity> {
+    return this.permeator.softDelete.permeate(
+      entity,
+      (scoped) => this.doSoftDelete(scoped, options),
+      options?.ctx,
+    );
+  }
+
+  protected abstract doSoftDelete(
     entity: Entity,
     options?: RepositoryDeleteOptions,
   ): Promise<Entity>;
 
-  abstract restore(
+  async restore(
+    entity: Entity,
+    options?: RepositoryRestoreOptions,
+  ): Promise<Entity> {
+    return this.permeator.restore.permeate(
+      entity,
+      (scoped) => this.doRestore(scoped, options),
+      options?.ctx,
+    );
+  }
+
+  protected abstract doRestore(
     entity: Entity,
     options?: RepositoryRestoreOptions,
   ): Promise<Entity>;
