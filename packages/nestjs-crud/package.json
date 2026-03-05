@@ -1,6 +1,6 @@
 {
   "name": "@concepta/nestjs-crud",
-  "version": "8.0.0-alpha.0",
+  "version": "8.0.0-alpha.1",
   "description": "Rockets NestJS CRUD",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,9 +12,9 @@
     "dist/**/!(*.spec|*.e2e-spec|*.fixture).{js,d.ts}"
   ],
   "dependencies": {
-    "@concepta/nestjs-common": "^7.0.0-alpha.10",
-    "@concepta/nestjs-hook": "^7.0.0-alpha.10",
-    "@concepta/nestjs-repository": "^7.0.0-alpha.10",
+    "@concepta/nestjs-common": "8.0.0-alpha.1",
+    "@concepta/nestjs-hook": "8.0.0-alpha.1",
+    "@concepta/nestjs-repository": "8.0.0-alpha.1",
     "@nestjs/common": "^11.1.9",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.9",
@@ -23,7 +23,7 @@
     "qs": "^6.14.0"
   },
   "devDependencies": {
-    "@concepta/nestjs-repository-typeorm": "^7.0.0-alpha.10",
+    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.1",
     "@concepta/typeorm-seeding": "^4.0.0",
     "@faker-js/faker": "^8.4.1",
     "@nestjs/cqrs": "^11.0.0",
@@ -35,7 +35,7 @@
     "typeorm": "^0.3.28"
   },
   "peerDependencies": {
-    "@concepta/nestjs-repository-typeorm": "^7.0.0-alpha.10",
+    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.1",
     "@nestjs/cqrs": "^11.0.0",
     "class-transformer": "*",
     "class-validator": "*",

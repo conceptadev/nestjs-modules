@@ -1,6 +1,6 @@
 {
   "name": "@concepta/nestjs-otp",
-  "version": "8.0.0-alpha.0",
+  "version": "8.0.0-alpha.1",
   "description": "Rockets NestJS User",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,15 +22,15 @@
     "dist/**/!(*/__tests_/*)"
   ],
   "dependencies": {
-    "@concepta/nestjs-common": "^7.0.0-alpha.10",
-    "@concepta/nestjs-repository": "^7.0.0-alpha.10",
+    "@concepta/nestjs-common": "8.0.0-alpha.1",
+    "@concepta/nestjs-repository": "8.0.0-alpha.1",
     "@nestjs/common": "^11.1.9",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.9",
     "@nestjs/cqrs": "^11.0.0"
   },
   "devDependencies": {
-    "@concepta/nestjs-repository-typeorm": "^7.0.0-alpha.10",
+    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.1",
     "@concepta/typeorm-seeding": "^4.0.0",
     "@faker-js/faker": "^8.4.1",
     "@nestjs/testing": "^11.1.9",
