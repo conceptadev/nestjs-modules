@@ -19,7 +19,7 @@
     "access": "public"
   },
   "files": [
-    "dist/**/!(*/__tests_/*)"
+    "dist/**/!(*.spec|*.e2e-spec|*.fixture).{js,d.ts}"
   ],
   "dependencies": {
     "@concepta/nestjs-common": "8.0.0-alpha.1",
