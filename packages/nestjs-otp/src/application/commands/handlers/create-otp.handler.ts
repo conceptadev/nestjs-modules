@@ -65,8 +65,13 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
           category,
         });
         if (activeOtp) {
-          activeOtp.deactivate(eventContext);
-          await otpRepo.save(ctx, activeOtp);
+          const mergedActiveOtp =
+            this.eventPublisher.mergeObjectContext(activeOtp);
+          mergedActiveOtp.deactivate(eventContext);
+          await otpRepo.save(ctx, mergedActiveOtp);
+
+          trx.onCommit(ctx, () => mergedActiveOtp.commit());
+          trx.onRollback(ctx, () => mergedActiveOtp.uncommit());
         }
       }
 
