@@ -177,6 +177,7 @@ Concrete implementations must provide these methods:
 | Update | `upsert` | `(entity, options?) => Promise<Entity>` |
 | Update | `replace` | `(entity, data, options?) => Promise<Entity>` |
 | Delete | `delete` | `(entity, options?) => Promise<Entity>` |
+| Delete | `deleteMany` | `(entities, options?) => Promise<Entity[]>` |
 | Delete | `softDelete` | `(entity, options?) => Promise<Entity>` |
 | Lifecycle | `restore` | `(entity, options?) => Promise<Entity>` |
 | Utility | `transform` | `(entityLike) => Entity` |
@@ -895,7 +896,7 @@ match broad categories, and fine-grained decorators for specific operations.
 | `@BeforeRead` / `@AfterRead` | find, findOne, count, findAndCount |
 | `@BeforeWrite` / `@AfterWrite` | create, createMany, update, upsert, replace |
 | `@BeforeTransition` / `@AfterTransition` | softDelete, restore |
-| `@BeforeDestroy` / `@AfterDestroy` | delete (hard delete) |
+| `@BeforeDestroy` / `@AfterDestroy` | delete, deleteMany (hard delete) |
 
 #### Fine-Grained
 
@@ -904,7 +905,7 @@ match broad categories, and fine-grained decorators for specific operations.
 | Query | `@BeforeFind` `@AfterFind` `@BeforeFindOne` `@AfterFindOne` `@BeforeCount` `@AfterCount` `@BeforeFindAndCount` `@AfterFindAndCount` |
 | Create | `@BeforeCreate` `@AfterCreate` `@BeforeCreateMany` `@AfterCreateMany` |
 | Update | `@BeforeUpdate` `@AfterUpdate` `@BeforeUpsert` `@AfterUpsert` `@BeforeReplace` `@AfterReplace` |
-| Delete | `@BeforeDelete` `@AfterDelete` |
+| Delete | `@BeforeDelete` `@AfterDelete` `@BeforeDeleteMany` `@AfterDeleteMany` |
 | Lifecycle | `@BeforeSoftDelete` `@AfterSoftDelete` `@BeforeRestore` `@AfterRestore` |
 
 Hook methods receive the operation payload and an optional context, and must

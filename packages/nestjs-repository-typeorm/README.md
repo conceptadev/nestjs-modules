@@ -163,6 +163,7 @@ and throws `ModelQueryException` on errors.
 | Update | `upsert` | `(entity, options?) => Promise<Entity>` |
 | Update | `replace` | `(entity, data, options?) => Promise<Entity>` |
 | Delete | `delete` | `(entity, options?) => Promise<Entity>` |
+| Delete | `deleteMany` | `(entities, options?) => Promise<Entity[]>` |
 | Delete | `softDelete` | `(entity, options?) => Promise<Entity>` |
 | Lifecycle | `restore` | `(entity, options?) => Promise<Entity>` |
 | Utility | `transform` | `(entityLike) => Entity` |
@@ -339,6 +340,7 @@ fine-grained hooks fire automatically.
 | `upsert` | `beforeWrite` -> `beforeUpsert` | `afterUpsert` -> `afterWrite` |
 | `replace` | `beforeWrite` -> `beforeReplace` | `afterReplace` -> `afterWrite` |
 | `delete` | `beforeDestroy` -> `beforeDelete` | `afterDelete` -> `afterDestroy` |
+| `deleteMany` | `beforeDestroy` -> `beforeDeleteMany` | `afterDeleteMany` -> `afterDestroy` |
 | `softDelete` | `beforeTransition` -> `beforeSoftDelete` | `afterSoftDelete` -> `afterTransition` |
 | `restore` | `beforeTransition` -> `beforeRestore` | `afterRestore` -> `afterTransition` |
 
