@@ -1,11 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
 
+import { RoleEntityNotFoundException } from '../../../infrastructure/exceptions/role-entity-not-found.exception';
 import { RoleAssignmentConflictException } from '../role-assignment-conflict.exception';
 import { RoleAssignmentNotFoundException } from '../role-assignment-not-found.exception';
 import { RoleAssignmentsConflictException } from '../role-assignments-conflict.exception';
 import { RoleNotFoundException } from '../role-not-found.exception';
 import { RoleException } from '../role.exception';
-import { RoleEntityNotFoundException } from '../../../infrastructure/exceptions/role-entity-not-found.exception';
 
 describe('Role Exceptions', () => {
   describe(RoleException.name, () => {
@@ -15,7 +15,10 @@ describe('Role Exceptions', () => {
     });
 
     it('should accept a custom message', () => {
-      const error = new RoleException({ message: 'Custom: %s', messageParams: ['test'] });
+      const error = new RoleException({
+        message: 'Custom: %s',
+        messageParams: ['test'],
+      });
       expect(error.message).toBe('Custom: test');
     });
   });
