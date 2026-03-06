@@ -128,17 +128,13 @@ export class RoleAssignmentRepository {
     await this.repository.delete(roleAssignment.toPlain(), { ctx });
   }
 
-  /**
-   * Remove multiple assignments sequentially within the current transaction.
-   * Sequential execution ensures consistent ordering and avoids
-   * potential issues with parallel writes in the same transaction.
-   */
   async removeMany(
     ctx: RepositoryContextInterface,
     roleAssignments: RoleAssignment[],
   ): Promise<void> {
-    for (const ra of roleAssignments) {
-      await this.remove(ctx, ra);
-    }
+    await this.repository.deleteMany(
+      roleAssignments.map((ra) => ra.toPlain()),
+      { ctx },
+    );
   }
 }

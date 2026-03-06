@@ -138,6 +138,7 @@ describe('#crud', () => {
               upsert: jest.fn(),
               replace: jest.fn(),
               delete: jest.fn(),
+              deleteMany: jest.fn(),
               softDelete: jest.fn(),
               restore: jest.fn(),
               transform: jest.fn(),

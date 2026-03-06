@@ -408,6 +408,15 @@ export class TypeOrmRepository<
     return repo.remove(entity);
   }
 
+  protected async doDeleteMany(
+    entities: Entity[],
+    options?: RepositoryDeleteOptions,
+  ): Promise<Entity[]> {
+    const repo = await this.getRepo(options?.ctx);
+    this.markDirty(options?.ctx);
+    return repo.remove(entities);
+  }
+
   protected async doSoftDelete(
     entity: Entity,
     options?: RepositoryDeleteOptions,

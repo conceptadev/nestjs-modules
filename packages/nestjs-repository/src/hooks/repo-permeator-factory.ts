@@ -62,6 +62,7 @@ export class RepoPermeatorFactory<
 
   // Delete/lifecycle operations
   readonly delete: RepoPermeator<Entity, Entity>;
+  readonly deleteMany: RepoPermeator<Entity[], Entity[]>;
   readonly softDelete: RepoPermeator<Entity, Entity>;
   readonly restore: RepoPermeator<Entity, Entity>;
 
@@ -253,6 +254,18 @@ export class RepoPermeatorFactory<
       Membrane.sequence(
         Membrane.object<Entity, unknown, Ctx>(cb(K.AFTER_DELETE), 'preserve'),
         Membrane.object<Entity, unknown, Ctx>(cb(K.AFTER_DESTROY), 'preserve'),
+      ),
+      options,
+    );
+
+    this.deleteMany = Permeator.mutable(
+      Membrane.sequence(
+        Membrane.collection<Entity, Ctx>(cb(K.BEFORE_DESTROY), 'preserve'),
+        Membrane.collection<Entity, Ctx>(cb(K.BEFORE_DELETE_MANY), 'preserve'),
+      ),
+      Membrane.sequence(
+        Membrane.collection<Entity, Ctx>(cb(K.AFTER_DELETE_MANY), 'preserve'),
+        Membrane.collection<Entity, Ctx>(cb(K.AFTER_DESTROY), 'preserve'),
       ),
       options,
     );

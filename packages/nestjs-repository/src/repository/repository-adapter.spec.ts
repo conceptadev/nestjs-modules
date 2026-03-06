@@ -122,6 +122,12 @@ class TestRepositoryAdapter extends RepositoryAdapter<TestEntity> {
   ): Promise<TestEntity> {
     throw new Error('not implemented');
   }
+  protected doDeleteMany(
+    _entities: TestEntity[],
+    _options?: RepositoryDeleteOptions,
+  ): Promise<TestEntity[]> {
+    throw new Error('not implemented');
+  }
   protected doSoftDelete(
     _entity: TestEntity,
     _options?: RepositoryDeleteOptions,

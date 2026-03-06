@@ -245,6 +245,22 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     options?: RepositoryDeleteOptions,
   ): Promise<Entity>;
 
+  async deleteMany(
+    entities: Entity[],
+    options?: RepositoryDeleteOptions,
+  ): Promise<Entity[]> {
+    return this.permeator.deleteMany.permeate(
+      entities,
+      (scoped) => this.doDeleteMany(scoped, options),
+      options?.ctx,
+    );
+  }
+
+  protected abstract doDeleteMany(
+    entities: Entity[],
+    options?: RepositoryDeleteOptions,
+  ): Promise<Entity[]>;
+
   async softDelete(
     entity: Entity,
     options?: RepositoryDeleteOptions,

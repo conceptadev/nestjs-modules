@@ -139,6 +139,18 @@ export interface RepositoryInterface<Entity extends PlainLiteralObject> {
   delete(entity: Entity, options?: RepositoryDeleteOptions): Promise<Entity>;
 
   /**
+   * Permanently delete multiple entities (hard delete).
+   *
+   * @param entities - Array of entities to delete
+   * @param options - Delete options
+   * @returns Array of deleted entities
+   */
+  deleteMany(
+    entities: Entity[],
+    options?: RepositoryDeleteOptions,
+  ): Promise<Entity[]>;
+
+  /**
    * Soft delete an entity by setting its delete date.
    *
    * @param entity - Entity to soft delete (primary keys used for identification)

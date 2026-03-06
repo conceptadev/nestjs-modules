@@ -91,9 +91,10 @@ export class CacheRepository {
   ): Promise<void> {
     const caches = await this.findAllByAssignee(ctx, assigneeId);
 
-    for (const cache of caches) {
-      await this.remove(ctx, cache);
-    }
+    await this.repository.deleteMany(
+      caches.map((cache) => cache.toPlain()),
+      { ctx },
+    );
   }
 
   async softRemove(

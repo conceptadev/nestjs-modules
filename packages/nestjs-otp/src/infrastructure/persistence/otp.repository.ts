@@ -143,6 +143,9 @@ export class OtpRepository {
   }
 
   async removeAll(ctx: RepositoryContextInterface, otps: Otp[]): Promise<void> {
-    await Promise.all(otps.map((otp) => this.remove(ctx, otp)));
+    await this.repository.deleteMany(
+      otps.map((otp) => otp.toPlain()),
+      { ctx },
+    );
   }
 }

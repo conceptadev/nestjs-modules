@@ -41,6 +41,8 @@ export const RepoHookMethodKey = {
   AFTER_REPLACE: 'afterReplace',
   BEFORE_DELETE: 'beforeDelete',
   AFTER_DELETE: 'afterDelete',
+  BEFORE_DELETE_MANY: 'beforeDeleteMany',
+  AFTER_DELETE_MANY: 'afterDeleteMany',
   BEFORE_SOFT_DELETE: 'beforeSoftDelete',
   AFTER_SOFT_DELETE: 'afterSoftDelete',
   BEFORE_RESTORE: 'beforeRestore',
@@ -295,6 +297,20 @@ export const BeforeDelete = createHookMethodDecorator(
  */
 export const AfterDelete = createHookMethodDecorator(
   RepoHookMethodKey.AFTER_DELETE,
+);
+
+/**
+ * Runs before deleteMany() - permanently delete multiple entities.
+ */
+export const BeforeDeleteMany = createHookMethodDecorator(
+  RepoHookMethodKey.BEFORE_DELETE_MANY,
+);
+
+/**
+ * Runs after deleteMany() - permanently delete multiple entities.
+ */
+export const AfterDeleteMany = createHookMethodDecorator(
+  RepoHookMethodKey.AFTER_DELETE_MANY,
 );
 
 // =============================================================================

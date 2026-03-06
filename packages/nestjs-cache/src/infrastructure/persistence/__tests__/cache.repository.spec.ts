@@ -167,9 +167,9 @@ describe(CacheRepository.name, () => {
   });
 
   describe('removeAllByAssignee', () => {
-    it('should find and remove all caches for assignee', async () => {
+    it('should find and delete all caches for assignee in a single batch', async () => {
       mockRepoInterface.find.mockResolvedValue([mockEntity]);
-      mockRepoInterface.delete.mockResolvedValue(undefined as never);
+      mockRepoInterface.deleteMany.mockResolvedValue([mockEntity]);
 
       await repo.removeAllByAssignee(ctx, 'test-assignee');
 
@@ -177,15 +177,20 @@ describe(CacheRepository.name, () => {
         where: w.eq('assigneeId', 'test-assignee'),
         ctx,
       });
-      expect(mockRepoInterface.delete).toHaveBeenCalledTimes(1);
+      const expectedPlain = Cache.toInstance(mockEntity, settings).toPlain();
+      expect(mockRepoInterface.deleteMany).toHaveBeenCalledWith(
+        [expectedPlain],
+        { ctx },
+      );
     });
 
-    it('should not call delete when no caches found', async () => {
+    it('should call deleteMany with empty array when no caches found', async () => {
       mockRepoInterface.find.mockResolvedValue([]);
+      mockRepoInterface.deleteMany.mockResolvedValue([]);
 
       await repo.removeAllByAssignee(ctx, 'none');
 
-      expect(mockRepoInterface.delete).not.toHaveBeenCalled();
+      expect(mockRepoInterface.deleteMany).toHaveBeenCalledWith([], { ctx });
     });
   });
 

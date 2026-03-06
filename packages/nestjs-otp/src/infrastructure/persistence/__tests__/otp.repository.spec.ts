@@ -295,21 +295,26 @@ describe(OtpRepository.name, () => {
   });
 
   describe('removeAll', () => {
-    it('should remove all OTPs concurrently', async () => {
-      mockRepository.delete.mockResolvedValue(entity);
+    it('should delete all OTPs in a single batch', async () => {
+      mockRepository.deleteMany.mockResolvedValue([entity, entity]);
 
       const otp1 = Otp.toInstance(entity);
       const otp2 = Otp.toInstance({ ...entity, id: 'otp-2' });
 
       await repo.removeAll(ctx, [otp1, otp2]);
 
-      expect(mockRepository.delete).toHaveBeenCalledTimes(2);
+      expect(mockRepository.deleteMany).toHaveBeenCalledWith(
+        [otp1.toPlain(), otp2.toPlain()],
+        { ctx },
+      );
     });
 
     it('should handle empty array', async () => {
+      mockRepository.deleteMany.mockResolvedValue([]);
+
       await repo.removeAll(ctx, []);
 
-      expect(mockRepository.delete).not.toHaveBeenCalled();
+      expect(mockRepository.deleteMany).toHaveBeenCalledWith([], { ctx });
     });
   });
 });
