@@ -1,0 +1,52 @@
+import {
+  createMockRoleAssignmentRepository,
+  createMockAssignmentRepositoryResolver,
+  createMockContext,
+  createMockRoleAssignmentEntity,
+} from '../../../../__tests__/helpers/mock.helpers';
+import { RoleAssignment } from '../../../../domain/aggregates/role-assignment';
+import { GetAssignedRolesQuery } from '../../impl/get-assigned-roles.query';
+import { GetAssignedRolesHandler } from '../get-assigned-roles.handler';
+
+describe(GetAssignedRolesHandler.name, () => {
+  const ctx = createMockContext();
+  let mockRepo: ReturnType<typeof createMockRoleAssignmentRepository>;
+  let handler: GetAssignedRolesHandler;
+
+  beforeEach(() => {
+    mockRepo = createMockRoleAssignmentRepository();
+
+    handler = new GetAssignedRolesHandler(
+      createMockAssignmentRepositoryResolver(mockRepo),
+    );
+  });
+
+  it('should return assignments for the assignee', async () => {
+    const assignment1 = RoleAssignment.toInstance(
+      createMockRoleAssignmentEntity({ id: 'a1', roleId: 'role-1' }),
+    );
+    const assignment2 = RoleAssignment.toInstance(
+      createMockRoleAssignmentEntity({ id: 'a2', roleId: 'role-2' }),
+    );
+    mockRepo.findByAssignee.mockResolvedValue([assignment1, assignment2]);
+
+    const result = await handler.execute(
+      new GetAssignedRolesQuery(ctx, 'user-1'),
+    );
+
+    expect(mockRepo.findByAssignee).toHaveBeenCalledWith(ctx, 'user-1');
+    expect(result).toHaveLength(2);
+    expect(result[0]).toBe(assignment1);
+    expect(result[1]).toBe(assignment2);
+  });
+
+  it('should return empty array when no assignments', async () => {
+    mockRepo.findByAssignee.mockResolvedValue([]);
+
+    const result = await handler.execute(
+      new GetAssignedRolesQuery(ctx, 'user-1'),
+    );
+
+    expect(result).toEqual([]);
+  });
+});

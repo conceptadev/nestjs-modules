@@ -1,0 +1,28 @@
+import { RoleException } from '../../exceptions/role.exception';
+import { assertRoleId } from '../assert-role-id.util';
+
+describe('assertRoleId', () => {
+  it('should not throw for a valid string id', () => {
+    expect(() => assertRoleId('abc-123')).not.toThrow();
+  });
+
+  it('should throw RoleException for an empty string', () => {
+    expect(() => assertRoleId('')).toThrow(RoleException);
+  });
+
+  it('should throw RoleException for a whitespace-only string', () => {
+    expect(() => assertRoleId('   ')).toThrow(RoleException);
+  });
+
+  it('should throw RoleException for undefined', () => {
+    expect(() => assertRoleId(undefined)).toThrow(RoleException);
+  });
+
+  it('should throw RoleException for null', () => {
+    expect(() => assertRoleId(null)).toThrow(RoleException);
+  });
+
+  it('should throw RoleException for a number', () => {
+    expect(() => assertRoleId(42)).toThrow(RoleException);
+  });
+});

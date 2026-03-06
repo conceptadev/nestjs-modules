@@ -1,0 +1,28 @@
+import { HttpStatus } from '@nestjs/common';
+
+import { RuntimeException } from '@concepta/nestjs-common';
+
+import { RoleException } from './role.exception';
+
+export class RoleNotFoundException extends RoleException {
+  context: RuntimeException['context'] & {
+    id: string;
+  };
+
+  constructor(options: { id: string; message?: string }) {
+    const { id, message = 'Role not found for id=%s' } = options;
+
+    super({
+      httpStatus: HttpStatus.NOT_FOUND,
+      message,
+      messageParams: [id],
+    });
+
+    this.errorCode = 'ROLE_NOT_FOUND_ERROR';
+
+    this.context = {
+      ...super.context,
+      id,
+    };
+  }
+}

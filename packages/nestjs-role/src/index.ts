@@ -1,23 +1,75 @@
+// module
 export { RoleModule } from './role.module';
 
-export { RoleService } from './services/role.service';
-export { RoleModelService } from './services/role-model.service';
+// domain aggregates
+export { Role } from './domain/aggregates/role';
+export { RoleAssignment } from './domain/aggregates/role-assignment';
 
-export { RoleModelServiceInterface } from './interfaces/role-model-service.interface';
+// repositories
+export { RoleRepository } from './infrastructure/persistence/role.repository';
+export { RoleAssignmentRepository } from './infrastructure/persistence/role-assignment.repository';
+export { RoleRepositoryResolver } from './infrastructure/persistence/role-repository.resolver';
+export { RoleAssignmentRepositoryResolver } from './infrastructure/persistence/role-assignment-repository.resolver';
 
-export { RoleAssignmentCreateManyDto } from './dto/role-assignment-create-many.dto';
-export { RoleAssignmentCreateDto } from './dto/role-assignment-create.dto';
-export { RoleAssignmentPaginatedDto } from './dto/role-assignment-paginated.dto';
-export { RoleAssignmentDto } from './dto/role-assignment.dto';
-export { RoleCreateManyDto } from './dto/role-create-many.dto';
-export { RoleCreateDto } from './dto/role-create.dto';
-export { RolePaginatedDto } from './dto/role-paginated.dto';
-export { RoleUpdateDto } from './dto/role-update.dto';
-export { RoleDto } from './dto/role.dto';
+// dtos
+export { RoleDto } from './infrastructure/dtos/role.dto';
+export { RoleCreateDto } from './infrastructure/dtos/role-create.dto';
+export { RoleUpdateDto } from './infrastructure/dtos/role-update.dto';
+export { RoleAssignmentDto } from './infrastructure/dtos/role-assignment.dto';
+export { RoleAssignmentCreateDto } from './infrastructure/dtos/role-assignment-create.dto';
 
+// commands
+export { CreateRoleCommand } from './application/commands/impl/create-role.command';
+export { UpdateRoleCommand } from './application/commands/impl/update-role.command';
+export { ReplaceRoleCommand } from './application/commands/impl/replace-role.command';
+export { RemoveRoleCommand } from './application/commands/impl/remove-role.command';
+export { AssignRoleCommand } from './application/commands/impl/assign-role.command';
+export { AssignRolesCommand } from './application/commands/impl/assign-roles.command';
+export { RevokeRoleCommand } from './application/commands/impl/revoke-role.command';
+export { RevokeRolesCommand } from './application/commands/impl/revoke-roles.command';
+
+// events
+export { RoleCreatedEvent } from './domain/events/role-created.event';
+export { RoleUpdatedEvent } from './domain/events/role-updated.event';
+export { RoleReplacedEvent } from './domain/events/role-replaced.event';
+export { RoleAssignedEvent } from './domain/events/role-assigned.event';
+export { RoleRevokedEvent } from './domain/events/role-revoked.event';
+
+// queries
+export { GetRoleQuery } from './application/queries/impl/get-role.query';
+export { GetAssignedRolesQuery } from './application/queries/impl/get-assigned-roles.query';
+export { IsAssignedRoleQuery } from './application/queries/impl/is-assigned-role.query';
+export { IsAssignedRolesQuery } from './application/queries/impl/is-assigned-roles.query';
+export { GetRoleAssignmentQuery } from './application/queries/impl/get-role-assignment.query';
+
+// command handlers
+export { CreateRoleHandler } from './application/commands/handlers/create-role.handler';
+export { UpdateRoleHandler } from './application/commands/handlers/update-role.handler';
+export { ReplaceRoleHandler } from './application/commands/handlers/replace-role.handler';
+export { RemoveRoleHandler } from './application/commands/handlers/remove-role.handler';
+export { AssignRoleHandler } from './application/commands/handlers/assign-role.handler';
+export { AssignRolesHandler } from './application/commands/handlers/assign-roles.handler';
+export { RevokeRoleHandler } from './application/commands/handlers/revoke-role.handler';
+export { RevokeRolesHandler } from './application/commands/handlers/revoke-roles.handler';
+
+// query handlers
+export { GetRoleHandler } from './application/queries/handlers/get-role.handler';
+export { GetAssignedRolesHandler } from './application/queries/handlers/get-assigned-roles.handler';
+export { IsAssignedRoleHandler } from './application/queries/handlers/is-assigned-role.handler';
+export { IsAssignedRolesHandler } from './application/queries/handlers/is-assigned-roles.handler';
+export { GetRoleAssignmentHandler } from './application/queries/handlers/get-role-assignment.handler';
+
+// interfaces
+export { RoleOptionsInterface } from './infrastructure/config/interfaces/role-options.interface';
+export { RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface';
+
+// types
 export { RoleResource, RoleAssignmentResource } from './role.types';
-export { RoleException } from './exceptions/role.exception';
-export { RoleAssignmentNotFoundException as AssignmentNotFoundException } from './exceptions/role-assignment-not-found.exception';
-export { RoleEntityNotFoundException as EntityNotFoundException } from './exceptions/role-entity-not-found.exception';
-export { RoleAssignmentConflictException } from './exceptions/role-assignment-conflict.exception';
-export { RoleMissingEntitiesOptionsException } from './exceptions/role-missing-entities-options.exception';
+
+// exceptions
+export { RoleException } from './application/exceptions/role.exception';
+export { RoleAssignmentConflictException } from './application/exceptions/role-assignment-conflict.exception';
+export { RoleAssignmentsConflictException } from './application/exceptions/role-assignments-conflict.exception';
+export { RoleEntityNotFoundException } from './infrastructure/exceptions/role-entity-not-found.exception';
+export { RoleNotFoundException } from './application/exceptions/role-not-found.exception';
+export { RoleAssignmentNotFoundException } from './application/exceptions/role-assignment-not-found.exception';
