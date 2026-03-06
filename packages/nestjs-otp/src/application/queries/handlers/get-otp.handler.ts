@@ -2,6 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Otp } from '../../../domain/aggregates/otp';
 import { OtpRepositoryResolver } from '../../../infrastructure/persistence/otp-repository.resolver';
+import { OtpNotFoundException } from '../../exceptions/otp-not-found.exception';
 import { GetOtpQuery } from '../impl/get-otp.query';
 
 @QueryHandler(GetOtpQuery)
@@ -13,6 +14,12 @@ export class GetOtpHandler implements IQueryHandler<GetOtpQuery> {
 
     const otpRepo = this.repositoryResolver.resolve(ctx.entity);
 
-    return otpRepo.get(ctx, id);
+    const otp = await otpRepo.get(ctx, id);
+
+    if (!otp) {
+      throw new OtpNotFoundException({ id });
+    }
+
+    return otp;
   }
 }

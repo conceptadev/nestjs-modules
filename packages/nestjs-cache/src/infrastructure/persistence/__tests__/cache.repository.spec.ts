@@ -5,7 +5,6 @@ import { createMockContext } from '../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../domain/aggregates/cache';
 import { CacheSettingsInterface } from '../../config/interfaces/cache-settings.interface';
 import { CacheRepository } from '../cache.repository';
-import { CacheNotFoundException } from '../exceptions/cache-not-found.exception';
 
 const mockEntity: CacheInterface = {
   id: 'test-id',
@@ -41,19 +40,19 @@ describe(CacheRepository.name, () => {
       const result = await repo.get(ctx, 'test-id');
 
       expect(result).toBeInstanceOf(Cache);
-      expect(result.id).toBe('test-id');
+      expect(result!.id).toBe('test-id');
       expect(mockRepoInterface.findOne).toHaveBeenCalledWith({
         where: w.eq('id', 'test-id'),
         ctx,
       });
     });
 
-    it('should throw CacheNotFoundException when entity is not found', async () => {
+    it('should return null when entity is not found', async () => {
       mockRepoInterface.findOne.mockResolvedValue(null);
 
-      await expect(repo.get(ctx, 'missing')).rejects.toThrow(
-        CacheNotFoundException,
-      );
+      const result = await repo.get(ctx, 'missing');
+
+      expect(result).toBeNull();
     });
   });
 

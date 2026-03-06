@@ -9,15 +9,16 @@ import {
 import { Otp } from '../../domain/aggregates/otp';
 import { OtpSettingsInterface } from '../config/interfaces/otp-settings.interface';
 
-import { OtpNotFoundException } from './exceptions/otp-not-found.exception';
-
 export class OtpRepository {
   constructor(
     protected readonly repository: RepositoryInterface<OtpInterface>,
     protected readonly settings: OtpSettingsInterface,
   ) {}
 
-  async get(ctx: RepositoryContextInterface, id: ReferenceId): Promise<Otp> {
+  async get(
+    ctx: RepositoryContextInterface,
+    id: ReferenceId,
+  ): Promise<Otp | null> {
     const w = Where.for<OtpInterface>();
 
     const entity = await this.repository.findOne({
@@ -25,11 +26,7 @@ export class OtpRepository {
       ctx,
     });
 
-    if (!entity) {
-      throw new OtpNotFoundException({ id });
-    }
-
-    return Otp.toInstance(entity);
+    return entity ? Otp.toInstance(entity) : null;
   }
 
   async findActiveByPasscode(

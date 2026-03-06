@@ -60,5 +60,5 @@ export { OtpException } from './domain/exceptions/otp.exception';
 export { OtpEntityNotFoundException } from './infrastructure/exceptions/otp-entity-not-found.exception';
 export { OtpTypeNotDefinedException } from './domain/exceptions/otp-type-not-defined.exception';
 export { OtpLimitReachedException } from './domain/exceptions/otp-limit-reached.exception';
-export { OtpNotFoundException } from './infrastructure/persistence/exceptions/otp-not-found.exception';
+export { OtpNotFoundException } from './application/exceptions/otp-not-found.exception';
 export { OtpInvalidExpirationDateException } from './domain/exceptions/otp-invalid-expiration-date.exception';

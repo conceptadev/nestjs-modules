@@ -12,7 +12,6 @@ import {
 } from '../../../__tests__/helpers/mock.helpers';
 import { Otp } from '../../../domain/aggregates/otp';
 import { OtpSettingsInterface } from '../../config/interfaces/otp-settings.interface';
-import { OtpNotFoundException } from '../exceptions/otp-not-found.exception';
 import { OtpRepository } from '../otp.repository';
 
 describe(OtpRepository.name, () => {
@@ -47,19 +46,19 @@ describe(OtpRepository.name, () => {
       const result = await repo.get(ctx, 'test-id');
 
       expect(result).toBeInstanceOf(Otp);
-      expect(result.id).toBe('test-id');
+      expect(result!.id).toBe('test-id');
       expect(mockRepository.findOne).toHaveBeenCalledWith({
         where: w.eq('id', 'test-id'),
         ctx,
       });
     });
 
-    it('should throw OtpNotFoundException when entity is not found', async () => {
+    it('should return null when entity is not found', async () => {
       mockRepository.findOne.mockResolvedValue(null);
 
-      await expect(repo.get(ctx, 'missing')).rejects.toThrow(
-        OtpNotFoundException,
-      );
+      const result = await repo.get(ctx, 'missing');
+
+      expect(result).toBeNull();
     });
 
     it('should pass ctx to repository', async () => {

@@ -4,6 +4,7 @@ import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { Cache } from '../../../domain/aggregates/cache';
 import { CacheRepositoryResolver } from '../../../infrastructure/persistence/cache-repository.resolver';
+import { CacheNotFoundException } from '../../exceptions/cache-not-found.exception';
 import { RemoveCacheCommand } from '../impl/remove-cache.command';
 
 @CommandHandler(RemoveCacheCommand)
@@ -20,6 +21,11 @@ export class RemoveCacheHandler implements ICommandHandler<RemoveCacheCommand> {
 
     return this.txScope.run(ctx, async () => {
       const cache = await cacheRepo.get(ctx, id);
+
+      if (!cache) {
+        throw new CacheNotFoundException(id);
+      }
+
       await cacheRepo.remove(ctx, cache);
       return cache;
     });

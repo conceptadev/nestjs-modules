@@ -9,15 +9,16 @@ import {
 import { Cache } from '../../domain/aggregates/cache';
 import { CacheSettingsInterface } from '../config/interfaces/cache-settings.interface';
 
-import { CacheNotFoundException } from './exceptions/cache-not-found.exception';
-
 export class CacheRepository {
   constructor(
     protected readonly repository: RepositoryInterface<CacheInterface>,
     protected readonly settings: CacheSettingsInterface,
   ) {}
 
-  async get(ctx: RepositoryContextInterface, id: ReferenceId): Promise<Cache> {
+  async get(
+    ctx: RepositoryContextInterface,
+    id: ReferenceId,
+  ): Promise<Cache | null> {
     const w = Where.for<CacheInterface>();
 
     const entity = await this.repository.findOne({
@@ -25,11 +26,7 @@ export class CacheRepository {
       ctx,
     });
 
-    if (!entity) {
-      throw new CacheNotFoundException(id);
-    }
-
-    return Cache.toInstance(entity, this.settings);
+    return entity ? Cache.toInstance(entity, this.settings) : null;
   }
 
   async findById(

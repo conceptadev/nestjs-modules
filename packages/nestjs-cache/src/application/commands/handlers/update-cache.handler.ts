@@ -8,6 +8,7 @@ import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { Cache } from '../../../domain/aggregates/cache';
 import { CacheRepositoryResolver } from '../../../infrastructure/persistence/cache-repository.resolver';
+import { CacheNotFoundException } from '../../exceptions/cache-not-found.exception';
 import { UpdateCacheCommand } from '../impl/update-cache.command';
 
 @CommandHandler(UpdateCacheCommand)
@@ -29,9 +30,13 @@ export class UpdateCacheHandler implements ICommandHandler<UpdateCacheCommand> {
       .build();
 
     return this.txScope.run(ctx, async (trx) => {
-      const cache = this.eventPublisher.mergeObjectContext(
-        await cacheRepo.get(ctx, id),
-      );
+      const existing = await cacheRepo.get(ctx, id);
+
+      if (!existing) {
+        throw new CacheNotFoundException(id);
+      }
+
+      const cache = this.eventPublisher.mergeObjectContext(existing);
 
       cache.updateData(eventContext, data);
 

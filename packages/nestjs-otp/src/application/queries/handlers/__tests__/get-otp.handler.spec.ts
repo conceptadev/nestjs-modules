@@ -5,7 +5,7 @@ import {
   createMockRepositoryResolver,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Otp } from '../../../../domain/aggregates/otp';
-import { OtpNotFoundException } from '../../../../infrastructure/persistence/exceptions/otp-not-found.exception';
+import { OtpNotFoundException } from '../../../exceptions/otp-not-found.exception';
 import { GetOtpQuery } from '../../impl/get-otp.query';
 import { GetOtpHandler } from '../get-otp.handler';
 
@@ -35,8 +35,8 @@ describe(GetOtpHandler.name, () => {
     expect(mockRepo.get).toHaveBeenCalledWith(expect.anything(), 'test-id');
   });
 
-  it('should propagate OtpNotFoundException when not found', async () => {
-    mockRepo.get.mockRejectedValue(new OtpNotFoundException({ id: 'missing' }));
+  it('should throw OtpNotFoundException when not found', async () => {
+    mockRepo.get.mockResolvedValue(null);
 
     const query = new GetOtpQuery(ctx, 'missing');
 

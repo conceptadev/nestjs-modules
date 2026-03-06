@@ -48,4 +48,4 @@ export { FindCachesByAssigneeHandler } from './application/queries/handlers/find
 export { CacheException } from './domain/exceptions/cache.exception';
 export { CacheEntityNotFoundException } from './infrastructure/exceptions/cache-entity-not-found.exception';
 export { CacheInvalidExpiredDateException } from './domain/exceptions/cache-invalid-expired-date.exception';
-export { CacheNotFoundException } from './infrastructure/persistence/exceptions/cache-not-found.exception';
+export { CacheNotFoundException } from './application/exceptions/cache-not-found.exception';
