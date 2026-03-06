@@ -14,7 +14,7 @@ import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
-} from '../fixtures/federation-orchestrator.mocks';
+} from '../fixtures/federation-orchestrator.mock';
 
 describe('FederationOrchestrator - Unsupported Features Validation', () => {
   describe('OR filter validation', () => {

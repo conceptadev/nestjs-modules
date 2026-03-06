@@ -9,7 +9,7 @@ import {
   TestCrudAdapter,
   TestEntity,
   createTestAdapter,
-} from './fixtures/query-handler-test.fixtures';
+} from './fixtures/query-handler-test.fixture';
 
 describe('CrudReadHandler', () => {
   let adapter: TestCrudAdapter;

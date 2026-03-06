@@ -15,7 +15,7 @@ import {
   mockOrchestrator,
   mockOneToManyRelation,
   mockContext,
-} from '../fixtures/federation-orchestrator.mocks';
+} from '../fixtures/federation-orchestrator.mock';
 
 describe('FederationOrchestrator - Context Propagation', () => {
   it('should propagate ctx to relation queries in ROOT_FIRST strategy', async () => {

@@ -19,7 +19,7 @@ import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
-} from '../fixtures/federation-orchestrator.mocks';
+} from '../fixtures/federation-orchestrator.mock';
 
 describe('FederationOrchestrator - Root Sort Strategy', () => {
   describe('Single root field sort', () => {

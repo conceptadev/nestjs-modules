@@ -20,7 +20,7 @@ import {
   mockOrchestrator,
   mockOneToManyRelation,
   mockOneToOneRelation,
-} from '../fixtures/federation-orchestrator.mocks';
+} from '../fixtures/federation-orchestrator.mock';
 
 describe('FederationOrchestrator - Multi-Relation Constraint Field', () => {
   it('should use foreignKey (not rootKey) when constraining second relation', async () => {

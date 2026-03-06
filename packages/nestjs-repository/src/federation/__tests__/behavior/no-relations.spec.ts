@@ -12,7 +12,7 @@ import { TestRoot, TestRelation } from '../federation-test-data';
 import {
   mockTestRepo,
   mockOrchestrator,
-} from '../fixtures/federation-orchestrator.mocks';
+} from '../fixtures/federation-orchestrator.mock';
 
 describe('FederationOrchestrator - No Relations Query', () => {
   it('should pass through root request unchanged when no joins are requested', async () => {

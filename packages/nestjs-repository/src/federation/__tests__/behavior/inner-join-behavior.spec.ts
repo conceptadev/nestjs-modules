@@ -23,7 +23,7 @@ import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
-} from '../fixtures/federation-orchestrator.mocks';
+} from '../fixtures/federation-orchestrator.mock';
 
 describe('FederationOrchestrator - Inner Join Behavior', () => {
   describe('Relation existence filter (NOT_NULL)', () => {

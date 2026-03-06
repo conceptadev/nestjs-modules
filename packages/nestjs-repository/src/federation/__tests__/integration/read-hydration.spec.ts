@@ -28,7 +28,7 @@ import {
   mockOrchestrator,
   mockOneToOneRelation,
   mockOneToManyRelation,
-} from '../fixtures/federation-orchestrator.mocks';
+} from '../fixtures/federation-orchestrator.mock';
 
 describe('FederationOrchestrator - Integration: Read Hydration', () => {
   describe('no relations', () => {

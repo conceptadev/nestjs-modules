@@ -4,7 +4,7 @@ import { CrudQueryHandler } from '../crud-query.handler';
 import {
   TestCrudAdapter,
   createTestAdapter,
-} from './fixtures/query-handler-test.fixtures';
+} from './fixtures/query-handler-test.fixture';
 
 describe('CrudQueryHandler', () => {
   let adapter: TestCrudAdapter;

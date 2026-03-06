@@ -22,7 +22,7 @@ import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToOneRelation,
-} from '../fixtures/federation-orchestrator.mocks';
+} from '../fixtures/federation-orchestrator.mock';
 
 describe('FederationOrchestrator - Integration: One-to-One Forward', () => {
   describe('Root with existing related entity', () => {

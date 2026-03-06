@@ -15,7 +15,7 @@ import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
-} from '../fixtures/federation-orchestrator.mocks';
+} from '../fixtures/federation-orchestrator.mock';
 
 describe('FederationOrchestrator - Relation Sort Validation', () => {
   describe('Forward relationship validation', () => {

@@ -13,7 +13,7 @@ import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
-} from '../fixtures/federation-orchestrator.mocks';
+} from '../fixtures/federation-orchestrator.mock';
 
 describe('FederationOrchestrator - Complex Scenarios', () => {
   describe('Sparse data iteration', () => {

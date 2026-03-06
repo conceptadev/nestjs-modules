@@ -15,7 +15,7 @@ import {
   mockOrchestrator,
   mockOneToManyRelation,
   mockOneToOneRelation,
-} from '../fixtures/federation-orchestrator.mocks';
+} from '../fixtures/federation-orchestrator.mock';
 
 describe('FederationOrchestrator - distinctFilter Validation', () => {
   describe('distinctFilter requirement validation', () => {
