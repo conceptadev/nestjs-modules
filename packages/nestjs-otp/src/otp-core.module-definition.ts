@@ -20,11 +20,16 @@ import { FindAssignedOtpsHandler } from './application/queries/handlers/find-ass
 import { GetOtpHandler } from './application/queries/handlers/get-otp.handler';
 import { ValidateOtpHandler } from './application/queries/handlers/validate-otp.handler';
 import { OtpHistoryCleanupService } from './domain/services/otp-history-cleanup.service';
+import { OtpExtrasInterface } from './infrastructure/config/interfaces/otp-extras.interface';
 import { OtpOptionsInterface } from './infrastructure/config/interfaces/otp-options.interface';
 import { OtpSettingsInterface } from './infrastructure/config/interfaces/otp-settings.interface';
 import { otpDefaultConfig } from './infrastructure/config/otp-default.config';
 import { OtpRepositoryResolver } from './infrastructure/persistence/otp-repository.resolver';
-import { OTP_MODULE_SETTINGS_TOKEN } from './otp.constants';
+import {
+  OTP_CUSTOM_REPOSITORY_TOKEN,
+  OTP_MODULE_SETTINGS_TOKEN,
+  OTP_REPOSITORY_RESOLVER_TOKEN,
+} from './otp.constants';
 
 const RAW_OPTIONS_TOKEN = Symbol('__OTP_MODULE_RAW_OPTIONS_TOKEN__');
 
@@ -36,10 +41,7 @@ export const {
   moduleName: 'OtpCore',
   optionsInjectionToken: RAW_OPTIONS_TOKEN,
 })
-  .setExtras<Pick<DynamicModule, 'global'>>(
-    { global: true },
-    definitionTransform,
-  )
+  .setExtras<OtpExtrasInterface>({ global: true }, definitionTransform)
   .build();
 
 export type OtpCoreOptions = typeof OTP_CORE_OPTIONS_TYPE;
@@ -47,15 +49,15 @@ export type OtpCoreAsyncOptions = typeof OTP_CORE_ASYNC_OPTIONS_TYPE;
 
 function definitionTransform(
   definition: DynamicModule,
-  extras: Pick<DynamicModule, 'global'>,
+  { global, repositories }: OtpExtrasInterface,
 ): DynamicModule {
-  const { imports, providers } = definition;
+  const { providers = [], imports = [] } = definition;
 
   return {
     ...definition,
-    global: extras.global,
+    global,
     imports: createOtpImports({ imports }),
-    providers: createOtpProviders({ providers }),
+    providers: createOtpProviders({ providers, repositories }),
     exports: [ConfigModule, RAW_OPTIONS_TOKEN, ...createOtpExports()],
   };
 }
@@ -73,11 +75,18 @@ export function createOtpImports(options: {
 export function createOtpProviders(options: {
   overrides?: OtpCoreOptions;
   providers?: Provider[];
+  repositories?: OtpExtrasInterface['repositories'];
 }): Provider[] {
   return [
-    ...(options.providers ?? []),
     createOtpSettingsProvider(options.overrides),
-    OtpRepositoryResolver,
+    {
+      provide: OTP_CUSTOM_REPOSITORY_TOKEN,
+      useValue: options.repositories?.otp ?? null,
+    },
+    {
+      provide: OTP_REPOSITORY_RESOLVER_TOKEN,
+      useClass: OtpRepositoryResolver,
+    },
     // Command handlers
     ConsumeOtpHandler,
     CreateOtpHandler,
@@ -94,6 +103,7 @@ export function createOtpProviders(options: {
     FindAssignedOtpsHandler,
     GetOtpHandler,
     ValidateOtpHandler,
+    ...(options.providers ?? []),
   ];
 }
 

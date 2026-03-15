@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { OtpRepositoryResolver } from '../infrastructure/persistence/otp-repository.resolver';
+import { OtpRepositoryResolverInterface } from '../domain/repositories/otp-repository-resolver.interface';
 import { OtpRepository } from '../infrastructure/persistence/otp.repository';
+import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../otp.constants';
 import { OtpModule } from '../otp.module';
 
 import { AppModuleFixture } from './fixtures/app.module.fixture';
@@ -72,7 +73,9 @@ describe(OtpModule.name, () => {
         imports: [AppModuleFixture],
       }).compile();
 
-      const resolver = testModule.get(OtpRepositoryResolver);
+      const resolver = testModule.get<OtpRepositoryResolverInterface>(
+        OTP_REPOSITORY_RESOLVER_TOKEN,
+      );
       const repo = resolver.resolve('userOtp');
 
       expect(repo).toBeInstanceOf(OtpRepository);

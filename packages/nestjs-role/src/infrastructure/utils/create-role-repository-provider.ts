@@ -1,4 +1,4 @@
-import { Provider } from '@nestjs/common';
+import { Provider, Type } from '@nestjs/common';
 
 import {
   RoleEntityInterface,
@@ -6,6 +6,8 @@ import {
   RepositoryInterface,
 } from '@concepta/nestjs-common';
 
+import { RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface';
+import { ROLE_CUSTOM_REPOSITORY_TOKEN } from '../../role.constants';
 import { RoleRepository } from '../persistence/role.repository';
 
 /**
@@ -20,9 +22,16 @@ export function getDynamicRoleRepositoryToken(entityKey: string): string {
 export function createRoleRepositoryProvider(entityKey: string): Provider {
   return {
     provide: getDynamicRoleRepositoryToken(entityKey),
-    inject: [getDynamicRepositoryToken(entityKey)],
-    useFactory: (repository: RepositoryInterface<RoleEntityInterface>) => {
-      return new RoleRepository(repository);
+    inject: [
+      getDynamicRepositoryToken(entityKey),
+      { token: ROLE_CUSTOM_REPOSITORY_TOKEN, optional: true },
+    ],
+    useFactory: (
+      repository: RepositoryInterface<RoleEntityInterface>,
+      customRepo?: Type<RoleRepositoryInterface>,
+    ) => {
+      const RepoClass = customRepo ?? RoleRepository;
+      return new RepoClass(repository);
     },
   };
 }

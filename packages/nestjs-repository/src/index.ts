@@ -137,3 +137,7 @@ export {
   BeforeRestore,
   AfterRestore,
 } from './hooks/repository-hook.decorators';
+
+// Hook specifications
+export { RepoSpec } from './hooks/specifications/repo-spec.factory';
+export { EntitySpecification } from './hooks/specifications/entity.specification';

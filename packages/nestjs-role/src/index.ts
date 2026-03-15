@@ -59,9 +59,16 @@ export { IsAssignedRoleHandler } from './application/queries/handlers/is-assigne
 export { IsAssignedRolesHandler } from './application/queries/handlers/is-assigned-roles.handler';
 export { GetRoleAssignmentHandler } from './application/queries/handlers/get-role-assignment.handler';
 
+// domain repository interfaces
+export { RoleRepositoryInterface } from './domain/repositories/role-repository.interface';
+export { RoleRepositoryResolverInterface } from './domain/repositories/role-repository-resolver.interface';
+export { RoleAssignmentRepositoryInterface } from './domain/repositories/role-assignment-repository.interface';
+export { RoleAssignmentRepositoryResolverInterface } from './domain/repositories/role-assignment-repository-resolver.interface';
+
 // interfaces
 export { RoleOptionsInterface } from './infrastructure/config/interfaces/role-options.interface';
 export { RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface';
+export { RoleExtrasInterface } from './infrastructure/config/interfaces/role-extras.interface';
 
 // types
 export { RoleResource, RoleAssignmentResource } from './role.types';

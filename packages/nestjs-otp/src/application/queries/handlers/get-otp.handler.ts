@@ -1,13 +1,18 @@
+import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Otp } from '../../../domain/aggregates/otp';
-import { OtpRepositoryResolver } from '../../../infrastructure/persistence/otp-repository.resolver';
+import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
+import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../../otp.constants';
 import { OtpNotFoundException } from '../../exceptions/otp-not-found.exception';
 import { GetOtpQuery } from '../impl/get-otp.query';
 
 @QueryHandler(GetOtpQuery)
 export class GetOtpHandler implements IQueryHandler<GetOtpQuery> {
-  constructor(private readonly repositoryResolver: OtpRepositoryResolver) {}
+  constructor(
+    @Inject(OTP_REPOSITORY_RESOLVER_TOKEN)
+    private readonly repositoryResolver: OtpRepositoryResolverInterface,
+  ) {}
 
   async execute(query: GetOtpQuery): Promise<Otp> {
     const { ctx, id } = query;

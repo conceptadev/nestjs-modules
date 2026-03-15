@@ -58,6 +58,7 @@ import {
  * Options for constructing a TypeOrmRepository.
  */
 export interface TypeOrmRepositoryOptions {
+  entityKey: string;
   transactionKey?: string;
   hookResolver?: HookResolverService;
   relationsConfig?: Record<string, RelationActionConfig>;
@@ -74,9 +75,9 @@ export class TypeOrmRepository<
 
   constructor(
     private readonly repo: Repository<Entity>,
-    private readonly options: TypeOrmRepositoryOptions = {},
+    private readonly options: TypeOrmRepositoryOptions,
   ) {
-    super(options.hookResolver);
+    super(options.entityKey, options.hookResolver);
 
     const entityName = repo.metadata?.name || repo.metadata?.targetName;
 

@@ -1,15 +1,18 @@
+import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { RoleRepositoryResolver } from '../../../infrastructure/persistence/role-repository.resolver';
+import { RoleRepositoryResolverInterface } from '../../../domain/repositories/role-repository-resolver.interface';
+import { ROLE_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants';
 import { RoleNotFoundException } from '../../exceptions/role-not-found.exception';
 import { RemoveRoleCommand } from '../impl/remove-role.command';
 
 @CommandHandler(RemoveRoleCommand)
 export class RemoveRoleHandler implements ICommandHandler<RemoveRoleCommand> {
   constructor(
-    private readonly repositoryResolver: RoleRepositoryResolver,
+    @Inject(ROLE_REPOSITORY_RESOLVER_TOKEN)
+    private readonly repositoryResolver: RoleRepositoryResolverInterface,
     private readonly txScope: TransactionScope,
   ) {}
 

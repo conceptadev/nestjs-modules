@@ -18,8 +18,13 @@ import { UpsertCacheHandler } from './application/commands/handlers/upsert-cache
 import { FindCachesByAssigneeHandler } from './application/queries/handlers/find-caches-by-assignee.handler';
 import { FindOneCacheHandler } from './application/queries/handlers/find-one-cache.handler';
 import { GetCacheHandler } from './application/queries/handlers/get-cache.handler';
-import { CACHE_MODULE_SETTINGS_TOKEN } from './cache.constants';
+import {
+  CACHE_CUSTOM_REPOSITORY_TOKEN,
+  CACHE_MODULE_SETTINGS_TOKEN,
+  CACHE_REPOSITORY_RESOLVER_TOKEN,
+} from './cache.constants';
 import { cacheDefaultConfig } from './infrastructure/config/cache-default.config';
+import { CacheExtrasInterface } from './infrastructure/config/interfaces/cache-extras.interface';
 import { CacheOptionsInterface } from './infrastructure/config/interfaces/cache-options.interface';
 import { CacheSettingsInterface } from './infrastructure/config/interfaces/cache-settings.interface';
 import { CacheRepositoryResolver } from './infrastructure/persistence/cache-repository.resolver';
@@ -34,10 +39,7 @@ export const {
   moduleName: 'CacheCore',
   optionsInjectionToken: RAW_OPTIONS_TOKEN,
 })
-  .setExtras<Pick<DynamicModule, 'global'>>(
-    { global: true },
-    definitionTransform,
-  )
+  .setExtras<CacheExtrasInterface>({ global: true }, definitionTransform)
   .build();
 
 export type CacheCoreOptions = typeof CACHE_CORE_OPTIONS_TYPE;
@@ -45,15 +47,15 @@ export type CacheCoreAsyncOptions = typeof CACHE_CORE_ASYNC_OPTIONS_TYPE;
 
 function definitionTransform(
   definition: DynamicModule,
-  extras: Pick<DynamicModule, 'global'>,
+  { global, repositories }: CacheExtrasInterface,
 ): DynamicModule {
-  const { imports, providers } = definition;
+  const { providers = [], imports = [] } = definition;
 
   return {
     ...definition,
-    global: extras.global,
+    global,
     imports: createCacheImports({ imports }),
-    providers: createCacheProviders({ providers }),
+    providers: createCacheProviders({ providers, repositories }),
     exports: [ConfigModule, RAW_OPTIONS_TOKEN, ...createCacheExports()],
   };
 }
@@ -71,11 +73,18 @@ export function createCacheImports(options: {
 export function createCacheProviders(options: {
   overrides?: CacheCoreOptions;
   providers?: Provider[];
+  repositories?: CacheExtrasInterface['repositories'];
 }): Provider[] {
   return [
-    ...(options.providers ?? []),
     createCacheSettingsProvider(options.overrides),
-    CacheRepositoryResolver,
+    {
+      provide: CACHE_CUSTOM_REPOSITORY_TOKEN,
+      useValue: options.repositories?.cache ?? null,
+    },
+    {
+      provide: CACHE_REPOSITORY_RESOLVER_TOKEN,
+      useClass: CacheRepositoryResolver,
+    },
     UpsertCacheHandler,
     ClearCachesByAssigneeHandler,
     CreateCacheHandler,
@@ -86,6 +95,7 @@ export function createCacheProviders(options: {
     GetCacheHandler,
     FindOneCacheHandler,
     FindCachesByAssigneeHandler,
+    ...(options.providers ?? []),
   ];
 }
 

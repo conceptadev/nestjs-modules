@@ -98,7 +98,7 @@ describe('typeorm-repository.util', () => {
         metadata: { name: 'TestEntity', targetName: 'TestEntity', columns: [] },
       } as unknown as Repository<TestEntity>;
 
-      const result = createTypeOrmRepository(mockRepo);
+      const result = createTypeOrmRepository(mockRepo, 'test-entity');
 
       expect(result).toBeInstanceOf(TypeOrmRepository);
       expect(result.metadata.type).toBe(TestEntity);
@@ -110,7 +110,11 @@ describe('typeorm-repository.util', () => {
         metadata: { name: 'TestEntity', targetName: 'TestEntity', columns: [] },
       } as unknown as Repository<TestEntity>;
 
-      const result = createTypeOrmRepository(mockRepo, 'secondary');
+      const result = createTypeOrmRepository(
+        mockRepo,
+        'test-entity',
+        'secondary',
+      );
 
       expect(result).toBeInstanceOf(TypeOrmRepository);
     });
@@ -124,6 +128,7 @@ describe('typeorm-repository.util', () => {
 
       const result = createTypeOrmRepository(
         mockRepo,
+        'test-entity',
         undefined,
         mockHookResolver,
       );

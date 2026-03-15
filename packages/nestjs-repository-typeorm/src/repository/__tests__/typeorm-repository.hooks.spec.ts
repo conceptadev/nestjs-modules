@@ -372,10 +372,11 @@ class AllHooks implements AllHooksInterface {
  * Adds the RepoHook.KEY type to each hook config (normally done by HookInterceptor).
  */
 function createHookContext(...hookClasses: Type[]) {
-  return AppContextHost.merge<RepositoryContextInterface>(() => ({
-    entity: '',
+  const ctx = AppContextHost.merge<RepositoryContextInterface>(() => ({
     hooks: hookClasses.map((hook) => ({ hook, type: RepoHook.KEY })),
   }));
+  ctx.switchToRepo('');
+  return ctx;
 }
 
 // =============================================================================

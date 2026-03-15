@@ -74,7 +74,7 @@ function createTestableRepo(): TestableTypeOrmRepository {
     target: TestEntityClass,
   } as unknown as Repository<TestEntity>;
 
-  return new TestableTypeOrmRepository(mockRepo);
+  return new TestableTypeOrmRepository(mockRepo, { entityKey: 'test-entity' });
 }
 
 describe('TypeOrmRepository WHERE clause translation', () => {

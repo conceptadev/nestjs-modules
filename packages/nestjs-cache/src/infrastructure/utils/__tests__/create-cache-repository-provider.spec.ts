@@ -1,6 +1,9 @@
 import { getDynamicRepositoryToken } from '@concepta/nestjs-common';
 
-import { CACHE_MODULE_SETTINGS_TOKEN } from '../../../cache.constants';
+import {
+  CACHE_CUSTOM_REPOSITORY_TOKEN,
+  CACHE_MODULE_SETTINGS_TOKEN,
+} from '../../../cache.constants';
 import { CacheRepository } from '../../persistence/cache.repository';
 import {
   createCacheRepositoryProvider,
@@ -40,6 +43,7 @@ describe('createCacheRepositoryProvider', () => {
     expect(provider.inject).toEqual([
       getDynamicRepositoryToken('user'),
       CACHE_MODULE_SETTINGS_TOKEN,
+      { token: CACHE_CUSTOM_REPOSITORY_TOKEN, optional: true },
     ]);
   });
 

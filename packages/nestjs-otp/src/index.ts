@@ -4,9 +4,11 @@ export { OtpModule } from './otp.module';
 // domain aggregate
 export { Otp } from './domain/aggregates/otp';
 
-// repository
+// repositories
 export { OtpRepository } from './infrastructure/persistence/otp.repository';
 export { OtpRepositoryResolver } from './infrastructure/persistence/otp-repository.resolver';
+export { OtpRepositoryInterface } from './domain/repositories/otp-repository.interface';
+export { OtpRepositoryResolverInterface } from './domain/repositories/otp-repository-resolver.interface';
 
 // dto
 export { OtpCreateDto } from './infrastructure/dtos/otp-create.dto';
@@ -51,6 +53,7 @@ export { GetOtpHandler } from './application/queries/handlers/get-otp.handler';
 export { ValidateOtpHandler } from './application/queries/handlers/validate-otp.handler';
 
 // interfaces
+export { OtpExtrasInterface } from './infrastructure/config/interfaces/otp-extras.interface';
 export { OtpOptionsInterface } from './infrastructure/config/interfaces/otp-options.interface';
 export { OtpSettingsInterface } from './infrastructure/config/interfaces/otp-settings.interface';
 export { OtpTypeServiceInterface } from './infrastructure/config/interfaces/otp-type-service.interface';

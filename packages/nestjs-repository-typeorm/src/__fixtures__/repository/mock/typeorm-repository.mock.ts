@@ -21,5 +21,5 @@ export function mockTypeOrmRepository(): TypeOrmRepository<TestEntity> {
     target: TestEntityClass,
   } as unknown as Repository<TestEntity>;
 
-  return new TypeOrmRepository(repo);
+  return new TypeOrmRepository(repo, { entityKey: 'test-entity' });
 }

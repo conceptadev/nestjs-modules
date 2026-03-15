@@ -7,8 +7,9 @@ import {
 } from '@concepta/nestjs-common';
 
 import { Role } from '../../domain/aggregates/role';
+import { RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface';
 
-export class RoleRepository {
+export class RoleRepository implements RoleRepositoryInterface {
   constructor(
     protected readonly repository: RepositoryInterface<RoleEntityInterface>,
   ) {}

@@ -169,7 +169,7 @@ describe(RepositoryAdapter.name, () => {
   let adapter: TestRepositoryAdapter;
 
   beforeEach(() => {
-    adapter = new TestRepositoryAdapter();
+    adapter = new TestRepositoryAdapter('test-entity');
   });
 
   describe('resolveJoinClauses', () => {

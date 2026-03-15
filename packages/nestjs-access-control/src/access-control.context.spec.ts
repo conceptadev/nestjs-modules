@@ -4,9 +4,10 @@ import { mock } from 'jest-mock-extended';
 import { Controller } from '@nestjs/common';
 import { ExecutionContext, HttpArgumentsHost } from '@nestjs/common/interfaces';
 
+import { ActionEnum } from '@concepta/nestjs-common';
+
 import { AccessControlContext } from './access-control.context';
 import { AccessControlReadOne } from './decorators/access-control-read-one.decorator';
-import { ActionEnum } from './enums/action.enum';
 import { PossessionEnum } from './enums/possession.enum';
 
 describe(AccessControlContext.name, () => {

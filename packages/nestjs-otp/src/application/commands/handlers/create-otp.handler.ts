@@ -11,18 +11,22 @@ import { TransactionScope } from '@concepta/nestjs-repository';
 import { Otp } from '../../../domain/aggregates/otp';
 import { OtpLimitReachedException } from '../../../domain/exceptions/otp-limit-reached.exception';
 import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception';
+import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
+import { OtpRepositoryInterface } from '../../../domain/repositories/otp-repository.interface';
 import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface';
 import { OtpCreateDto } from '../../../infrastructure/dtos/otp-create.dto';
-import { OtpRepositoryResolver } from '../../../infrastructure/persistence/otp-repository.resolver';
-import { OtpRepository } from '../../../infrastructure/persistence/otp.repository';
-import { OTP_MODULE_SETTINGS_TOKEN } from '../../../otp.constants';
+import {
+  OTP_MODULE_SETTINGS_TOKEN,
+  OTP_REPOSITORY_RESOLVER_TOKEN,
+} from '../../../otp.constants';
 import { validateOtpDto } from '../../utils/validate-otp-dto.util';
 import { CreateOtpCommand } from '../impl/create-otp.command';
 
 @CommandHandler(CreateOtpCommand)
 export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
   constructor(
-    private readonly repositoryResolver: OtpRepositoryResolver,
+    @Inject(OTP_REPOSITORY_RESOLVER_TOKEN)
+    private readonly repositoryResolver: OtpRepositoryResolverInterface,
     private readonly txScope: TransactionScope,
     private readonly eventPublisher: EventPublisher,
     @Inject(OTP_MODULE_SETTINGS_TOKEN)
@@ -95,7 +99,7 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
   }
 
   protected async validateRateLimit(params: {
-    otpRepo: OtpRepository;
+    otpRepo: OtpRepositoryInterface;
     dto: OtpCreateDto;
     ctx: RepositoryContextInterface;
     rateSeconds?: number;

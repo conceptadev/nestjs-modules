@@ -1,0 +1,39 @@
+import { Inject } from '@nestjs/common';
+import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+
+import { TransactionScope } from '@concepta/nestjs-repository';
+
+import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface';
+import { USER_REPOSITORY_TOKEN } from '../../../user.constants';
+import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
+import { UpdateUserCredentialCommand } from '../impl/update-user-credential.command';
+import { UpdateUserPasswordCommand } from '../impl/update-user-password.command';
+
+@CommandHandler(UpdateUserPasswordCommand)
+export class UpdateUserPasswordHandler
+  implements ICommandHandler<UpdateUserPasswordCommand, void>
+{
+  constructor(
+    @Inject(USER_REPOSITORY_TOKEN)
+    private readonly userRepository: UserRepositoryInterface,
+    private readonly commandBus: CommandBus,
+    private readonly txScope: TransactionScope,
+  ) {}
+
+  async execute(command: UpdateUserPasswordCommand): Promise<void> {
+    const { ctx, userId, passwordDto } = command;
+
+    return this.txScope.run(ctx, async () => {
+      // verify user exists
+      const user = await this.userRepository.get(ctx, userId);
+
+      if (!user) {
+        throw new UserNotFoundException({ id: userId });
+      }
+
+      await this.commandBus.execute(
+        new UpdateUserCredentialCommand(ctx, userId, passwordDto),
+      );
+    });
+  }
+}

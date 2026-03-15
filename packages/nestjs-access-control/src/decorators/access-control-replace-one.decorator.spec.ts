@@ -1,7 +1,8 @@
 import { Controller } from '@nestjs/common';
 
+import { ActionEnum } from '@concepta/nestjs-common';
+
 import { ACCESS_CONTROL_MODULE_GRANT_METADATA } from '../constants';
-import { ActionEnum } from '../enums/action.enum';
 
 import { AccessControlReplaceOne } from './access-control-replace-one.decorator';
 

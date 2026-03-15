@@ -7,10 +7,13 @@ import {
 } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { CACHE_MODULE_SETTINGS_TOKEN } from '../../../cache.constants';
+import {
+  CACHE_MODULE_SETTINGS_TOKEN,
+  CACHE_REPOSITORY_RESOLVER_TOKEN,
+} from '../../../cache.constants';
 import { Cache } from '../../../domain/aggregates/cache';
+import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface';
 import { CacheSettingsInterface } from '../../../infrastructure/config/interfaces/cache-settings.interface';
-import { CacheRepositoryResolver } from '../../../infrastructure/persistence/cache-repository.resolver';
 import { ReplaceCacheCommand } from '../impl/replace-cache.command';
 
 @CommandHandler(ReplaceCacheCommand)
@@ -18,7 +21,8 @@ export class ReplaceCacheHandler
   implements ICommandHandler<ReplaceCacheCommand>
 {
   constructor(
-    private readonly repositoryResolver: CacheRepositoryResolver,
+    @Inject(CACHE_REPOSITORY_RESOLVER_TOKEN)
+    private readonly repositoryResolver: CacheRepositoryResolverInterface,
     private readonly txScope: TransactionScope,
     private readonly eventPublisher: EventPublisher,
     @Inject(CACHE_MODULE_SETTINGS_TOKEN)

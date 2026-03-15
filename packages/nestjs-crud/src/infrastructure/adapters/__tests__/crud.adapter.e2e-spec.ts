@@ -48,7 +48,7 @@ const ENTITY_TOKEN = 'test-adapter-entity';
 function ctx(
   overrides?: Partial<CrudContextInterface<TestEntityFixture>>,
 ): CrudContextInterface<TestEntityFixture> {
-  return {
+  const base = {
     entity: 'TestEntityFixture',
     params: {},
     query: mockCrudParsedQuery(),
@@ -58,6 +58,14 @@ function ctx(
     locals: {},
     ...overrides,
   } as CrudContextInterface<TestEntityFixture>;
+
+  base.switchToRepo = (entity: string) => {
+    const overlay = Object.create(base);
+    overlay.entity = entity;
+    return overlay;
+  };
+
+  return base;
 }
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
@@ -1080,7 +1088,7 @@ describe('CrudAdapter relations (e2e)', () => {
   function relCtx(
     overrides?: Partial<CrudContextInterface<CompanyEntity>>,
   ): CrudContextInterface<CompanyEntity> {
-    return {
+    const base = {
       entity: 'CompanyEntity',
       params: {},
       query: mockCrudParsedQuery(),
@@ -1090,6 +1098,14 @@ describe('CrudAdapter relations (e2e)', () => {
       locals: {},
       ...overrides,
     } as CrudContextInterface<CompanyEntity>;
+
+    base.switchToRepo = (entity: string) => {
+      const overlay = Object.create(base);
+      overlay.entity = entity;
+      return overlay;
+    };
+
+    return base;
   }
 
   beforeEach(async () => {

@@ -1184,7 +1184,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-access-control@workspace:packages/nestjs-access-control"
   dependencies:
-    "@concepta/nestjs-common": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-common": "npm:8.0.0-alpha.1"
     "@nestjs/common": "npm:^11.1.9"
     "@nestjs/config": "npm:^4.0.2"
     "@nestjs/core": "npm:^11.1.9"
@@ -2025,24 +2025,46 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@concepta/nestjs-user@npm:^7.0.0-alpha.10, @concepta/nestjs-user@workspace:packages/nestjs-user":
+"@concepta/nestjs-user@npm:^7.0.0-alpha.10":
+  version: 7.0.0-alpha.10
+  resolution: "@concepta/nestjs-user@npm:7.0.0-alpha.10"
+  dependencies:
+    "@concepta/nestjs-access-control": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-common": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-event": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-password": "npm:^7.0.0-alpha.10"
+    "@nestjs/common": "npm:^11.1.9"
+    "@nestjs/config": "npm:^4.0.2"
+    "@nestjs/core": "npm:^11.1.9"
+    "@nestjs/swagger": "npm:^11.2.2"
+  peerDependencies:
+    class-transformer: "*"
+    class-validator: "*"
+    typeorm: ^0.3.0
+  checksum: 10c0/a48718233df898052482ad41257471135c93a60ee55bb6a1405eb4b3f6115d312a05fae925274daf09aa2b6992058fd4d5b1bc2ca89e61ffcecd3c84d0b6ab21
+  languageName: node
+  linkType: hard
+
+"@concepta/nestjs-user@workspace:packages/nestjs-user":
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-user@workspace:packages/nestjs-user"
   dependencies:
     "@concepta/nestjs-access-control": "npm:^7.0.0-alpha.10"
     "@concepta/nestjs-auth-jwt": "npm:^7.0.0-alpha.10"
     "@concepta/nestjs-authentication": "npm:^7.0.0-alpha.10"
-    "@concepta/nestjs-common": "npm:^7.0.0-alpha.10"
-    "@concepta/nestjs-crud": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-common": "npm:8.0.0-alpha.1"
+    "@concepta/nestjs-crud": "npm:8.0.0-alpha.1"
     "@concepta/nestjs-event": "npm:^7.0.0-alpha.10"
     "@concepta/nestjs-jwt": "npm:^7.0.0-alpha.10"
     "@concepta/nestjs-password": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-repository": "npm:8.0.0-alpha.1"
     "@concepta/nestjs-typeorm-ext": "npm:^7.0.0-alpha.10"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
     "@nestjs/common": "npm:^11.1.9"
     "@nestjs/config": "npm:^4.0.2"
     "@nestjs/core": "npm:^11.1.9"
+    "@nestjs/cqrs": "npm:^11.0.3"
     "@nestjs/swagger": "npm:^11.2.2"
     "@nestjs/testing": "npm:^11.1.9"
     "@nestjs/typeorm": "npm:^11.0.0"
@@ -4170,7 +4192,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/cqrs@npm:^11.0.0":
+"@nestjs/cqrs@npm:^11.0.0, @nestjs/cqrs@npm:^11.0.3":
   version: 11.0.3
   resolution: "@nestjs/cqrs@npm:11.0.3"
   peerDependencies:

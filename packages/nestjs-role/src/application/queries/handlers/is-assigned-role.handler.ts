@@ -1,6 +1,8 @@
+import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { RoleAssignmentRepositoryResolver } from '../../../infrastructure/persistence/role-assignment-repository.resolver';
+import { RoleAssignmentRepositoryResolverInterface } from '../../../domain/repositories/role-assignment-repository-resolver.interface';
+import { ROLE_ASSIGNMENT_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants';
 import { IsAssignedRoleQuery } from '../impl/is-assigned-role.query';
 
 @QueryHandler(IsAssignedRoleQuery)
@@ -8,7 +10,8 @@ export class IsAssignedRoleHandler
   implements IQueryHandler<IsAssignedRoleQuery>
 {
   constructor(
-    private readonly repositoryResolver: RoleAssignmentRepositoryResolver,
+    @Inject(ROLE_ASSIGNMENT_REPOSITORY_RESOLVER_TOKEN)
+    private readonly repositoryResolver: RoleAssignmentRepositoryResolverInterface,
   ) {}
 
   async execute(query: IsAssignedRoleQuery): Promise<boolean> {

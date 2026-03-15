@@ -53,11 +53,13 @@ export function resolveTokenName(dsName?: string): string | undefined {
  */
 export function createTypeOrmRepository<E extends PlainLiteralObject>(
   repo: Repository<E>,
+  entityKey: string,
   dataSource?: string,
   hookResolver?: HookResolverService,
   relationsConfig?: Record<string, RelationActionConfig>,
 ): TypeOrmRepository<E> {
   return new TypeOrmRepository(repo, {
+    entityKey,
     transactionKey: resolveTransactionKey(dataSource),
     hookResolver,
     relationsConfig,
@@ -90,6 +92,7 @@ export function createTypeOrmProvider<E extends PlainLiteralObject>(
       useFactory: (ds: DataSource, hookResolver?: HookResolverService) => {
         return createTypeOrmRepository(
           factory(ds),
+          key,
           dsName,
           hookResolver,
           relations,
@@ -104,7 +107,13 @@ export function createTypeOrmProvider<E extends PlainLiteralObject>(
         OPTIONAL_HOOK_RESOLVER_INJECT,
       ],
       useFactory: (repo: Repository<E>, hookResolver?: HookResolverService) => {
-        return createTypeOrmRepository(repo, dsName, hookResolver, relations);
+        return createTypeOrmRepository(
+          repo,
+          key,
+          dsName,
+          hookResolver,
+          relations,
+        );
       },
     };
   }

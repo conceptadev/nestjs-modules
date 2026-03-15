@@ -1,3 +1,4 @@
+import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
 import {
@@ -7,13 +8,15 @@ import {
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { Role } from '../../../domain/aggregates/role';
-import { RoleRepositoryResolver } from '../../../infrastructure/persistence/role-repository.resolver';
+import { RoleRepositoryResolverInterface } from '../../../domain/repositories/role-repository-resolver.interface';
+import { ROLE_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants';
 import { CreateRoleCommand } from '../impl/create-role.command';
 
 @CommandHandler(CreateRoleCommand)
 export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand> {
   constructor(
-    private readonly repositoryResolver: RoleRepositoryResolver,
+    @Inject(ROLE_REPOSITORY_RESOLVER_TOKEN)
+    private readonly repositoryResolver: RoleRepositoryResolverInterface,
     private readonly txScope: TransactionScope,
     private readonly eventPublisher: EventPublisher,
   ) {}

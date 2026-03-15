@@ -1,6 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 
-import { ActionEnum } from '../enums/action.enum';
+import { ActionEnum } from '@concepta/nestjs-common';
 
 import { AccessControlGrant } from './access-control-grant.decorator';
 

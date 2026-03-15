@@ -9,9 +9,12 @@ import {
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception';
+import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
 import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface';
-import { OtpRepositoryResolver } from '../../../infrastructure/persistence/otp-repository.resolver';
-import { OTP_MODULE_SETTINGS_TOKEN } from '../../../otp.constants';
+import {
+  OTP_MODULE_SETTINGS_TOKEN,
+  OTP_REPOSITORY_RESOLVER_TOKEN,
+} from '../../../otp.constants';
 import { ConsumeOtpCommand } from '../impl/consume-otp.command';
 
 @CommandHandler(ConsumeOtpCommand)
@@ -20,7 +23,8 @@ export class ConsumeOtpHandler
     ICommandHandler<ConsumeOtpCommand, AssigneeRelationInterface | null>
 {
   constructor(
-    private readonly repositoryResolver: OtpRepositoryResolver,
+    @Inject(OTP_REPOSITORY_RESOLVER_TOKEN)
+    private readonly repositoryResolver: OtpRepositoryResolverInterface,
     private readonly txScope: TransactionScope,
     private readonly eventPublisher: EventPublisher,
     @Inject(OTP_MODULE_SETTINGS_TOKEN)

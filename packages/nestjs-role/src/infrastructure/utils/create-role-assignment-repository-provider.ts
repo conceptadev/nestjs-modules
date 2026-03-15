@@ -1,4 +1,4 @@
-import { Provider } from '@nestjs/common';
+import { Provider, Type } from '@nestjs/common';
 
 import {
   RoleAssignmentEntityInterface,
@@ -6,6 +6,8 @@ import {
   RepositoryInterface,
 } from '@concepta/nestjs-common';
 
+import { RoleAssignmentRepositoryInterface } from '../../domain/repositories/role-assignment-repository.interface';
+import { ROLE_ASSIGNMENT_CUSTOM_REPOSITORY_TOKEN } from '../../role.constants';
 import { RoleAssignmentRepository } from '../persistence/role-assignment.repository';
 
 /**
@@ -24,11 +26,16 @@ export function createRoleAssignmentRepositoryProvider(
 ): Provider {
   return {
     provide: getDynamicRoleAssignmentRepositoryToken(entityKey),
-    inject: [getDynamicRepositoryToken(entityKey)],
+    inject: [
+      getDynamicRepositoryToken(entityKey),
+      { token: ROLE_ASSIGNMENT_CUSTOM_REPOSITORY_TOKEN, optional: true },
+    ],
     useFactory: (
       repository: RepositoryInterface<RoleAssignmentEntityInterface>,
+      customRepo?: Type<RoleAssignmentRepositoryInterface>,
     ) => {
-      return new RoleAssignmentRepository(repository);
+      const RepoClass = customRepo ?? RoleAssignmentRepository;
+      return new RepoClass(repository);
     },
   };
 }

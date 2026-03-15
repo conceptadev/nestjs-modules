@@ -151,7 +151,7 @@ export class TransactionScope {
     ctx: TransactionContextInterface,
     fn: () => void | Promise<void>,
   ): void {
-    ctx.trx.onCommit(fn);
+    ctx.trx?.onCommit(fn);
   }
 
   /**
@@ -161,7 +161,7 @@ export class TransactionScope {
     ctx: TransactionContextInterface,
     fn: () => void | Promise<void>,
   ): void {
-    ctx.trx.onRollback(fn);
+    ctx.trx?.onRollback(fn);
   }
 
   private withTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {

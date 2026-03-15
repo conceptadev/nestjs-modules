@@ -1,38 +1,58 @@
 {
   "name": "@concepta/nestjs-user",
-  "version": "7.0.0-alpha.10",
+  "version": "8.0.0-alpha.1",
   "description": "Rockets NestJS User",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./optional/crud": {
+      "types": "./dist/optional-crud.d.ts",
+      "default": "./dist/optional-crud.js"
+    },
+    "./optional/seeding": {
+      "types": "./dist/optional-seeding.d.ts",
+      "default": "./dist/optional-seeding.js"
+    }
+  },
   "license": "BSD-3-Clause",
   "publishConfig": {
     "access": "public"
   },
   "files": [
-    "dist/**/!(*.spec|*.e2e-spec|*.fixture).{js,d.ts}"
+    "dist/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "!dist/**/__tests__/**",
+    "!dist/**/__fixtures__/**"
   ],
   "dependencies": {
-    "@concepta/nestjs-access-control": "^7.0.0-alpha.10",
-    "@concepta/nestjs-common": "^7.0.0-alpha.10",
+    "@concepta/nestjs-common": "8.0.0-alpha.1",
     "@concepta/nestjs-event": "^7.0.0-alpha.10",
     "@concepta/nestjs-password": "^7.0.0-alpha.10",
+    "@concepta/nestjs-repository": "8.0.0-alpha.1",
     "@nestjs/common": "^11.1.9",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.9",
+    "@nestjs/cqrs": "^11.0.3",
     "@nestjs/swagger": "^11.2.2"
   },
   "devDependencies": {
     "@concepta/nestjs-auth-jwt": "^7.0.0-alpha.10",
     "@concepta/nestjs-authentication": "^7.0.0-alpha.10",
-    "@concepta/nestjs-crud": "^7.0.0-alpha.10",
+    "@concepta/nestjs-crud": "8.0.0-alpha.1",
+    "@concepta/nestjs-hook": "^7.0.0-alpha.10",
     "@concepta/nestjs-jwt": "^7.0.0-alpha.10",
+    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.1",
     "@concepta/nestjs-typeorm-ext": "^7.0.0-alpha.10",
     "@concepta/typeorm-seeding": "^4.0.0",
     "@faker-js/faker": "^8.4.1",
     "@nestjs/testing": "^11.1.9",
     "@nestjs/typeorm": "^11.0.0",
     "accesscontrol": "^2.2.1",
-    "supertest": "^6.3.4"
+    "supertest": "^6.3.4",
+    "rxjs": "^7.8.1"
   },
   "peerDependencies": {
     "class-transformer": "*",

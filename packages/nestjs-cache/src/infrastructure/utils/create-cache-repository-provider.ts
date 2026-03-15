@@ -1,4 +1,4 @@
-import { Provider } from '@nestjs/common';
+import { Provider, Type } from '@nestjs/common';
 
 import {
   CacheInterface,
@@ -6,7 +6,11 @@ import {
   RepositoryInterface,
 } from '@concepta/nestjs-common';
 
-import { CACHE_MODULE_SETTINGS_TOKEN } from '../../cache.constants';
+import {
+  CACHE_CUSTOM_REPOSITORY_TOKEN,
+  CACHE_MODULE_SETTINGS_TOKEN,
+} from '../../cache.constants';
+import { CacheRepositoryInterface } from '../../domain/repositories/cache-repository.interface';
 import { CacheSettingsInterface } from '../config/interfaces/cache-settings.interface';
 import { CacheRepository } from '../persistence/cache.repository';
 
@@ -17,12 +21,18 @@ export function getDynamicCacheRepositoryToken(entityKey: string): string {
 export function createCacheRepositoryProvider(entityKey: string): Provider {
   return {
     provide: getDynamicCacheRepositoryToken(entityKey),
-    inject: [getDynamicRepositoryToken(entityKey), CACHE_MODULE_SETTINGS_TOKEN],
+    inject: [
+      getDynamicRepositoryToken(entityKey),
+      CACHE_MODULE_SETTINGS_TOKEN,
+      { token: CACHE_CUSTOM_REPOSITORY_TOKEN, optional: true },
+    ],
     useFactory: (
       repository: RepositoryInterface<CacheInterface>,
       settings: CacheSettingsInterface,
+      customRepo?: Type<CacheRepositoryInterface>,
     ) => {
-      return new CacheRepository(repository, settings);
+      const RepoClass = customRepo ?? CacheRepository;
+      return new RepoClass(repository, settings);
     },
   };
 }

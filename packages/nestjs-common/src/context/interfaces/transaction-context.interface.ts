@@ -13,5 +13,5 @@ export interface TransactionContextInterface extends PlainLiteralObject {
    * Transaction manager holding active transactions.
    * Mutable so transaction scope can set it.
    */
-  trx: TransactionManagerInterface;
+  trx?: TransactionManagerInterface;
 }

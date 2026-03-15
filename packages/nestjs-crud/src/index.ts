@@ -66,6 +66,9 @@ export { CrudSort } from './infrastructure/decorators/routes/crud-sort.decorator
 export { CrudValidate } from './infrastructure/decorators/routes/crud-validate.decorator';
 export { UseCrudLocals } from './infrastructure/decorators/routes/crud-locals.decorator';
 
+// locals utilities
+export { getLocal } from './infrastructure/utils/get-local.util';
+
 // param decorators
 export { CrudBody } from './infrastructure/decorators/params/crud-body.decorator';
 

@@ -3,9 +3,14 @@ export { CacheModule } from './cache.module';
 // domain object
 export { Cache } from './domain/aggregates/cache';
 
-// repository
+// repositories
 export { CacheRepository } from './infrastructure/persistence/cache.repository';
 export { CacheRepositoryResolver } from './infrastructure/persistence/cache-repository.resolver';
+export { CacheRepositoryInterface } from './domain/repositories/cache-repository.interface';
+export { CacheRepositoryResolverInterface } from './domain/repositories/cache-repository-resolver.interface';
+
+// interfaces
+export { CacheExtrasInterface } from './infrastructure/config/interfaces/cache-extras.interface';
 
 // dto
 export { CacheCreateDto } from './infrastructure/dtos/cache-create.dto';

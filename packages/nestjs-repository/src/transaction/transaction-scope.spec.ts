@@ -186,7 +186,7 @@ describe(TransactionScope.name, () => {
 
       await transaction.run(ctx, async () => {
         // Simulate repo accessing the transaction lazily
-        const trxManager = ctx.trx;
+        const trxManager = ctx.trx!;
         const tx = await trxManager.getOrStart('typeorm:default');
         tx?.markDirty();
         return 'result';
@@ -204,7 +204,7 @@ describe(TransactionScope.name, () => {
       const ctx = createCtx();
 
       await transaction.run(ctx, async () => {
-        const trxManager = ctx.trx;
+        const trxManager = ctx.trx!;
         await trxManager.getOrStart('typeorm:default');
         return 'result';
       });
@@ -222,7 +222,7 @@ describe(TransactionScope.name, () => {
 
       await expect(
         transaction.run(ctx, async () => {
-          const trxManager = ctx.trx;
+          const trxManager = ctx.trx!;
           await trxManager.getOrStart('typeorm:default');
           throw error;
         }),
@@ -242,7 +242,7 @@ describe(TransactionScope.name, () => {
       await transaction.run(
         ctx,
         async () => {
-          const trxManager = ctx.trx;
+          const trxManager = ctx.trx!;
           const tx = await trxManager.getOrStart('typeorm:default');
           tx?.markDirty();
           return 'result';
@@ -261,7 +261,7 @@ describe(TransactionScope.name, () => {
       const ctx = createCtx();
 
       await transaction.runReadOnly(ctx, async () => {
-        const trxManager = ctx.trx;
+        const trxManager = ctx.trx!;
         await trxManager.getOrStart('typeorm:default');
         return 'result';
       });
@@ -373,7 +373,7 @@ describe(TransactionScope.name, () => {
       const ctx = createCtx();
 
       await transaction.run(ctx, async () => {
-        const trxManager = ctx.trx;
+        const trxManager = ctx.trx!;
         const tx = await trxManager.getOrStart('typeorm:default');
         tx?.markDirty();
 
@@ -396,7 +396,7 @@ describe(TransactionScope.name, () => {
 
       await expect(
         transaction.run(ctx, async () => {
-          const trxManager = ctx.trx;
+          const trxManager = ctx.trx!;
           await trxManager.getOrStart('typeorm:default');
 
           await transaction.run(ctx, async () => {

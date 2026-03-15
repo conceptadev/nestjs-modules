@@ -390,8 +390,7 @@ The module exports pre-built entities for common domain models. Each has
 Postgres and SQLite variants:
 
 - User: `UserPostgresEntity`, `UserSqliteEntity`
-- User Profile: `UserProfilePostgresEntity`, `UserProfileSqliteEntity`
-- User Password History: `UserPasswordHistoryPostgresEntity`, `UserPasswordHistorySqliteEntity`
+- User Credential: `UserCredentialPostgresEntity`, `UserCredentialSqliteEntity`
 - Org: `OrgPostgresEntity`, `OrgSqliteEntity`
 - Org Member: `OrgMemberPostgresEntity`, `OrgMemberSqliteEntity`
 - Org Profile: `OrgProfilePostgresEntity`, `OrgProfileSqliteEntity`

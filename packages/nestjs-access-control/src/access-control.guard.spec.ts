@@ -6,6 +6,8 @@ import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { ActionEnum } from '@concepta/nestjs-common';
+
 import { AccessControlContext } from './access-control.context';
 import { AccessControlGuard } from './access-control.guard';
 import {
@@ -17,7 +19,6 @@ import { AccessControlCreateOne } from './decorators/access-control-create-one.d
 import { AccessControlQuery } from './decorators/access-control-query.decorator';
 import { AccessControlReadMany } from './decorators/access-control-read-many.decorator';
 import { AccessControlReadOne } from './decorators/access-control-read-one.decorator';
-import { ActionEnum } from './enums/action.enum';
 import { PossessionEnum } from './enums/possession.enum';
 import { AccessControlContextInterface } from './interfaces/access-control-context.interface';
 import { AccessControlGrantOptionInterface } from './interfaces/access-control-grant-option.interface';

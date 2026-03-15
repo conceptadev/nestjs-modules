@@ -1,5 +1,4 @@
 import {
-  ActionEnum,
   PossessionEnum,
   AccessControlCreateMany,
   AccessControlCreateOne,
@@ -45,7 +44,6 @@ describe('Index', () => {
 
   // enums
   it('All exported enums should be imported', () => {
-    expect(ActionEnum).toEqual(expect.any(Object));
     expect(PossessionEnum).toEqual(expect.any(Object));
   });
 });

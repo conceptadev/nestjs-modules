@@ -15,6 +15,7 @@ export { AuthorizationPayloadInterface } from './authorization/interfaces/author
 export { PasswordStorageInterface } from './password/interfaces/password-storage.interface';
 export { PasswordPlainCurrentInterface } from './password/interfaces/password-plain-current.interface';
 export { PasswordPlainInterface } from './password/interfaces/password-plain.interface';
+export { PasswordUpdateInterface } from './password/interfaces/password-update.interface';
 export { isPasswordStorage } from './password/is-password-storage.typeguard';
 
 export { OrgCreatableInterface } from './org/interfaces/org-creatable.interface';
@@ -35,18 +36,13 @@ export { OrgProfileEntityInterface } from './org-profile/interfaces/org-profile-
 export { UserCreatableInterface } from './user/interfaces/user-creatable.interface';
 export { UserOwnableInterface } from './user/interfaces/user-ownable.interface';
 export { UserUpdatableInterface } from './user/interfaces/user-updatable.interface';
-export { UserReplaceableInterface } from './user/interfaces/user-replaceable.interface';
 export { UserRelationInterface } from './user/interfaces/user-relation.interface';
 export { UserInterface } from './user/interfaces/user.interface';
 export { UserEntityInterface } from './user/interfaces/user-entity.interface';
 
-export { UserProfileInterface } from './user-profile/interfaces/user-profile.interface';
-export { UserProfileCreatableInterface } from './user-profile/interfaces/user-profile-creatable.interface';
-export { UserProfileEntityInterface } from './user-profile/interfaces/user-profile-entity.interface';
-
-export { UserPasswordHistoryInterface } from './user-password-history/interfaces/user-password-history.interface';
-export { UserPasswordHistoryEntityInterface } from './user-password-history/interfaces/user-password-history-entity.interface';
-export { UserPasswordHistoryCreatableInterface } from './user-password-history/interfaces/user-password-history-creatable.interface';
+export { UserCredentialInterface } from './user-credential/interfaces/user-credential.interface';
+export { UserCredentialEntityInterface } from './user-credential/interfaces/user-credential-entity.interface';
+export { UserCredentialCreatableInterface } from './user-credential/interfaces/user-credential-creatable.interface';
 
 export { FederatedCreatableInterface } from './federated/interfaces/federated-creatable.interface';
 export { FederatedUpdatableInterface } from './federated/interfaces/federated-updatable.interface';

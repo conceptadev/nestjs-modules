@@ -1,13 +1,18 @@
+import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
+import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants';
 import { Cache } from '../../../domain/aggregates/cache';
-import { CacheRepositoryResolver } from '../../../infrastructure/persistence/cache-repository.resolver';
+import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface';
 import { CacheNotFoundException } from '../../exceptions/cache-not-found.exception';
 import { GetCacheQuery } from '../impl/get-cache.query';
 
 @QueryHandler(GetCacheQuery)
 export class GetCacheHandler implements IQueryHandler<GetCacheQuery> {
-  constructor(private readonly repositoryResolver: CacheRepositoryResolver) {}
+  constructor(
+    @Inject(CACHE_REPOSITORY_RESOLVER_TOKEN)
+    private readonly repositoryResolver: CacheRepositoryResolverInterface,
+  ) {}
 
   async execute(query: GetCacheQuery): Promise<Cache> {
     const { ctx, id } = query;

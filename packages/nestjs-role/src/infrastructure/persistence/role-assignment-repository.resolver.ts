@@ -1,20 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
+import { RoleAssignmentRepositoryResolverInterface } from '../../domain/repositories/role-assignment-repository-resolver.interface';
+import { RoleAssignmentRepositoryInterface } from '../../domain/repositories/role-assignment-repository.interface';
 import { RoleEntityNotFoundException } from '../exceptions/role-entity-not-found.exception';
 import { getDynamicRoleAssignmentRepositoryToken } from '../utils/create-role-assignment-repository-provider';
 
-import { RoleAssignmentRepository } from './role-assignment.repository';
-
 @Injectable()
-export class RoleAssignmentRepositoryResolver {
+export class RoleAssignmentRepositoryResolver
+  implements RoleAssignmentRepositoryResolverInterface
+{
   constructor(private readonly moduleRef: ModuleRef) {}
 
-  resolve(entityKey: string): RoleAssignmentRepository {
+  resolve(entityKey: string): RoleAssignmentRepositoryInterface {
     const token = getDynamicRoleAssignmentRepositoryToken(entityKey);
 
     try {
-      return this.moduleRef.get<RoleAssignmentRepository>(token, {
+      return this.moduleRef.get<RoleAssignmentRepositoryInterface>(token, {
         strict: false,
       });
     } catch {

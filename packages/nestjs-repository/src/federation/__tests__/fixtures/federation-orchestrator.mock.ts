@@ -132,8 +132,12 @@ export function mockContext(
     trx: {} as unknown as RepositoryContextInterface['trx'],
     hooks: [],
     entity: 'TestEntity',
+    switchToRepo(entity: string) {
+      this.entity = entity;
+      return this;
+    },
     ...overrides,
-  };
+  } as RepositoryContextInterface;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

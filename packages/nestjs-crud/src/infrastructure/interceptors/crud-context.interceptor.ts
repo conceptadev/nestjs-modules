@@ -90,8 +90,8 @@ export class CrudContextInterceptor<
       // Build current route options
       const route = this.getRouteOptions(target, handler, operation);
 
-      // Register values on the aggregated context (read-only after set)
-      ctx.register('entity', entity);
+      // Set entity via switchToRepo (configurable, allows repo adapter to switch)
+      ctx.switchToRepo(entity);
       ctx.register('operation', operation);
       ctx.register('action', operationToAction(operation));
       ctx.register('params', parser.getRouteParams());

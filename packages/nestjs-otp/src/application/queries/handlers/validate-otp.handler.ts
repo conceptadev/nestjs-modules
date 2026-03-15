@@ -4,15 +4,19 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { AssigneeRelationInterface } from '@concepta/nestjs-common';
 
 import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception';
+import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
 import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface';
-import { OtpRepositoryResolver } from '../../../infrastructure/persistence/otp-repository.resolver';
-import { OTP_MODULE_SETTINGS_TOKEN } from '../../../otp.constants';
+import {
+  OTP_MODULE_SETTINGS_TOKEN,
+  OTP_REPOSITORY_RESOLVER_TOKEN,
+} from '../../../otp.constants';
 import { ValidateOtpQuery } from '../impl/validate-otp.query';
 
 @QueryHandler(ValidateOtpQuery)
 export class ValidateOtpHandler implements IQueryHandler<ValidateOtpQuery> {
   constructor(
-    private readonly repositoryResolver: OtpRepositoryResolver,
+    @Inject(OTP_REPOSITORY_RESOLVER_TOKEN)
+    private readonly repositoryResolver: OtpRepositoryResolverInterface,
     @Inject(OTP_MODULE_SETTINGS_TOKEN)
     private readonly settings: OtpSettingsInterface,
   ) {}

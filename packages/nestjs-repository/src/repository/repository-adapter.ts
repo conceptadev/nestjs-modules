@@ -7,6 +7,7 @@ import {
   DeepPartial,
   HookContextInterface,
   JoinClause,
+  RepositoryContextInterface,
   RepositoryInterface,
   RepositoryMetadataInterface,
   RepositoryFindOptions,
@@ -51,10 +52,17 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
 {
   abstract readonly metadata: RepositoryMetadataInterface<Entity>;
 
+  readonly entityKey: string;
+
   private _permeator?: RepoPermeatorFactory<Entity>;
   private _federationOrchestrator?: FederationOrchestrator;
 
-  constructor(protected readonly hookResolver?: HookResolverService) {}
+  constructor(
+    entityKey: string,
+    protected readonly hookResolver?: HookResolverService,
+  ) {
+    this.entityKey = entityKey;
+  }
 
   /**
    * Set the federation orchestrator for this repository.
@@ -69,10 +77,20 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     if (!this._permeator) {
       this._permeator = new RepoPermeatorFactory<Entity>(
         this.runHooks.bind(this),
-        this.metadata.name,
+        this.entityKey,
       );
     }
     return this._permeator;
+  }
+
+  /**
+   * Switch the context's entity to this repository's entity key.
+   */
+  protected entityCtx(
+    ctx?: RepositoryContextInterface,
+  ): RepositoryContextInterface | undefined {
+    if (!ctx) return undefined;
+    return ctx.switchToRepo(this.entityKey);
   }
 
   // Query operations
@@ -81,7 +99,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.permeator.find.permeate(
       options,
       (scoped) => this.doFind(scoped),
-      options.ctx,
+      this.entityCtx(options.ctx),
     );
   }
 
@@ -95,7 +113,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.permeator.findOne.permeate(
       options,
       (scoped) => this.doFindOne(scoped),
-      options.ctx,
+      this.entityCtx(options.ctx),
     );
   }
 
@@ -107,7 +125,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.permeator.count.permeate(
       options,
       (scoped) => this.doCount(scoped),
-      options.ctx,
+      this.entityCtx(options.ctx),
     );
   }
 
@@ -131,7 +149,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.permeator.findAndCount.permeate(
       options,
       (scoped) => this.doFindAndCount(scoped),
-      options.ctx,
+      this.entityCtx(options.ctx),
     );
   }
 
@@ -148,7 +166,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.permeator.create.permeate(
       entity,
       (scoped) => this.doCreate(scoped, options),
-      options?.ctx,
+      this.entityCtx(options?.ctx),
     );
   }
 
@@ -164,7 +182,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.permeator.createMany.permeate(
       entities,
       (scoped) => this.doCreateMany(scoped, options),
-      options?.ctx,
+      this.entityCtx(options?.ctx),
     );
   }
 
@@ -183,7 +201,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.permeator.update.permeate(
       data,
       (scoped) => this.doUpdate(entity, scoped, options),
-      options?.ctx,
+      this.entityCtx(options?.ctx),
     );
   }
 
@@ -200,7 +218,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.permeator.upsert.permeate(
       entity,
       (scoped) => this.doUpsert(scoped, options),
-      options?.ctx,
+      this.entityCtx(options?.ctx),
     );
   }
 
@@ -217,7 +235,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.permeator.replace.permeate(
       data,
       (scoped) => this.doReplace(entity, scoped, options),
-      options?.ctx,
+      this.entityCtx(options?.ctx),
     );
   }
 
@@ -236,7 +254,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.permeator.delete.permeate(
       entity,
       (scoped) => this.doDelete(scoped, options),
-      options?.ctx,
+      this.entityCtx(options?.ctx),
     );
   }
 
@@ -252,7 +270,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.permeator.deleteMany.permeate(
       entities,
       (scoped) => this.doDeleteMany(scoped, options),
-      options?.ctx,
+      this.entityCtx(options?.ctx),
     );
   }
 
@@ -268,7 +286,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.permeator.softDelete.permeate(
       entity,
       (scoped) => this.doSoftDelete(scoped, options),
-      options?.ctx,
+      this.entityCtx(options?.ctx),
     );
   }
 
@@ -284,7 +302,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     return this.permeator.restore.permeate(
       entity,
       (scoped) => this.doRestore(scoped, options),
-      options?.ctx,
+      this.entityCtx(options?.ctx),
     );
   }
 

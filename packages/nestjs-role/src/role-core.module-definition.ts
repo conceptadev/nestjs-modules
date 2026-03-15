@@ -21,12 +21,19 @@ import { GetRoleAssignmentHandler } from './application/queries/handlers/get-rol
 import { GetRoleHandler } from './application/queries/handlers/get-role.handler';
 import { IsAssignedRoleHandler } from './application/queries/handlers/is-assigned-role.handler';
 import { IsAssignedRolesHandler } from './application/queries/handlers/is-assigned-roles.handler';
+import { RoleExtrasInterface } from './infrastructure/config/interfaces/role-extras.interface';
 import { RoleOptionsInterface } from './infrastructure/config/interfaces/role-options.interface';
 import { RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface';
 import { roleDefaultConfig } from './infrastructure/config/role-default.config';
 import { RoleAssignmentRepositoryResolver } from './infrastructure/persistence/role-assignment-repository.resolver';
 import { RoleRepositoryResolver } from './infrastructure/persistence/role-repository.resolver';
-import { ROLE_MODULE_SETTINGS_TOKEN } from './role.constants';
+import {
+  ROLE_ASSIGNMENT_CUSTOM_REPOSITORY_TOKEN,
+  ROLE_ASSIGNMENT_REPOSITORY_RESOLVER_TOKEN,
+  ROLE_CUSTOM_REPOSITORY_TOKEN,
+  ROLE_MODULE_SETTINGS_TOKEN,
+  ROLE_REPOSITORY_RESOLVER_TOKEN,
+} from './role.constants';
 
 const RAW_OPTIONS_TOKEN = Symbol('__ROLE_MODULE_RAW_OPTIONS_TOKEN__');
 
@@ -38,10 +45,7 @@ export const {
   moduleName: 'RoleCore',
   optionsInjectionToken: RAW_OPTIONS_TOKEN,
 })
-  .setExtras<Pick<DynamicModule, 'global'>>(
-    { global: true },
-    definitionTransform,
-  )
+  .setExtras<RoleExtrasInterface>({ global: true }, definitionTransform)
   .build();
 
 export type RoleCoreOptions = typeof ROLE_CORE_OPTIONS_TYPE;
@@ -49,15 +53,15 @@ export type RoleCoreAsyncOptions = typeof ROLE_CORE_ASYNC_OPTIONS_TYPE;
 
 function definitionTransform(
   definition: DynamicModule,
-  extras: Pick<DynamicModule, 'global'>,
+  { global, repositories }: RoleExtrasInterface,
 ): DynamicModule {
-  const { imports, providers } = definition;
+  const { providers = [], imports = [] } = definition;
 
   return {
     ...definition,
-    global: extras.global,
+    global,
     imports: createRoleImports({ imports }),
-    providers: createRoleProviders({ providers }),
+    providers: createRoleProviders({ providers, repositories }),
     exports: [ConfigModule, RAW_OPTIONS_TOKEN, ...createRoleExports()],
   };
 }
@@ -75,12 +79,26 @@ export function createRoleImports(options: {
 export function createRoleProviders(options: {
   overrides?: RoleCoreOptions;
   providers?: Provider[];
+  repositories?: RoleExtrasInterface['repositories'];
 }): Provider[] {
   return [
-    ...(options.providers ?? []),
     createRoleSettingsProvider(options.overrides),
-    RoleRepositoryResolver,
-    RoleAssignmentRepositoryResolver,
+    {
+      provide: ROLE_CUSTOM_REPOSITORY_TOKEN,
+      useValue: options.repositories?.role ?? null,
+    },
+    {
+      provide: ROLE_ASSIGNMENT_CUSTOM_REPOSITORY_TOKEN,
+      useValue: options.repositories?.roleAssignment ?? null,
+    },
+    {
+      provide: ROLE_REPOSITORY_RESOLVER_TOKEN,
+      useClass: RoleRepositoryResolver,
+    },
+    {
+      provide: ROLE_ASSIGNMENT_REPOSITORY_RESOLVER_TOKEN,
+      useClass: RoleAssignmentRepositoryResolver,
+    },
     // Command handlers
     CreateRoleHandler,
     UpdateRoleHandler,
@@ -96,6 +114,7 @@ export function createRoleProviders(options: {
     GetAssignedRolesHandler,
     IsAssignedRoleHandler,
     IsAssignedRolesHandler,
+    ...(options.providers ?? []),
   ];
 }
 

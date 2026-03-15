@@ -1,13 +1,18 @@
+import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Role } from '../../../domain/aggregates/role';
-import { RoleRepositoryResolver } from '../../../infrastructure/persistence/role-repository.resolver';
+import { RoleRepositoryResolverInterface } from '../../../domain/repositories/role-repository-resolver.interface';
+import { ROLE_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants';
 import { RoleNotFoundException } from '../../exceptions/role-not-found.exception';
 import { GetRoleQuery } from '../impl/get-role.query';
 
 @QueryHandler(GetRoleQuery)
 export class GetRoleHandler implements IQueryHandler<GetRoleQuery> {
-  constructor(private readonly repositoryResolver: RoleRepositoryResolver) {}
+  constructor(
+    @Inject(ROLE_REPOSITORY_RESOLVER_TOKEN)
+    private readonly repositoryResolver: RoleRepositoryResolverInterface,
+  ) {}
 
   async execute(query: GetRoleQuery): Promise<Role> {
     const { ctx, id } = query;

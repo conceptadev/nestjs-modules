@@ -1,0 +1,37 @@
+import { RepositoryContextInterface } from '@concepta/nestjs-common';
+
+import { createMockTxScope } from '../../../../__tests__/fixtures/mock-tx-scope.fixture';
+import { createMockUserCredentialsService } from '../../../../__tests__/fixtures/mock-user-credentials-service.fixture';
+import { UserCredentials } from '../../../../domain/aggregates/user-credentials';
+import { CreateUserCredentialCommand } from '../../impl/create-user-credential.command';
+import { CreateUserCredentialHandler } from '../create-user-credential.handler';
+
+const ctx = {} as RepositoryContextInterface;
+
+describe(CreateUserCredentialHandler.name, () => {
+  const userCredentialsService = createMockUserCredentialsService();
+  const txScope = createMockTxScope();
+  const mockCredentials = {} as UserCredentials;
+
+  let handler: CreateUserCredentialHandler;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    userCredentialsService.setPassword.mockResolvedValue(mockCredentials);
+    handler = new CreateUserCredentialHandler(userCredentialsService, txScope);
+  });
+
+  it('should delegate to userCredentialsService.setPassword', async () => {
+    const result = await handler.execute(
+      new CreateUserCredentialCommand(ctx, 'user-1', 'secret'),
+    );
+
+    expect(result).toBe(mockCredentials);
+    expect(userCredentialsService.setPassword).toHaveBeenCalledWith(
+      ctx,
+      expect.anything(),
+      'user-1',
+      'secret',
+    );
+  });
+});

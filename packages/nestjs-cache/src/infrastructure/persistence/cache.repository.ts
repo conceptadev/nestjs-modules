@@ -7,9 +7,10 @@ import {
 } from '@concepta/nestjs-common';
 
 import { Cache } from '../../domain/aggregates/cache';
+import { CacheRepositoryInterface } from '../../domain/repositories/cache-repository.interface';
 import { CacheSettingsInterface } from '../config/interfaces/cache-settings.interface';
 
-export class CacheRepository {
+export class CacheRepository implements CacheRepositoryInterface {
   constructor(
     protected readonly repository: RepositoryInterface<CacheInterface>,
     protected readonly settings: CacheSettingsInterface,

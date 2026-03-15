@@ -19,13 +19,9 @@ export { CommonSqliteEntity } from './entities/common/common-sqlite.entity';
 export { UserPostgresEntity } from './entities/user/user-postgres.entity';
 export { UserSqliteEntity } from './entities/user/user-sqlite.entity';
 
-// user password history entities
-export { UserPasswordHistoryPostgresEntity } from './entities/user-password-history/user-password-history-postgres.entity';
-export { UserPasswordHistorySqliteEntity } from './entities/user-password-history/user-password-history-sqlite.entity';
-
-// user profile entities
-export { UserProfilePostgresEntity } from './entities/user-profile/user-profile-postgres.entity';
-export { UserProfileSqliteEntity } from './entities/user-profile/user-profile-sqlite.entity';
+// user credential entities
+export { UserCredentialPostgresEntity } from './entities/user-credential/user-credential-postgres.entity';
+export { UserCredentialSqliteEntity } from './entities/user-credential/user-credential-sqlite.entity';
 
 // org entities
 export { OrgPostgresEntity } from './entities/org/org-postgres.entity';

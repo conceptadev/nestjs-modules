@@ -1,34 +1,77 @@
+// module
 export { UserModule } from './user.module';
-export { UserProfileCrudBuilder } from './utils/user-profile.crud-builder';
 
-export { UserModelService } from './services/user-model.service';
-export { UserPasswordService } from './services/user-password.service';
-export { UserAccessQueryService } from './services/user-access-query.service';
+// domain aggregates
+export { User } from './domain/aggregates/user';
+export { UserCredentials } from './domain/aggregates/user-credentials';
 
-export { UserModelServiceInterface } from './interfaces/user-model-service.interface';
-export { UserPasswordServiceInterface } from './interfaces/user-password-service.interface';
-export { UserEntitiesOptionsInterface } from './interfaces/user-entities-options.interface';
+// repositories
+export { UserRepository } from './infrastructure/persistence/user.repository';
+export { UserCredentialsRepository } from './infrastructure/persistence/user-credentials.repository';
+export { UserRepositoryInterface } from './domain/repositories/user-repository.interface';
+export { UserCredentialsRepositoryInterface } from './domain/repositories/user-credentials-repository.interface';
 
-export { UserCreateManyDto } from './dto/user-create-many.dto';
-export { UserCreateDto } from './dto/user-create.dto';
-export { UserPaginatedDto } from './dto/user-paginated.dto';
-export { UserPasswordDto } from './dto/user-password.dto';
-export { UserPasswordUpdateDto } from './dto/user-password-update.dto';
-export { UserPasswordHashDto } from './dto/user-password-hash.dto';
-export { UserUpdateDto } from './dto/user-update.dto';
-export { UserDto } from './dto/user.dto';
+// dtos
+export { UserDto } from './infrastructure/dtos/user.dto';
+export { UserCreateDto } from './infrastructure/dtos/user-create.dto';
+export { UserUpdateDto } from './infrastructure/dtos/user-update.dto';
+export { UserPasswordDto } from './infrastructure/dtos/password/user-password.dto';
+export { UserPasswordUpdateDto } from './infrastructure/dtos/password/user-password-update.dto';
+export { UserPasswordHashDto } from './infrastructure/dtos/password/user-password-hash.dto';
 
-// Interfaces now in nestjs-common
-// Entities moved to nestjs-typeorm-ext
+// commands
+export { CreateUserCommand } from './application/commands/impl/create-user.command';
+export { UpdateUserCommand } from './application/commands/impl/update-user.command';
+export { RemoveUserCommand } from './application/commands/impl/remove-user.command';
+export { CreateUserCredentialCommand } from './application/commands/impl/create-user-credential.command';
+export { UpdateUserCredentialCommand } from './application/commands/impl/update-user-credential.command';
+export { SetUserPasswordCommand } from './application/commands/impl/set-user-password.command';
+export { UpdateUserPasswordCommand } from './application/commands/impl/update-user-password.command';
 
-export { UserProfileDto } from './dto/profile/user-profile.dto';
-export { UserProfileCreateDto } from './dto/profile/user-profile-create.dto';
-export { UserProfileUpdateDto } from './dto/profile/user-profile-update.dto';
-export { UserProfilePaginatedDto } from './dto/profile/user-profile-paginated.dto';
+// events
+export { UserCreatedEvent } from './domain/events/user-created.event';
+export { UserUpdatedEvent } from './domain/events/user-updated.event';
+export { UserRemovedEvent } from './domain/events/user-removed.event';
+export { UserCredentialsCreatedEvent } from './domain/events/user-credentials-created.event';
+export { UserCredentialsDeactivatedEvent } from './domain/events/user-credentials-deactivated.event';
 
-export { UserResource } from './user.types';
+// queries
+export { GetUserQuery } from './application/queries/impl/get-user.query';
+export { GetUserByEmailQuery } from './application/queries/impl/get-user-by-email.query';
+export { GetUserByUsernameQuery } from './application/queries/impl/get-user-by-username.query';
+export { GetUserBySubjectQuery } from './application/queries/impl/get-user-by-subject.query';
 
-export { UserException } from './exceptions/user-exception';
-export { UserBadRequestException } from './exceptions/user-bad-request-exception';
-export { UserNotFoundException } from './exceptions/user-not-found-exception';
-export { UserMissingEntitiesOptionsException } from './exceptions/user-missing-entities-options.exception';
+// command handlers
+export { CreateUserHandler } from './application/commands/handlers/create-user.handler';
+export { UpdateUserHandler } from './application/commands/handlers/update-user.handler';
+export { RemoveUserHandler } from './application/commands/handlers/remove-user.handler';
+export { CreateUserCredentialHandler } from './application/commands/handlers/create-user-credential.handler';
+export { UpdateUserCredentialHandler } from './application/commands/handlers/update-user-credential.handler';
+export { SetUserPasswordHandler } from './application/commands/handlers/set-user-password.handler';
+export { UpdateUserPasswordHandler } from './application/commands/handlers/update-user-password.handler';
+
+// query handlers
+export { GetUserHandler } from './application/queries/handlers/get-user.handler';
+export { GetUserByEmailHandler } from './application/queries/handlers/get-user-by-email.handler';
+export { GetUserBySubjectHandler } from './application/queries/handlers/get-user-by-subject.handler';
+export { GetUserByUsernameHandler } from './application/queries/handlers/get-user-by-username.handler';
+
+// listeners
+export { InvitationAcceptedListener } from './application/listeners/invitation-accepted.listener';
+
+// domain services
+export { UserCredentialsService } from './domain/services/user-credentials.service';
+
+// interfaces
+export { UserOptionsInterface } from './infrastructure/config/interfaces/user-options.interface';
+export { UserExtrasInterface } from './infrastructure/config/interfaces/user-extras.interface';
+export { UserSettingsInterface } from './infrastructure/config/interfaces/user-settings.interface';
+export { UserCredentialsEventPayloadInterface } from './domain/events/interfaces/user-credentials-event-payload.interface';
+export { PasswordPolicySettings } from './domain/policies/user-password.policy';
+
+// exceptions
+export { UserException } from './domain/exceptions/user.exception';
+export { UserNotFoundException } from './application/exceptions/user-not-found.exception';
+export { UserCredentialsAlreadyExistException } from './domain/exceptions/user-credentials-already-exist.exception';
+export { UserPasswordCurrentInvalidException } from './domain/exceptions/user-password-current-invalid.exception';
+export { UserPasswordHistoryViolationException } from './domain/exceptions/user-password-history-violation.exception';

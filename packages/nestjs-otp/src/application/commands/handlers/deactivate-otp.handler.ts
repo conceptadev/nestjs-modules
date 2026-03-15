@@ -1,3 +1,4 @@
+import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
 import {
@@ -6,7 +7,8 @@ import {
 } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { OtpRepositoryResolver } from '../../../infrastructure/persistence/otp-repository.resolver';
+import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
+import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../../otp.constants';
 import { DeactivateOtpCommand } from '../impl/deactivate-otp.command';
 
 @CommandHandler(DeactivateOtpCommand)
@@ -14,7 +16,8 @@ export class DeactivateOtpHandler
   implements ICommandHandler<DeactivateOtpCommand>
 {
   constructor(
-    private readonly repositoryResolver: OtpRepositoryResolver,
+    @Inject(OTP_REPOSITORY_RESOLVER_TOKEN)
+    private readonly repositoryResolver: OtpRepositoryResolverInterface,
     private readonly txScope: TransactionScope,
     private readonly eventPublisher: EventPublisher,
   ) {}

@@ -7,9 +7,10 @@ import {
 } from '@concepta/nestjs-common';
 
 import { Otp } from '../../domain/aggregates/otp';
+import { OtpRepositoryInterface } from '../../domain/repositories/otp-repository.interface';
 import { OtpSettingsInterface } from '../config/interfaces/otp-settings.interface';
 
-export class OtpRepository {
+export class OtpRepository implements OtpRepositoryInterface {
   constructor(
     protected readonly repository: RepositoryInterface<OtpInterface>,
     protected readonly settings: OtpSettingsInterface,

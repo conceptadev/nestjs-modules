@@ -1,3 +1,4 @@
+import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
 import {
@@ -6,15 +7,17 @@ import {
 } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
+import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants';
 import { Cache } from '../../../domain/aggregates/cache';
-import { CacheRepositoryResolver } from '../../../infrastructure/persistence/cache-repository.resolver';
+import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface';
 import { CacheNotFoundException } from '../../exceptions/cache-not-found.exception';
 import { UpdateCacheCommand } from '../impl/update-cache.command';
 
 @CommandHandler(UpdateCacheCommand)
 export class UpdateCacheHandler implements ICommandHandler<UpdateCacheCommand> {
   constructor(
-    private readonly repositoryResolver: CacheRepositoryResolver,
+    @Inject(CACHE_REPOSITORY_RESOLVER_TOKEN)
+    private readonly repositoryResolver: CacheRepositoryResolverInterface,
     private readonly txScope: TransactionScope,
     private readonly eventPublisher: EventPublisher,
   ) {}

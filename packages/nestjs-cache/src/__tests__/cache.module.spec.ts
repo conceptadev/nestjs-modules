@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../cache.constants';
 import { CacheModule } from '../cache.module';
-import { CacheRepositoryResolver } from '../infrastructure/persistence/cache-repository.resolver';
+import { CacheRepositoryResolverInterface } from '../domain/repositories/cache-repository-resolver.interface';
 import { CacheRepository } from '../infrastructure/persistence/cache.repository';
 
 import { AppModuleFixture } from './fixtures/app.module.fixture';
@@ -72,7 +73,9 @@ describe(CacheModule.name, () => {
         imports: [AppModuleFixture],
       }).compile();
 
-      const resolver = testModule.get(CacheRepositoryResolver);
+      const resolver = testModule.get<CacheRepositoryResolverInterface>(
+        CACHE_REPOSITORY_RESOLVER_TOKEN,
+      );
       const repo = resolver.resolve('userCache');
 
       expect(repo).toBeInstanceOf(CacheRepository);

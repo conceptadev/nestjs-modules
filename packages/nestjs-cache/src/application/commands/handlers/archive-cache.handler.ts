@@ -1,9 +1,11 @@
+import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { TransactionScope } from '@concepta/nestjs-repository';
 
+import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants';
 import { Cache } from '../../../domain/aggregates/cache';
-import { CacheRepositoryResolver } from '../../../infrastructure/persistence/cache-repository.resolver';
+import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface';
 import { CacheNotFoundException } from '../../exceptions/cache-not-found.exception';
 import { ArchiveCacheCommand } from '../impl/archive-cache.command';
 
@@ -12,7 +14,8 @@ export class ArchiveCacheHandler
   implements ICommandHandler<ArchiveCacheCommand>
 {
   constructor(
-    private readonly repositoryResolver: CacheRepositoryResolver,
+    @Inject(CACHE_REPOSITORY_RESOLVER_TOKEN)
+    private readonly repositoryResolver: CacheRepositoryResolverInterface,
     private readonly txScope: TransactionScope,
   ) {}
 
