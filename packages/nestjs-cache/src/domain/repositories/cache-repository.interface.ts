@@ -8,11 +8,6 @@ import { Cache } from '../aggregates/cache';
 export interface CacheRepositoryInterface {
   get(ctx: RepositoryContextInterface, id: ReferenceId): Promise<Cache | null>;
 
-  findById(
-    ctx: RepositoryContextInterface,
-    id: ReferenceId,
-  ): Promise<Cache | null>;
-
   findOne(
     ctx: RepositoryContextInterface,
     options: { key: string; type: string; assigneeId: string },

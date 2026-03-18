@@ -1,7 +1,9 @@
 import { RepositoryContextInterface } from '@concepta/nestjs-common';
 
-import { createMockTxScope } from '../../../../__tests__/fixtures/mock-tx-scope.fixture';
-import { createMockUserCredentialsService } from '../../../../__tests__/fixtures/mock-user-credentials-service.fixture';
+import {
+  createMockTxScope,
+  createMockUserCredentialsService,
+} from '../../../../__tests__/helpers/mock.helpers';
 import { UpdateUserCredentialCommand } from '../../impl/update-user-credential.command';
 import { UpdateUserCredentialHandler } from '../update-user-credential.handler';
 

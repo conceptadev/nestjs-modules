@@ -39,7 +39,7 @@ describe(ReplaceCacheHandler.name, () => {
   };
 
   it('should replace an existing cache', async () => {
-    mockRepo.findById.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
+    mockRepo.get.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
     const result = await handler.execute(
       new ReplaceCacheCommand(ctx, 'test-id', dto),
@@ -50,7 +50,7 @@ describe(ReplaceCacheHandler.name, () => {
   });
 
   it('should create a new cache when not found', async () => {
-    mockRepo.findById.mockResolvedValue(null);
+    mockRepo.get.mockResolvedValue(null);
 
     const result = await handler.execute(
       new ReplaceCacheCommand(ctx, 'new-id', dto),
@@ -61,7 +61,7 @@ describe(ReplaceCacheHandler.name, () => {
   });
 
   it('should save in both paths', async () => {
-    mockRepo.findById.mockResolvedValue(null);
+    mockRepo.get.mockResolvedValue(null);
 
     await handler.execute(new ReplaceCacheCommand(ctx, 'new-id', dto));
 

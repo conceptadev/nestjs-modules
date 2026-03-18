@@ -6,8 +6,8 @@ import {
   EventContextHost,
   RoleInterface,
 } from '@concepta/nestjs-common';
+import { DomainAggregate } from '@concepta/nestjs-common/aggregate';
 
-import { DomainAggregate } from '../../../../nestjs-common/dist/index-aggregate';
 import { RoleCreatedEvent } from '../events/role-created.event';
 import { RoleReplacedEvent } from '../events/role-replaced.event';
 import { RoleUpdatedEvent } from '../events/role-updated.event';

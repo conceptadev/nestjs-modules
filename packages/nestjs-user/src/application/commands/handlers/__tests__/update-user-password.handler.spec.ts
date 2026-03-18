@@ -1,8 +1,10 @@
 import { RepositoryContextInterface } from '@concepta/nestjs-common';
+import { createMockCommandBus } from '@concepta/nestjs-common/testing';
 
-import { createMockCommandBus } from '../../../../__tests__/fixtures/mock-command-bus.fixture';
-import { createMockTxScope } from '../../../../__tests__/fixtures/mock-tx-scope.fixture';
-import { createMockUserRepository } from '../../../../__tests__/fixtures/mock-user-repository.fixture';
+import {
+  createMockTxScope,
+  createMockUserRepository,
+} from '../../../../__tests__/helpers/mock.helpers';
 import { UserMapper } from '../../../../infrastructure/persistence/user.mapper';
 import { UserNotFoundException } from '../../../exceptions/user-not-found.exception';
 import { UpdateUserCredentialCommand } from '../../impl/update-user-credential.command';

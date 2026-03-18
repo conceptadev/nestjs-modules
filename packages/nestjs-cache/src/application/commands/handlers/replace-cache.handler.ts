@@ -41,7 +41,7 @@ export class ReplaceCacheHandler
 
       let cache: Cache;
 
-      const existing = await cacheRepo.findById(ctx, id);
+      const existing = await cacheRepo.get(ctx, id);
 
       if (existing) {
         cache = this.eventPublisher.mergeObjectContext(existing);

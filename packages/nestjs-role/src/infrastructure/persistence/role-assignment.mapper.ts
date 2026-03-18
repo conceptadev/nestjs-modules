@@ -2,8 +2,8 @@ import {
   RoleAssignmentEntityInterface,
   RoleAssignmentInterface,
 } from '@concepta/nestjs-common';
+import { DomainMapper } from '@concepta/nestjs-common/aggregate';
 
-import { DomainMapper } from '../../../../nestjs-common/dist/index-aggregate';
 import { RoleAssignment } from '../../domain/aggregates/role-assignment';
 
 export class RoleAssignmentMapper extends DomainMapper<

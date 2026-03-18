@@ -31,20 +31,6 @@ export class CacheRepository implements CacheRepositoryInterface {
     return entity ? this.mapper.toDomain(entity) : null;
   }
 
-  async findById(
-    ctx: RepositoryContextInterface,
-    id: ReferenceId,
-  ): Promise<Cache | null> {
-    const w = Where.for<CacheEntityInterface>();
-
-    const entity = await this.repository.findOne({
-      where: w.eq('id', id),
-      ctx,
-    });
-
-    return entity ? this.mapper.toDomain(entity) : null;
-  }
-
   async findOne(
     ctx: RepositoryContextInterface,
     options: { key: string; type: string; assigneeId: string },

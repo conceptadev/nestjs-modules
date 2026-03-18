@@ -6,8 +6,8 @@ import {
   UserCredentialCreatableInterface,
   UserCredentialInterface,
 } from '@concepta/nestjs-common';
+import { DomainAggregate } from '@concepta/nestjs-common/aggregate';
 
-import { DomainAggregate } from '../../../../nestjs-common/dist/index-aggregate';
 import { UserCredentialsCreatedEvent } from '../events/user-credentials-created.event';
 import { UserCredentialsDeactivatedEvent } from '../events/user-credentials-deactivated.event';
 

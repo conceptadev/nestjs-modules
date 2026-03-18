@@ -61,29 +61,6 @@ describe(CacheRepository.name, () => {
     });
   });
 
-  describe('findById', () => {
-    it('should query by id and return a Cache', async () => {
-      mockRepoInterface.findOne.mockResolvedValue(mockEntity);
-
-      const result = await repo.findById(ctx, 'test-id');
-
-      expect(result).toBeInstanceOf(Cache);
-      expect(result!.id).toBe('test-id');
-      expect(mockRepoInterface.findOne).toHaveBeenCalledWith({
-        where: w.eq('id', 'test-id'),
-        ctx,
-      });
-    });
-
-    it('should return null when entity is not found', async () => {
-      mockRepoInterface.findOne.mockResolvedValue(null);
-
-      const result = await repo.findById(ctx, 'missing');
-
-      expect(result).toBeNull();
-    });
-  });
-
   describe('findOne', () => {
     it('should query by key, type, and assigneeId', async () => {
       mockRepoInterface.findOne.mockResolvedValue(mockEntity);

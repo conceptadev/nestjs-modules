@@ -1,10 +1,15 @@
 import {
-  EntityHeaderInterface,
-  EventContextHost,
-  RepositoryContextInterface,
   RoleAssignmentEntityInterface,
   RoleEntityInterface,
 } from '@concepta/nestjs-common';
+import {
+  createMockCommandBus,
+  createMockContext as createMockContextBase,
+  createMockEventContext as createMockEventContextBase,
+  createMockEventPublisher,
+  createMockQueryBus,
+} from '@concepta/nestjs-common/testing';
+import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
 import { RoleAssignmentRepositoryResolver } from '../../infrastructure/persistence/role-assignment-repository.resolver';
 import { RoleAssignmentMapper } from '../../infrastructure/persistence/role-assignment.mapper';
@@ -13,10 +18,13 @@ import { RoleRepositoryResolver } from '../../infrastructure/persistence/role-re
 import { RoleMapper } from '../../infrastructure/persistence/role.mapper';
 import { RoleRepository } from '../../infrastructure/persistence/role.repository';
 
-export interface MockTransactionHandle {
-  onCommit: jest.Mock;
-  onRollback: jest.Mock;
-}
+export {
+  createMockCommandBus,
+  createMockEventPublisher,
+  createMockQueryBus,
+  createMockTransaction,
+};
+export type { MockTransactionHandle } from '@concepta/nestjs-repository/testing';
 
 export function createMockRoleRepository(): jest.Mocked<RoleRepository> {
   return {
@@ -57,52 +65,12 @@ export function createMockAssignmentRepositoryResolver(
   } as unknown as jest.Mocked<RoleAssignmentRepositoryResolver>;
 }
 
-export function createMockTransaction(): {
-  transaction: { run: jest.Mock };
-  trxHandle: MockTransactionHandle;
-} {
-  const trxHandle: MockTransactionHandle = {
-    onCommit: jest.fn(),
-    onRollback: jest.fn(),
-  };
-
-  const transaction = {
-    run: jest.fn((_ctx: unknown, fn: (trx: MockTransactionHandle) => unknown) =>
-      fn(trxHandle),
-    ),
-  };
-
-  return { transaction, trxHandle };
+export function createMockContext(entity = 'Role') {
+  return createMockContextBase(entity);
 }
 
-export function createMockEventPublisher() {
-  return {
-    mergeObjectContext: jest.fn((obj: unknown) => obj),
-  };
-}
-
-export function createMockCommandBus() {
-  return {
-    execute: jest.fn(),
-  };
-}
-
-export function createMockQueryBus() {
-  return {
-    execute: jest.fn(),
-  };
-}
-
-export function createMockContext(entity = 'Role'): RepositoryContextInterface {
-  return { entity } as RepositoryContextInterface;
-}
-
-export function createMockEventContext(
-  entity = 'Role',
-): EventContextHost<EntityHeaderInterface> {
-  return EventContextHost.builder<EntityHeaderInterface>()
-    .setHeader('entity', entity)
-    .build();
+export function createMockEventContext(entity = 'Role') {
+  return createMockEventContextBase(entity);
 }
 
 export function createMockRoleEntity(

@@ -327,8 +327,7 @@ persistence form via `toPersistence()`.
 
 | Method | Signature |
 | --- | --- |
-| `get` | `(ctx, id) => Promise<Cache>` |
-| `findById` | `(ctx, id) => Promise<Cache \| null>` |
+| `get` | `(ctx, id) => Promise<Cache \| null>` |
 | `findOne` | `(ctx, { key, type, assigneeId }) => Promise<Cache \| null>` |
 | `findAllByAssignee` | `(ctx, assigneeId) => Promise<Cache[]>` |
 | `save` | `(ctx, cache) => Promise<void>` |

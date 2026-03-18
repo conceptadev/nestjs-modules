@@ -7,11 +7,11 @@ import {
   EntityHeaderInterface,
   EventContextHost,
 } from '@concepta/nestjs-common';
-
 import {
   AggregateMetaInterface,
   DomainAggregate,
-} from '../../../../nestjs-common/dist/index-aggregate';
+} from '@concepta/nestjs-common/aggregate';
+
 import { CacheCreatedEvent } from '../events/cache-created.event';
 import { CacheExtendedEvent } from '../events/cache-extended.event';
 import { CacheReplacedEvent } from '../events/cache-replaced.event';

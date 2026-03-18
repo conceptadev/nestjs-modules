@@ -7,8 +7,8 @@ import {
   UserInterface,
   UserUpdatableInterface,
 } from '@concepta/nestjs-common';
+import { DomainAggregate } from '@concepta/nestjs-common/aggregate';
 
-import { DomainAggregate } from '../../../../nestjs-common/dist/index-aggregate';
 import { UserCreatedEvent } from '../events/user-created.event';
 import { UserRemovedEvent } from '../events/user-removed.event';
 import { UserUpdatedEvent } from '../events/user-updated.event';

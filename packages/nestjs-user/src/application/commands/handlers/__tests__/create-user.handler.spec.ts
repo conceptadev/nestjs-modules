@@ -2,11 +2,13 @@ import {
   RepositoryContextInterface,
   UserCreatableInterface,
 } from '@concepta/nestjs-common';
+import { createMockCommandBus } from '@concepta/nestjs-common/testing';
 
-import { createMockCommandBus } from '../../../../__tests__/fixtures/mock-command-bus.fixture';
-import { createMockEventPublisher } from '../../../../__tests__/fixtures/mock-event-publisher.fixture';
-import { createMockTxScope } from '../../../../__tests__/fixtures/mock-tx-scope.fixture';
-import { createMockUserRepository } from '../../../../__tests__/fixtures/mock-user-repository.fixture';
+import {
+  createMockEventPublisher,
+  createMockTxScope,
+  createMockUserRepository,
+} from '../../../../__tests__/helpers/mock.helpers';
 import { User } from '../../../../domain/aggregates/user';
 import { CreateUserCredentialCommand } from '../../impl/create-user-credential.command';
 import { CreateUserCommand } from '../../impl/create-user.command';

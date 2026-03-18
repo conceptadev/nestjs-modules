@@ -1,8 +1,10 @@
 import {
-  EntityHeaderInterface,
-  EventContextHost,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
+  createMockCommandBus,
+  createMockContext as createMockContextBase,
+  createMockEventContext as createMockEventContextBase,
+  createMockEventPublisher,
+} from '@concepta/nestjs-common/testing';
+import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
 import { Cache } from '../../domain/aggregates/cache';
 import { CacheRepositoryResolver } from '../../infrastructure/persistence/cache-repository.resolver';
@@ -10,15 +12,16 @@ import { CacheMapper } from '../../infrastructure/persistence/cache.mapper';
 import { CacheRepository } from '../../infrastructure/persistence/cache.repository';
 import { CacheEntityInterface } from '../../infrastructure/persistence/interfaces/cache-entity.interface';
 
-export interface MockTransactionHandle {
-  onCommit: jest.Mock;
-  onRollback: jest.Mock;
-}
+export {
+  createMockCommandBus,
+  createMockEventPublisher,
+  createMockTransaction,
+};
+export type { MockTransactionHandle } from '@concepta/nestjs-repository/testing';
 
 export function createMockCacheRepository(): jest.Mocked<CacheRepository> {
   return {
     get: jest.fn(),
-    findById: jest.fn(),
     findOne: jest.fn(),
     findAllByAssignee: jest.fn(),
     removeAllByAssignee: jest.fn(),
@@ -36,48 +39,12 @@ export function createMockRepositoryResolver(
   } as unknown as jest.Mocked<CacheRepositoryResolver>;
 }
 
-export function createMockTransaction(): {
-  transaction: { run: jest.Mock };
-  trxHandle: MockTransactionHandle;
-} {
-  const trxHandle: MockTransactionHandle = {
-    onCommit: jest.fn(),
-    onRollback: jest.fn(),
-  };
-
-  const transaction = {
-    run: jest.fn((_ctx: unknown, fn: (trx: MockTransactionHandle) => unknown) =>
-      fn(trxHandle),
-    ),
-  };
-
-  return { transaction, trxHandle };
+export function createMockContext(entity = 'UserCache') {
+  return createMockContextBase(entity);
 }
 
-export function createMockEventPublisher() {
-  return {
-    mergeObjectContext: jest.fn((obj: unknown) => obj),
-  };
-}
-
-export function createMockCommandBus() {
-  return {
-    execute: jest.fn(),
-  };
-}
-
-export function createMockContext(
-  entity = 'UserCache',
-): RepositoryContextInterface {
-  return { entity } as RepositoryContextInterface;
-}
-
-export function createMockEventContext(
-  entity = 'UserCache',
-): EventContextHost<EntityHeaderInterface> {
-  return EventContextHost.builder<EntityHeaderInterface>()
-    .setHeader('entity', entity)
-    .build();
+export function createMockEventContext(entity = 'UserCache') {
+  return createMockEventContextBase(entity);
 }
 
 export function createMockCacheEntity(

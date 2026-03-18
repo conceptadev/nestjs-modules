@@ -8,9 +8,11 @@ import {
   PasswordStorageServiceInterface,
 } from '@concepta/nestjs-password';
 
-import { createMockEventPublisher } from '../../../__tests__/fixtures/mock-event-publisher.fixture';
-import { createMockTxScope } from '../../../__tests__/fixtures/mock-tx-scope.fixture';
-import { createMockUserCredentialsRepository } from '../../../__tests__/fixtures/mock-user-credentials-repository.fixture';
+import {
+  createMockEventPublisher,
+  createMockTxScope,
+  createMockUserCredentialsRepository,
+} from '../../../__tests__/helpers/mock.helpers';
 import { UserCredentialsMapper } from '../../../infrastructure/persistence/user-credentials.mapper';
 import { UserCredentialsAlreadyExistException } from '../../exceptions/user-credentials-already-exist.exception';
 import { UserPasswordCurrentInvalidException } from '../../exceptions/user-password-current-invalid.exception';

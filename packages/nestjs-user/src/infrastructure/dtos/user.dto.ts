@@ -4,8 +4,7 @@ import { IsBoolean, IsEmail, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UserInterface } from '@concepta/nestjs-common';
-
-import { DomainAggregateDto } from '../../../../nestjs-common/dist/index-aggregate';
+import { DomainAggregateDto } from '@concepta/nestjs-common/aggregate';
 
 @Exclude()
 export class UserDto extends DomainAggregateDto implements UserInterface {

@@ -6,8 +6,8 @@ import {
   EventContextHost,
   OtpInterface,
 } from '@concepta/nestjs-common';
+import { DomainAggregate } from '@concepta/nestjs-common/aggregate';
 
-import { DomainAggregate } from '../../../../nestjs-common/dist/index-aggregate';
 import { OtpConsumedEvent } from '../events/otp-consumed.event';
 import { OtpCreatedEvent } from '../events/otp-created.event';
 import { OtpDeactivatedEvent } from '../events/otp-deactivated.event';

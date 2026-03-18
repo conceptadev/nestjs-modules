@@ -1,11 +1,11 @@
-import { EventPublisher } from '@nestjs/cqrs';
-
 import {
-  EntityHeaderInterface,
-  EventContextHost,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
-import { TransactionScope } from '@concepta/nestjs-repository';
+  createMockCommandBus,
+  createMockContext as createMockContextBase,
+  createMockEventContext as createMockEventContextBase,
+  createMockEventPublisher,
+  createMockQueryBus,
+} from '@concepta/nestjs-common/testing';
+import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
 import { Otp } from '../../domain/aggregates/otp';
 import { OtpSettingsInterface } from '../../infrastructure/config/interfaces/otp-settings.interface';
@@ -14,10 +14,13 @@ import { OtpRepositoryResolver } from '../../infrastructure/persistence/otp-repo
 import { OtpMapper } from '../../infrastructure/persistence/otp.mapper';
 import { OtpRepository } from '../../infrastructure/persistence/otp.repository';
 
-export interface MockTransactionHandle {
-  onCommit: jest.Mock;
-  onRollback: jest.Mock;
-}
+export {
+  createMockCommandBus,
+  createMockEventPublisher,
+  createMockQueryBus,
+  createMockTransaction,
+};
+export type { MockTransactionHandle } from '@concepta/nestjs-repository/testing';
 
 export function createMockOtpRepository(): jest.Mocked<OtpRepository> {
   return {
@@ -42,46 +45,12 @@ export function createMockRepositoryResolver(
   } as unknown as jest.Mocked<OtpRepositoryResolver>;
 }
 
-export function createMockTransaction(): {
-  transaction: TransactionScope;
-  trxHandle: MockTransactionHandle;
-} {
-  const trxHandle: MockTransactionHandle = {
-    onCommit: jest.fn(),
-    onRollback: jest.fn(),
-  };
-
-  const transaction = {
-    run: jest.fn((_ctx: unknown, fn: (trx: MockTransactionHandle) => unknown) =>
-      fn(trxHandle),
-    ),
-  } as unknown as TransactionScope;
-
-  return { transaction, trxHandle };
+export function createMockContext(entity = 'userOtp') {
+  return createMockContextBase(entity);
 }
 
-export function createMockEventPublisher(): EventPublisher {
-  return {
-    mergeObjectContext: jest.fn((obj: unknown) => obj),
-  } as unknown as EventPublisher;
-}
-
-export function createMockCommandBus() {
-  return {
-    execute: jest.fn(),
-  };
-}
-
-export function createMockQueryBus() {
-  return {
-    execute: jest.fn(),
-  };
-}
-
-export function createMockContext(
-  entity = 'userOtp',
-): RepositoryContextInterface {
-  return { entity } as RepositoryContextInterface;
+export function createMockEventContext(entity = 'userOtp') {
+  return createMockEventContextBase(entity);
 }
 
 export function createMockOtpEntity(
@@ -107,14 +76,6 @@ const otpMapper = new OtpMapper();
 
 export function toOtpDomain(entity: OtpEntityInterface): Otp {
   return otpMapper.toDomain(entity);
-}
-
-export function createMockEventContext(
-  entity = 'userOtp',
-): EventContextHost<EntityHeaderInterface> {
-  return EventContextHost.builder<EntityHeaderInterface>()
-    .setHeader('entity', entity)
-    .build();
 }
 
 export function createMockOtpSettings(): OtpSettingsInterface {

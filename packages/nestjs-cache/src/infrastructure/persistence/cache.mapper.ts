@@ -1,6 +1,6 @@
 import { CacheInterface } from '@concepta/nestjs-common';
+import { DomainMapper } from '@concepta/nestjs-common/aggregate';
 
-import { DomainMapper } from '../../../../nestjs-common/dist/index-aggregate';
 import { Cache } from '../../domain/aggregates/cache';
 
 import { CacheEntityInterface } from './interfaces/cache-entity.interface';

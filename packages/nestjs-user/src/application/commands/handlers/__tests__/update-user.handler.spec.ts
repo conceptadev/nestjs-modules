@@ -1,8 +1,10 @@
 import { RepositoryContextInterface } from '@concepta/nestjs-common';
 
-import { createMockEventPublisher } from '../../../../__tests__/fixtures/mock-event-publisher.fixture';
-import { createMockTxScope } from '../../../../__tests__/fixtures/mock-tx-scope.fixture';
-import { createMockUserRepository } from '../../../../__tests__/fixtures/mock-user-repository.fixture';
+import {
+  createMockEventPublisher,
+  createMockTxScope,
+  createMockUserRepository,
+} from '../../../../__tests__/helpers/mock.helpers';
 import { User } from '../../../../domain/aggregates/user';
 import { UserMapper } from '../../../../infrastructure/persistence/user.mapper';
 import { UserNotFoundException } from '../../../exceptions/user-not-found.exception';

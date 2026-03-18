@@ -1,6 +1,6 @@
 import { OtpInterface } from '@concepta/nestjs-common';
+import { DomainMapper } from '@concepta/nestjs-common/aggregate';
 
-import { DomainMapper } from '../../../../nestjs-common/dist/index-aggregate';
 import { Otp } from '../../domain/aggregates/otp';
 
 import { OtpEntityInterface } from './interfaces/otp-entity.interface';
