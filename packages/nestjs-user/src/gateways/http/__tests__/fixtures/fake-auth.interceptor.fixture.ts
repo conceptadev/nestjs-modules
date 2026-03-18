@@ -7,11 +7,11 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 
-import { UserInterface } from '@concepta/nestjs-common';
+import { UserEntityInterface } from '@concepta/nestjs-common';
 
 @Injectable()
 export class FakeAuthInterceptorFixture implements NestInterceptor {
-  user: UserInterface | undefined;
+  user: UserEntityInterface | undefined;
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const request = context.switchToHttp().getRequest();

@@ -9,11 +9,14 @@ import {
 import { RoleAssignment } from '../../domain/aggregates/role-assignment';
 import { RoleAssignmentRepositoryInterface } from '../../domain/repositories/role-assignment-repository.interface';
 
+import { RoleAssignmentMapper } from './role-assignment.mapper';
+
 export class RoleAssignmentRepository
   implements RoleAssignmentRepositoryInterface
 {
   constructor(
     protected readonly repository: RepositoryInterface<RoleAssignmentEntityInterface>,
+    private readonly mapper: RoleAssignmentMapper,
   ) {}
 
   async get(
@@ -27,7 +30,7 @@ export class RoleAssignmentRepository
       ctx,
     });
 
-    return entity ? RoleAssignment.toInstance(entity) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async findByAssignee(
@@ -41,7 +44,7 @@ export class RoleAssignmentRepository
       ctx,
     });
 
-    return entities.map((e) => RoleAssignment.toInstance(e));
+    return entities.map((e) => this.mapper.toDomain(e));
   }
 
   async findOne(
@@ -56,7 +59,7 @@ export class RoleAssignmentRepository
       ctx,
     });
 
-    return entity ? RoleAssignment.toInstance(entity) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async findByRoleIdsAndAssignee(
@@ -71,7 +74,7 @@ export class RoleAssignmentRepository
       ctx,
     });
 
-    return entities.map((e) => RoleAssignment.toInstance(e));
+    return entities.map((e) => this.mapper.toDomain(e));
   }
 
   async countByRoleIdAndAssignee(
@@ -104,10 +107,10 @@ export class RoleAssignmentRepository
     ctx: RepositoryContextInterface,
     roleAssignment: RoleAssignment,
   ): Promise<void> {
-    const entity = await this.repository.upsert(roleAssignment.toPlain(), {
+    roleAssignment.stampUpdated();
+    await this.repository.upsert(this.mapper.toPersistence(roleAssignment), {
       ctx,
     });
-    roleAssignment.hydrate(entity);
   }
 
   /**
@@ -128,7 +131,9 @@ export class RoleAssignmentRepository
     ctx: RepositoryContextInterface,
     roleAssignment: RoleAssignment,
   ): Promise<void> {
-    await this.repository.delete(roleAssignment.toPlain(), { ctx });
+    await this.repository.delete(this.mapper.toPersistence(roleAssignment), {
+      ctx,
+    });
   }
 
   async removeMany(
@@ -136,7 +141,7 @@ export class RoleAssignmentRepository
     roleAssignments: RoleAssignment[],
   ): Promise<void> {
     await this.repository.deleteMany(
-      roleAssignments.map((ra) => ra.toPlain()),
+      roleAssignments.map((ra) => this.mapper.toPersistence(ra)),
       { ctx },
     );
   }

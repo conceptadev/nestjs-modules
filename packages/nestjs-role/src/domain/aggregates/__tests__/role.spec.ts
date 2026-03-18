@@ -1,6 +1,7 @@
 import {
   createMockEventContext,
   createMockRoleEntity,
+  toRoleDomain,
 } from '../../../__tests__/helpers/mock.helpers';
 import { RoleCreatedEvent } from '../../events/role-created.event';
 import { RoleReplacedEvent } from '../../events/role-replaced.event';
@@ -52,10 +53,10 @@ describe(Role.name, () => {
     });
   });
 
-  describe('toInstance', () => {
-    it('should reconstitute from an entity without applying events', () => {
+  describe('constructor', () => {
+    it('should reconstitute from entity data without applying events', () => {
       const entity = createMockRoleEntity();
-      const role = Role.toInstance(entity);
+      const role = toRoleDomain(entity);
 
       expect(role.toPlain()).toEqual(entity);
       expect(role.getUncommittedEvents()).toHaveLength(0);
@@ -65,7 +66,7 @@ describe(Role.name, () => {
   describe('toPlain', () => {
     it('should return an immutable copy of the entity', () => {
       const entity = createMockRoleEntity();
-      const role = Role.toInstance(entity);
+      const role = toRoleDomain(entity);
 
       const plain = role.toPlain();
       plain.name = 'mutated';
@@ -74,26 +75,9 @@ describe(Role.name, () => {
     });
   });
 
-  describe('hydrate', () => {
-    it('should replace internal state', () => {
-      const role = Role.toInstance(createMockRoleEntity());
-
-      const updated = createMockRoleEntity({
-        name: 'New Name',
-        description: 'New Description',
-        version: 2,
-      });
-      role.hydrate(updated);
-
-      expect(role.name).toBe('New Name');
-      expect(role.description).toBe('New Description');
-      expect(role.version).toBe(2);
-    });
-  });
-
   describe('update', () => {
     it('should merge partial props and bump version', () => {
-      const role = Role.toInstance(createMockRoleEntity({ version: 1 }));
+      const role = toRoleDomain(createMockRoleEntity({ version: 1 }));
 
       role.update(eventContext, { name: 'Updated Name' });
 
@@ -102,21 +86,8 @@ describe(Role.name, () => {
       expect(role.version).toBe(2);
     });
 
-    it('should update dateUpdated', () => {
-      const originalDate = new Date('2020-01-01');
-      const role = Role.toInstance(
-        createMockRoleEntity({ dateUpdated: originalDate }),
-      );
-
-      role.update(eventContext, { name: 'Updated' });
-
-      expect(role.dateUpdated.getTime()).toBeGreaterThan(
-        originalDate.getTime(),
-      );
-    });
-
     it('should apply a RoleUpdatedEvent', () => {
-      const role = Role.toInstance(createMockRoleEntity());
+      const role = toRoleDomain(createMockRoleEntity());
 
       role.update(eventContext, { name: 'Updated' });
 
@@ -128,7 +99,7 @@ describe(Role.name, () => {
 
   describe('replace', () => {
     it('should set name and description, bump version', () => {
-      const role = Role.toInstance(createMockRoleEntity({ version: 3 }));
+      const role = toRoleDomain(createMockRoleEntity({ version: 3 }));
 
       role.replace(eventContext, {
         name: 'Replaced',
@@ -141,7 +112,7 @@ describe(Role.name, () => {
     });
 
     it('should apply a RoleReplacedEvent', () => {
-      const role = Role.toInstance(createMockRoleEntity());
+      const role = toRoleDomain(createMockRoleEntity());
 
       role.replace(eventContext, { name: 'R', description: 'D' });
 
@@ -154,7 +125,7 @@ describe(Role.name, () => {
   describe('immutability', () => {
     it('should not be affected by mutations to the original entity', () => {
       const entity = createMockRoleEntity();
-      const role = Role.toInstance(entity);
+      const role = toRoleDomain(entity);
 
       entity.name = 'mutated';
 

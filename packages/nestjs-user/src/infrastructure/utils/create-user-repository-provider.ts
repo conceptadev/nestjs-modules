@@ -8,6 +8,7 @@ import {
 
 import { UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
 import { USER_REPOSITORY_TOKEN } from '../../user.constants';
+import { UserMapper } from '../persistence/user.mapper';
 import { UserRepository } from '../persistence/user.repository';
 
 export function createUserRepositoryProvider(
@@ -21,9 +22,12 @@ export function createUserRepositoryProvider(
   return [
     {
       provide: USER_REPOSITORY_TOKEN,
-      inject: [getDynamicRepositoryToken(entityKey)],
-      useFactory: (repository: RepositoryInterface<UserEntityInterface>) => {
-        return new UserRepository(repository);
+      inject: [getDynamicRepositoryToken(entityKey), UserMapper],
+      useFactory: (
+        repository: RepositoryInterface<UserEntityInterface>,
+        mapper: UserMapper,
+      ) => {
+        return new UserRepository(repository, mapper);
       },
     },
   ];

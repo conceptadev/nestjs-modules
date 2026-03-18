@@ -1,9 +1,7 @@
 import { getDynamicRepositoryToken } from '@concepta/nestjs-common';
 
-import {
-  CACHE_CUSTOM_REPOSITORY_TOKEN,
-  CACHE_MODULE_SETTINGS_TOKEN,
-} from '../../../cache.constants';
+import { CACHE_CUSTOM_REPOSITORY_TOKEN } from '../../../cache.constants';
+import { CacheMapper } from '../../persistence/cache.mapper';
 import { CacheRepository } from '../../persistence/cache.repository';
 import {
   createCacheRepositoryProvider,
@@ -35,14 +33,14 @@ describe('createCacheRepositoryProvider', () => {
     );
   });
 
-  it('should inject repository token and settings token', () => {
+  it('should inject repository token, mapper, and custom repo token', () => {
     const provider = createCacheRepositoryProvider('user') as {
       inject: unknown[];
     };
 
     expect(provider.inject).toEqual([
       getDynamicRepositoryToken('user'),
-      CACHE_MODULE_SETTINGS_TOKEN,
+      CacheMapper,
       { token: CACHE_CUSTOM_REPOSITORY_TOKEN, optional: true },
     ]);
   });
@@ -53,8 +51,8 @@ describe('createCacheRepositoryProvider', () => {
     };
 
     const mockRepo = {} as never;
-    const mockSettings = {};
-    const result = provider.useFactory(mockRepo, mockSettings);
+    const mockMapper = new CacheMapper();
+    const result = provider.useFactory(mockRepo, mockMapper);
 
     expect(result).toBeInstanceOf(CacheRepository);
   });

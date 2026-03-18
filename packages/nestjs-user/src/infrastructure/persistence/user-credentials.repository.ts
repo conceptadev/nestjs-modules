@@ -10,11 +10,14 @@ import {
 import { UserCredentials } from '../../domain/aggregates/user-credentials';
 import { UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';
 
+import { UserCredentialsMapper } from './user-credentials.mapper';
+
 export class UserCredentialsRepository
   implements UserCredentialsRepositoryInterface
 {
   constructor(
     protected readonly repository: RepositoryInterface<UserCredentialEntityInterface>,
+    private readonly mapper: UserCredentialsMapper,
   ) {}
 
   async findActiveByUserId(
@@ -28,7 +31,7 @@ export class UserCredentialsRepository
       ctx,
     });
 
-    return entity ? UserCredentials.toInstance(entity) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async findByUserId(
@@ -50,14 +53,14 @@ export class UserCredentialsRepository
       ctx,
     });
 
-    return entities.map(UserCredentials.toInstance);
+    return entities.map((e) => this.mapper.toDomain(e));
   }
 
   async save(
     ctx: RepositoryContextInterface,
     entry: UserCredentials,
   ): Promise<void> {
-    const entity = await this.repository.upsert(entry.toPlain(), { ctx });
-    entry.hydrate(entity);
+    entry.stampUpdated();
+    await this.repository.upsert(this.mapper.toPersistence(entry), { ctx });
   }
 }

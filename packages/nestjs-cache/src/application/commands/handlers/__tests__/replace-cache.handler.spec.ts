@@ -5,15 +5,16 @@ import {
   createMockEventPublisher,
   createMockContext,
   createMockCacheEntity,
+  toCacheDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../../domain/aggregates/cache';
-import { CacheSettingsInterface } from '../../../../infrastructure/config/interfaces/cache-settings.interface';
+import { CacheExpirationPolicy } from '../../../../domain/policies/cache-expiration.policy';
 import { ReplaceCacheCommand } from '../../impl/replace-cache.command';
 import { ReplaceCacheHandler } from '../replace-cache.handler';
 
 describe(ReplaceCacheHandler.name, () => {
   const ctx = createMockContext();
-  const settings: CacheSettingsInterface = { expiresIn: '1h' };
+  const policy = new CacheExpirationPolicy({ expiresIn: '1h' });
   let mockRepo: ReturnType<typeof createMockCacheRepository>;
   let handler: ReplaceCacheHandler;
 
@@ -25,7 +26,7 @@ describe(ReplaceCacheHandler.name, () => {
       createMockRepositoryResolver(mockRepo),
       transaction as never,
       createMockEventPublisher() as never,
-      settings,
+      policy,
     );
   });
 
@@ -38,9 +39,7 @@ describe(ReplaceCacheHandler.name, () => {
   };
 
   it('should replace an existing cache', async () => {
-    mockRepo.findById.mockResolvedValue(
-      Cache.toInstance(createMockCacheEntity()),
-    );
+    mockRepo.findById.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
     const result = await handler.execute(
       new ReplaceCacheCommand(ctx, 'test-id', dto),

@@ -4,8 +4,8 @@ import {
   createMockOtpRepository,
   createMockRepositoryResolver,
   createMockTransaction,
+  toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { Otp } from '../../../../domain/aggregates/otp';
 import { ClearOtpsCommand } from '../../impl/clear-otps.command';
 import { ClearOtpsHandler } from '../clear-otps.handler';
 
@@ -25,8 +25,8 @@ describe(ClearOtpsHandler.name, () => {
 
   it('should find and remove all OTPs for assignee and category', async () => {
     const otps = [
-      Otp.toInstance(createMockOtpEntity({ id: '1' })),
-      Otp.toInstance(createMockOtpEntity({ id: '2' })),
+      toOtpDomain(createMockOtpEntity({ id: '1' })),
+      toOtpDomain(createMockOtpEntity({ id: '2' })),
     ];
     mockRepo.findAllByAssigneeAndCategory.mockResolvedValue(otps);
 

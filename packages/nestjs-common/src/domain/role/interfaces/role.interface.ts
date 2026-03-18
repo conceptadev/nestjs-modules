@@ -1,7 +1,4 @@
-import { AuditInterface } from '../../../audit/interfaces/audit.interface';
-import { ReferenceIdInterface } from '../../../reference/interfaces/reference-id.interface';
-
-export interface RoleInterface extends ReferenceIdInterface, AuditInterface {
+export interface RoleInterface {
   /**
    * Name
    */

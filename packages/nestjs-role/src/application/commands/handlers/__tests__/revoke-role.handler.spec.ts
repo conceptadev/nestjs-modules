@@ -5,8 +5,8 @@ import {
   createMockEventPublisher,
   createMockContext,
   createMockRoleAssignmentEntity,
+  toRoleAssignmentDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { RoleAssignment } from '../../../../domain/aggregates/role-assignment';
 import { RevokeRoleCommand } from '../../impl/revoke-role.command';
 import { RevokeRoleHandler } from '../revoke-role.handler';
 
@@ -29,7 +29,7 @@ describe(RevokeRoleHandler.name, () => {
   });
 
   it('should revoke and remove the assignment', async () => {
-    const existing = RoleAssignment.toInstance(
+    const existing = toRoleAssignmentDomain(
       createMockRoleAssignmentEntity({
         roleId: 'role-1',
         assigneeId: 'user-1',
@@ -45,9 +45,7 @@ describe(RevokeRoleHandler.name, () => {
   });
 
   it('should register onCommit and onRollback', async () => {
-    const existing = RoleAssignment.toInstance(
-      createMockRoleAssignmentEntity(),
-    );
+    const existing = toRoleAssignmentDomain(createMockRoleAssignmentEntity());
     mockRepo.findOne.mockResolvedValue(existing);
 
     await handler.execute(

@@ -1,8 +1,13 @@
 import { DynamicModule, Module } from '@nestjs/common';
 
-import { CacheCoreModuleClass } from './cache-core.module-definition';
-import { CacheAsyncOptions, CacheOptions } from './cache.module-definition';
+import {
+  CacheCoreAsyncOptions,
+  CacheCoreModuleClass,
+  CacheCoreOptions,
+} from './cache-core.module-definition';
 import { createCacheRepositoryProvider } from './infrastructure/utils/create-cache-repository-provider';
+type CacheOptions = Omit<CacheCoreOptions, 'global'>;
+type CacheAsyncOptions = Omit<CacheCoreAsyncOptions, 'global'>;
 
 /**
  * Cache Module

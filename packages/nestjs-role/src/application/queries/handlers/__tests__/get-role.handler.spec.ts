@@ -3,6 +3,7 @@ import {
   createMockRoleRepositoryResolver,
   createMockContext,
   createMockRoleEntity,
+  toRoleDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Role } from '../../../../domain/aggregates/role';
 import { RoleNotFoundException } from '../../../exceptions/role-not-found.exception';
@@ -21,7 +22,7 @@ describe(GetRoleHandler.name, () => {
   });
 
   it('should return a Role when found', async () => {
-    const existing = Role.toInstance(createMockRoleEntity());
+    const existing = toRoleDomain(createMockRoleEntity());
     mockRepo.get.mockResolvedValue(existing);
 
     const result = await handler.execute(new GetRoleQuery(ctx, 'test-role-id'));

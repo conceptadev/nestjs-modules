@@ -1,6 +1,5 @@
 import {
   AppContextHost,
-  OtpInterface,
   RepositoryContextInterface,
   Where,
 } from '@concepta/nestjs-common';
@@ -9,34 +8,28 @@ import { createMockRepository } from '@concepta/nestjs-common/testing';
 import {
   createMockContext,
   createMockOtpEntity,
+  toOtpDomain,
 } from '../../../__tests__/helpers/mock.helpers';
 import { Otp } from '../../../domain/aggregates/otp';
-import { OtpSettingsInterface } from '../../config/interfaces/otp-settings.interface';
+import { OtpEntityInterface } from '../interfaces/otp-entity.interface';
+import { OtpMapper } from '../otp.mapper';
 import { OtpRepository } from '../otp.repository';
+
+const mapper = new OtpMapper();
 
 describe(OtpRepository.name, () => {
   let repo: OtpRepository;
-  let mockRepository: ReturnType<typeof createMockRepository<OtpInterface>>;
-  let mockSettings: OtpSettingsInterface;
+  let mockRepository: ReturnType<
+    typeof createMockRepository<OtpEntityInterface>
+  >;
 
-  const w = Where.for<OtpInterface>();
+  const w = Where.for<OtpEntityInterface>();
   const entity = createMockOtpEntity();
   const ctx = createMockContext();
 
   beforeEach(() => {
-    mockRepository = createMockRepository<OtpInterface>();
-
-    mockSettings = {
-      types: {
-        uuid: {
-          generator: () => 'generated',
-          validator: () => true,
-        },
-      },
-      duplicateStrategy: 'ALLOW',
-    };
-
-    repo = new OtpRepository(mockRepository, mockSettings);
+    mockRepository = createMockRepository<OtpEntityInterface>();
+    repo = new OtpRepository(mockRepository, new OtpMapper());
   });
 
   describe('get', () => {
@@ -266,18 +259,19 @@ describe(OtpRepository.name, () => {
   });
 
   describe('save', () => {
-    it('should upsert the plain entity and hydrate the aggregate', async () => {
-      const updatedEntity = { ...entity, version: 2 };
-      mockRepository.upsert.mockResolvedValue(updatedEntity);
+    it('should stamp and upsert the plain entity', async () => {
+      mockRepository.upsert.mockResolvedValue(entity);
 
-      const otp = Otp.toInstance(entity);
-      const plainBeforeSave = otp.toPlain();
+      const otp = toOtpDomain(entity);
+      const stampSpy = jest.spyOn(otp, 'stampUpdated');
+
       await repo.save(ctx, otp);
 
-      expect(mockRepository.upsert).toHaveBeenCalledWith(plainBeforeSave, {
-        ctx,
-      });
-      expect(otp.version).toBe(2);
+      expect(stampSpy).toHaveBeenCalledTimes(1);
+      expect(mockRepository.upsert).toHaveBeenCalledWith(
+        mapper.toPersistence(otp),
+        { ctx },
+      );
     });
   });
 
@@ -285,12 +279,13 @@ describe(OtpRepository.name, () => {
     it('should delete the plain entity', async () => {
       mockRepository.delete.mockResolvedValue(entity);
 
-      const otp = Otp.toInstance(entity);
+      const otp = toOtpDomain(entity);
       await repo.remove(ctx, otp);
 
-      expect(mockRepository.delete).toHaveBeenCalledWith(otp.toPlain(), {
-        ctx,
-      });
+      expect(mockRepository.delete).toHaveBeenCalledWith(
+        mapper.toPersistence(otp),
+        { ctx },
+      );
     });
   });
 
@@ -298,13 +293,13 @@ describe(OtpRepository.name, () => {
     it('should delete all OTPs in a single batch', async () => {
       mockRepository.deleteMany.mockResolvedValue([entity, entity]);
 
-      const otp1 = Otp.toInstance(entity);
-      const otp2 = Otp.toInstance({ ...entity, id: 'otp-2' });
+      const otp1 = toOtpDomain(entity);
+      const otp2 = toOtpDomain({ ...entity, id: 'otp-2' });
 
       await repo.removeAll(ctx, [otp1, otp2]);
 
       expect(mockRepository.deleteMany).toHaveBeenCalledWith(
-        [otp1.toPlain(), otp2.toPlain()],
+        [mapper.toPersistence(otp1), mapper.toPersistence(otp2)],
         { ctx },
       );
     });

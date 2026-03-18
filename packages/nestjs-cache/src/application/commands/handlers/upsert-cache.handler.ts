@@ -7,13 +7,10 @@ import {
 } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import {
-  CACHE_MODULE_SETTINGS_TOKEN,
-  CACHE_REPOSITORY_RESOLVER_TOKEN,
-} from '../../../cache.constants';
+import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants';
 import { Cache } from '../../../domain/aggregates/cache';
+import { CacheExpirationPolicy } from '../../../domain/policies/cache-expiration.policy';
 import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface';
-import { CacheSettingsInterface } from '../../../infrastructure/config/interfaces/cache-settings.interface';
 import { UpsertCacheCommand } from '../impl/upsert-cache.command';
 
 @CommandHandler(UpsertCacheCommand)
@@ -23,8 +20,7 @@ export class UpsertCacheHandler implements ICommandHandler<UpsertCacheCommand> {
     private readonly repositoryResolver: CacheRepositoryResolverInterface,
     private readonly txScope: TransactionScope,
     private readonly eventPublisher: EventPublisher,
-    @Inject(CACHE_MODULE_SETTINGS_TOKEN)
-    private readonly settings: CacheSettingsInterface,
+    private readonly expirationPolicy: CacheExpirationPolicy,
   ) {}
 
   async execute(command: UpsertCacheCommand): Promise<Cache> {
@@ -47,11 +43,15 @@ export class UpsertCacheHandler implements ICommandHandler<UpsertCacheCommand> {
         cache.updateData(eventContext, data);
 
         if (expiresIn) {
-          cache.extend(eventContext, expiresIn);
+          const expirationDate =
+            this.expirationPolicy.resolveExpirationDate(expiresIn);
+          cache.extend(eventContext, expirationDate);
         }
       } else {
+        const expirationDate =
+          this.expirationPolicy.resolveExpirationDate(expiresIn);
         cache = this.eventPublisher.mergeObjectContext(
-          Cache.create(eventContext, dto, this.settings),
+          Cache.create(eventContext, dto, expirationDate),
         );
       }
 

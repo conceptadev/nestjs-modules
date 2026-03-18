@@ -27,6 +27,8 @@ import { UserExtrasInterface } from './infrastructure/config/interfaces/user-ext
 import { UserOptionsInterface } from './infrastructure/config/interfaces/user-options.interface';
 import { UserSettingsInterface } from './infrastructure/config/interfaces/user-settings.interface';
 import { userDefaultConfig } from './infrastructure/config/user-default.config';
+import { UserCredentialsMapper } from './infrastructure/persistence/user-credentials.mapper';
+import { UserMapper } from './infrastructure/persistence/user.mapper';
 import { createPasswordPolicyProvider } from './infrastructure/utils/create-password-policy-provider';
 import { createUserCredentialsRepositoryProvider } from './infrastructure/utils/create-user-credentials-repository-provider';
 import { createUserRepositoryProvider } from './infrastructure/utils/create-user-repository-provider';
@@ -53,7 +55,12 @@ export type UserAsyncOptions = typeof USER_ASYNC_OPTIONS_TYPE;
 
 function definitionTransform(
   definition: DynamicModule,
-  { global, entities, repositories }: UserExtrasInterface,
+  {
+    global,
+    providers: overrideProviders,
+    entities,
+    repositories,
+  }: UserExtrasInterface,
 ): DynamicModule {
   const { providers = [], imports = [] } = definition;
 
@@ -62,7 +69,7 @@ function definitionTransform(
     global,
     imports: createUserImports({ imports }),
     providers: createUserProviders({
-      providers,
+      providers: [...providers, ...(overrideProviders ?? [])],
       entities,
       repositories,
     }),
@@ -88,6 +95,7 @@ export function createUserProviders(options: {
 }): Provider[] {
   return [
     createUserSettingsProvider(options.overrides),
+    UserMapper,
     // User repository
     ...createUserRepositoryProvider(
       options.entities.user,
@@ -127,6 +135,7 @@ function createUserCredentialProviders(
 
   return [
     createPasswordPolicyProvider(),
+    UserCredentialsMapper,
     ...createUserCredentialsRepositoryProvider(entityKey, customRepository),
     CreateUserCredentialHandler,
     UpdateUserCredentialHandler,

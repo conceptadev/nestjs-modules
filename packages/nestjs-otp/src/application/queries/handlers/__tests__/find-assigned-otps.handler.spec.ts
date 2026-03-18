@@ -3,6 +3,7 @@ import {
   createMockOtpEntity,
   createMockOtpRepository,
   createMockRepositoryResolver,
+  toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Otp } from '../../../../domain/aggregates/otp';
 import { FindAssignedOtpsQuery } from '../../impl/find-assigned-otps.query';
@@ -23,8 +24,8 @@ describe(FindAssignedOtpsHandler.name, () => {
 
   it('should return all OTPs for assignee and category', async () => {
     const otps = [
-      Otp.toInstance(createMockOtpEntity({ id: '1' })),
-      Otp.toInstance(createMockOtpEntity({ id: '2' })),
+      toOtpDomain(createMockOtpEntity({ id: '1' })),
+      toOtpDomain(createMockOtpEntity({ id: '2' })),
     ];
     mockRepo.findAllByAssigneeAndCategory.mockResolvedValue(otps);
 

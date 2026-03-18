@@ -1,8 +1,9 @@
-import { DynamicModule, Type } from '@nestjs/common';
+import { DynamicModule, Provider, Type } from '@nestjs/common';
 
 import { CacheRepositoryInterface } from '../../../domain/repositories/cache-repository.interface';
 
 export interface CacheExtrasInterface extends Pick<DynamicModule, 'global'> {
+  providers?: Provider[];
   repositories?: {
     cache?: Type<CacheRepositoryInterface>;
   };

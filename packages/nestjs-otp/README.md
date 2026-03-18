@@ -116,9 +116,25 @@ export class UserModule {}
 Each entity key maps to an `OtpRepository` instance resolved at runtime by
 `OtpRepositoryResolver`.
 
-### Settings
+### Options
+
+`forRoot()` and `registerAsync()` accept `OtpOptionsInterface` merged with
+`OtpExtrasInterface` (extras are passed to `setExtras` on the
+`ConfigurableModuleBuilder`):
 
 ```ts
+interface OtpExtrasInterface {
+  global?: boolean;
+  providers?: Provider[];
+  repositories?: {
+    otp?: Type<OtpRepositoryInterface>;
+  };
+}
+
+interface OtpOptionsInterface {
+  settings?: OtpSettingsInterface;
+}
+
 interface OtpSettingsInterface {
   types: Record<string, OtpTypeServiceInterface>;
   duplicateStrategy: 'ALLOW' | 'DEACTIVATE';
@@ -126,6 +142,13 @@ interface OtpSettingsInterface {
   rateSeconds?: number;
   rateThreshold?: number;
 }
+```
+
+`forFeature()` accepts an array of entity key strings. Each key creates a
+dynamic `OtpRepository` provider:
+
+```ts
+OtpModule.forFeature(entityKeys: string[])
 ```
 
 - **`types`** -- map of OTP type strategies. Each type provides a `generator()`
@@ -141,6 +164,9 @@ interface OtpSettingsInterface {
   and maximum creation attempts within that window. Exceeding the threshold
   throws `OtpLimitReachedException`.
 
+Pass `repositories.otp` to override the default `OtpRepository` with a
+custom implementation.
+
 ## Architecture Overview
 
 The module follows a DDD/CQRS architecture:
@@ -150,14 +176,15 @@ Application (Commands / Queries / Listeners)
   |
 Domain (Otp aggregate, Events, Services)
   |
-Infrastructure (Repository, DTOs, Config)
+Infrastructure (Repository, Mapper, DTOs, Config)
 ```
 
-- **Domain** -- `Otp` aggregate extending `AggregateRoot`, 3 domain events,
-  history cleanup service
+- **Domain** -- `Otp` aggregate extending `DomainAggregate<OtpInterface>`,
+  3 domain events, history cleanup service
 - **Application** -- 6 commands and 4 queries dispatched via `@nestjs/cqrs`,
   1 built-in event listener
 - **Infrastructure** -- `OtpRepository` with ctx-first signatures,
+  `OtpMapper` for entity-to-aggregate conversion (DI-injected),
   `OtpRepositoryResolver`, DTOs, config
 
 The module does not include a gateway layer. See
@@ -292,7 +319,8 @@ export class OtpCreatedListener implements IEventHandler<OtpCreatedEvent> {
 
 ## Otp Aggregate
 
-The `Otp` class extends `AggregateRoot` and encapsulates all OTP domain logic.
+The `Otp` class extends `DomainAggregate<OtpInterface>` and encapsulates all
+OTP domain logic.
 
 ### Factory Methods
 
@@ -303,15 +331,15 @@ const otp = Otp.create(eventContext, {
   type: 'uuid',
   assigneeId: userId,
   passcode,
-  expiresIn: '15m',
+  expirationDate,
 });
 
 // Create with a specific ID
 const otp = Otp.createWithId(eventContext, id, props);
-
-// Reconstitute from a database entity
-const otp = Otp.toInstance(entity);
 ```
+
+Reconstitution from a database entity is handled by `OtpMapper` (see
+[Repository](#repository)).
 
 ### Operations
 
@@ -324,22 +352,19 @@ otp.consume(eventContext);
 
 // Check if the OTP has expired
 otp.isExpired();
-```
 
-### Serialization
-
-```ts
-// Convert to plain OtpInterface object
+// Convert to plain OtpInterface object (inherited from DomainAggregate)
 const plain = otp.toPlain();
-
-// Hydrate from a database entity (after save)
-otp.hydrate(savedEntity);
 ```
 
 ## Repository
 
 `OtpRepository` uses a ctx-first calling convention. All methods take
 `RepositoryContextInterface` as the first argument.
+
+The repository receives a DI-injected `OtpMapper` that converts database
+entities to `Otp` aggregates via `toDomain()` and aggregates back to
+persistence form via `toPersistence()`.
 
 | Method | Signature |
 | --- | --- |

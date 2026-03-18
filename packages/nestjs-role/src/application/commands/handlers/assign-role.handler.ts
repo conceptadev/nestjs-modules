@@ -4,7 +4,6 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import {
   EntityHeaderInterface,
   EventContextHost,
-  RoleAssignmentEntityInterface,
 } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
@@ -23,9 +22,7 @@ export class AssignRoleHandler implements ICommandHandler<AssignRoleCommand> {
     private readonly eventPublisher: EventPublisher,
   ) {}
 
-  async execute(
-    command: AssignRoleCommand,
-  ): Promise<RoleAssignmentEntityInterface> {
+  async execute(command: AssignRoleCommand): Promise<RoleAssignment> {
     const { ctx, roleId, assigneeId } = command;
 
     const assignmentRepo = this.repositoryResolver.resolve(ctx.entity);
@@ -54,7 +51,7 @@ export class AssignRoleHandler implements ICommandHandler<AssignRoleCommand> {
       trx.onCommit(ctx, () => roleAssignment.commit());
       trx.onRollback(ctx, () => roleAssignment.uncommit());
 
-      return roleAssignment.toPlain();
+      return roleAssignment;
     });
   }
 }

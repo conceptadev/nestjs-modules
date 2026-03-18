@@ -6,13 +6,13 @@ import {
   createMockContext,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../../domain/aggregates/cache';
-import { CacheSettingsInterface } from '../../../../infrastructure/config/interfaces/cache-settings.interface';
+import { CacheExpirationPolicy } from '../../../../domain/policies/cache-expiration.policy';
 import { CreateCacheCommand } from '../../impl/create-cache.command';
 import { CreateCacheHandler } from '../create-cache.handler';
 
 describe(CreateCacheHandler.name, () => {
   const ctx = createMockContext();
-  const settings: CacheSettingsInterface = { expiresIn: '1h' };
+  const policy = new CacheExpirationPolicy({ expiresIn: '1h' });
   let mockRepo: ReturnType<typeof createMockCacheRepository>;
   let handler: CreateCacheHandler;
   let trxHandle: ReturnType<typeof createMockTransaction>['trxHandle'];
@@ -26,7 +26,7 @@ describe(CreateCacheHandler.name, () => {
       createMockRepositoryResolver(mockRepo),
       transaction as never,
       createMockEventPublisher() as never,
-      settings,
+      policy,
     );
   });
 

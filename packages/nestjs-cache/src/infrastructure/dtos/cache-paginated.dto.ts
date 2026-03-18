@@ -2,16 +2,12 @@ import { Exclude, Expose, Type } from 'class-transformer';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { CacheInterface } from '@concepta/nestjs-common';
 import { CrudResponsePaginatedDto } from '@concepta/nestjs-crud';
 
 import { CacheDto } from './cache.dto';
 
-/**
- * Cache paginated DTO
- */
 @Exclude()
-export class CachePaginatedDto extends CrudResponsePaginatedDto<CacheInterface> {
+export class CachePaginatedDto extends CrudResponsePaginatedDto<CacheDto> {
   @Expose()
   @ApiProperty({
     type: CacheDto,

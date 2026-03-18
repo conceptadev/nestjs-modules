@@ -13,9 +13,11 @@ export { RoleAssignmentRepositoryResolver } from './infrastructure/persistence/r
 
 // dtos
 export { RoleDto } from './infrastructure/dtos/role.dto';
+export { RolePaginatedDto } from './infrastructure/dtos/role-paginated.dto';
 export { RoleCreateDto } from './infrastructure/dtos/role-create.dto';
 export { RoleUpdateDto } from './infrastructure/dtos/role-update.dto';
 export { RoleAssignmentDto } from './infrastructure/dtos/role-assignment.dto';
+export { RoleAssignmentPaginatedDto } from './infrastructure/dtos/role-assignment-paginated.dto';
 export { RoleAssignmentCreateDto } from './infrastructure/dtos/role-assignment-create.dto';
 
 // commands

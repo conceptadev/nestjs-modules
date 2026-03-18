@@ -1,5 +1,4 @@
 import {
-  CacheInterface,
   ReferenceId,
   RepositoryContextInterface,
   RepositoryInterface,
@@ -8,40 +7,42 @@ import {
 
 import { Cache } from '../../domain/aggregates/cache';
 import { CacheRepositoryInterface } from '../../domain/repositories/cache-repository.interface';
-import { CacheSettingsInterface } from '../config/interfaces/cache-settings.interface';
+
+import { CacheMapper } from './cache.mapper';
+import { CacheEntityInterface } from './interfaces/cache-entity.interface';
 
 export class CacheRepository implements CacheRepositoryInterface {
   constructor(
-    protected readonly repository: RepositoryInterface<CacheInterface>,
-    protected readonly settings: CacheSettingsInterface,
+    protected readonly repository: RepositoryInterface<CacheEntityInterface>,
+    private readonly mapper: CacheMapper,
   ) {}
 
   async get(
     ctx: RepositoryContextInterface,
     id: ReferenceId,
   ): Promise<Cache | null> {
-    const w = Where.for<CacheInterface>();
+    const w = Where.for<CacheEntityInterface>();
 
     const entity = await this.repository.findOne({
       where: w.eq('id', id),
       ctx,
     });
 
-    return entity ? Cache.toInstance(entity, this.settings) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async findById(
     ctx: RepositoryContextInterface,
     id: ReferenceId,
   ): Promise<Cache | null> {
-    const w = Where.for<CacheInterface>();
+    const w = Where.for<CacheEntityInterface>();
 
     const entity = await this.repository.findOne({
       where: w.eq('id', id),
       ctx,
     });
 
-    return entity ? Cache.toInstance(entity, this.settings) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async findOne(
@@ -49,7 +50,7 @@ export class CacheRepository implements CacheRepositoryInterface {
     options: { key: string; type: string; assigneeId: string },
   ): Promise<Cache | null> {
     const { key, type, assigneeId } = options;
-    const w = Where.for<CacheInterface>();
+    const w = Where.for<CacheEntityInterface>();
 
     const entity = await this.repository.findOne({
       where: w.and(
@@ -60,30 +61,30 @@ export class CacheRepository implements CacheRepositoryInterface {
       ctx,
     });
 
-    return entity ? Cache.toInstance(entity, this.settings) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async findAllByAssignee(
     ctx: RepositoryContextInterface,
     assigneeId: string,
   ): Promise<Cache[]> {
-    const w = Where.for<CacheInterface>();
+    const w = Where.for<CacheEntityInterface>();
 
     const entities = await this.repository.find({
       where: w.eq('assigneeId', assigneeId),
       ctx,
     });
 
-    return entities.map((e) => Cache.toInstance(e, this.settings));
+    return entities.map((e) => this.mapper.toDomain(e));
   }
 
   async save(ctx: RepositoryContextInterface, cache: Cache): Promise<void> {
-    const entity = await this.repository.upsert(cache.toPlain(), { ctx });
-    cache.hydrate(entity);
+    cache.stampUpdated();
+    await this.repository.upsert(this.mapper.toPersistence(cache), { ctx });
   }
 
   async remove(ctx: RepositoryContextInterface, cache: Cache): Promise<void> {
-    await this.repository.delete(cache.toPlain(), { ctx });
+    await this.repository.delete(this.mapper.toPersistence(cache), { ctx });
   }
 
   async removeAllByAssignee(
@@ -93,7 +94,7 @@ export class CacheRepository implements CacheRepositoryInterface {
     const caches = await this.findAllByAssignee(ctx, assigneeId);
 
     await this.repository.deleteMany(
-      caches.map((cache) => cache.toPlain()),
+      caches.map((cache) => this.mapper.toPersistence(cache)),
       { ctx },
     );
   }
@@ -102,6 +103,7 @@ export class CacheRepository implements CacheRepositoryInterface {
     ctx: RepositoryContextInterface,
     cache: Cache,
   ): Promise<void> {
-    await this.repository.softDelete(cache.toPlain(), { ctx });
+    cache.stampDeleted();
+    await this.repository.softDelete(this.mapper.toPersistence(cache), { ctx });
   }
 }

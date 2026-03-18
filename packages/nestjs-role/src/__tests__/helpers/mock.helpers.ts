@@ -7,8 +7,10 @@ import {
 } from '@concepta/nestjs-common';
 
 import { RoleAssignmentRepositoryResolver } from '../../infrastructure/persistence/role-assignment-repository.resolver';
+import { RoleAssignmentMapper } from '../../infrastructure/persistence/role-assignment.mapper';
 import { RoleAssignmentRepository } from '../../infrastructure/persistence/role-assignment.repository';
 import { RoleRepositoryResolver } from '../../infrastructure/persistence/role-repository.resolver';
+import { RoleMapper } from '../../infrastructure/persistence/role.mapper';
 import { RoleRepository } from '../../infrastructure/persistence/role.repository';
 
 export interface MockTransactionHandle {
@@ -131,4 +133,15 @@ export function createMockRoleAssignmentEntity(
     version: 1,
     ...overrides,
   };
+}
+
+const roleMapper = new RoleMapper();
+const roleAssignmentMapper = new RoleAssignmentMapper();
+
+export function toRoleDomain(entity: RoleEntityInterface) {
+  return roleMapper.toDomain(entity);
+}
+
+export function toRoleAssignmentDomain(entity: RoleAssignmentEntityInterface) {
+  return roleAssignmentMapper.toDomain(entity);
 }

@@ -1,9 +1,10 @@
-import { DynamicModule, Type } from '@nestjs/common';
+import { DynamicModule, Provider, Type } from '@nestjs/common';
 
 import { UserCredentialsRepositoryInterface } from '../../../domain/repositories/user-credentials-repository.interface';
 import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface';
 
 export interface UserExtrasInterface extends Pick<DynamicModule, 'global'> {
+  providers?: Provider[];
   entities: {
     user: string;
     credentials?: string;

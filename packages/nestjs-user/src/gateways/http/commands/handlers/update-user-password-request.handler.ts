@@ -1,22 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { PasswordUpdateInterface } from '@concepta/nestjs-common';
-import { CrudUpdateCommand } from '@concepta/nestjs-crud';
-
 import { UpdateUserPasswordCommand } from '../../../../application/commands/impl/update-user-password.command';
 import { assertUserId } from '../../../../application/utils/assert-user-id.util';
+import { UpdateUserPasswordRequest } from '../impl/update-user-password.request';
 
 @Injectable()
 export class UpdateUserPasswordRequestHandler {
   constructor(private readonly commandBus: CommandBus) {}
 
-  async execute(
-    command: CrudUpdateCommand<
-      PasswordUpdateInterface,
-      PasswordUpdateInterface
-    >,
-  ): Promise<null> {
+  async execute(command: UpdateUserPasswordRequest): Promise<null> {
     const { context, dto } = command;
     const id = context.params.id;
 

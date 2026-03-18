@@ -5,6 +5,7 @@ import {
   createMockEventPublisher,
   createMockContext,
   createMockRoleEntity,
+  toRoleDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Role } from '../../../../domain/aggregates/role';
 import { ReplaceRoleCommand } from '../../impl/replace-role.command';
@@ -29,7 +30,7 @@ describe(ReplaceRoleHandler.name, () => {
   });
 
   it('should replace an existing role', async () => {
-    const existing = Role.toInstance(
+    const existing = toRoleDomain(
       createMockRoleEntity({ name: 'OldName', description: 'OldDesc' }),
     );
     mockRepo.get.mockResolvedValue(existing);
@@ -45,7 +46,7 @@ describe(ReplaceRoleHandler.name, () => {
   });
 
   it('should save and return the replaced role', async () => {
-    const existing = Role.toInstance(
+    const existing = toRoleDomain(
       createMockRoleEntity({ name: 'OldName', description: 'OldDesc' }),
     );
     mockRepo.get.mockResolvedValue(existing);
@@ -89,7 +90,7 @@ describe(ReplaceRoleHandler.name, () => {
   });
 
   it('should register onCommit and onRollback', async () => {
-    const existing = Role.toInstance(createMockRoleEntity());
+    const existing = toRoleDomain(createMockRoleEntity());
     mockRepo.get.mockResolvedValue(existing);
 
     const dto = { name: 'Replaced', description: 'Replaced' };

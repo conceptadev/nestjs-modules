@@ -1,15 +1,13 @@
 import { randomUUID } from 'crypto';
 
-import { AggregateRoot } from '@nestjs/cqrs';
-
 import {
   DomainFactory,
-  DomainMappable,
   EntityHeaderInterface,
   EventContextHost,
   OtpInterface,
 } from '@concepta/nestjs-common';
 
+import { DomainAggregate } from '../../../../nestjs-common/dist/index-aggregate';
 import { OtpConsumedEvent } from '../events/otp-consumed.event';
 import { OtpCreatedEvent } from '../events/otp-created.event';
 import { OtpDeactivatedEvent } from '../events/otp-deactivated.event';
@@ -23,21 +21,7 @@ export interface OtpCreateProps {
   expiresIn: string;
 }
 
-export class Otp
-  extends AggregateRoot
-  implements OtpInterface, DomainMappable<OtpInterface>
-{
-  private props: OtpInterface;
-
-  constructor(entity: OtpInterface) {
-    super();
-    this.props = { ...entity };
-  }
-
-  get id() {
-    return this.props.id;
-  }
-
+export class Otp extends DomainAggregate<OtpInterface> {
   get category() {
     return this.props.category;
   }
@@ -62,22 +46,6 @@ export class Otp
     return this.props.active;
   }
 
-  get dateCreated() {
-    return this.props.dateCreated;
-  }
-
-  get dateUpdated() {
-    return this.props.dateUpdated;
-  }
-
-  get dateDeleted() {
-    return this.props.dateDeleted;
-  }
-
-  get version() {
-    return this.props.version;
-  }
-
   static create(
     eventContext: EventContextHost<EntityHeaderInterface>,
     props: OtpCreateProps,
@@ -93,18 +61,13 @@ export class Otp
     const { category, type, assigneeId, passcode, expiresIn } = props;
     const now = new Date();
 
-    const otp = new Otp({
-      id,
+    const otp = new Otp(id, {
       category,
       type,
       assigneeId,
       passcode,
       expirationDate: getExpirationDate(expiresIn, now),
       active: true,
-      dateCreated: now,
-      dateUpdated: now,
-      dateDeleted: null,
-      version: 1,
     });
 
     otp.apply(new OtpCreatedEvent(eventContext, otp.toPlain()));
@@ -112,25 +75,14 @@ export class Otp
     return otp;
   }
 
-  static toInstance(entity: OtpInterface): Otp {
-    return new Otp(entity);
-  }
-
-  toPlain(): OtpInterface {
-    return { ...this.props };
-  }
-
-  hydrate(entity: OtpInterface): void {
-    this.props = { ...entity };
-  }
-
   deactivate(eventContext: EventContextHost<EntityHeaderInterface>): void {
     this.props = {
       ...this.props,
       active: false,
-      dateUpdated: new Date(),
-      version: this.props.version + 1,
     };
+
+    this.incrementVersion();
+
     this.apply(new OtpDeactivatedEvent(eventContext, this.toPlain()));
   }
 
@@ -143,4 +95,4 @@ export class Otp
   }
 }
 
-Otp satisfies DomainFactory<OtpInterface, OtpCreateProps, Otp>;
+Otp satisfies DomainFactory<OtpCreateProps, Otp>;

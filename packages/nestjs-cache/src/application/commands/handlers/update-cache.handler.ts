@@ -9,6 +9,7 @@ import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants';
 import { Cache } from '../../../domain/aggregates/cache';
+import { CacheExpirationPolicy } from '../../../domain/policies/cache-expiration.policy';
 import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface';
 import { CacheNotFoundException } from '../../exceptions/cache-not-found.exception';
 import { UpdateCacheCommand } from '../impl/update-cache.command';
@@ -20,6 +21,7 @@ export class UpdateCacheHandler implements ICommandHandler<UpdateCacheCommand> {
     private readonly repositoryResolver: CacheRepositoryResolverInterface,
     private readonly txScope: TransactionScope,
     private readonly eventPublisher: EventPublisher,
+    private readonly expirationPolicy: CacheExpirationPolicy,
   ) {}
 
   async execute(command: UpdateCacheCommand): Promise<Cache> {
@@ -44,7 +46,9 @@ export class UpdateCacheHandler implements ICommandHandler<UpdateCacheCommand> {
       cache.updateData(eventContext, data);
 
       if (expiresIn) {
-        cache.extend(eventContext, expiresIn);
+        const expirationDate =
+          this.expirationPolicy.resolveExpirationDate(expiresIn);
+        cache.extend(eventContext, expirationDate);
       }
 
       await cacheRepo.save(ctx, cache);

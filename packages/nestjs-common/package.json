@@ -9,6 +9,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./aggregate": {
+      "types": "./dist/index-aggregate.d.ts",
+      "default": "./dist/index-aggregate.js"
+    },
     "./testing": {
       "types": "./dist/testing.d.ts",
       "default": "./dist/testing.js"
@@ -36,7 +40,13 @@
     "supertest": "^6.3.4"
   },
   "peerDependencies": {
+    "@nestjs/cqrs": "^11.0.0",
     "class-transformer": "*",
     "class-validator": "*"
+  },
+  "peerDependenciesMeta": {
+    "@nestjs/cqrs": {
+      "optional": true
+    }
   }
 }

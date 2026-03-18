@@ -5,7 +5,10 @@ import {
 } from '@concepta/nestjs-common';
 
 import { User } from '../../../domain/aggregates/user';
+import { UserMapper } from '../user.mapper';
 import { UserRepository } from '../user.repository';
+
+const userMapper = new UserMapper();
 
 const ctx = {} as RepositoryContextInterface;
 
@@ -41,6 +44,7 @@ describe(UserRepository.name, () => {
     jest.clearAllMocks();
     repository = new UserRepository(
       innerRepo as unknown as RepositoryInterface<UserEntityInterface>,
+      new UserMapper(),
     );
   });
 
@@ -103,15 +107,19 @@ describe(UserRepository.name, () => {
   });
 
   describe('save', () => {
-    it('should upsert and hydrate the user', async () => {
-      const updatedEntity = { ...mockEntity, version: 2 };
-      innerRepo.upsert.mockResolvedValue(updatedEntity);
+    it('should stamp and upsert the plain entity', async () => {
+      innerRepo.upsert.mockResolvedValue(mockEntity);
 
-      const user = User.toInstance(mockEntity);
+      const user = userMapper.toDomain(mockEntity);
+      const stampSpy = jest.spyOn(user, 'stampUpdated');
+
       await repository.save(ctx, user);
 
-      expect(innerRepo.upsert).toHaveBeenCalledTimes(1);
-      expect(user.version).toBe(2);
+      expect(stampSpy).toHaveBeenCalledTimes(1);
+      expect(innerRepo.upsert).toHaveBeenCalledWith(
+        userMapper.toPersistence(user),
+        { ctx },
+      );
     });
   });
 
@@ -119,7 +127,7 @@ describe(UserRepository.name, () => {
     it('should delete the user', async () => {
       innerRepo.delete.mockResolvedValue(mockEntity);
 
-      const user = User.toInstance(mockEntity);
+      const user = userMapper.toDomain(mockEntity);
       await repository.remove(ctx, user);
 
       expect(innerRepo.delete).toHaveBeenCalledTimes(1);

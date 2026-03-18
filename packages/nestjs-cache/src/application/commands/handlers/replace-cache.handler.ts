@@ -7,13 +7,10 @@ import {
 } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import {
-  CACHE_MODULE_SETTINGS_TOKEN,
-  CACHE_REPOSITORY_RESOLVER_TOKEN,
-} from '../../../cache.constants';
+import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants';
 import { Cache } from '../../../domain/aggregates/cache';
+import { CacheExpirationPolicy } from '../../../domain/policies/cache-expiration.policy';
 import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface';
-import { CacheSettingsInterface } from '../../../infrastructure/config/interfaces/cache-settings.interface';
 import { ReplaceCacheCommand } from '../impl/replace-cache.command';
 
 @CommandHandler(ReplaceCacheCommand)
@@ -25,8 +22,7 @@ export class ReplaceCacheHandler
     private readonly repositoryResolver: CacheRepositoryResolverInterface,
     private readonly txScope: TransactionScope,
     private readonly eventPublisher: EventPublisher,
-    @Inject(CACHE_MODULE_SETTINGS_TOKEN)
-    private readonly settings: CacheSettingsInterface,
+    private readonly expirationPolicy: CacheExpirationPolicy,
   ) {}
 
   async execute(command: ReplaceCacheCommand): Promise<Cache> {
@@ -39,16 +35,20 @@ export class ReplaceCacheHandler
       .build();
 
     return this.txScope.run(ctx, async (trx) => {
+      const expirationDate = this.expirationPolicy.resolveExpirationDate(
+        dto.expiresIn,
+      );
+
       let cache: Cache;
 
       const existing = await cacheRepo.findById(ctx, id);
 
       if (existing) {
         cache = this.eventPublisher.mergeObjectContext(existing);
-        cache.replace(eventContext, dto);
+        cache.replace(eventContext, dto, expirationDate);
       } else {
         cache = this.eventPublisher.mergeObjectContext(
-          Cache.createWithId(eventContext, id, dto, this.settings),
+          Cache.createWithId(eventContext, id, dto, expirationDate),
         );
       }
 

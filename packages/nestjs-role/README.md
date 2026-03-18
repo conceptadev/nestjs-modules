@@ -209,7 +209,20 @@ RoleModule.forFeature({
 
 ### Options
 
+`forRoot()` and `registerAsync()` accept `RoleOptionsInterface` merged with
+`RoleExtrasInterface` (extras are passed to `setExtras` on the
+`ConfigurableModuleBuilder`):
+
 ```ts
+interface RoleExtrasInterface {
+  global?: boolean;
+  providers?: Provider[];
+  repositories?: {
+    role?: Type<RoleRepositoryInterface>;
+    roleAssignment?: Type<RoleAssignmentRepositoryInterface>;
+  };
+}
+
 interface RoleOptionsInterface {
   settings?: RoleSettingsInterface;
 }
@@ -219,6 +232,19 @@ interface RoleSettingsInterface {
   assignments: Record<string, { entityKey: string }>;
 }
 ```
+
+`forFeature()` accepts entity key configuration for repository provider
+creation:
+
+```ts
+RoleModule.forFeature(config: {
+  roleEntityKey: string;
+  assignmentEntityKeys: string[];
+})
+```
+
+Pass `repositories.role` or `repositories.roleAssignment` to override the
+default repository implementations.
 
 ## Architecture Overview
 
@@ -247,16 +273,16 @@ interface RoleSettingsInterface {
 ┌──────────────────────────────────────────┐
 │ Domain Aggregates                        │
 │                                          │
-│ Role (AggregateRoot)                     │
-│ RoleAssignment (AggregateRoot)           │
+│ Role (DomainAggregate<RoleInterface>)    │
+│ RoleAssignment (DomainAggregate<...>)    │
 └────────────────────┬─────────────────────┘
                      │
                      ▼
 ┌──────────────────────────────────────────┐
-│ Repositories                             │
+│ Repositories + Mappers                   │
 │                                          │
-│ RoleRepository                           │
-│ RoleAssignmentRepository                 │
+│ RoleRepository ← RoleMapper (DI)         │
+│ RoleAssignmentRepository ← Mapper (DI)   │
 │                                          │
 │ Resolved via RepositoryResolver          │
 │ (multi-entity / multi-tenant support)    │
@@ -274,56 +300,52 @@ interface RoleSettingsInterface {
   event publishing, and repository calls.
 - **Domain** — Aggregate roots (`Role`, `RoleAssignment`) encapsulate business
   rules and emit domain events.
-- **Infrastructure** — Repositories, DTOs, configuration, and provider
-  factories.
+- **Infrastructure** — Repositories with DI-injected mappers (`RoleMapper`,
+  `RoleAssignmentMapper`), DTOs, configuration, and provider factories.
 
 ## Domain Aggregates
 
 ### Role
 
-Extends `AggregateRoot` from `@nestjs/cqrs`. Implements `RoleEntityInterface`.
+Extends `DomainAggregate<RoleInterface>`.
 
 | Property | Type |
 | --- | --- |
 | `id` | `string` |
 | `name` | `string` |
 | `description` | `string` |
-| `dateCreated` | `Date` |
-| `dateUpdated` | `Date` |
-| `dateDeleted` | `Date \| null` |
 | `version` | `number` |
+| `meta` | `AggregateMetaInterface` (dateCreated, dateUpdated, dateDeleted) |
 
 | Method | Description | Event |
 | --- | --- | --- |
 | `Role.create(ctx, props)` | Create with generated UUID | `RoleCreatedEvent` |
 | `Role.createWithId(ctx, id, props)` | Create with explicit ID | `RoleCreatedEvent` |
-| `Role.toInstance(entity)` | Reconstitute from entity (no events) | — |
 | `update(ctx, dto)` | Partial update, bumps version | `RoleUpdatedEvent` |
 | `replace(ctx, dto)` | Full replacement, bumps version | `RoleReplacedEvent` |
-| `toPlain()` | Returns immutable plain object | — |
-| `hydrate(entity)` | Replaces internal state from entity | — |
+| `toPlain()` | Returns `{ id, version, ...props, ...meta }` | — |
+
+Reconstitution from a database entity is handled by `RoleMapper`.
 
 ### RoleAssignment
 
-Extends `AggregateRoot`. Implements `RoleAssignmentEntityInterface`.
+Extends `DomainAggregate<RoleAssignmentInterface>`.
 
 | Property | Type |
 | --- | --- |
 | `id` | `string` |
 | `roleId` | `string` |
 | `assigneeId` | `string` |
-| `dateCreated` | `Date` |
-| `dateUpdated` | `Date` |
-| `dateDeleted` | `Date \| null` |
 | `version` | `number` |
+| `meta` | `AggregateMetaInterface` (dateCreated, dateUpdated, dateDeleted) |
 
 | Method | Description | Event |
 | --- | --- | --- |
 | `RoleAssignment.create(ctx, props)` | Create assignment | `RoleAssignedEvent` |
-| `RoleAssignment.toInstance(entity)` | Reconstitute (no events) | — |
 | `revoke(ctx)` | Mark for revocation | `RoleRevokedEvent` |
-| `toPlain()` | Returns immutable plain object | — |
-| `hydrate(entity)` | Replaces internal state | — |
+| `toPlain()` | Returns `{ id, version, ...props, ...meta }` | — |
+
+Reconstitution from a database entity is handled by `RoleAssignmentMapper`.
 
 ## Commands
 

@@ -35,7 +35,7 @@ describe(AssignRolesHandler.name, () => {
     );
 
     expect(result).toHaveLength(2);
-    expect(result).toEqual([
+    expect(result.map((r) => r.toPlain())).toEqual([
       {
         id: expect.any(String),
         roleId: 'role-1',

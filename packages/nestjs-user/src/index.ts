@@ -13,6 +13,7 @@ export { UserCredentialsRepositoryInterface } from './domain/repositories/user-c
 
 // dtos
 export { UserDto } from './infrastructure/dtos/user.dto';
+export { UserPaginatedDto } from './infrastructure/dtos/user-paginated.dto';
 export { UserCreateDto } from './infrastructure/dtos/user-create.dto';
 export { UserUpdateDto } from './infrastructure/dtos/user-update.dto';
 export { UserPasswordDto } from './infrastructure/dtos/password/user-password.dto';

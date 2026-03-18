@@ -9,7 +9,6 @@ export {
 
 // Core
 export { DomainFactory } from './core.interfaces';
-export { DomainMappable } from './core.interfaces';
 
 // DTOs
 export { AuditDto } from './audit/dto/audit.dto';
@@ -68,6 +67,7 @@ export { ReferenceUsernameInterface } from './reference/interfaces/reference-use
 export { ReferenceUserInterface } from './reference/interfaces/reference-user.interface';
 export { ReferenceRoleInterface } from './reference/interfaces/reference-role.interface';
 export { ReferenceRolesInterface } from './reference/interfaces/reference-roles.interface';
+export { ReferenceVersionInterface } from './reference/interfaces/reference-version.interface';
 
 // model exceptions
 export { ModelQueryException } from './model/exceptions/model-query.exception';

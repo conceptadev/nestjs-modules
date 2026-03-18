@@ -3,6 +3,7 @@ import {
   createMockOtpEntity,
   createMockOtpRepository,
   createMockRepositoryResolver,
+  toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Otp } from '../../../../domain/aggregates/otp';
 import { FindActiveOtpQuery } from '../../impl/find-active-otp.query';
@@ -22,7 +23,7 @@ describe(FindActiveOtpHandler.name, () => {
   });
 
   it('should return an active OTP when found', async () => {
-    const otp = Otp.toInstance(createMockOtpEntity());
+    const otp = toOtpDomain(createMockOtpEntity());
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
 
     const query = new FindActiveOtpQuery(ctx, {

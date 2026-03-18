@@ -110,9 +110,25 @@ export class UserModule {}
 Each entity key maps to a `CacheRepository` instance resolved at runtime by
 `CacheRepositoryResolver`.
 
-### Settings
+### Options
+
+`forRoot()` and `registerAsync()` accept `CacheOptionsInterface` merged with
+`CacheExtrasInterface` (extras are passed to `setExtras` on the
+`ConfigurableModuleBuilder`):
 
 ```ts
+interface CacheExtrasInterface {
+  global?: boolean;
+  providers?: Provider[];
+  repositories?: {
+    cache?: Type<CacheRepositoryInterface>;
+  };
+}
+
+interface CacheOptionsInterface {
+  settings?: CacheSettingsInterface;
+}
+
 interface CacheSettingsInterface {
   expiresIn?: string | null;
 }
@@ -120,6 +136,16 @@ interface CacheSettingsInterface {
 
 The `expiresIn` value accepts time span strings (e.g. `'60'`, `'2 days'`,
 `'10h'`, `'7d'`). When not provided, entries do not expire.
+
+`forFeature()` accepts an array of entity key strings. Each key creates a
+dynamic `CacheRepository` provider:
+
+```ts
+CacheModule.forFeature(entityKeys: string[])
+```
+
+Pass `repositories.cache` to override the default `CacheRepository` with a
+custom implementation.
 
 ## Architecture Overview
 
@@ -132,12 +158,14 @@ Application (Commands / Queries)
   |
 Domain (Cache aggregate, Events)
   |
-Infrastructure (Repository, DTOs, Config)
+Infrastructure (Repository, Mapper, DTOs, Config)
 ```
 
-- **Domain** -- `Cache` aggregate extending `AggregateRoot`, domain events
+- **Domain** -- `Cache` aggregate extending `DomainAggregate<CacheInterface>`,
+  domain events
 - **Application** -- 7 commands and 3 queries dispatched via `@nestjs/cqrs`
 - **Infrastructure** -- `CacheRepository` with ctx-first signatures,
+  `CacheMapper` for entity-to-aggregate conversion (DI-injected),
   `CacheRepositoryResolver` for multi-tenancy, DTOs
 - **Gateway** -- HTTP request handlers bridging `@concepta/nestjs-crud`
   to domain commands
@@ -256,49 +284,46 @@ export class CacheCreatedListener implements IEventHandler<CacheCreatedEvent> {
 
 ## Cache Aggregate
 
-The `Cache` class extends `AggregateRoot` and encapsulates all cache domain
-logic.
+The `Cache` class extends `DomainAggregate<CacheInterface>` and encapsulates
+all cache domain logic.
 
 ### Factory Methods
 
 ```ts
 // Create with auto-generated UUID
-const cache = Cache.create(eventContext, dto, settings);
+const cache = Cache.create(eventContext, dto, expirationDate);
 
 // Create with a specific ID
-const cache = Cache.createWithId(eventContext, id, dto, settings);
-
-// Reconstitute from a database entity
-const cache = Cache.toInstance(entity, settings);
+const cache = Cache.createWithId(eventContext, id, dto, expirationDate);
 ```
+
+Reconstitution from a database entity is handled by `CacheMapper` (see
+[Repository](#repository)).
 
 ### Operations
 
 ```ts
 // Replace all fields (preserves id and dateCreated)
-cache.replace(eventContext, dto);
+cache.replace(eventContext, dto, expirationDate);
 
 // Update only the data field
 cache.updateData(eventContext, newData);
 
-// Extend expiration (uses dto expiresIn or falls back to settings)
-cache.extend(eventContext, '24h');
-```
+// Extend expiration
+cache.extend(eventContext, expirationDate);
 
-### Serialization
-
-```ts
-// Convert to plain CacheInterface object
+// Convert to plain CacheInterface object (inherited from DomainAggregate)
 const plain = cache.toPlain();
-
-// Hydrate from a database entity (after save)
-cache.hydrate(savedEntity);
 ```
 
 ## Repository
 
 `CacheRepository` uses a ctx-first calling convention for multi-tenancy
 support. All methods take `RepositoryContextInterface` as the first argument.
+
+The repository receives a DI-injected `CacheMapper` that converts database
+entities to `Cache` aggregates via `toDomain()` and aggregates back to
+persistence form via `toPersistence()`.
 
 | Method | Signature |
 | --- | --- |

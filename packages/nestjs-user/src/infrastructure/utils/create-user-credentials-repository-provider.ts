@@ -8,6 +8,7 @@ import {
 
 import { UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';
 import { USER_CREDENTIALS_REPOSITORY_TOKEN } from '../../user.constants';
+import { UserCredentialsMapper } from '../persistence/user-credentials.mapper';
 import { UserCredentialsRepository } from '../persistence/user-credentials.repository';
 
 export function createUserCredentialsRepositoryProvider(
@@ -35,12 +36,16 @@ export function createUserCredentialsRepositoryProvider(
           token: getDynamicRepositoryToken(entityKey),
           optional: true,
         },
+        UserCredentialsMapper,
       ],
       useFactory: (
-        repository?: RepositoryInterface<UserCredentialEntityInterface>,
+        repository:
+          | RepositoryInterface<UserCredentialEntityInterface>
+          | undefined,
+        mapper: UserCredentialsMapper,
       ) => {
         if (repository) {
-          return new UserCredentialsRepository(repository);
+          return new UserCredentialsRepository(repository, mapper);
         }
         return undefined;
       },

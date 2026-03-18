@@ -5,8 +5,8 @@ import {
   createMockEventPublisher,
   createMockContext,
   createMockRoleAssignmentEntity,
+  toRoleAssignmentDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { RoleAssignment } from '../../../../domain/aggregates/role-assignment';
 import { RevokeRolesCommand } from '../../impl/revoke-roles.command';
 import { RevokeRolesHandler } from '../revoke-roles.handler';
 
@@ -29,14 +29,14 @@ describe(RevokeRolesHandler.name, () => {
   });
 
   it('should revoke and remove all matching assignments', async () => {
-    const assignment1 = RoleAssignment.toInstance(
+    const assignment1 = toRoleAssignmentDomain(
       createMockRoleAssignmentEntity({
         id: 'a1',
         roleId: 'role-1',
         assigneeId: 'user-1',
       }),
     );
-    const assignment2 = RoleAssignment.toInstance(
+    const assignment2 = toRoleAssignmentDomain(
       createMockRoleAssignmentEntity({
         id: 'a2',
         roleId: 'role-2',
@@ -65,9 +65,7 @@ describe(RevokeRolesHandler.name, () => {
   });
 
   it('should register onCommit and onRollback', async () => {
-    const assignment = RoleAssignment.toInstance(
-      createMockRoleAssignmentEntity(),
-    );
+    const assignment = toRoleAssignmentDomain(createMockRoleAssignmentEntity());
     mockRepo.findByRoleIdsAndAssignee.mockResolvedValue([assignment]);
 
     await handler.execute(
@@ -79,7 +77,7 @@ describe(RevokeRolesHandler.name, () => {
   });
 
   it('should only remove found assignments', async () => {
-    const assignment = RoleAssignment.toInstance(
+    const assignment = toRoleAssignmentDomain(
       createMockRoleAssignmentEntity({ roleId: 'role-1' }),
     );
     mockRepo.findByRoleIdsAndAssignee.mockResolvedValue([assignment]);

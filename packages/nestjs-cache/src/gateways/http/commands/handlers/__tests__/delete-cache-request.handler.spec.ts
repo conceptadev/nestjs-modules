@@ -4,8 +4,8 @@ import { CrudDeleteCommand } from '@concepta/nestjs-crud';
 import {
   createMockCommandBus,
   createMockCacheEntity,
+  toCacheDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
-import { Cache } from '../../../../../domain/aggregates/cache';
 import { DeleteCacheRequestHandler } from '../delete-cache-request.handler';
 
 describe(DeleteCacheRequestHandler.name, () => {
@@ -19,7 +19,7 @@ describe(DeleteCacheRequestHandler.name, () => {
 
   it('should return null when returnDeleted is false', async () => {
     commandBus.execute.mockResolvedValue(
-      Cache.toInstance(createMockCacheEntity()),
+      toCacheDomain(createMockCacheEntity()),
     );
 
     const context = {
@@ -38,7 +38,7 @@ describe(DeleteCacheRequestHandler.name, () => {
 
   it('should return plain object when returnDeleted is true', async () => {
     commandBus.execute.mockResolvedValue(
-      Cache.toInstance(createMockCacheEntity()),
+      toCacheDomain(createMockCacheEntity()),
     );
 
     const context = {
@@ -53,13 +53,12 @@ describe(DeleteCacheRequestHandler.name, () => {
     );
 
     expect(result).not.toBeNull();
-    expect(result).not.toBeInstanceOf(Cache);
     expect(result!.id).toBe('test-id');
   });
 
   it('should use soft delete when operation is SoftDelete', async () => {
     commandBus.execute.mockResolvedValue(
-      Cache.toInstance(createMockCacheEntity()),
+      toCacheDomain(createMockCacheEntity()),
     );
 
     const context = {

@@ -3,6 +3,7 @@ import {
   createMockOtpEntity,
   createMockOtpRepository,
   createMockRepositoryResolver,
+  toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Otp } from '../../../../domain/aggregates/otp';
 import { OtpNotFoundException } from '../../../exceptions/otp-not-found.exception';
@@ -23,7 +24,7 @@ describe(GetOtpHandler.name, () => {
   });
 
   it('should return an OTP by id', async () => {
-    const otp = Otp.toInstance(createMockOtpEntity());
+    const otp = toOtpDomain(createMockOtpEntity());
     mockRepo.get.mockResolvedValue(otp);
 
     const query = new GetOtpQuery(ctx, 'test-id');

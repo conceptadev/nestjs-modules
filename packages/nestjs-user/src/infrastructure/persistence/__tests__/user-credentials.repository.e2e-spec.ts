@@ -18,6 +18,7 @@ import {
   USER_CREDENTIALS_REPOSITORY_TOKEN,
   USER_REPOSITORY_TOKEN,
 } from '../../../user.constants';
+import { UserCredentialsMapper } from '../user-credentials.mapper';
 import { UserCredentialsRepository } from '../user-credentials.repository';
 
 describe(UserCredentialsRepository.name + ' (e2e)', () => {
@@ -26,6 +27,7 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
   let userRepository: UserRepositoryInterface;
   const ctx = new AppContextHost() as unknown as RepositoryContextInterface;
   const eventContext = EventContextHost.builder().build();
+  const credentialsMapper = new UserCredentialsMapper();
 
   let testUser: User;
 
@@ -147,7 +149,7 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
         dateDeleted: null,
         version: 1,
       };
-      const oldCreds = UserCredentials.toInstance(oldEntity);
+      const oldCreds = credentialsMapper.toDomain(oldEntity);
       await credentialsRepository.save(ctx, oldCreds);
 
       const recentCreds = UserCredentials.create(eventContext, {
@@ -187,7 +189,7 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
         dateDeleted: null,
         version: 1,
       };
-      const olderCreds = UserCredentials.toInstance(olderEntity);
+      const olderCreds = credentialsMapper.toDomain(olderEntity);
       await credentialsRepository.save(ctx, olderCreds);
 
       const newerCreds = UserCredentials.create(eventContext, {

@@ -26,7 +26,9 @@ import { RoleOptionsInterface } from './infrastructure/config/interfaces/role-op
 import { RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface';
 import { roleDefaultConfig } from './infrastructure/config/role-default.config';
 import { RoleAssignmentRepositoryResolver } from './infrastructure/persistence/role-assignment-repository.resolver';
+import { RoleAssignmentMapper } from './infrastructure/persistence/role-assignment.mapper';
 import { RoleRepositoryResolver } from './infrastructure/persistence/role-repository.resolver';
+import { RoleMapper } from './infrastructure/persistence/role.mapper';
 import {
   ROLE_ASSIGNMENT_CUSTOM_REPOSITORY_TOKEN,
   ROLE_ASSIGNMENT_REPOSITORY_RESOLVER_TOKEN,
@@ -53,7 +55,7 @@ export type RoleCoreAsyncOptions = typeof ROLE_CORE_ASYNC_OPTIONS_TYPE;
 
 function definitionTransform(
   definition: DynamicModule,
-  { global, repositories }: RoleExtrasInterface,
+  { global, providers: overrideProviders, repositories }: RoleExtrasInterface,
 ): DynamicModule {
   const { providers = [], imports = [] } = definition;
 
@@ -61,7 +63,10 @@ function definitionTransform(
     ...definition,
     global,
     imports: createRoleImports({ imports }),
-    providers: createRoleProviders({ providers, repositories }),
+    providers: createRoleProviders({
+      providers: [...providers, ...(overrideProviders ?? [])],
+      repositories,
+    }),
     exports: [ConfigModule, RAW_OPTIONS_TOKEN, ...createRoleExports()],
   };
 }
@@ -83,6 +88,8 @@ export function createRoleProviders(options: {
 }): Provider[] {
   return [
     createRoleSettingsProvider(options.overrides),
+    RoleMapper,
+    RoleAssignmentMapper,
     {
       provide: ROLE_CUSTOM_REPOSITORY_TOKEN,
       useValue: options.repositories?.role ?? null,
@@ -121,7 +128,7 @@ export function createRoleProviders(options: {
 export function createRoleExports(): Required<
   Pick<DynamicModule, 'exports'>
 >['exports'] {
-  return [ROLE_MODULE_SETTINGS_TOKEN];
+  return [ROLE_MODULE_SETTINGS_TOKEN, RoleMapper, RoleAssignmentMapper];
 }
 
 export function createRoleSettingsProvider(

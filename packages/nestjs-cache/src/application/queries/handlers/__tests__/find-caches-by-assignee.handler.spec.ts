@@ -3,8 +3,8 @@ import {
   createMockRepositoryResolver,
   createMockContext,
   createMockCacheEntity,
+  toCacheDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { Cache } from '../../../../domain/aggregates/cache';
 import { FindCachesByAssigneeQuery } from '../../impl/find-caches-by-assignee.query';
 import { FindCachesByAssigneeHandler } from '../find-caches-by-assignee.handler';
 
@@ -23,8 +23,8 @@ describe(FindCachesByAssigneeHandler.name, () => {
   it('should return an array of caches', async () => {
     const entity = createMockCacheEntity();
     mockRepo.findAllByAssignee.mockResolvedValue([
-      Cache.toInstance(entity),
-      Cache.toInstance({ ...entity, id: 'id-2' }),
+      toCacheDomain(entity),
+      toCacheDomain({ ...entity, id: 'id-2' }),
     ]);
 
     const result = await handler.execute(

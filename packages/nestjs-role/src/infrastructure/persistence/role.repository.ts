@@ -9,9 +9,12 @@ import {
 import { Role } from '../../domain/aggregates/role';
 import { RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface';
 
+import { RoleMapper } from './role.mapper';
+
 export class RoleRepository implements RoleRepositoryInterface {
   constructor(
     protected readonly repository: RepositoryInterface<RoleEntityInterface>,
+    private readonly mapper: RoleMapper,
   ) {}
 
   async get(
@@ -25,15 +28,15 @@ export class RoleRepository implements RoleRepositoryInterface {
       ctx,
     });
 
-    return entity ? Role.toInstance(entity) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async save(ctx: RepositoryContextInterface, role: Role): Promise<void> {
-    const entity = await this.repository.upsert(role.toPlain(), { ctx });
-    role.hydrate(entity);
+    role.stampUpdated();
+    await this.repository.upsert(this.mapper.toPersistence(role), { ctx });
   }
 
   async remove(ctx: RepositoryContextInterface, role: Role): Promise<void> {
-    await this.repository.delete(role.toPlain(), { ctx });
+    await this.repository.delete(this.mapper.toPersistence(role), { ctx });
   }
 }

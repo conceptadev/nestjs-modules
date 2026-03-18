@@ -5,7 +5,10 @@ import {
 } from '@concepta/nestjs-common';
 
 import { UserCredentials } from '../../../domain/aggregates/user-credentials';
+import { UserCredentialsMapper } from '../user-credentials.mapper';
 import { UserCredentialsRepository } from '../user-credentials.repository';
+
+const credentialsMapper = new UserCredentialsMapper();
 
 const ctx = {} as RepositoryContextInterface;
 
@@ -44,6 +47,7 @@ describe(UserCredentialsRepository.name, () => {
     jest.clearAllMocks();
     repository = new UserCredentialsRepository(
       innerRepo as unknown as RepositoryInterface<UserCredentialEntityInterface>,
+      new UserCredentialsMapper(),
     );
   });
 
@@ -106,15 +110,19 @@ describe(UserCredentialsRepository.name, () => {
   });
 
   describe('save', () => {
-    it('should upsert and hydrate the entry', async () => {
-      const updatedEntity = { ...mockEntity, version: 2 };
-      innerRepo.upsert.mockResolvedValue(updatedEntity);
+    it('should stamp and upsert the plain entity', async () => {
+      innerRepo.upsert.mockResolvedValue(mockEntity);
 
-      const entry = UserCredentials.toInstance(mockEntity);
+      const entry = credentialsMapper.toDomain(mockEntity);
+      const stampSpy = jest.spyOn(entry, 'stampUpdated');
+
       await repository.save(ctx, entry);
 
-      expect(innerRepo.upsert).toHaveBeenCalledTimes(1);
-      expect(entry.version).toBe(2);
+      expect(stampSpy).toHaveBeenCalledTimes(1);
+      expect(innerRepo.upsert).toHaveBeenCalledWith(
+        credentialsMapper.toPersistence(entry),
+        { ctx },
+      );
     });
   });
 });

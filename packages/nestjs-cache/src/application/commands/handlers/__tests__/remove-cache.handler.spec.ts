@@ -4,6 +4,7 @@ import {
   createMockTransaction,
   createMockContext,
   createMockCacheEntity,
+  toCacheDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../../domain/aggregates/cache';
 import { RemoveCacheCommand } from '../../impl/remove-cache.command';
@@ -25,7 +26,7 @@ describe(RemoveCacheHandler.name, () => {
   });
 
   it('should return the removed Cache', async () => {
-    mockRepo.get.mockResolvedValue(Cache.toInstance(createMockCacheEntity()));
+    mockRepo.get.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
     const result = await handler.execute(
       new RemoveCacheCommand(ctx, 'test-id'),
@@ -36,7 +37,7 @@ describe(RemoveCacheHandler.name, () => {
   });
 
   it('should call remove on the repository', async () => {
-    mockRepo.get.mockResolvedValue(Cache.toInstance(createMockCacheEntity()));
+    mockRepo.get.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
     await handler.execute(new RemoveCacheCommand(ctx, 'test-id'));
 

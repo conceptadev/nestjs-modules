@@ -35,7 +35,7 @@ describe(AssignRoleHandler.name, () => {
     );
 
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
-    expect(result).toEqual({
+    expect(result.toPlain()).toEqual({
       id: expect.any(String),
       roleId: 'role-1',
       assigneeId: 'user-1',

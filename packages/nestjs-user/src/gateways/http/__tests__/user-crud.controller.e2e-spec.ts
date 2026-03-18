@@ -4,7 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken } from '@nestjs/typeorm';
 
-import { UserInterface } from '@concepta/nestjs-common';
+import { UserEntityInterface } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
@@ -172,8 +172,8 @@ describe('UserCrudController (e2e)', () => {
   });
 
   describe('Password CRUD', () => {
-    let userA: UserInterface;
-    let userB: UserInterface;
+    let userA: UserEntityInterface;
+    let userB: UserEntityInterface;
     let fakeAuth: FakeAuthInterceptorFixture;
 
     beforeEach(async () => {

@@ -3,10 +3,12 @@ import { IsBoolean, IsEmail, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { CommonEntityDto, UserInterface } from '@concepta/nestjs-common';
+import { UserInterface } from '@concepta/nestjs-common';
+
+import { DomainAggregateDto } from '../../../../nestjs-common/dist/index-aggregate';
 
 @Exclude()
-export class UserDto extends CommonEntityDto implements UserInterface {
+export class UserDto extends DomainAggregateDto implements UserInterface {
   @Expose()
   @ApiProperty({
     type: 'string',

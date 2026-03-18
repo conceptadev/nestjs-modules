@@ -1,7 +1,7 @@
 import { RepositoryContextInterface } from '@concepta/nestjs-common';
 
-import { User } from '../../../../domain/aggregates/user';
 import { UserRepositoryInterface } from '../../../../domain/repositories/user-repository.interface';
+import { UserMapper } from '../../../../infrastructure/persistence/user.mapper';
 import { GetUserByEmailQuery } from '../../impl/get-user-by-email.query';
 import { GetUserBySubjectQuery } from '../../impl/get-user-by-subject.query';
 import { GetUserByUsernameQuery } from '../../impl/get-user-by-username.query';
@@ -12,8 +12,8 @@ import { GetUserByUsernameHandler } from '../get-user-by-username.handler';
 import { GetUserHandler } from '../get-user.handler';
 
 const ctx = {} as RepositoryContextInterface;
-
-const mockUser = User.toInstance({
+const userMapper = new UserMapper();
+const mockUser = userMapper.toDomain({
   id: 'user-1',
   email: 'a@b.com',
   username: 'john',

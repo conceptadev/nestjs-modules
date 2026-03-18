@@ -3,6 +3,7 @@ import {
   createMockAssignmentRepositoryResolver,
   createMockContext,
   createMockRoleAssignmentEntity,
+  toRoleAssignmentDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { RoleAssignment } from '../../../../domain/aggregates/role-assignment';
 import { RoleAssignmentNotFoundException } from '../../../exceptions/role-assignment-not-found.exception';
@@ -23,9 +24,7 @@ describe(GetRoleAssignmentHandler.name, () => {
   });
 
   it('should return a RoleAssignment when found', async () => {
-    const existing = RoleAssignment.toInstance(
-      createMockRoleAssignmentEntity(),
-    );
+    const existing = toRoleAssignmentDomain(createMockRoleAssignmentEntity());
     mockRepo.get.mockResolvedValue(existing);
 
     const result = await handler.execute(

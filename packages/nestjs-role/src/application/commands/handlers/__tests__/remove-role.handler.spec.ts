@@ -4,8 +4,8 @@ import {
   createMockTransaction,
   createMockContext,
   createMockRoleEntity,
+  toRoleDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { Role } from '../../../../domain/aggregates/role';
 import { RoleNotFoundException } from '../../../exceptions/role-not-found.exception';
 import { RemoveRoleCommand } from '../../impl/remove-role.command';
 import { RemoveRoleHandler } from '../remove-role.handler';
@@ -26,7 +26,7 @@ describe(RemoveRoleHandler.name, () => {
   });
 
   it('should remove the role', async () => {
-    const existing = Role.toInstance(createMockRoleEntity());
+    const existing = toRoleDomain(createMockRoleEntity());
     mockRepo.get.mockResolvedValue(existing);
 
     await handler.execute(new RemoveRoleCommand(ctx, 'test-role-id'));

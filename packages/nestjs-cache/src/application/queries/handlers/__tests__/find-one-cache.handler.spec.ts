@@ -3,8 +3,8 @@ import {
   createMockRepositoryResolver,
   createMockContext,
   createMockCacheEntity,
+  toCacheDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { Cache } from '../../../../domain/aggregates/cache';
 import { FindOneCacheQuery } from '../../impl/find-one-cache.query';
 import { FindOneCacheHandler } from '../find-one-cache.handler';
 
@@ -19,9 +19,7 @@ describe(FindOneCacheHandler.name, () => {
   });
 
   it('should return a Cache when found', async () => {
-    mockRepo.findOne.mockResolvedValue(
-      Cache.toInstance(createMockCacheEntity()),
-    );
+    mockRepo.findOne.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
     const result = await handler.execute(
       new FindOneCacheQuery(ctx, 'key', 'type', 'assignee'),

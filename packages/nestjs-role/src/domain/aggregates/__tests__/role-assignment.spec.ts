@@ -1,6 +1,7 @@
 import {
   createMockEventContext,
   createMockRoleAssignmentEntity,
+  toRoleAssignmentDomain,
 } from '../../../__tests__/helpers/mock.helpers';
 import { RoleAssignedEvent } from '../../events/role-assigned.event';
 import { RoleRevokedEvent } from '../../events/role-revoked.event';
@@ -39,10 +40,10 @@ describe(RoleAssignment.name, () => {
     });
   });
 
-  describe('toInstance', () => {
+  describe('constructor', () => {
     it('should reconstitute from an entity without applying events', () => {
       const entity = createMockRoleAssignmentEntity();
-      const assignment = RoleAssignment.toInstance(entity);
+      const assignment = toRoleAssignmentDomain(entity);
 
       expect(assignment.toPlain()).toEqual(entity);
       expect(assignment.getUncommittedEvents()).toHaveLength(0);
@@ -52,7 +53,7 @@ describe(RoleAssignment.name, () => {
   describe('toPlain', () => {
     it('should return an immutable copy', () => {
       const entity = createMockRoleAssignmentEntity();
-      const assignment = RoleAssignment.toInstance(entity);
+      const assignment = toRoleAssignmentDomain(entity);
 
       const plain = assignment.toPlain();
       plain.roleId = 'mutated';
@@ -61,28 +62,9 @@ describe(RoleAssignment.name, () => {
     });
   });
 
-  describe('hydrate', () => {
-    it('should replace internal state', () => {
-      const assignment = RoleAssignment.toInstance(
-        createMockRoleAssignmentEntity(),
-      );
-
-      const updated = createMockRoleAssignmentEntity({
-        roleId: 'new-role',
-        assigneeId: 'new-assignee',
-        version: 5,
-      });
-      assignment.hydrate(updated);
-
-      expect(assignment.roleId).toBe('new-role');
-      expect(assignment.assigneeId).toBe('new-assignee');
-      expect(assignment.version).toBe(5);
-    });
-  });
-
   describe('revoke', () => {
     it('should apply a RoleRevokedEvent', () => {
-      const assignment = RoleAssignment.toInstance(
+      const assignment = toRoleAssignmentDomain(
         createMockRoleAssignmentEntity(),
       );
 
@@ -97,7 +79,7 @@ describe(RoleAssignment.name, () => {
   describe('immutability', () => {
     it('should not be affected by mutations to the original entity', () => {
       const entity = createMockRoleAssignmentEntity();
-      const assignment = RoleAssignment.toInstance(entity);
+      const assignment = toRoleAssignmentDomain(entity);
 
       entity.roleId = 'mutated';
 

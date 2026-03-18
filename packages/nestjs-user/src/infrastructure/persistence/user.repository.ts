@@ -11,9 +11,12 @@ import {
 import { User } from '../../domain/aggregates/user';
 import { UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
 
+import { UserMapper } from './user.mapper';
+
 export class UserRepository implements UserRepositoryInterface {
   constructor(
     protected readonly repository: RepositoryInterface<UserEntityInterface>,
+    private readonly mapper: UserMapper,
   ) {}
 
   async get(
@@ -27,7 +30,7 @@ export class UserRepository implements UserRepositoryInterface {
       ctx,
     });
 
-    return entity ? User.toInstance(entity) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async findByEmail(
@@ -41,7 +44,7 @@ export class UserRepository implements UserRepositoryInterface {
       ctx,
     });
 
-    return entity ? User.toInstance(entity) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async findByUsername(
@@ -55,15 +58,15 @@ export class UserRepository implements UserRepositoryInterface {
       ctx,
     });
 
-    return entity ? User.toInstance(entity) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async save(ctx: RepositoryContextInterface, user: User): Promise<void> {
-    const entity = await this.repository.upsert(user.toPlain(), { ctx });
-    user.hydrate(entity);
+    user.stampUpdated();
+    await this.repository.upsert(this.mapper.toPersistence(user), { ctx });
   }
 
   async remove(ctx: RepositoryContextInterface, user: User): Promise<void> {
-    await this.repository.delete(user.toPlain(), { ctx });
+    await this.repository.delete(this.mapper.toPersistence(user), { ctx });
   }
 }

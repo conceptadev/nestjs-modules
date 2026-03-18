@@ -5,6 +5,7 @@ import {
   createMockEventPublisher,
   createMockContext,
   createMockRoleEntity,
+  toRoleDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Role } from '../../../../domain/aggregates/role';
 import { RoleNotFoundException } from '../../../exceptions/role-not-found.exception';
@@ -30,7 +31,7 @@ describe(UpdateRoleHandler.name, () => {
   });
 
   it('should return an updated Role instance', async () => {
-    const existing = Role.toInstance(
+    const existing = toRoleDomain(
       createMockRoleEntity({ name: 'OldName', description: 'OldDesc' }),
     );
     mockRepo.get.mockResolvedValue(existing);
@@ -46,7 +47,7 @@ describe(UpdateRoleHandler.name, () => {
   });
 
   it('should save and return the updated role', async () => {
-    const existing = Role.toInstance(
+    const existing = toRoleDomain(
       createMockRoleEntity({ name: 'OldName', description: 'OldDesc' }),
     );
     mockRepo.get.mockResolvedValue(existing);
@@ -69,7 +70,7 @@ describe(UpdateRoleHandler.name, () => {
   });
 
   it('should register onCommit and onRollback', async () => {
-    const existing = Role.toInstance(createMockRoleEntity());
+    const existing = toRoleDomain(createMockRoleEntity());
     mockRepo.get.mockResolvedValue(existing);
 
     const dto = { name: 'Updated' };

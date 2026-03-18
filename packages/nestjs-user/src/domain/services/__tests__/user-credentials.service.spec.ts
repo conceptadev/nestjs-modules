@@ -11,7 +11,7 @@ import {
 import { createMockEventPublisher } from '../../../__tests__/fixtures/mock-event-publisher.fixture';
 import { createMockTxScope } from '../../../__tests__/fixtures/mock-tx-scope.fixture';
 import { createMockUserCredentialsRepository } from '../../../__tests__/fixtures/mock-user-credentials-repository.fixture';
-import { UserCredentials } from '../../aggregates/user-credentials';
+import { UserCredentialsMapper } from '../../../infrastructure/persistence/user-credentials.mapper';
 import { UserCredentialsAlreadyExistException } from '../../exceptions/user-credentials-already-exist.exception';
 import { UserPasswordCurrentInvalidException } from '../../exceptions/user-password-current-invalid.exception';
 import { UserPasswordHistoryViolationException } from '../../exceptions/user-password-history-violation.exception';
@@ -21,7 +21,7 @@ import { UserCredentialsService } from '../user-credentials.service';
 describe(UserCredentialsService.name, () => {
   const ctx = {} as RepositoryContextInterface;
   const eventContext = EventContextHost.builder().build();
-
+  const credentialsMapper = new UserCredentialsMapper();
   const mockCredentialEntity: UserCredentialEntityInterface = {
     id: 'cred-1',
     userId: 'user-1',
@@ -103,7 +103,7 @@ describe(UserCredentialsService.name, () => {
     it('should throw when active credentials already exist', async () => {
       const { service, userCredentialsRepository } = setup();
       userCredentialsRepository.findActiveByUserId.mockResolvedValue(
-        UserCredentials.toInstance(mockCredentialEntity),
+        credentialsMapper.toDomain(mockCredentialEntity),
       );
 
       await expect(
@@ -129,7 +129,7 @@ describe(UserCredentialsService.name, () => {
 
       it('should deactivate existing and create new', async () => {
         const { service, userCredentialsRepository } = setup();
-        const existing = UserCredentials.toInstance(mockCredentialEntity);
+        const existing = credentialsMapper.toDomain(mockCredentialEntity);
         userCredentialsRepository.findActiveByUserId.mockResolvedValue(
           existing,
         );
@@ -162,7 +162,7 @@ describe(UserCredentialsService.name, () => {
       it('should throw when passwordCurrent not provided', async () => {
         const { service, userCredentialsRepository } = setup(policy);
         userCredentialsRepository.findActiveByUserId.mockResolvedValue(
-          UserCredentials.toInstance(mockCredentialEntity),
+          credentialsMapper.toDomain(mockCredentialEntity),
         );
 
         await expect(
@@ -174,7 +174,7 @@ describe(UserCredentialsService.name, () => {
         const { service, userCredentialsRepository, passwordCreationService } =
           setup(policy);
         userCredentialsRepository.findActiveByUserId.mockResolvedValue(
-          UserCredentials.toInstance(mockCredentialEntity),
+          credentialsMapper.toDomain(mockCredentialEntity),
         );
         passwordCreationService.validateCurrent.mockResolvedValue(false);
 
@@ -193,7 +193,7 @@ describe(UserCredentialsService.name, () => {
         const { service, userCredentialsRepository, passwordCreationService } =
           setup(policy);
         userCredentialsRepository.findActiveByUserId.mockResolvedValue(
-          UserCredentials.toInstance(mockCredentialEntity),
+          credentialsMapper.toDomain(mockCredentialEntity),
         );
         passwordCreationService.validateCurrent.mockResolvedValue(true);
 
@@ -217,7 +217,7 @@ describe(UserCredentialsService.name, () => {
           setup(policy);
         userCredentialsRepository.findActiveByUserId.mockResolvedValue(null);
         userCredentialsRepository.findByUserId.mockResolvedValue([
-          UserCredentials.toInstance(mockCredentialEntity),
+          credentialsMapper.toDomain(mockCredentialEntity),
         ]);
         passwordCreationService.validateHistory.mockResolvedValue(false);
 
@@ -231,7 +231,7 @@ describe(UserCredentialsService.name, () => {
           setup(policy);
         userCredentialsRepository.findActiveByUserId.mockResolvedValue(null);
         userCredentialsRepository.findByUserId.mockResolvedValue([
-          UserCredentials.toInstance(mockCredentialEntity),
+          credentialsMapper.toDomain(mockCredentialEntity),
         ]);
         passwordCreationService.validateHistory.mockResolvedValue(true);
 

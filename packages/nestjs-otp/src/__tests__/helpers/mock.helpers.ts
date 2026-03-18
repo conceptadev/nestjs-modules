@@ -3,13 +3,15 @@ import { EventPublisher } from '@nestjs/cqrs';
 import {
   EntityHeaderInterface,
   EventContextHost,
-  OtpInterface,
   RepositoryContextInterface,
 } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
+import { Otp } from '../../domain/aggregates/otp';
 import { OtpSettingsInterface } from '../../infrastructure/config/interfaces/otp-settings.interface';
+import { OtpEntityInterface } from '../../infrastructure/persistence/interfaces/otp-entity.interface';
 import { OtpRepositoryResolver } from '../../infrastructure/persistence/otp-repository.resolver';
+import { OtpMapper } from '../../infrastructure/persistence/otp.mapper';
 import { OtpRepository } from '../../infrastructure/persistence/otp.repository';
 
 export interface MockTransactionHandle {
@@ -83,8 +85,8 @@ export function createMockContext(
 }
 
 export function createMockOtpEntity(
-  overrides: Partial<OtpInterface> = {},
-): OtpInterface {
+  overrides: Partial<OtpEntityInterface> = {},
+): OtpEntityInterface {
   return {
     id: 'test-id',
     category: 'test-category',
@@ -99,6 +101,12 @@ export function createMockOtpEntity(
     version: 1,
     ...overrides,
   };
+}
+
+const otpMapper = new OtpMapper();
+
+export function toOtpDomain(entity: OtpEntityInterface): Otp {
+  return otpMapper.toDomain(entity);
 }
 
 export function createMockEventContext(

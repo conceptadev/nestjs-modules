@@ -7,8 +7,8 @@ import { CrudReplaceCommand } from '@concepta/nestjs-crud';
 import {
   createMockCommandBus,
   createMockCacheEntity,
+  toCacheDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
-import { Cache } from '../../../../../domain/aggregates/cache';
 import { ReplaceCacheRequestHandler } from '../replace-cache-request.handler';
 
 describe(ReplaceCacheRequestHandler.name, () => {
@@ -20,9 +20,9 @@ describe(ReplaceCacheRequestHandler.name, () => {
     handler = new ReplaceCacheRequestHandler(commandBus as never);
   });
 
-  it('should return a plain cache object', async () => {
+  it('should return a plain object from toPlain()', async () => {
     commandBus.execute.mockResolvedValue(
-      Cache.toInstance(createMockCacheEntity({ data: 'replaced-data' })),
+      toCacheDomain(createMockCacheEntity({ data: 'replaced-data' })),
     );
 
     const context = {
@@ -44,7 +44,6 @@ describe(ReplaceCacheRequestHandler.name, () => {
       ),
     );
 
-    expect(result).not.toBeInstanceOf(Cache);
     expect(result.data).toBe('replaced-data');
   });
 

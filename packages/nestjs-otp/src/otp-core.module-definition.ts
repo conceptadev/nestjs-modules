@@ -25,6 +25,7 @@ import { OtpOptionsInterface } from './infrastructure/config/interfaces/otp-opti
 import { OtpSettingsInterface } from './infrastructure/config/interfaces/otp-settings.interface';
 import { otpDefaultConfig } from './infrastructure/config/otp-default.config';
 import { OtpRepositoryResolver } from './infrastructure/persistence/otp-repository.resolver';
+import { OtpMapper } from './infrastructure/persistence/otp.mapper';
 import {
   OTP_CUSTOM_REPOSITORY_TOKEN,
   OTP_MODULE_SETTINGS_TOKEN,
@@ -49,7 +50,7 @@ export type OtpCoreAsyncOptions = typeof OTP_CORE_ASYNC_OPTIONS_TYPE;
 
 function definitionTransform(
   definition: DynamicModule,
-  { global, repositories }: OtpExtrasInterface,
+  { global, providers: overrideProviders, repositories }: OtpExtrasInterface,
 ): DynamicModule {
   const { providers = [], imports = [] } = definition;
 
@@ -57,7 +58,10 @@ function definitionTransform(
     ...definition,
     global,
     imports: createOtpImports({ imports }),
-    providers: createOtpProviders({ providers, repositories }),
+    providers: createOtpProviders({
+      providers: [...providers, ...(overrideProviders ?? [])],
+      repositories,
+    }),
     exports: [ConfigModule, RAW_OPTIONS_TOKEN, ...createOtpExports()],
   };
 }
@@ -79,6 +83,7 @@ export function createOtpProviders(options: {
 }): Provider[] {
   return [
     createOtpSettingsProvider(options.overrides),
+    OtpMapper,
     {
       provide: OTP_CUSTOM_REPOSITORY_TOKEN,
       useValue: options.repositories?.otp ?? null,
@@ -110,7 +115,7 @@ export function createOtpProviders(options: {
 export function createOtpExports(): Required<
   Pick<DynamicModule, 'exports'>
 >['exports'] {
-  return [OTP_MODULE_SETTINGS_TOKEN];
+  return [OTP_MODULE_SETTINGS_TOKEN, OtpMapper];
 }
 
 export function createOtpSettingsProvider(

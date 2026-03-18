@@ -1,3 +1,4 @@
+import { OtpMapper } from '../../persistence/otp.mapper';
 import { OtpRepository } from '../../persistence/otp.repository';
 import {
   createOtpRepositoryProvider,
@@ -29,9 +30,9 @@ describe('createOtpRepositoryProvider', () => {
     const factory = (provider as { useFactory: Function }).useFactory;
 
     const mockRepository = {} as never;
-    const mockSettings = {} as never;
+    const mockMapper = new OtpMapper();
 
-    const result = factory(mockRepository, mockSettings);
+    const result = factory(mockRepository, mockMapper);
 
     expect(result).toBeInstanceOf(OtpRepository);
   });

@@ -5,13 +5,16 @@ import {
   createMockEventPublisher,
   createMockContext,
   createMockCacheEntity,
+  toCacheDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../../domain/aggregates/cache';
+import { CacheExpirationPolicy } from '../../../../domain/policies/cache-expiration.policy';
 import { UpdateCacheCommand } from '../../impl/update-cache.command';
 import { UpdateCacheHandler } from '../update-cache.handler';
 
 describe(UpdateCacheHandler.name, () => {
   const ctx = createMockContext();
+  const policy = new CacheExpirationPolicy({ expiresIn: '1h' });
   let mockRepo: ReturnType<typeof createMockCacheRepository>;
   let handler: UpdateCacheHandler;
 
@@ -23,11 +26,12 @@ describe(UpdateCacheHandler.name, () => {
       createMockRepositoryResolver(mockRepo),
       transaction as never,
       createMockEventPublisher() as never,
+      policy,
     );
   });
 
   it('should return the updated Cache', async () => {
-    mockRepo.get.mockResolvedValue(Cache.toInstance(createMockCacheEntity()));
+    mockRepo.get.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
     const dto = {
       key: 'test-key',
@@ -46,7 +50,7 @@ describe(UpdateCacheHandler.name, () => {
   });
 
   it('should save the cache', async () => {
-    mockRepo.get.mockResolvedValue(Cache.toInstance(createMockCacheEntity()));
+    mockRepo.get.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
     const dto = {
       key: 'test-key',

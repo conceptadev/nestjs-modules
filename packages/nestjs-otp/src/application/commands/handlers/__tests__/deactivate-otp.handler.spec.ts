@@ -5,8 +5,8 @@ import {
   createMockOtpRepository,
   createMockRepositoryResolver,
   createMockTransaction,
+  toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { Otp } from '../../../../domain/aggregates/otp';
 import { DeactivateOtpCommand } from '../../impl/deactivate-otp.command';
 import { DeactivateOtpHandler } from '../deactivate-otp.handler';
 
@@ -31,7 +31,7 @@ describe(DeactivateOtpHandler.name, () => {
   });
 
   it('should deactivate an active OTP and save it', async () => {
-    const activeOtp = Otp.toInstance(createMockOtpEntity({ active: true }));
+    const activeOtp = toOtpDomain(createMockOtpEntity({ active: true }));
     mockRepo.findActiveByAssignee.mockResolvedValue(activeOtp);
 
     const command = new DeactivateOtpCommand(ctx, {
@@ -52,7 +52,7 @@ describe(DeactivateOtpHandler.name, () => {
   });
 
   it('should register onCommit and onRollback when OTP is found', async () => {
-    const activeOtp = Otp.toInstance(createMockOtpEntity({ active: true }));
+    const activeOtp = toOtpDomain(createMockOtpEntity({ active: true }));
     mockRepo.findActiveByAssignee.mockResolvedValue(activeOtp);
 
     const command = new DeactivateOtpCommand(ctx, {

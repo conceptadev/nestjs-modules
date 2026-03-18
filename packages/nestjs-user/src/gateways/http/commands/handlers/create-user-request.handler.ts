@@ -1,19 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { UserCreatableInterface, UserInterface } from '@concepta/nestjs-common';
-import { CrudCreateCommand } from '@concepta/nestjs-crud';
-
 import { CreateUserCommand } from '../../../../application/commands/impl/create-user.command';
 import { User } from '../../../../domain/aggregates/user';
+import { CreateUserRequest } from '../impl/create-user.request';
 
 @Injectable()
 export class CreateUserRequestHandler {
   constructor(private readonly commandBus: CommandBus) {}
 
-  async execute(
-    command: CrudCreateCommand<UserInterface, UserCreatableInterface>,
-  ): Promise<UserInterface> {
+  async execute(command: CreateUserRequest) {
     const { context, dto } = command;
     const user = await this.commandBus.execute<CreateUserCommand, User>(
       new CreateUserCommand(context, dto),

@@ -1,11 +1,11 @@
 import { AuditInterface } from '../../../audit/interfaces/audit.interface';
 import { ReferenceIdInterface } from '../../../reference/interfaces/reference-id.interface';
-import { AssigneeRelationInterface } from '../../assignee/interfaces/assignee-relation.interface';
+import { ReferenceVersionInterface } from '../../../reference/interfaces/reference-version.interface';
 
-import { RoleRelationInterface } from './role-relation.interface';
+import { RoleAssignmentInterface } from './role-assignment.interface';
 
 export interface RoleAssignmentEntityInterface
   extends ReferenceIdInterface,
-    AuditInterface,
-    AssigneeRelationInterface,
-    RoleRelationInterface {}
+    ReferenceVersionInterface,
+    RoleAssignmentInterface,
+    AuditInterface {}

@@ -1,12 +1,14 @@
 import {
-  CacheInterface,
   EntityHeaderInterface,
   EventContextHost,
   RepositoryContextInterface,
 } from '@concepta/nestjs-common';
 
+import { Cache } from '../../domain/aggregates/cache';
 import { CacheRepositoryResolver } from '../../infrastructure/persistence/cache-repository.resolver';
+import { CacheMapper } from '../../infrastructure/persistence/cache.mapper';
 import { CacheRepository } from '../../infrastructure/persistence/cache.repository';
+import { CacheEntityInterface } from '../../infrastructure/persistence/interfaces/cache-entity.interface';
 
 export interface MockTransactionHandle {
   onCommit: jest.Mock;
@@ -79,8 +81,8 @@ export function createMockEventContext(
 }
 
 export function createMockCacheEntity(
-  overrides: Partial<CacheInterface> = {},
-): CacheInterface {
+  overrides: Partial<CacheEntityInterface> = {},
+): CacheEntityInterface {
   return {
     id: 'test-id',
     key: 'test-key',
@@ -94,4 +96,10 @@ export function createMockCacheEntity(
     version: 1,
     ...overrides,
   };
+}
+
+const cacheMapper = new CacheMapper();
+
+export function toCacheDomain(entity: CacheEntityInterface): Cache {
+  return cacheMapper.toDomain(entity);
 }

@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
-import { RoleAssignmentEntityInterface } from '@concepta/nestjs-common';
-import { CrudDeleteCommand } from '@concepta/nestjs-crud';
-
 import { RevokeRoleCommand } from '../../../../application/commands/impl/revoke-role.command';
 import { GetRoleAssignmentQuery } from '../../../../application/queries/impl/get-role-assignment.query';
 import { assertRoleId } from '../../../../application/utils/assert-role-id.util';
 import { RoleAssignment } from '../../../../domain/aggregates/role-assignment';
+import { DeleteRoleAssignmentRequest } from '../impl/delete-role-assignment.request';
 
 @Injectable()
 export class DeleteRoleAssignmentRequestHandler {
@@ -16,9 +14,7 @@ export class DeleteRoleAssignmentRequestHandler {
     private readonly queryBus: QueryBus,
   ) {}
 
-  async execute(
-    command: CrudDeleteCommand<RoleAssignmentEntityInterface>,
-  ): Promise<RoleAssignmentEntityInterface | null> {
+  async execute(command: DeleteRoleAssignmentRequest) {
     const { context } = command;
     const { id } = context.params;
 

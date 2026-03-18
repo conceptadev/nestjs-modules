@@ -1,8 +1,10 @@
 import { EventContextHost, UserEntityInterface } from '@concepta/nestjs-common';
 
+import { UserMapper } from '../../../infrastructure/persistence/user.mapper';
 import { User } from '../user';
 
 const eventContext = EventContextHost.builder().build();
+const mapper = new UserMapper();
 
 const mockEntity: UserEntityInterface = {
   id: 'user-1',
@@ -28,9 +30,9 @@ describe(User.name, () => {
       expect(user.username).toBe('john');
       expect(user.active).toBe(true);
       expect(user.version).toBe(1);
-      expect(user.dateCreated).toBeInstanceOf(Date);
-      expect(user.dateUpdated).toBeInstanceOf(Date);
-      expect(user.dateDeleted).toBeNull();
+      expect(user.meta.dateCreated).toBeInstanceOf(Date);
+      expect(user.meta.dateUpdated).toBeInstanceOf(Date);
+      expect(user.meta.dateDeleted).toBeNull();
     });
 
     it('should default active to true', () => {
@@ -64,9 +66,9 @@ describe(User.name, () => {
     });
   });
 
-  describe('toInstance', () => {
+  describe('constructor', () => {
     it('should wrap entity with correct getters', () => {
-      const user = User.toInstance(mockEntity);
+      const user = mapper.toDomain(mockEntity);
 
       expect(user.id).toBe('user-1');
       expect(user.email).toBe('a@b.com');
@@ -78,7 +80,7 @@ describe(User.name, () => {
 
   describe('toPlain', () => {
     it('should return a plain copy', () => {
-      const user = User.toInstance(mockEntity);
+      const user = mapper.toDomain(mockEntity);
       const plain = user.toPlain();
 
       expect(plain).toEqual(mockEntity);
@@ -86,38 +88,22 @@ describe(User.name, () => {
     });
   });
 
-  describe('hydrate', () => {
-    it('should replace internal props', () => {
-      const user = User.toInstance(mockEntity);
-      const updated: UserEntityInterface = {
-        ...mockEntity,
-        email: 'new@b.com',
-        version: 5,
-      };
-
-      user.hydrate(updated);
-
-      expect(user.email).toBe('new@b.com');
-      expect(user.version).toBe(5);
-    });
-  });
-
   describe('update', () => {
     it('should merge dto and increment version', () => {
-      const user = User.toInstance(mockEntity);
-      const beforeUpdate = user.dateUpdated;
+      const user = mapper.toDomain(mockEntity);
+      const beforeUpdate = user.meta.dateUpdated;
 
       user.update(eventContext, { active: false });
 
       expect(user.active).toBe(false);
       expect(user.version).toBe(2);
-      expect(user.dateUpdated.getTime()).toBeGreaterThanOrEqual(
+      expect(user.meta.dateUpdated.getTime()).toBeGreaterThanOrEqual(
         beforeUpdate.getTime(),
       );
     });
 
     it('should preserve unchanged fields', () => {
-      const user = User.toInstance(mockEntity);
+      const user = mapper.toDomain(mockEntity);
 
       user.update(eventContext, { active: false });
 
@@ -128,7 +114,7 @@ describe(User.name, () => {
 
   describe('remove', () => {
     it('should not throw', () => {
-      const user = User.toInstance(mockEntity);
+      const user = mapper.toDomain(mockEntity);
 
       expect(() => user.remove(eventContext)).not.toThrow();
     });

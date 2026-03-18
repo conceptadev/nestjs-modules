@@ -1,18 +1,17 @@
-import {
-  CacheCreatableInterface,
-  CacheInterface,
-} from '@concepta/nestjs-common';
+import { CacheCreatableInterface } from '@concepta/nestjs-common';
 
-import { createMockEventContext } from '../../../__tests__/helpers/mock.helpers';
-import { CacheSettingsInterface } from '../../../infrastructure/config/interfaces/cache-settings.interface';
+import {
+  createMockEventContext,
+  toCacheDomain,
+} from '../../../__tests__/helpers/mock.helpers';
+import { CacheEntityInterface } from '../../../infrastructure/persistence/interfaces/cache-entity.interface';
+import { CacheExpirationPolicy } from '../../policies/cache-expiration.policy';
 import { Cache } from '../cache';
 
 describe(Cache.name, () => {
   const eventContext = createMockEventContext();
 
-  const settings: CacheSettingsInterface = {
-    expiresIn: '1h',
-  };
+  const policy = new CacheExpirationPolicy({ expiresIn: '1h' });
 
   const validCreateDto: CacheCreatableInterface = {
     key: 'testKey',
@@ -22,7 +21,7 @@ describe(Cache.name, () => {
     expiresIn: null,
   };
 
-  const mockEntity: CacheInterface = {
+  const mockEntity: CacheEntityInterface = {
     id: 'test-uuid',
     key: 'entityKey',
     type: 'entityType',
@@ -37,35 +36,27 @@ describe(Cache.name, () => {
 
   describe('constructor', () => {
     it('should hydrate all properties from entity', () => {
-      const cache = new Cache(mockEntity);
+      const cache = toCacheDomain(mockEntity);
 
       expect(cache.id).toBe(mockEntity.id);
       expect(cache.key).toBe(mockEntity.key);
       expect(cache.type).toBe(mockEntity.type);
       expect(cache.assigneeId).toBe(mockEntity.assigneeId);
       expect(cache.data).toBe(mockEntity.data);
-      expect(cache.expirationDate).toBe(mockEntity.expirationDate);
-      expect(cache.dateCreated).toBe(mockEntity.dateCreated);
-      expect(cache.dateUpdated).toBe(mockEntity.dateUpdated);
-      expect(cache.dateDeleted).toBe(mockEntity.dateDeleted);
+      expect(cache.expirationDate).toEqual(mockEntity.expirationDate);
+      expect(cache.meta.dateCreated).toEqual(mockEntity.dateCreated);
+      expect(cache.meta.dateUpdated).toEqual(mockEntity.dateUpdated);
+      expect(cache.meta.dateDeleted).toBe(mockEntity.dateDeleted);
       expect(cache.version).toBe(mockEntity.version);
     });
   });
 
-  describe('toInstance', () => {
-    it('should create a Cache from a persisted entity', () => {
-      const cache = Cache.toInstance(mockEntity);
-
-      expect(cache).toBeInstanceOf(Cache);
-      expect(cache.id).toBe(mockEntity.id);
-      expect(cache.key).toBe(mockEntity.key);
-      expect(cache.data).toBe(mockEntity.data);
-    });
-  });
-
   describe('create', () => {
-    it('should create a Cache with expirationDate from settings default', () => {
-      const cache = Cache.create(eventContext, validCreateDto, settings);
+    it('should create a Cache with a computed expirationDate', () => {
+      const expirationDate = policy.resolveExpirationDate(
+        validCreateDto.expiresIn,
+      );
+      const cache = Cache.create(eventContext, validCreateDto, expirationDate);
 
       expect(cache).toBeInstanceOf(Cache);
       expect(cache.key).toBe('testKey');
@@ -76,31 +67,29 @@ describe(Cache.name, () => {
       expect(cache.version).toBe(1);
     });
 
-    it('should use dto expiresIn over settings default', () => {
+    it('should use dto expiresIn when provided', () => {
       const dto: CacheCreatableInterface = {
         ...validCreateDto,
         expiresIn: '2d',
       };
 
-      const cache = Cache.create(eventContext, dto, settings);
+      const expirationDate = policy.resolveExpirationDate(dto.expiresIn);
+      const cache = Cache.create(eventContext, dto, expirationDate);
 
       expect(cache.expirationDate).toBeInstanceOf(Date);
     });
 
-    it('should set expirationDate to null when neither dto nor settings provide expiresIn', () => {
-      const noExpirySettings: CacheSettingsInterface = {};
-
-      const cache = Cache.create(
-        eventContext,
-        validCreateDto,
-        noExpirySettings,
-      );
+    it('should set expirationDate to null when passed null', () => {
+      const cache = Cache.create(eventContext, validCreateDto, null);
 
       expect(cache.expirationDate).toBeNull();
     });
 
     it('should generate a uuid for id', () => {
-      const cache = Cache.create(eventContext, validCreateDto, settings);
+      const expirationDate = policy.resolveExpirationDate(
+        validCreateDto.expiresIn,
+      );
+      const cache = Cache.create(eventContext, validCreateDto, expirationDate);
 
       expect(cache.id).toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
@@ -109,15 +98,15 @@ describe(Cache.name, () => {
   });
 
   describe('toPlain', () => {
-    it('should return a CacheInterface snapshot', () => {
-      const cache = Cache.toInstance(mockEntity);
+    it('should return a CacheEntityInterface snapshot', () => {
+      const cache = toCacheDomain(mockEntity);
       const plain = cache.toPlain();
 
       expect(plain).toEqual(mockEntity);
     });
 
     it('should return a new object each time', () => {
-      const cache = Cache.toInstance(mockEntity);
+      const cache = toCacheDomain(mockEntity);
 
       expect(cache.toPlain()).not.toBe(cache.toPlain());
     });
@@ -125,7 +114,7 @@ describe(Cache.name, () => {
 
   describe('updateData', () => {
     it('should update data and bump version', () => {
-      const cache = Cache.toInstance(mockEntity, settings);
+      const cache = toCacheDomain(mockEntity);
 
       cache.updateData(eventContext, 'newData');
 
@@ -134,7 +123,7 @@ describe(Cache.name, () => {
     });
 
     it('should not change expirationDate', () => {
-      const cache = Cache.toInstance(mockEntity, settings);
+      const cache = toCacheDomain(mockEntity);
       const originalExpiration = cache.expirationDate;
 
       cache.updateData(eventContext, 'newData');
@@ -145,20 +134,21 @@ describe(Cache.name, () => {
 
   describe('extend', () => {
     it('should update expirationDate and bump version', () => {
-      const cache = Cache.toInstance(mockEntity, settings);
+      const cache = toCacheDomain(mockEntity);
+      const newExpiration = policy.resolveExpirationDate('2h');
 
-      cache.extend(eventContext, '2h');
+      cache.extend(eventContext, newExpiration);
 
       expect(cache.expirationDate).toBeInstanceOf(Date);
       expect(cache.version).toBe(mockEntity.version + 1);
     });
 
-    it('should use settings default when no expiresIn provided', () => {
-      const cache = Cache.toInstance(mockEntity, settings);
+    it('should set expirationDate to null when passed null', () => {
+      const cache = toCacheDomain(mockEntity);
 
-      cache.extend(eventContext);
+      cache.extend(eventContext, null);
 
-      expect(cache.expirationDate).toBeInstanceOf(Date);
+      expect(cache.expirationDate).toBeNull();
       expect(cache.version).toBe(mockEntity.version + 1);
     });
   });

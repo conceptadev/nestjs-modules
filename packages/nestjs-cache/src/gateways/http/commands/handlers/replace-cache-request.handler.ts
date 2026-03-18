@@ -1,23 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import {
-  CacheCreatableInterface,
-  CacheInterface,
-} from '@concepta/nestjs-common';
-import { CrudReplaceCommand } from '@concepta/nestjs-crud';
-
 import { ReplaceCacheCommand } from '../../../../application/commands/impl/replace-cache.command';
 import { assertCacheId } from '../../../../application/utils/assert-cache-id.util';
 import { Cache } from '../../../../domain/aggregates/cache';
+import { ReplaceCacheRequest } from '../impl/replace-cache.request';
 
 @Injectable()
 export class ReplaceCacheRequestHandler {
   constructor(private readonly commandBus: CommandBus) {}
 
-  async execute(
-    command: CrudReplaceCommand<CacheInterface, CacheCreatableInterface>,
-  ): Promise<CacheInterface> {
+  async execute(command: ReplaceCacheRequest) {
     const { context, dto } = command;
     const { id } = context.params;
 
@@ -26,7 +19,6 @@ export class ReplaceCacheRequestHandler {
     const cache = await this.commandBus.execute<ReplaceCacheCommand, Cache>(
       new ReplaceCacheCommand(context, id, dto),
     );
-
     return cache.toPlain();
   }
 }

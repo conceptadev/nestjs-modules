@@ -3,18 +3,13 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import {
-  RoleAssignmentInterface,
-  CommonEntityDto,
-  ReferenceId,
-} from '@concepta/nestjs-common';
+import { ReferenceId, RoleAssignmentInterface } from '@concepta/nestjs-common';
 
-/**
- * Role assignment DTO
- */
+import { DomainAggregateDto } from '../../../../nestjs-common/dist/index-aggregate';
+
 @Exclude()
 export class RoleAssignmentDto
-  extends CommonEntityDto
+  extends DomainAggregateDto
   implements RoleAssignmentInterface
 {
   @Expose()

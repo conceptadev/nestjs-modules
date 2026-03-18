@@ -1,21 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { CacheInterface, Operation } from '@concepta/nestjs-common';
-import { CrudDeleteCommand } from '@concepta/nestjs-crud';
+import { Operation } from '@concepta/nestjs-common';
 
 import { ArchiveCacheCommand } from '../../../../application/commands/impl/archive-cache.command';
 import { RemoveCacheCommand } from '../../../../application/commands/impl/remove-cache.command';
 import { assertCacheId } from '../../../../application/utils/assert-cache-id.util';
 import { Cache } from '../../../../domain/aggregates/cache';
+import { DeleteCacheRequest } from '../impl/delete-cache.request';
 
 @Injectable()
 export class DeleteCacheRequestHandler {
   constructor(private readonly commandBus: CommandBus) {}
 
-  async execute(
-    command: CrudDeleteCommand<CacheInterface>,
-  ): Promise<CacheInterface | null> {
+  async execute(command: DeleteCacheRequest) {
     const { context } = command;
     const { id } = context.params;
     const { returnDeleted = false } = context.options?.route ?? {};

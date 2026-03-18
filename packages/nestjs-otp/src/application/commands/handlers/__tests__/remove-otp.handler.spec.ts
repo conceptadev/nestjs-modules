@@ -4,8 +4,8 @@ import {
   createMockOtpRepository,
   createMockRepositoryResolver,
   createMockTransaction,
+  toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { Otp } from '../../../../domain/aggregates/otp';
 import { RemoveOtpCommand } from '../../impl/remove-otp.command';
 import { RemoveOtpHandler } from '../remove-otp.handler';
 
@@ -25,7 +25,7 @@ describe(RemoveOtpHandler.name, () => {
   });
 
   it('should find and remove an OTP by passcode', async () => {
-    const found = Otp.toInstance(createMockOtpEntity());
+    const found = toOtpDomain(createMockOtpEntity());
     mockRepo.findByPasscode.mockResolvedValue(found);
 
     const command = new RemoveOtpCommand(ctx, {

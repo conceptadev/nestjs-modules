@@ -1,8 +1,14 @@
 import { DynamicModule, Module } from '@nestjs/common';
 
 import { createOtpRepositoryProvider } from './infrastructure/utils/create-otp-repository-provider';
-import { OtpCoreModuleClass } from './otp-core.module-definition';
-import { OtpAsyncOptions, OtpOptions } from './otp.module-definition';
+import {
+  OtpCoreAsyncOptions,
+  OtpCoreModuleClass,
+  OtpCoreOptions,
+} from './otp-core.module-definition';
+
+type OtpOptions = Omit<OtpCoreOptions, 'global'>;
+type OtpAsyncOptions = Omit<OtpCoreAsyncOptions, 'global'>;
 
 /**
  * Otp Module
@@ -40,14 +46,14 @@ export class OtpModule {
   }
 
   static forFeature(entityKeys: string[]): DynamicModule {
-    const providers = entityKeys.map((entityKey) =>
+    const repoProviders = entityKeys.map((entityKey) =>
       createOtpRepositoryProvider(entityKey),
     );
 
     return {
       module: OtpModule,
-      providers,
-      exports: providers,
+      providers: [...repoProviders],
+      exports: repoProviders,
     };
   }
 }

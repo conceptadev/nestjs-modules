@@ -1,9 +1,8 @@
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { CacheInterface } from '@concepta/nestjs-common';
-
 import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants';
+import { Cache } from '../../../domain/aggregates/cache';
 import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface';
 import { FindCachesByAssigneeQuery } from '../impl/find-caches-by-assignee.query';
 
@@ -16,7 +15,7 @@ export class FindCachesByAssigneeHandler
     private readonly repositoryResolver: CacheRepositoryResolverInterface,
   ) {}
 
-  async execute(query: FindCachesByAssigneeQuery): Promise<CacheInterface[]> {
+  async execute(query: FindCachesByAssigneeQuery): Promise<Cache[]> {
     const { ctx, assigneeId } = query;
 
     const cacheRepo = this.repositoryResolver.resolve(ctx.entity);

@@ -1,10 +1,12 @@
 import {
   createMockContext,
   createMockEventPublisher,
+  createMockOtpEntity,
   createMockOtpRepository,
   createMockOtpSettings,
   createMockRepositoryResolver,
   createMockTransaction,
+  toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Otp } from '../../../../domain/aggregates/otp';
 import { OtpLimitReachedException } from '../../../../domain/exceptions/otp-limit-reached.exception';
@@ -77,19 +79,9 @@ describe(CreateOtpHandler.name, () => {
 
   describe('duplicateStrategy', () => {
     it('should deactivate existing active OTP when duplicateStrategy is DEACTIVATE', async () => {
-      const existingOtp = Otp.toInstance({
-        id: 'existing',
-        category: 'test-category',
-        type: 'uuid',
-        assigneeId: 'test-assignee',
-        passcode: 'old',
-        expirationDate: new Date('2027-01-01'),
-        active: true,
-        dateCreated: new Date(),
-        dateUpdated: new Date(),
-        dateDeleted: null,
-        version: 1,
-      });
+      const existingOtp = toOtpDomain(
+        createMockOtpEntity({ id: 'existing', passcode: 'old' }),
+      );
       mockRepo.findActiveByAssignee.mockResolvedValue(existingOtp);
 
       const command = new CreateOtpCommand(ctx, validDto, {

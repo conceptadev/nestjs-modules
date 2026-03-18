@@ -4,12 +4,13 @@ import { createMockEventPublisher } from '../../../../__tests__/fixtures/mock-ev
 import { createMockTxScope } from '../../../../__tests__/fixtures/mock-tx-scope.fixture';
 import { createMockUserRepository } from '../../../../__tests__/fixtures/mock-user-repository.fixture';
 import { User } from '../../../../domain/aggregates/user';
+import { UserMapper } from '../../../../infrastructure/persistence/user.mapper';
 import { UserNotFoundException } from '../../../exceptions/user-not-found.exception';
 import { UpdateUserCommand } from '../../impl/update-user.command';
 import { UpdateUserHandler } from '../update-user.handler';
 
 const ctx = {} as RepositoryContextInterface;
-
+const userMapper = new UserMapper();
 const mockUserEntity = {
   id: 'user-1',
   email: 'a@b.com',
@@ -34,7 +35,7 @@ describe(UpdateUserHandler.name, () => {
   });
 
   it('should update and return user when found', async () => {
-    userRepository.get.mockResolvedValue(User.toInstance(mockUserEntity));
+    userRepository.get.mockResolvedValue(userMapper.toDomain(mockUserEntity));
 
     const result = await handler.execute(
       new UpdateUserCommand(ctx, 'user-1', { active: false }),

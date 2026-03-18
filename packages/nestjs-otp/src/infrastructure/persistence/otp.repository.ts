@@ -1,5 +1,4 @@
 import {
-  OtpInterface,
   ReferenceId,
   RepositoryContextInterface,
   RepositoryInterface,
@@ -8,26 +7,28 @@ import {
 
 import { Otp } from '../../domain/aggregates/otp';
 import { OtpRepositoryInterface } from '../../domain/repositories/otp-repository.interface';
-import { OtpSettingsInterface } from '../config/interfaces/otp-settings.interface';
+
+import { OtpEntityInterface } from './interfaces/otp-entity.interface';
+import { OtpMapper } from './otp.mapper';
 
 export class OtpRepository implements OtpRepositoryInterface {
   constructor(
-    protected readonly repository: RepositoryInterface<OtpInterface>,
-    protected readonly settings: OtpSettingsInterface,
+    protected readonly repository: RepositoryInterface<OtpEntityInterface>,
+    private readonly mapper: OtpMapper,
   ) {}
 
   async get(
     ctx: RepositoryContextInterface,
     id: ReferenceId,
   ): Promise<Otp | null> {
-    const w = Where.for<OtpInterface>();
+    const w = Where.for<OtpEntityInterface>();
 
     const entity = await this.repository.findOne({
       where: w.eq('id', id),
       ctx,
     });
 
-    return entity ? Otp.toInstance(entity) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async findActiveByPasscode(
@@ -35,7 +36,7 @@ export class OtpRepository implements OtpRepositoryInterface {
     options: { category: string; passcode: string },
   ): Promise<Otp | null> {
     const { category, passcode } = options;
-    const w = Where.for<OtpInterface>();
+    const w = Where.for<OtpEntityInterface>();
 
     const entity = await this.repository.findOne({
       where: w.and(
@@ -46,7 +47,7 @@ export class OtpRepository implements OtpRepositoryInterface {
       ctx,
     });
 
-    return entity ? Otp.toInstance(entity) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async findByPasscode(
@@ -54,14 +55,14 @@ export class OtpRepository implements OtpRepositoryInterface {
     options: { category: string; passcode: string },
   ): Promise<Otp | null> {
     const { category, passcode } = options;
-    const w = Where.for<OtpInterface>();
+    const w = Where.for<OtpEntityInterface>();
 
     const entity = await this.repository.findOne({
       where: w.and(w.eq('category', category), w.eq('passcode', passcode)),
       ctx,
     });
 
-    return entity ? Otp.toInstance(entity) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async findActiveByAssignee(
@@ -69,7 +70,7 @@ export class OtpRepository implements OtpRepositoryInterface {
     options: { assigneeId: string; category: string },
   ): Promise<Otp | null> {
     const { assigneeId, category } = options;
-    const w = Where.for<OtpInterface>();
+    const w = Where.for<OtpEntityInterface>();
 
     const entity = await this.repository.findOne({
       where: w.and(
@@ -80,7 +81,7 @@ export class OtpRepository implements OtpRepositoryInterface {
       ctx,
     });
 
-    return entity ? Otp.toInstance(entity) : null;
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async findAllByAssigneeAndCategory(
@@ -88,14 +89,14 @@ export class OtpRepository implements OtpRepositoryInterface {
     options: { assigneeId: string; category: string },
   ): Promise<Otp[]> {
     const { assigneeId, category } = options;
-    const w = Where.for<OtpInterface>();
+    const w = Where.for<OtpEntityInterface>();
 
     const entities = await this.repository.find({
       where: w.and(w.eq('assigneeId', assigneeId), w.eq('category', category)),
       ctx,
     });
 
-    return entities.map((e) => Otp.toInstance(e));
+    return entities.map((e) => this.mapper.toDomain(e));
   }
 
   async countCreatedSince(
@@ -103,7 +104,7 @@ export class OtpRepository implements OtpRepositoryInterface {
     options: { assigneeId: string; category: string; cutoffDate: Date },
   ): Promise<number> {
     const { assigneeId, category, cutoffDate } = options;
-    const w = Where.for<OtpInterface>();
+    const w = Where.for<OtpEntityInterface>();
 
     return this.repository.count({
       where: w.and(
@@ -120,7 +121,7 @@ export class OtpRepository implements OtpRepositoryInterface {
     options: { assigneeId: string; category: string; cutoffDate: Date },
   ): Promise<Otp[]> {
     const { assigneeId, category, cutoffDate } = options;
-    const w = Where.for<OtpInterface>();
+    const w = Where.for<OtpEntityInterface>();
 
     const entities = await this.repository.find({
       where: w.and(
@@ -131,21 +132,21 @@ export class OtpRepository implements OtpRepositoryInterface {
       ctx,
     });
 
-    return entities.map((e) => Otp.toInstance(e));
+    return entities.map((e) => this.mapper.toDomain(e));
   }
 
   async save(ctx: RepositoryContextInterface, otp: Otp): Promise<void> {
-    const entity = await this.repository.upsert(otp.toPlain(), { ctx });
-    otp.hydrate(entity);
+    otp.stampUpdated();
+    await this.repository.upsert(this.mapper.toPersistence(otp), { ctx });
   }
 
   async remove(ctx: RepositoryContextInterface, otp: Otp): Promise<void> {
-    await this.repository.delete(otp.toPlain(), { ctx });
+    await this.repository.delete(this.mapper.toPersistence(otp), { ctx });
   }
 
   async removeAll(ctx: RepositoryContextInterface, otps: Otp[]): Promise<void> {
     await this.repository.deleteMany(
-      otps.map((otp) => otp.toPlain()),
+      otps.map((otp) => this.mapper.toPersistence(otp)),
       { ctx },
     );
   }

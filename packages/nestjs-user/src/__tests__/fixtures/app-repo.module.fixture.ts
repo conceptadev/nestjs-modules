@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { PasswordModule } from '@concepta/nestjs-password';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
-import { createUserCredentialsRepositoryProvider } from '../../infrastructure/utils/create-user-credentials-repository-provider';
-import { createUserRepositoryProvider } from '../../infrastructure/utils/create-user-repository-provider';
+import { UserModule } from '../../user.module';
 
 import { UserCredentialEntityFixture } from './entities/user-credential.entity.fixture';
 import { UserEntityFixture } from './entities/user.entity.fixture';
@@ -18,6 +18,7 @@ const USER_CREDENTIALS_ENTITY_KEY = 'user-credentials';
   imports: [
     TypeOrmModule.forRoot(ormConfig),
     RepositoryModule.forRoot({}),
+    PasswordModule.forRoot({}),
     RepositoryModule.forFeature({
       module: TypeOrmRepositoryModule,
       entities: [
@@ -28,10 +29,12 @@ const USER_CREDENTIALS_ENTITY_KEY = 'user-credentials';
         },
       ],
     }),
-  ],
-  providers: [
-    ...createUserRepositoryProvider(USER_ENTITY_KEY),
-    ...createUserCredentialsRepositoryProvider(USER_CREDENTIALS_ENTITY_KEY),
+    UserModule.forRoot({
+      entities: {
+        user: USER_ENTITY_KEY,
+        credentials: USER_CREDENTIALS_ENTITY_KEY,
+      },
+    }),
   ],
 })
 export class AppRepoModuleFixture {}

@@ -3,8 +3,8 @@ import {
   createMockAssignmentRepositoryResolver,
   createMockContext,
   createMockRoleAssignmentEntity,
+  toRoleAssignmentDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { RoleAssignment } from '../../../../domain/aggregates/role-assignment';
 import { GetAssignedRolesQuery } from '../../impl/get-assigned-roles.query';
 import { GetAssignedRolesHandler } from '../get-assigned-roles.handler';
 
@@ -22,10 +22,10 @@ describe(GetAssignedRolesHandler.name, () => {
   });
 
   it('should return assignments for the assignee', async () => {
-    const assignment1 = RoleAssignment.toInstance(
+    const assignment1 = toRoleAssignmentDomain(
       createMockRoleAssignmentEntity({ id: 'a1', roleId: 'role-1' }),
     );
-    const assignment2 = RoleAssignment.toInstance(
+    const assignment2 = toRoleAssignmentDomain(
       createMockRoleAssignmentEntity({ id: 'a2', roleId: 'role-2' }),
     );
     mockRepo.findByAssignee.mockResolvedValue([assignment1, assignment2]);

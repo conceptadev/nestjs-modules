@@ -3,6 +3,12 @@ export { CacheModule } from './cache.module';
 // domain object
 export { Cache } from './domain/aggregates/cache';
 
+// policies
+export {
+  CacheExpirationPolicy,
+  CacheExpirationSettings,
+} from './domain/policies/cache-expiration.policy';
+
 // repositories
 export { CacheRepository } from './infrastructure/persistence/cache.repository';
 export { CacheRepositoryResolver } from './infrastructure/persistence/cache-repository.resolver';
@@ -16,6 +22,7 @@ export { CacheExtrasInterface } from './infrastructure/config/interfaces/cache-e
 export { CacheCreateDto } from './infrastructure/dtos/cache-create.dto';
 export { CacheUpdateDto } from './infrastructure/dtos/cache-update.dto';
 export { CacheDto } from './infrastructure/dtos/cache.dto';
+export { CachePaginatedDto } from './infrastructure/dtos/cache-paginated.dto';
 
 // domain commands
 export { UpsertCacheCommand } from './application/commands/impl/upsert-cache.command';

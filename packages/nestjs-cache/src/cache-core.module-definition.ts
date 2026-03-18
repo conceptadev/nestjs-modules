@@ -23,11 +23,14 @@ import {
   CACHE_MODULE_SETTINGS_TOKEN,
   CACHE_REPOSITORY_RESOLVER_TOKEN,
 } from './cache.constants';
+import { CacheExpirationPolicy } from './domain/policies/cache-expiration.policy';
 import { cacheDefaultConfig } from './infrastructure/config/cache-default.config';
 import { CacheExtrasInterface } from './infrastructure/config/interfaces/cache-extras.interface';
 import { CacheOptionsInterface } from './infrastructure/config/interfaces/cache-options.interface';
 import { CacheSettingsInterface } from './infrastructure/config/interfaces/cache-settings.interface';
 import { CacheRepositoryResolver } from './infrastructure/persistence/cache-repository.resolver';
+import { CacheMapper } from './infrastructure/persistence/cache.mapper';
+import { createCacheExpirationPolicyProvider } from './infrastructure/utils/create-cache-expiration-policy-provider';
 
 const RAW_OPTIONS_TOKEN = Symbol('__CACHE_MODULE_RAW_OPTIONS_TOKEN__');
 
@@ -47,7 +50,7 @@ export type CacheCoreAsyncOptions = typeof CACHE_CORE_ASYNC_OPTIONS_TYPE;
 
 function definitionTransform(
   definition: DynamicModule,
-  { global, repositories }: CacheExtrasInterface,
+  { global, providers: overrideProviders, repositories }: CacheExtrasInterface,
 ): DynamicModule {
   const { providers = [], imports = [] } = definition;
 
@@ -55,7 +58,10 @@ function definitionTransform(
     ...definition,
     global,
     imports: createCacheImports({ imports }),
-    providers: createCacheProviders({ providers, repositories }),
+    providers: createCacheProviders({
+      providers: [...providers, ...(overrideProviders ?? [])],
+      repositories,
+    }),
     exports: [ConfigModule, RAW_OPTIONS_TOKEN, ...createCacheExports()],
   };
 }
@@ -77,6 +83,8 @@ export function createCacheProviders(options: {
 }): Provider[] {
   return [
     createCacheSettingsProvider(options.overrides),
+    createCacheExpirationPolicyProvider(),
+    CacheMapper,
     {
       provide: CACHE_CUSTOM_REPOSITORY_TOKEN,
       useValue: options.repositories?.cache ?? null,
@@ -102,7 +110,7 @@ export function createCacheProviders(options: {
 export function createCacheExports(): Required<
   Pick<DynamicModule, 'exports'>
 >['exports'] {
-  return [CACHE_MODULE_SETTINGS_TOKEN];
+  return [CACHE_MODULE_SETTINGS_TOKEN, CacheExpirationPolicy, CacheMapper];
 }
 
 export function createCacheSettingsProvider(

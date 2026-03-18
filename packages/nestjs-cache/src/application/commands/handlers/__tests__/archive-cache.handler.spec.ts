@@ -4,6 +4,7 @@ import {
   createMockTransaction,
   createMockContext,
   createMockCacheEntity,
+  toCacheDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../../domain/aggregates/cache';
 import { ArchiveCacheCommand } from '../../impl/archive-cache.command';
@@ -25,7 +26,7 @@ describe(ArchiveCacheHandler.name, () => {
   });
 
   it('should return the archived Cache', async () => {
-    mockRepo.get.mockResolvedValue(Cache.toInstance(createMockCacheEntity()));
+    mockRepo.get.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
     const result = await handler.execute(
       new ArchiveCacheCommand(ctx, 'test-id'),
@@ -36,7 +37,7 @@ describe(ArchiveCacheHandler.name, () => {
   });
 
   it('should call softRemove on the repository', async () => {
-    mockRepo.get.mockResolvedValue(Cache.toInstance(createMockCacheEntity()));
+    mockRepo.get.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
     await handler.execute(new ArchiveCacheCommand(ctx, 'test-id'));
 

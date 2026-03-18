@@ -1,12 +1,18 @@
-import { CacheInterface, Where } from '@concepta/nestjs-common';
+import { Where } from '@concepta/nestjs-common';
 import { createMockRepository } from '@concepta/nestjs-common/testing';
 
-import { createMockContext } from '../../../__tests__/helpers/mock.helpers';
+import {
+  createMockContext,
+  toCacheDomain,
+} from '../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../domain/aggregates/cache';
-import { CacheSettingsInterface } from '../../config/interfaces/cache-settings.interface';
+import { CacheMapper } from '../cache.mapper';
 import { CacheRepository } from '../cache.repository';
+import { CacheEntityInterface } from '../interfaces/cache-entity.interface';
 
-const mockEntity: CacheInterface = {
+const mapper = new CacheMapper();
+
+const mockEntity: CacheEntityInterface = {
   id: 'test-id',
   key: 'test-key',
   type: 'test-type',
@@ -22,15 +28,14 @@ const mockEntity: CacheInterface = {
 describe(CacheRepository.name, () => {
   let repo: CacheRepository;
   let mockRepoInterface: ReturnType<
-    typeof createMockRepository<CacheInterface>
+    typeof createMockRepository<CacheEntityInterface>
   >;
-  const settings: CacheSettingsInterface = { expiresIn: '1h' };
-  const w = Where.for<CacheInterface>();
+  const w = Where.for<CacheEntityInterface>();
   const ctx = createMockContext();
 
   beforeEach(() => {
-    mockRepoInterface = createMockRepository<CacheInterface>();
-    repo = new CacheRepository(mockRepoInterface, settings);
+    mockRepoInterface = createMockRepository<CacheEntityInterface>();
+    repo = new CacheRepository(mockRepoInterface, new CacheMapper());
   });
 
   describe('get', () => {
@@ -138,18 +143,19 @@ describe(CacheRepository.name, () => {
   });
 
   describe('save', () => {
-    it('should upsert the plain entity and hydrate the cache', async () => {
-      const updatedEntity = { ...mockEntity, version: 2 };
-      mockRepoInterface.upsert.mockResolvedValue(updatedEntity);
+    it('should stamp and upsert the plain entity', async () => {
+      mockRepoInterface.upsert.mockResolvedValue(mockEntity);
 
-      const cache = Cache.toInstance(mockEntity, settings);
-      const plainBeforeSave = cache.toPlain();
+      const cache = toCacheDomain(mockEntity);
+      const stampSpy = jest.spyOn(cache, 'stampUpdated');
+
       await repo.save(ctx, cache);
 
-      expect(mockRepoInterface.upsert).toHaveBeenCalledWith(plainBeforeSave, {
-        ctx,
-      });
-      expect(cache.version).toBe(2);
+      expect(stampSpy).toHaveBeenCalledTimes(1);
+      expect(mockRepoInterface.upsert).toHaveBeenCalledWith(
+        mapper.toPersistence(cache),
+        { ctx },
+      );
     });
   });
 
@@ -157,12 +163,13 @@ describe(CacheRepository.name, () => {
     it('should delete the plain entity', async () => {
       mockRepoInterface.delete.mockResolvedValue(undefined as never);
 
-      const cache = Cache.toInstance(mockEntity, settings);
+      const cache = toCacheDomain(mockEntity);
       await repo.remove(ctx, cache);
 
-      expect(mockRepoInterface.delete).toHaveBeenCalledWith(cache.toPlain(), {
-        ctx,
-      });
+      expect(mockRepoInterface.delete).toHaveBeenCalledWith(
+        mapper.toPersistence(cache),
+        { ctx },
+      );
     });
   });
 
@@ -177,9 +184,11 @@ describe(CacheRepository.name, () => {
         where: w.eq('assigneeId', 'test-assignee'),
         ctx,
       });
-      const expectedPlain = Cache.toInstance(mockEntity, settings).toPlain();
+      const expectedPersistence = mapper.toPersistence(
+        toCacheDomain(mockEntity),
+      );
       expect(mockRepoInterface.deleteMany).toHaveBeenCalledWith(
-        [expectedPlain],
+        [expectedPersistence],
         { ctx },
       );
     });
@@ -195,14 +204,17 @@ describe(CacheRepository.name, () => {
   });
 
   describe('softRemove', () => {
-    it('should soft delete the plain entity', async () => {
+    it('should stamp deleted and soft delete the plain entity', async () => {
       mockRepoInterface.softDelete.mockResolvedValue(undefined as never);
 
-      const cache = Cache.toInstance(mockEntity, settings);
+      const cache = toCacheDomain(mockEntity);
+      const stampSpy = jest.spyOn(cache, 'stampDeleted');
+
       await repo.softRemove(ctx, cache);
 
+      expect(stampSpy).toHaveBeenCalledTimes(1);
       expect(mockRepoInterface.softDelete).toHaveBeenCalledWith(
-        cache.toPlain(),
+        mapper.toPersistence(cache),
         { ctx },
       );
     });

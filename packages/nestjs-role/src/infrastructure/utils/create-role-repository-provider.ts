@@ -8,6 +8,7 @@ import {
 
 import { RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface';
 import { ROLE_CUSTOM_REPOSITORY_TOKEN } from '../../role.constants';
+import { RoleMapper } from '../persistence/role.mapper';
 import { RoleRepository } from '../persistence/role.repository';
 
 /**
@@ -24,14 +25,16 @@ export function createRoleRepositoryProvider(entityKey: string): Provider {
     provide: getDynamicRoleRepositoryToken(entityKey),
     inject: [
       getDynamicRepositoryToken(entityKey),
+      RoleMapper,
       { token: ROLE_CUSTOM_REPOSITORY_TOKEN, optional: true },
     ],
     useFactory: (
       repository: RepositoryInterface<RoleEntityInterface>,
+      mapper: RoleMapper,
       customRepo?: Type<RoleRepositoryInterface>,
     ) => {
       const RepoClass = customRepo ?? RoleRepository;
-      return new RepoClass(repository);
+      return new RepoClass(repository, mapper);
     },
   };
 }

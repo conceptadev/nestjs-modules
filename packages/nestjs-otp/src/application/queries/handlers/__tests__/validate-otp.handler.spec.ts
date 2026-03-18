@@ -4,8 +4,8 @@ import {
   createMockOtpRepository,
   createMockOtpSettings,
   createMockRepositoryResolver,
+  toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { Otp } from '../../../../domain/aggregates/otp';
 import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception';
 import { OtpSettingsInterface } from '../../../../infrastructure/config/interfaces/otp-settings.interface';
 import { ValidateOtpQuery } from '../../impl/validate-otp.query';
@@ -27,7 +27,7 @@ describe(ValidateOtpHandler.name, () => {
   });
 
   it('should return assigneeId when OTP is valid and active', async () => {
-    const otp = Otp.toInstance(
+    const otp = toOtpDomain(
       createMockOtpEntity({ expirationDate: new Date('2099-01-01') }),
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
@@ -43,7 +43,7 @@ describe(ValidateOtpHandler.name, () => {
   });
 
   it('should call the configured validator for the OTP type', async () => {
-    const otp = Otp.toInstance(
+    const otp = toOtpDomain(
       createMockOtpEntity({ expirationDate: new Date('2099-01-01') }),
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
@@ -62,7 +62,7 @@ describe(ValidateOtpHandler.name, () => {
   });
 
   it('should return null when configured validator returns false', async () => {
-    const otp = Otp.toInstance(
+    const otp = toOtpDomain(
       createMockOtpEntity({ expirationDate: new Date('2099-01-01') }),
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
@@ -79,7 +79,7 @@ describe(ValidateOtpHandler.name, () => {
   });
 
   it('should throw OtpTypeNotDefinedException when type is not configured', async () => {
-    const otp = Otp.toInstance(
+    const otp = toOtpDomain(
       createMockOtpEntity({
         type: 'unknown',
         expirationDate: new Date('2099-01-01'),
@@ -111,7 +111,7 @@ describe(ValidateOtpHandler.name, () => {
   });
 
   it('should return null when OTP is expired', async () => {
-    const otp = Otp.toInstance(
+    const otp = toOtpDomain(
       createMockOtpEntity({ expirationDate: new Date('2020-01-01') }),
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);

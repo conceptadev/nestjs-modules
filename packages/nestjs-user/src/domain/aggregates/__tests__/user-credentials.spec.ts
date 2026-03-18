@@ -3,9 +3,11 @@ import {
   UserCredentialEntityInterface,
 } from '@concepta/nestjs-common';
 
+import { UserCredentialsMapper } from '../../../infrastructure/persistence/user-credentials.mapper';
 import { UserCredentials } from '../user-credentials';
 
 const eventContext = EventContextHost.builder().build();
+const mapper = new UserCredentialsMapper();
 
 const mockEntity: UserCredentialEntityInterface = {
   id: 'cred-1',
@@ -38,9 +40,9 @@ describe(UserCredentials.name, () => {
       expect(creds.version).toBe(1);
       expect(creds.validFrom).toBeInstanceOf(Date);
       expect(creds.validTo).toBeNull();
-      expect(creds.dateCreated).toBeInstanceOf(Date);
-      expect(creds.dateUpdated).toBeInstanceOf(Date);
-      expect(creds.dateDeleted).toBeNull();
+      expect(creds.meta.dateCreated).toBeInstanceOf(Date);
+      expect(creds.meta.dateUpdated).toBeInstanceOf(Date);
+      expect(creds.meta.dateDeleted).toBeNull();
     });
   });
 
@@ -56,9 +58,9 @@ describe(UserCredentials.name, () => {
     });
   });
 
-  describe('toInstance', () => {
+  describe('constructor', () => {
     it('should wrap entity with correct getters', () => {
-      const creds = UserCredentials.toInstance(mockEntity);
+      const creds = mapper.toDomain(mockEntity);
 
       expect(creds.id).toBe('cred-1');
       expect(creds.userId).toBe('user-1');
@@ -71,7 +73,7 @@ describe(UserCredentials.name, () => {
 
   describe('toPlain', () => {
     it('should return a plain copy', () => {
-      const creds = UserCredentials.toInstance(mockEntity);
+      const creds = mapper.toDomain(mockEntity);
       const plain = creds.toPlain();
 
       expect(plain).toEqual(mockEntity);
@@ -79,25 +81,9 @@ describe(UserCredentials.name, () => {
     });
   });
 
-  describe('hydrate', () => {
-    it('should replace internal props', () => {
-      const creds = UserCredentials.toInstance(mockEntity);
-      const updated: UserCredentialEntityInterface = {
-        ...mockEntity,
-        version: 5,
-        active: false,
-      };
-
-      creds.hydrate(updated);
-
-      expect(creds.version).toBe(5);
-      expect(creds.active).toBe(false);
-    });
-  });
-
   describe('deactivate', () => {
     it('should set active to false and increment version', () => {
-      const creds = UserCredentials.toInstance(mockEntity);
+      const creds = mapper.toDomain(mockEntity);
 
       creds.deactivate(eventContext);
 

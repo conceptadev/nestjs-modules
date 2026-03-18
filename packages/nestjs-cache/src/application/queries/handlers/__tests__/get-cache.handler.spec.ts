@@ -3,6 +3,7 @@ import {
   createMockRepositoryResolver,
   createMockContext,
   createMockCacheEntity,
+  toCacheDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../../domain/aggregates/cache';
 import { GetCacheQuery } from '../../impl/get-cache.query';
@@ -20,7 +21,7 @@ describe(GetCacheHandler.name, () => {
 
   it('should return a Cache for a valid id', async () => {
     const entity = createMockCacheEntity();
-    mockRepo.get.mockResolvedValue(Cache.toInstance(entity));
+    mockRepo.get.mockResolvedValue(toCacheDomain(entity));
 
     const result = await handler.execute(new GetCacheQuery(ctx, 'test-id'));
 

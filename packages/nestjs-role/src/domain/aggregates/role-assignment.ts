@@ -1,15 +1,13 @@
 import { randomUUID } from 'crypto';
 
-import { AggregateRoot } from '@nestjs/cqrs';
-
 import {
   type DomainFactory,
-  DomainMappable,
   EntityHeaderInterface,
   EventContextHost,
-  RoleAssignmentEntityInterface,
+  RoleAssignmentInterface,
 } from '@concepta/nestjs-common';
 
+import { DomainAggregate } from '../../../../nestjs-common/dist/index-aggregate';
 import { RoleAssignedEvent } from '../events/role-assigned.event';
 import { RoleRevokedEvent } from '../events/role-revoked.event';
 
@@ -18,21 +16,7 @@ export interface RoleAssignmentCreateProps {
   assigneeId: string;
 }
 
-export class RoleAssignment
-  extends AggregateRoot
-  implements DomainMappable<RoleAssignmentEntityInterface>
-{
-  private props: RoleAssignmentEntityInterface;
-
-  constructor(entity: RoleAssignmentEntityInterface) {
-    super();
-    this.props = { ...entity };
-  }
-
-  get id() {
-    return this.props.id;
-  }
-
+export class RoleAssignment extends DomainAggregate<RoleAssignmentInterface> {
   get roleId() {
     return this.props.roleId;
   }
@@ -41,54 +25,28 @@ export class RoleAssignment
     return this.props.assigneeId;
   }
 
-  get dateCreated() {
-    return this.props.dateCreated;
-  }
-
-  get dateUpdated() {
-    return this.props.dateUpdated;
-  }
-
-  get dateDeleted() {
-    return this.props.dateDeleted;
-  }
-
-  get version() {
-    return this.props.version;
-  }
-
   static create(
     eventContext: EventContextHost<EntityHeaderInterface>,
     props: RoleAssignmentCreateProps,
   ): RoleAssignment {
-    const { roleId, assigneeId } = props;
-    const now = new Date();
+    return RoleAssignment.createWithId(eventContext, randomUUID(), props);
+  }
 
-    const instance = new RoleAssignment({
-      id: randomUUID(),
+  static createWithId(
+    eventContext: EventContextHost<EntityHeaderInterface>,
+    id: string,
+    props: RoleAssignmentCreateProps,
+  ): RoleAssignment {
+    const { roleId, assigneeId } = props;
+
+    const instance = new RoleAssignment(id, {
       roleId,
       assigneeId,
-      dateCreated: now,
-      dateUpdated: now,
-      dateDeleted: null,
-      version: 1,
     });
 
     instance.apply(new RoleAssignedEvent(eventContext, instance.toPlain()));
 
     return instance;
-  }
-
-  static toInstance(entity: RoleAssignmentEntityInterface): RoleAssignment {
-    return new RoleAssignment(entity);
-  }
-
-  toPlain(): RoleAssignmentEntityInterface {
-    return { ...this.props };
-  }
-
-  hydrate(entity: RoleAssignmentEntityInterface): void {
-    this.props = { ...entity };
   }
 
   revoke(eventContext: EventContextHost<EntityHeaderInterface>): void {
@@ -97,7 +55,6 @@ export class RoleAssignment
 }
 
 RoleAssignment satisfies DomainFactory<
-  RoleAssignmentEntityInterface,
   RoleAssignmentCreateProps,
   RoleAssignment
 >;
