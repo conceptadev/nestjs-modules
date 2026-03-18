@@ -4,6 +4,7 @@ import {
   UserEntityInterface,
 } from '@concepta/nestjs-common';
 
+import { createMockUserEntity } from '../../../__tests__/helpers/mock.helpers';
 import { User } from '../../../domain/aggregates/user';
 import { UserMapper } from '../user.mapper';
 import { UserRepository } from '../user.repository';
@@ -12,16 +13,7 @@ const userMapper = new UserMapper();
 
 const ctx = {} as RepositoryContextInterface;
 
-const mockEntity: UserEntityInterface = {
-  id: 'user-1',
-  email: 'a@b.com',
-  username: 'john',
-  active: true,
-  dateCreated: new Date('2024-01-01'),
-  dateUpdated: new Date('2024-01-01'),
-  dateDeleted: null,
-  version: 1,
-};
+const mockEntity = createMockUserEntity();
 
 function createMockRepository(): jest.Mocked<
   Pick<

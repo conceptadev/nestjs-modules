@@ -1,7 +1,11 @@
 import { RepositoryContextInterface } from '@concepta/nestjs-common';
 
+import {
+  createMockUserEntity,
+  createMockUserRepository,
+  toUserDomain,
+} from '../../../../__tests__/helpers/mock.helpers';
 import { UserRepositoryInterface } from '../../../../domain/repositories/user-repository.interface';
-import { UserMapper } from '../../../../infrastructure/persistence/user.mapper';
 import { GetUserByEmailQuery } from '../../impl/get-user-by-email.query';
 import { GetUserBySubjectQuery } from '../../impl/get-user-by-subject.query';
 import { GetUserByUsernameQuery } from '../../impl/get-user-by-username.query';
@@ -12,34 +16,14 @@ import { GetUserByUsernameHandler } from '../get-user-by-username.handler';
 import { GetUserHandler } from '../get-user.handler';
 
 const ctx = {} as RepositoryContextInterface;
-const userMapper = new UserMapper();
-const mockUser = userMapper.toDomain({
-  id: 'user-1',
-  email: 'a@b.com',
-  username: 'john',
-  active: true,
-  dateCreated: new Date(),
-  dateUpdated: new Date(),
-  dateDeleted: null,
-  version: 1,
-});
-
-function createMockRepo(): jest.Mocked<UserRepositoryInterface> {
-  return {
-    get: jest.fn(),
-    findByEmail: jest.fn(),
-    findByUsername: jest.fn(),
-    save: jest.fn(),
-    remove: jest.fn(),
-  };
-}
+const mockUser = toUserDomain(createMockUserEntity());
 
 describe(GetUserHandler.name, () => {
   let handler: GetUserHandler;
   let repo: jest.Mocked<UserRepositoryInterface>;
 
   beforeEach(() => {
-    repo = createMockRepo();
+    repo = createMockUserRepository();
     handler = new GetUserHandler(repo);
   });
 
@@ -62,7 +46,7 @@ describe(GetUserByEmailHandler.name, () => {
   let repo: jest.Mocked<UserRepositoryInterface>;
 
   beforeEach(() => {
-    repo = createMockRepo();
+    repo = createMockUserRepository();
     handler = new GetUserByEmailHandler(repo);
   });
 
@@ -89,7 +73,7 @@ describe(GetUserByUsernameHandler.name, () => {
   let repo: jest.Mocked<UserRepositoryInterface>;
 
   beforeEach(() => {
-    repo = createMockRepo();
+    repo = createMockUserRepository();
     handler = new GetUserByUsernameHandler(repo);
   });
 
@@ -116,7 +100,7 @@ describe(GetUserBySubjectHandler.name, () => {
   let repo: jest.Mocked<UserRepositoryInterface>;
 
   beforeEach(() => {
-    repo = createMockRepo();
+    repo = createMockUserRepository();
     handler = new GetUserBySubjectHandler(repo);
   });
 

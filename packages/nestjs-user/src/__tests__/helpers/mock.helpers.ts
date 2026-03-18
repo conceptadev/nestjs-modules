@@ -1,12 +1,17 @@
 import { EventPublisher } from '@nestjs/cqrs';
 
-import { UserEntityInterface } from '@concepta/nestjs-common';
+import {
+  UserCredentialEntityInterface,
+  UserEntityInterface,
+} from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { User } from '../../domain/aggregates/user';
+import { UserCredentials } from '../../domain/aggregates/user-credentials';
 import { UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';
 import { UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
 import { UserCredentialsService } from '../../domain/services/user-credentials.service';
+import { UserCredentialsMapper } from '../../infrastructure/persistence/user-credentials.mapper';
 import { UserMapper } from '../../infrastructure/persistence/user.mapper';
 
 export function createMockTxScope(): jest.Mocked<TransactionScope> {
@@ -73,8 +78,34 @@ export function createMockUserEntity(
   };
 }
 
+export function createMockUserCredentialEntity(
+  overrides: Partial<UserCredentialEntityInterface> = {},
+): UserCredentialEntityInterface {
+  return {
+    id: 'cred-1',
+    userId: 'user-1',
+    passwordHash: 'old-hash',
+    passwordSalt: 'old-salt',
+    active: true,
+    validFrom: new Date('2026-01-01'),
+    validTo: null,
+    dateCreated: new Date('2026-01-01'),
+    dateUpdated: new Date('2026-01-01'),
+    dateDeleted: null,
+    version: 1,
+    ...overrides,
+  };
+}
+
 const userMapper = new UserMapper();
+const credentialsMapper = new UserCredentialsMapper();
 
 export function toUserDomain(entity: UserEntityInterface): User {
   return userMapper.toDomain(entity);
+}
+
+export function toUserCredentialsDomain(
+  entity: UserCredentialEntityInterface,
+): UserCredentials {
+  return credentialsMapper.toDomain(entity);
 }

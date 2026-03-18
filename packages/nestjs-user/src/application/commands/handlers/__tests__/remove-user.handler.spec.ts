@@ -3,26 +3,16 @@ import { RepositoryContextInterface } from '@concepta/nestjs-common';
 import {
   createMockEventPublisher,
   createMockTxScope,
+  createMockUserEntity,
   createMockUserRepository,
+  toUserDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { User } from '../../../../domain/aggregates/user';
-import { UserMapper } from '../../../../infrastructure/persistence/user.mapper';
 import { UserNotFoundException } from '../../../exceptions/user-not-found.exception';
 import { RemoveUserCommand } from '../../impl/remove-user.command';
 import { RemoveUserHandler } from '../remove-user.handler';
 
 const ctx = {} as RepositoryContextInterface;
-const userMapper = new UserMapper();
-const mockUserEntity = {
-  id: 'user-1',
-  email: 'a@b.com',
-  username: 'john',
-  active: true,
-  dateCreated: new Date(),
-  dateUpdated: new Date(),
-  dateDeleted: null,
-  version: 1,
-};
 
 describe(RemoveUserHandler.name, () => {
   const userRepository = createMockUserRepository();
@@ -37,7 +27,7 @@ describe(RemoveUserHandler.name, () => {
   });
 
   it('should remove and return user when found', async () => {
-    userRepository.get.mockResolvedValue(userMapper.toDomain(mockUserEntity));
+    userRepository.get.mockResolvedValue(toUserDomain(createMockUserEntity()));
 
     const result = await handler.execute(new RemoveUserCommand(ctx, 'user-1'));
 

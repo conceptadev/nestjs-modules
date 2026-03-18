@@ -1,21 +1,13 @@
-import { EventContextHost, UserEntityInterface } from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
 
-import { UserMapper } from '../../../infrastructure/persistence/user.mapper';
+import {
+  createMockUserEntity,
+  toUserDomain,
+} from '../../../__tests__/helpers/mock.helpers';
 import { User } from '../user';
 
 const eventContext = EventContextHost.builder().build();
-const mapper = new UserMapper();
-
-const mockEntity: UserEntityInterface = {
-  id: 'user-1',
-  email: 'a@b.com',
-  username: 'john',
-  active: true,
-  dateCreated: new Date('2024-01-01'),
-  dateUpdated: new Date('2024-01-01'),
-  dateDeleted: null,
-  version: 1,
-};
+const mockEntity = createMockUserEntity();
 
 describe(User.name, () => {
   describe('create', () => {
@@ -68,7 +60,7 @@ describe(User.name, () => {
 
   describe('constructor', () => {
     it('should wrap entity with correct getters', () => {
-      const user = mapper.toDomain(mockEntity);
+      const user = toUserDomain(mockEntity);
 
       expect(user.id).toBe('user-1');
       expect(user.email).toBe('a@b.com');
@@ -80,7 +72,7 @@ describe(User.name, () => {
 
   describe('toPlain', () => {
     it('should return a plain copy', () => {
-      const user = mapper.toDomain(mockEntity);
+      const user = toUserDomain(mockEntity);
       const plain = user.toPlain();
 
       expect(plain).toEqual(mockEntity);
@@ -90,7 +82,7 @@ describe(User.name, () => {
 
   describe('update', () => {
     it('should merge dto and increment version', () => {
-      const user = mapper.toDomain(mockEntity);
+      const user = toUserDomain(mockEntity);
       const beforeUpdate = user.meta.dateUpdated;
 
       user.update(eventContext, { active: false });
@@ -103,7 +95,7 @@ describe(User.name, () => {
     });
 
     it('should preserve unchanged fields', () => {
-      const user = mapper.toDomain(mockEntity);
+      const user = toUserDomain(mockEntity);
 
       user.update(eventContext, { active: false });
 
@@ -114,7 +106,7 @@ describe(User.name, () => {
 
   describe('remove', () => {
     it('should not throw', () => {
-      const user = mapper.toDomain(mockEntity);
+      const user = toUserDomain(mockEntity);
 
       expect(() => user.remove(eventContext)).not.toThrow();
     });

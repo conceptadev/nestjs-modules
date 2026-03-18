@@ -3,26 +3,16 @@ import { createMockCommandBus } from '@concepta/nestjs-common/testing';
 
 import {
   createMockTxScope,
+  createMockUserEntity,
   createMockUserRepository,
+  toUserDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { UserMapper } from '../../../../infrastructure/persistence/user.mapper';
 import { UserNotFoundException } from '../../../exceptions/user-not-found.exception';
 import { UpdateUserCredentialCommand } from '../../impl/update-user-credential.command';
 import { UpdateUserPasswordCommand } from '../../impl/update-user-password.command';
 import { UpdateUserPasswordHandler } from '../update-user-password.handler';
 
 const ctx = {} as RepositoryContextInterface;
-const userMapper = new UserMapper();
-const mockUserEntity = {
-  id: 'user-1',
-  email: 'a@b.com',
-  username: 'john',
-  active: true,
-  dateCreated: new Date(),
-  dateUpdated: new Date(),
-  dateDeleted: null,
-  version: 1,
-};
 
 describe(UpdateUserPasswordHandler.name, () => {
   const userRepository = createMockUserRepository();
@@ -41,7 +31,7 @@ describe(UpdateUserPasswordHandler.name, () => {
   });
 
   it('should dispatch UpdateUserCredentialCommand when user found', async () => {
-    userRepository.get.mockResolvedValue(userMapper.toDomain(mockUserEntity));
+    userRepository.get.mockResolvedValue(toUserDomain(createMockUserEntity()));
 
     const passwordDto = { password: 'new-pass', passwordCurrent: 'old-pass' };
 

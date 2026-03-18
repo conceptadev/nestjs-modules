@@ -3,26 +3,16 @@ import { RepositoryContextInterface } from '@concepta/nestjs-common';
 import {
   createMockEventPublisher,
   createMockTxScope,
+  createMockUserEntity,
   createMockUserRepository,
+  toUserDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { User } from '../../../../domain/aggregates/user';
-import { UserMapper } from '../../../../infrastructure/persistence/user.mapper';
 import { UserNotFoundException } from '../../../exceptions/user-not-found.exception';
 import { UpdateUserCommand } from '../../impl/update-user.command';
 import { UpdateUserHandler } from '../update-user.handler';
 
 const ctx = {} as RepositoryContextInterface;
-const userMapper = new UserMapper();
-const mockUserEntity = {
-  id: 'user-1',
-  email: 'a@b.com',
-  username: 'john',
-  active: true,
-  dateCreated: new Date('2024-01-01'),
-  dateUpdated: new Date('2024-01-01'),
-  dateDeleted: null,
-  version: 1,
-};
 
 describe(UpdateUserHandler.name, () => {
   const userRepository = createMockUserRepository();
@@ -37,7 +27,7 @@ describe(UpdateUserHandler.name, () => {
   });
 
   it('should update and return user when found', async () => {
-    userRepository.get.mockResolvedValue(userMapper.toDomain(mockUserEntity));
+    userRepository.get.mockResolvedValue(toUserDomain(createMockUserEntity()));
 
     const result = await handler.execute(
       new UpdateUserCommand(ctx, 'user-1', { active: false }),
