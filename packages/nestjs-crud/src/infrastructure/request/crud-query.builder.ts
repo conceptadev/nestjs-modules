@@ -14,7 +14,7 @@ import {
   OrderSortKeyArr,
   WhereCondition,
   WhereConditionArr,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { hasValue } from '../utils/validation';
 

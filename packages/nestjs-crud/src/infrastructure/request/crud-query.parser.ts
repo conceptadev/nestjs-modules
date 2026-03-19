@@ -7,7 +7,7 @@ import {
   Where,
   WhereCondition,
   WhereConditionScalar,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
 import {

@@ -1,7 +1,9 @@
 import { Global, Module, Provider } from '@nestjs/common';
 
-import { getDynamicRepositoryToken } from '@concepta/nestjs-common';
-import { DynamicRepositoryModule } from '@concepta/nestjs-repository';
+import {
+  getDynamicRepositoryToken,
+  DynamicRepositoryModule,
+} from '@concepta/nestjs-repository';
 
 import { TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface';
 import {

@@ -4,7 +4,7 @@ import {
   EntityColumn,
   JoinClause,
   OrderSortKey,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { QueryFilterOption } from '../query-filter-option.type';
 

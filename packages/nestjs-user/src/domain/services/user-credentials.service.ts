@@ -6,7 +6,6 @@ import {
   PasswordStorageInterface,
   ReferenceId,
   ReferenceIdInterface,
-  RepositoryContextInterface,
 } from '@concepta/nestjs-common';
 import {
   PasswordCreationService,
@@ -14,7 +13,10 @@ import {
   PasswordStorageService,
   PasswordStorageServiceInterface,
 } from '@concepta/nestjs-password';
-import { TransactionScope } from '@concepta/nestjs-repository';
+import {
+  RepositoryContextInterface,
+  TransactionScope,
+} from '@concepta/nestjs-repository';
 
 import { USER_CREDENTIALS_REPOSITORY_TOKEN } from '../../user.constants';
 import { UserCredentials } from '../aggregates/user-credentials';

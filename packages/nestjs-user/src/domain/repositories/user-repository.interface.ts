@@ -2,8 +2,8 @@ import {
   ReferenceEmail,
   ReferenceId,
   ReferenceUsername,
-  RepositoryContextInterface,
 } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { User } from '../aggregates/user';
 

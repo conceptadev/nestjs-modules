@@ -1,7 +1,5 @@
-import {
-  RepositoryContextInterface,
-  UserCreatableInterface,
-} from '@concepta/nestjs-common';
+import { UserCreatableInterface } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 export class CreateUserCommand {
   constructor(

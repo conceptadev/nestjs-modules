@@ -23,6 +23,7 @@ database-specific base entities for Postgres and SQLite.
 - [Repository Hooks](#repository-hooks)
 - [Base Entities](#base-entities)
 - [Exceptions](#exceptions)
+- [Entry Points](#entry-points)
 
 ## Installation
 
@@ -126,7 +127,7 @@ interface TypeOrmProviderOptionsInterface<Entity> extends RepositoryProviderOpti
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import { InjectDynamicRepository } from '@concepta/nestjs-common';
+import { InjectDynamicRepository } from '@concepta/nestjs-repository';
 import { TypeOrmRepository } from '@concepta/nestjs-repository-typeorm';
 
 @Injectable()
@@ -185,7 +186,7 @@ When a `RepositoryContextInterface` with an active `trx` is provided,
 ## WhereClause Translation
 
 `TypeOrmRepository` translates the ORM-agnostic `WhereClause` AST from
-`@concepta/nestjs-common` into TypeORM `FindOptionsWhere` objects.
+`@concepta/nestjs-repository` into TypeORM `FindOptionsWhere` objects.
 
 ### Supported Operators
 
@@ -218,11 +219,11 @@ When a `RepositoryContextInterface` with an active `trx` is provided,
 
 ### Using the Where Builder
 
-The `Where` helper from `@concepta/nestjs-common` builds `WhereClause`
+The `Where` helper from `@concepta/nestjs-repository` builds `WhereClause`
 objects that `TypeOrmRepository` translates automatically:
 
 ```ts
-import { Where } from '@concepta/nestjs-common';
+import { Where } from '@concepta/nestjs-repository';
 
 // Static API
 const orders = await orderRepo.find(
@@ -409,3 +410,9 @@ Postgres and SQLite variants:
 | --- | --- |
 | `TypeOrmEntityNameException` | Entity name cannot be resolved from TypeORM repository metadata |
 | `ModelQueryException` | TypeORM query error (wraps original error) |
+
+## Entry Points
+
+| Import Path | Contents |
+| --- | --- |
+| `@concepta/nestjs-repository-typeorm` | `TypeOrmRepositoryModule`, `TypeOrmRepository`, `TypeOrmTransaction`, `TypeOrmTransactionFactory`, base entities (Postgres + SQLite), exceptions |

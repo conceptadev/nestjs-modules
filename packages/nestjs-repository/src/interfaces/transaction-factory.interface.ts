@@ -1,4 +1,4 @@
-import { TransactionInterface } from '@concepta/nestjs-common';
+import { TransactionInterface } from '../transaction/interfaces/transaction.interface';
 
 /**
  * Factory for creating transactions.

@@ -1,7 +1,5 @@
-import {
-  ReferenceId,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 export class SetUserPasswordCommand {
   constructor(

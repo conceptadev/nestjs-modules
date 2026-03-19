@@ -1,9 +1,9 @@
 import {
   PasswordUpdateInterface,
-  RepositoryContextInterface,
   UserCreatableInterface,
   UserUpdatableInterface,
 } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { CreateUserCredentialCommand } from '../create-user-credential.command';
 import { CreateUserCommand } from '../create-user.command';

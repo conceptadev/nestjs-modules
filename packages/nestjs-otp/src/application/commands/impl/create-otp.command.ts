@@ -1,7 +1,5 @@
-import {
-  OtpCreatableInterface,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
+import { OtpCreatableInterface } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 interface CreateOtpCommandOptions {
   duplicateStrategy?: 'ALLOW' | 'DEACTIVATE';

@@ -7,8 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   getDynamicRepositoryToken,
   RepositoryInterface,
-} from '@concepta/nestjs-common';
-import { RepositoryModule } from '@concepta/nestjs-repository';
+  RepositoryModule,
+} from '@concepta/nestjs-repository';
 
 import { ormConfig } from '../../__fixtures__/repository/config/ormconfig.fixture';
 import { TestEntityFixture } from '../../__fixtures__/repository/entity/test.entity.fixture';

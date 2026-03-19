@@ -1,6 +1,10 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { EntityColumn, Where, WhereCondition } from '@concepta/nestjs-common';
+import {
+  EntityColumn,
+  Where,
+  WhereCondition,
+} from '@concepta/nestjs-repository';
 
 /**
  * Wire format prefix for comparison operators in query strings.

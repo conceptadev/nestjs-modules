@@ -2,8 +2,11 @@ import { Module } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getDataSourceToken } from '@nestjs/typeorm';
 
-import { getDynamicRepositoryToken, Where } from '@concepta/nestjs-common';
-import { RepositoryModule } from '@concepta/nestjs-repository';
+import {
+  getDynamicRepositoryToken,
+  Where,
+  RepositoryModule,
+} from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
 import { relationOrmConfig } from '../../__fixtures__/repository/config/relation-ormconfig.fixture';

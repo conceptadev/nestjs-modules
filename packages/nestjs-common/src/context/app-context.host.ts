@@ -1,13 +1,10 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { HookWithSpec } from '../hooks/hook.types';
-
 import { ContextMergeException } from './exceptions/context-merge.exception';
 import {
   AppContextInterface,
   AppContextMergeInterface,
 } from './interfaces/app-context.interface';
-import { RepositoryContextInterface } from './interfaces/repository-context.interface';
 import { isAppContext } from './is-app-context.util';
 
 /**
@@ -35,56 +32,11 @@ export const APP_CONTEXT_KEY = Symbol('APP_CONTEXT_KEY');
 export class AppContextHost<T extends PlainLiteralObject = PlainLiteralObject>
   implements AppContextInterface<T>
 {
-  /** Set at runtime via {@link switchToRepo} or {@link register}. */
-  declare entity: string;
-  /** Set at runtime via {@link switchToRepo} or {@link register}. */
-  declare hooks: HookWithSpec[];
-
   /**
    * Check if a property has been registered.
    */
   has(key: keyof T): boolean {
     return key in this;
-  }
-
-  /**
-   * Set or switch the repository entity on this context.
-   *
-   * - **First call** (entity not yet set): sets entity directly on this
-   *   context and initializes `hooks` to `[]` if absent. Returns `this`.
-   * - **Subsequent calls** (entity already set): returns a prototype-chain
-   *   overlay (`Object.create(this)`) that shadows only `entity`.
-   *   The original context is never mutated.
-   */
-  switchToRepo(entity: string): RepositoryContextInterface {
-    if ('entity' in this) {
-      const overlay = Object.create(this);
-      Object.defineProperty(overlay, 'entity', {
-        value: entity,
-        enumerable: true,
-        configurable: false,
-        writable: false,
-      });
-      return overlay as RepositoryContextInterface;
-    }
-
-    Object.defineProperty(this, 'entity', {
-      value: entity,
-      enumerable: true,
-      configurable: false,
-      writable: false,
-    });
-
-    if (!('hooks' in this)) {
-      Object.defineProperty(this, 'hooks', {
-        value: [],
-        enumerable: true,
-        configurable: false,
-        writable: false,
-      });
-    }
-
-    return this as RepositoryContextInterface;
   }
 
   /**

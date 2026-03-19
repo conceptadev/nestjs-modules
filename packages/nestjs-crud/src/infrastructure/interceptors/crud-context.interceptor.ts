@@ -90,8 +90,8 @@ export class CrudContextInterceptor<
       // Build current route options
       const route = this.getRouteOptions(target, handler, operation);
 
-      // Set entity via switchToRepo (configurable, allows repo adapter to switch)
-      ctx.switchToRepo(entity);
+      // Set entity on context for repository hook resolution
+      ctx.register('entity', entity);
       ctx.register('operation', operation);
       ctx.register('action', operationToAction(operation));
       ctx.register('params', parser.getRouteParams());

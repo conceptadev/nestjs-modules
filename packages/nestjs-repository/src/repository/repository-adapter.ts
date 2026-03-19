@@ -6,10 +6,19 @@ import { isObject } from '@nestjs/common/utils/shared.utils';
 import {
   DeepPartial,
   HookContextInterface,
-  JoinClause,
-  RepositoryContextInterface,
-  RepositoryInterface,
-  RepositoryMetadataInterface,
+  RuntimeException,
+} from '@concepta/nestjs-common';
+import { HookMethodKeyType, HookResolverService } from '@concepta/nestjs-hook';
+
+import { RepositoryContextInterface } from '../context/interfaces/repository-context.interface';
+import { switchToRepo } from '../context/switch-to-repo';
+import { FederationOrchestrator } from '../federation/federation-orchestrator.service';
+import { RepoPermeatorFactory } from '../hooks/repo-permeator-factory';
+import { RepoHook } from '../hooks/repository-hook.decorators';
+
+import { JoinClause } from './interfaces/join-clause.interface';
+import { RepositoryMetadataInterface } from './interfaces/repository-metadata.interface';
+import {
   RepositoryFindOptions,
   RepositoryFindOneOptions,
   RepositoryCreateOptions,
@@ -17,17 +26,14 @@ import {
   RepositoryUpsertOptions,
   RepositoryDeleteOptions,
   RepositoryRestoreOptions,
-  RuntimeException,
+} from './interfaces/repository-options.interface';
+import { RepositoryInterface } from './interfaces/repository.interface';
+import {
   WhereClause,
-  WhereCompoundOperator,
   isWhereCondition,
   isWhereCompound,
-} from '@concepta/nestjs-common';
-import { HookMethodKeyType, HookResolverService } from '@concepta/nestjs-hook';
-
-import { FederationOrchestrator } from '../federation/federation-orchestrator.service';
-import { RepoPermeatorFactory } from '../hooks/repo-permeator-factory';
-import { RepoHook } from '../hooks/repository-hook.decorators';
+} from './interfaces/where-clause.interface';
+import { WhereCompoundOperator } from './repository.types';
 
 /**
  * Abstract repository adapter that implements DTO transformation.
@@ -90,7 +96,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
     ctx?: RepositoryContextInterface,
   ): RepositoryContextInterface | undefined {
     if (!ctx) return undefined;
-    return ctx.switchToRepo(this.entityKey);
+    return switchToRepo(ctx, this.entityKey);
   }
 
   // Query operations

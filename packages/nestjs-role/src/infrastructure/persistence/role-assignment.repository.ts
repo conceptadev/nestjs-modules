@@ -1,10 +1,12 @@
 import {
   ReferenceId,
+  RoleAssignmentEntityInterface,
+} from '@concepta/nestjs-common';
+import {
   RepositoryContextInterface,
   RepositoryInterface,
-  RoleAssignmentEntityInterface,
   Where,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { RoleAssignment } from '../../domain/aggregates/role-assignment';
 import { RoleAssignmentRepositoryInterface } from '../../domain/repositories/role-assignment-repository.interface';

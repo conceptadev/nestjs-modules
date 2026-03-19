@@ -1,6 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
 
-import { WhereCompoundOperator, WhereOperator } from '@concepta/nestjs-common';
+import {
+  WhereCompoundOperator,
+  WhereOperator,
+} from '@concepta/nestjs-repository';
 
 import { SCondition } from '../crud-query.types';
 import { SConditionConverter } from '../crud-scondition.converter';

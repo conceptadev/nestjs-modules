@@ -1,7 +1,5 @@
-import {
-  ReferenceSubject,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
+import { ReferenceSubject } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 export class GetUserBySubjectQuery {
   constructor(

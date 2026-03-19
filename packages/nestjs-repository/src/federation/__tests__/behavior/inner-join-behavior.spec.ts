@@ -8,11 +8,10 @@
  * Ported from nestjs-crud __tests__/crud-federation/behavior/inner-join-behavior.spec.ts
  */
 import {
-  Where,
   WhereCompoundOperator,
   WhereOperator,
-} from '@concepta/nestjs-common';
-
+} from '../../../repository/repository.types';
+import { Where } from '../../../repository/where.helpers';
 import {
   TestRoot,
   TestRelation,

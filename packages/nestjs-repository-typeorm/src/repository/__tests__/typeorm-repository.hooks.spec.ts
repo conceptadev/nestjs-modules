@@ -2,15 +2,7 @@ import { Type } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 
-import {
-  AppContextHost,
-  DeepPartial,
-  getDynamicRepositoryToken,
-  RepositoryContextInterface,
-  RepositoryFindOptions,
-  RepositoryFindOneOptions,
-  Where,
-} from '@concepta/nestjs-common';
+import { AppContextHost, DeepPartial } from '@concepta/nestjs-common';
 import { HookModule } from '@concepta/nestjs-hook';
 import {
   RepositoryModule,
@@ -85,6 +77,13 @@ import {
   AfterTransitionMethod,
   BeforeDestroyMethod,
   AfterDestroyMethod,
+  // Repository types (moved from nestjs-common)
+  RepositoryContextInterface,
+  RepositoryFindOptions,
+  RepositoryFindOneOptions,
+  Where,
+  getDynamicRepositoryToken,
+  switchToRepo,
 } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
@@ -375,8 +374,7 @@ function createHookContext(...hookClasses: Type[]) {
   const ctx = AppContextHost.merge<RepositoryContextInterface>(() => ({
     hooks: hookClasses.map((hook) => ({ hook, type: RepoHook.KEY })),
   }));
-  ctx.switchToRepo('');
-  return ctx;
+  return switchToRepo(ctx as unknown as RepositoryContextInterface, '');
 }
 
 // =============================================================================

@@ -1,5 +1,4 @@
-import { TransactionInterface } from '@concepta/nestjs-common';
-
+import { TransactionInterface } from './interfaces/transaction.interface';
 import { TransactionFactoryRegistry } from './transaction-factory-registry';
 import { TransactionManager } from './transaction-manager';
 

@@ -1,8 +1,6 @@
-import {
-  RepositoryContextInterface,
-  UserCreatableInterface,
-} from '@concepta/nestjs-common';
+import { UserCreatableInterface } from '@concepta/nestjs-common';
 import { createMockCommandBus } from '@concepta/nestjs-common/testing';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import {
   createMockEventPublisher,

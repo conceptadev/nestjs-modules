@@ -1,6 +1,7 @@
 import { Type, PlainLiteralObject } from '@nestjs/common';
 
-import { RelationAction, WhereCondition } from '@concepta/nestjs-common';
+import { WhereCondition } from '../repository/interfaces/where-clause.interface';
+import { RelationAction } from '../repository/repository.types';
 
 /**
  * Per-relation configuration for forFeature() registration.

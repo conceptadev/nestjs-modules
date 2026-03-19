@@ -1,20 +1,17 @@
 import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
-import {
-  JoinClause,
-  RepositoryFindOptions,
-  RepositoryInterface,
-  OrderClause,
-  RepositoryRelationMetadataInterface,
-  Where,
-  getDynamicRepositoryToken,
-} from '@concepta/nestjs-common';
-
+import { JoinClause } from '../repository/interfaces/join-clause.interface';
+import { RepositoryFindOptions } from '../repository/interfaces/repository-options.interface';
+import { RepositoryRelationMetadataInterface } from '../repository/interfaces/repository-relation-metadata.interface';
+import { RepositoryInterface } from '../repository/interfaces/repository.interface';
+import { OrderClause } from '../repository/repository.types';
+import { Where } from '../repository/where.helpers';
 import {
   REPOSITORY_REGISTRY,
   RepositoryRegistryService,
 } from '../services/repository-registry.service';
+import { getDynamicRepositoryToken } from '../utils/get-dynamic-repository-token';
 
 import { BufferStrategy } from './buffer-strategy';
 import { FederationException } from './exceptions/federation.exception';

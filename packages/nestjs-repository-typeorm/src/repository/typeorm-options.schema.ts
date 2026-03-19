@@ -8,8 +8,8 @@ import {
   OrderClause,
   RepositoryColumnMetadataInterface,
   RepositoryRelationMetadataInterface,
-} from '@concepta/nestjs-common';
-import { RelationActionConfig } from '@concepta/nestjs-repository';
+  RelationActionConfig,
+} from '@concepta/nestjs-repository';
 
 /**
  * Type guard that validates EntityTarget satisfies Type<Entity>.

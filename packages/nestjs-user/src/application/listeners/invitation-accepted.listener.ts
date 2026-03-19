@@ -5,9 +5,9 @@ import {
   AppContextHost,
   INVITATION_MODULE_CATEGORY_USER_KEY,
   InvitationAcceptedEventPayloadInterface,
-  RepositoryContextInterface,
 } from '@concepta/nestjs-common';
 import { EventAsyncInterface, EventListenerOn } from '@concepta/nestjs-event';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { UserException } from '../../domain/exceptions/user.exception';
 import { UserSettingsInterface } from '../../infrastructure/config/interfaces/user-settings.interface';

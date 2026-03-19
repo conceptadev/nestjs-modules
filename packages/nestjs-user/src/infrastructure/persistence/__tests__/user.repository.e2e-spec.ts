@@ -1,10 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import {
-  AppContextHost,
-  EventContextHost,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
+import { AppContextHost, EventContextHost } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { AppRepoModuleFixture } from '../../../__tests__/fixtures/app-repo.module.fixture';
 import { User } from '../../../domain/aggregates/user';

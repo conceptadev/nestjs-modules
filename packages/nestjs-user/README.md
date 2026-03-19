@@ -27,6 +27,7 @@ password validation), and invitation-based activation.
 - [Exceptions](#exceptions)
 - [Environment Variables](#environment-variables)
 - [Seeding (Optional)](#seeding-optional)
+- [Entry Points](#entry-points)
 
 ## Installation
 
@@ -398,4 +399,4 @@ import { UserFactory } from '@concepta/nestjs-user/optional/seeding';
 | --- | --- |
 | `@concepta/nestjs-user` | Module, aggregates, commands, queries, events, handlers, DTOs, repositories, exceptions, interfaces |
 | `@concepta/nestjs-user/optional/crud` | CRUD request/handler classes, paginated DTO |
-| `@concepta/nestjs-user/optional/seeding` | `UserFactory` |
+| `@concepta/nestjs-user/optional/seeding` | `UserFactory`, `UserCredentialFactory`, `UserSeeder` |

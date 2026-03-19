@@ -75,12 +75,7 @@ export { ModelMutateException } from './model/exceptions/model-mutate.exception'
 export { ModelValidationException } from './model/exceptions/model-validation.exception';
 export { ModelIdNoMatchException } from './model/exceptions/model-id-no-match.exception';
 
-// model services
-export { ModelService } from './model/model.service';
-export { ModelServiceInterface } from './model/interfaces/model-service.interface';
-
 // model query interfaces
-export { FindInterface } from './model/interfaces/query/find.interface';
 export { ByEmailInterface } from './model/interfaces/query/by-email.interface';
 export { ByIdInterface } from './model/interfaces/query/by-id.interface';
 export { BySubjectInterface } from './model/interfaces/query/by-subject.interface';
@@ -91,81 +86,6 @@ export { CreateOneInterface } from './model/interfaces/mutate/create-one.interfa
 export { RemoveOneInterface } from './model/interfaces/mutate/remove-one.interface';
 export { ReplaceOneInterface } from './model/interfaces/mutate/replace-one.interface';
 export { UpdateOneInterface } from './model/interfaces/mutate/update-one.interface';
-
-// Repository interfaces
-export { RepositoryInterface } from './repository/interfaces/repository.interface';
-export { RepositoryEntityOptionInterface } from './repository/interfaces/repository-entity-option.interface';
-export { RepositoryColumnMetadataInterface } from './repository/interfaces/repository-column-metadata.interface';
-export { RepositoryMetadataInterface } from './repository/interfaces/repository-metadata.interface';
-export { RepositoryRelationMetadataInterface } from './repository/interfaces/repository-relation-metadata.interface';
-
-// Repository option types (replaces RepositoryInternals)
-export {
-  RepositoryFindOneOptions,
-  RepositoryFindOptions,
-  RepositoryCreateOptions,
-  RepositoryUpdateOptions,
-  RepositoryUpsertOptions,
-  RepositoryDeleteOptions,
-  RepositoryRestoreOptions,
-} from './repository/interfaces/repository-options.interface';
-
-// Repository query types
-export {
-  EntityColumn,
-  WhereOperator,
-  WhereNullaryOperator,
-  WhereScalarOperator,
-  WhereArrayOperator,
-  WherePairOperator,
-  WhereCompoundOperator,
-  WhereConditionArr,
-  RelationAction,
-  SortOrder,
-  OrderSortKey,
-  OrderSortKeyArr,
-  OrderClause,
-} from './repository/repository.types';
-
-// Order sort key interfaces
-export {
-  OrderSortKeyAsc,
-  OrderSortKeyDesc,
-} from './repository/interfaces/order-sort-key.interface';
-
-// Join clause interface
-export { JoinClause } from './repository/interfaces/join-clause.interface';
-
-// Where clause interfaces
-export {
-  WhereConditionNullary,
-  WhereConditionScalar,
-  WhereConditionArray,
-  WhereConditionPair,
-  WhereCondition,
-  WhereCompound,
-  WhereClause,
-  isWhereCondition,
-  isWhereCompound,
-  isNullaryCondition,
-  isArrayCondition,
-  isPairCondition,
-} from './repository/interfaces/where-clause.interface';
-
-// Where clause helpers
-export { Where } from './repository/where.helpers';
-
-// Order clause helpers
-export { OrderBy } from './repository/order-by.helpers';
-
-// Join clause helpers
-export { Join } from './repository/join.helpers';
-
-// Repository utils
-export { getDynamicRepositoryToken } from './repository/utils/get-dynamic-repository-token';
-
-// Repository decorators
-export { InjectDynamicRepository } from './repository/decorators/inject-dynamic-repository.decorator';
 
 // Audit types
 export {
@@ -207,11 +127,6 @@ export { Ctx } from './context/ctx.decorator';
 // Context interfaces
 export { AppContextInterface } from './context/interfaces/app-context.interface';
 export { HookContextInterface } from './context/interfaces/hook-context.interface';
-export { TransactionContextInterface } from './context/interfaces/transaction-context.interface';
-export { RepositoryContextInterface } from './context/interfaces/repository-context.interface';
-export { TransactionInterface } from './repository/interfaces/transaction.interface';
-export { TransactionManagerInterface } from './repository/interfaces/transaction-manager.interface';
-
 export { EntityHeaderInterface } from './events/headers/interfaces/entity-header.interface';
 
 // Event context

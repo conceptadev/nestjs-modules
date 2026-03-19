@@ -1,8 +1,8 @@
 # @concepta/nestjs-common
 
 Core dependency for all Rockets modules. Provides the DDD aggregate
-infrastructure, repository abstractions, audit system, domain interfaces,
-context management, and shared DTOs.
+infrastructure, audit system, domain interfaces, context management,
+and shared DTOs.
 
 ## Project
 
@@ -21,7 +21,6 @@ context management, and shared DTOs.
 - [Domain Factory](#domain-factory)
 - [Audit System](#audit-system)
 - [Reference Interfaces](#reference-interfaces)
-- [Repository Abstractions](#repository-abstractions)
 - [Context Management](#context-management)
 - [DTOs](#dtos)
 - [Domain Interfaces](#domain-interfaces)
@@ -38,7 +37,7 @@ yarn add @concepta/nestjs-common
 | --- | --- |
 | `@concepta/nestjs-common` | Main entry -- DTOs, interfaces, enums, utilities |
 | `@concepta/nestjs-common/aggregate` | Aggregate infrastructure -- `DomainAggregate`, `DomainMapper`, `DomainAggregateDto`, `AggregateMetaInterface` |
-| `@concepta/nestjs-common/testing` | Testing utilities |
+| `@concepta/nestjs-common/testing` | `createMockEventPublisher`, `createMockCommandBus`, `createMockQueryBus`, `createMockContext`, `createMockEventContext` |
 
 ## Domain Aggregates
 
@@ -176,45 +175,19 @@ Small, composable interfaces for common entity fields:
 | `ReferenceRoleInterface` | `role: string` |
 | `ReferenceRolesInterface` | `roles: string[]` |
 
-## Repository Abstractions
+## Context Management
 
-### RepositoryInterface
-
-Generic repository contract used by all Rockets modules:
-
-```ts
-interface RepositoryInterface<Entity> {
-  find(options?): Promise<Entity[]>
-  findOne(options?): Promise<Entity | null>
-  save(entity): Promise<Entity>
-  remove(entity): Promise<void>
-  softRemove(entity): Promise<Entity>
-  deleteMany(options?): Promise<void>
-  // ...
-}
-```
-
-### Where / OrderBy / Join Helpers
-
-Fluent query builders for type-safe repository queries:
-
-```ts
-import { Where, OrderBy } from '@concepta/nestjs-common';
-
-const options = {
-  where: Where.eq('status', 'active'),
-  order: OrderBy.asc('dateCreated'),
-};
-```
-
-### Context Interfaces
-
-| Interface | Fields |
+| Export | Description |
 | --- | --- |
-| `RepositoryContextInterface` | `entity`, `trx`, hooks |
-| `TransactionContextInterface` | `trx` |
-| `HookContextInterface` | Hook configuration |
-| `AppContextInterface` | Base context |
+| `AppContextHost` | Creates and merges application context objects |
+| `getAppContext()` | Retrieves the current app context |
+| `@Ctx()` | Parameter decorator for injecting context |
+| `EventContextHost` | Creates event context with entity headers |
+| `EventContextBuilder` | Fluent builder for event context objects |
+| `AppContextInterface` | App context shape |
+| `HookContextInterface` | Hook context shape |
+| `EventContextInterface` | Event context shape |
+| `EntityHeaderInterface` | Entity key header for events |
 
 ## DTOs
 

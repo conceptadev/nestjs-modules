@@ -1,8 +1,5 @@
-import {
-  CacheUpdatableInterface,
-  ReferenceId,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
+import { CacheUpdatableInterface, ReferenceId } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 export class UpdateCacheCommand {
   constructor(

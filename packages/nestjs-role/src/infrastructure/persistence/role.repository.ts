@@ -1,10 +1,9 @@
+import { ReferenceId, RoleEntityInterface } from '@concepta/nestjs-common';
 import {
-  ReferenceId,
   RepositoryContextInterface,
   RepositoryInterface,
-  RoleEntityInterface,
   Where,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { Role } from '../../domain/aggregates/role';
 import { RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface';

@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { RepositoryRelationMetadataInterface } from '@concepta/nestjs-common';
+import { RepositoryRelationMetadataInterface } from '../repository/interfaces/repository-relation-metadata.interface';
 
 /**
  * Relation metadata enriched with a single computed field.

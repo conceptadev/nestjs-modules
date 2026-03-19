@@ -1,7 +1,5 @@
-import {
-  ReferenceEmail,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
+import { ReferenceEmail } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 export class GetUserByEmailQuery {
   constructor(

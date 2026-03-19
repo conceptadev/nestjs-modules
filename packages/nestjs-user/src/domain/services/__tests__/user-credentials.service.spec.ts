@@ -1,11 +1,9 @@
-import {
-  EventContextHost,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
 import {
   PasswordCreationServiceInterface,
   PasswordStorageServiceInterface,
 } from '@concepta/nestjs-password';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import {
   createMockEventPublisher,

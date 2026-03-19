@@ -26,6 +26,8 @@ duplicate strategies, and automatic history cleanup.
 - [DTOs](#dtos)
 - [Exceptions](#exceptions)
 - [HTTP Controller with CRUD Module](#http-controller-with-crud-module)
+- [Entry Points](#entry-points)
+- [Seeding](#seeding)
 - [Environment Variables](#environment-variables)
 
 ## Installation
@@ -200,7 +202,8 @@ and hook configuration for the operation.
 Use `AppContextHost.merge()` to create a context:
 
 ```ts
-import { AppContextHost, RepositoryContextInterface } from '@concepta/nestjs-common';
+import { AppContextHost } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 const ctx = AppContextHost.merge<RepositoryContextInterface>(() => ({
   entity: 'userOtp',
@@ -502,6 +505,21 @@ for the full API.
 
 `OtpModule.forRoot()` (or `forRootAsync()`) must be registered globally
 in a parent module for `forFeature()` to resolve its dependencies.
+
+## Entry Points
+
+| Import Path | Contents |
+| --- | --- |
+| `@concepta/nestjs-otp` | Module, aggregate, commands, queries, events, handlers, DTOs, repository, exceptions |
+| `@concepta/nestjs-otp/optional/seeding` | `OtpFactory` |
+
+## Seeding
+
+An `OtpFactory` is available for test seeding:
+
+```ts
+import { OtpFactory } from '@concepta/nestjs-otp/optional/seeding';
+```
 
 ## Environment Variables
 

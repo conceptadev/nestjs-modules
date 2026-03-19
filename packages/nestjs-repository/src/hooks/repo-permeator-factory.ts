@@ -12,10 +12,13 @@ import {
   DeepPartial,
   ModelQueryException,
   HookContextInterface,
-  RepositoryFindOptions,
-  RepositoryFindOneOptions,
 } from '@concepta/nestjs-common';
 import { HookMethodKeyType } from '@concepta/nestjs-hook';
+
+import {
+  RepositoryFindOptions,
+  RepositoryFindOneOptions,
+} from '../repository/interfaces/repository-options.interface';
 
 import { RepoHookMethodKey as K } from './repository-hook.decorators';
 

@@ -141,3 +141,89 @@ export {
 // Hook specifications
 export { RepoSpec } from './hooks/specifications/repo-spec.factory';
 export { EntitySpecification } from './hooks/specifications/entity.specification';
+
+// Repository interfaces
+export { RepositoryInterface } from './repository/interfaces/repository.interface';
+export { RepositoryEntityOptionInterface } from './repository/interfaces/repository-entity-option.interface';
+export { RepositoryColumnMetadataInterface } from './repository/interfaces/repository-column-metadata.interface';
+export { RepositoryMetadataInterface } from './repository/interfaces/repository-metadata.interface';
+export { RepositoryRelationMetadataInterface } from './repository/interfaces/repository-relation-metadata.interface';
+
+// Repository option types
+export {
+  RepositoryFindOneOptions,
+  RepositoryFindOptions,
+  RepositoryCreateOptions,
+  RepositoryUpdateOptions,
+  RepositoryUpsertOptions,
+  RepositoryDeleteOptions,
+  RepositoryRestoreOptions,
+} from './repository/interfaces/repository-options.interface';
+
+// Repository query types
+export {
+  EntityColumn,
+  WhereOperator,
+  WhereNullaryOperator,
+  WhereScalarOperator,
+  WhereArrayOperator,
+  WherePairOperator,
+  WhereCompoundOperator,
+  WhereConditionArr,
+  RelationAction,
+  SortOrder,
+  OrderSortKey,
+  OrderSortKeyArr,
+  OrderClause,
+} from './repository/repository.types';
+
+// Order sort key interfaces
+export {
+  OrderSortKeyAsc,
+  OrderSortKeyDesc,
+} from './repository/interfaces/order-sort-key.interface';
+
+// Join clause interface
+export { JoinClause } from './repository/interfaces/join-clause.interface';
+
+// Where clause interfaces
+export {
+  WhereConditionNullary,
+  WhereConditionScalar,
+  WhereConditionArray,
+  WhereConditionPair,
+  WhereCondition,
+  WhereCompound,
+  WhereClause,
+  isWhereCondition,
+  isWhereCompound,
+  isNullaryCondition,
+  isArrayCondition,
+  isPairCondition,
+} from './repository/interfaces/where-clause.interface';
+
+// Where clause helpers
+export { Where } from './repository/where.helpers';
+
+// Order clause helpers
+export { OrderBy } from './repository/order-by.helpers';
+
+// Join clause helpers
+export { Join } from './repository/join.helpers';
+
+// Repository utils
+export { getDynamicRepositoryToken } from './utils/get-dynamic-repository-token';
+
+// Repository decorators
+export { InjectDynamicRepository } from './decorators/inject-dynamic-repository.decorator';
+
+// Transaction interfaces
+export { TransactionInterface } from './transaction/interfaces/transaction.interface';
+export { TransactionManagerInterface } from './transaction/interfaces/transaction-manager.interface';
+
+// Context interfaces
+export { TransactionContextInterface } from './context/interfaces/transaction-context.interface';
+export { RepositoryContextInterface } from './context/interfaces/repository-context.interface';
+
+// Context utilities
+export { switchToRepo } from './context/switch-to-repo';

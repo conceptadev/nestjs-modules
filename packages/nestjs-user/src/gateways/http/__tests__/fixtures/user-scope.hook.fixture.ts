@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
 
 import {
-  RepositoryContextInterface,
-  RepositoryFindOneOptions,
   UserCredentialEntityInterface,
   UserEntityInterface,
-  Where,
 } from '@concepta/nestjs-common';
 import { getLocal } from '@concepta/nestjs-crud';
-import { BeforeFindOne, RepoHook, RepoSpec } from '@concepta/nestjs-repository';
+import {
+  BeforeFindOne,
+  RepoHook,
+  RepositoryContextInterface,
+  RepositoryFindOneOptions,
+  RepoSpec,
+  Where,
+} from '@concepta/nestjs-repository';
 
 import { AuthorizedUserLocalFixture } from './authorized-user.local.fixture';
 

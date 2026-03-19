@@ -1,6 +1,6 @@
 import { DataSource, QueryRunner, EntityManager } from 'typeorm';
 
-import { TransactionInterface } from '@concepta/nestjs-common';
+import { TransactionInterface } from '@concepta/nestjs-repository';
 
 /**
  * TypeORM implementation of a transaction.

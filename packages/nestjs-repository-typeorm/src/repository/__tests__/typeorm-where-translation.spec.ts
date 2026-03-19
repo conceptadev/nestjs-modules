@@ -19,7 +19,7 @@ import {
   WhereClause,
   WhereCondition,
   WhereOperator,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { TypeOrmRepository } from '../typeorm-repository';
 

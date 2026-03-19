@@ -7,8 +7,7 @@
  *
  * Ported from nestjs-crud __tests__/crud-federation/behavior/relation-sort-validation.spec.ts
  */
-import { WhereOperator } from '@concepta/nestjs-common';
-
+import { WhereOperator } from '../../../repository/repository.types';
 import { FederationException } from '../../exceptions/federation.exception';
 import { TestRoot, TestRelation } from '../federation-test-data';
 import {

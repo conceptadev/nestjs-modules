@@ -6,8 +6,10 @@
  *
  * Ported from nestjs-crud __tests__/crud-federation/behavior/distinct-filter-validation.spec.ts
  */
-import { WhereCompoundOperator, WhereOperator } from '@concepta/nestjs-common';
-
+import {
+  WhereCompoundOperator,
+  WhereOperator,
+} from '../../../repository/repository.types';
 import { FederationException } from '../../exceptions/federation.exception';
 import { TestRoot, TestRelation } from '../federation-test-data';
 import {

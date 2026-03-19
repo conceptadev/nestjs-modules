@@ -13,8 +13,7 @@
  *
  * Ported from nestjs-crud __tests__/crud-federation/integration/read-hydration.spec.ts
  */
-import { WhereOperator } from '@concepta/nestjs-common';
-
+import { WhereOperator } from '../../../repository/repository.types';
 import {
   TestRoot,
   TestRelation,

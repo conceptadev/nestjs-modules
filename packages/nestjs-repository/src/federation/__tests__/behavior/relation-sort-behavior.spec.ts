@@ -9,8 +9,10 @@
  *
  * Ported from nestjs-crud __tests__/crud-federation/behavior/relation-sort-behavior.spec.ts
  */
-import { WhereCompoundOperator, WhereOperator } from '@concepta/nestjs-common';
-
+import {
+  WhereCompoundOperator,
+  WhereOperator,
+} from '../../../repository/repository.types';
 import {
   TestRoot,
   TestRelation,

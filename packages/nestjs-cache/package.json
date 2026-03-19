@@ -1,7 +1,7 @@
 {
   "name": "@concepta/nestjs-cache",
   "version": "8.0.0-alpha.1",
-  "description": "Rockets NestJS User",
+  "description": "Rockets NestJS Cache",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {

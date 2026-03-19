@@ -1,7 +1,5 @@
-import {
-  ReferenceId,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { Otp } from '../aggregates/otp';
 

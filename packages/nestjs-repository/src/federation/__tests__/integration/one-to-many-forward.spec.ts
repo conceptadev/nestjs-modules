@@ -11,8 +11,7 @@
  *
  * Ported from nestjs-crud __tests__/crud-federation/integration/one-to-many-forward.spec.ts
  */
-import { WhereOperator } from '@concepta/nestjs-common';
-
+import { WhereOperator } from '../../../repository/repository.types';
 import { TestRoot, TestRelation, TestSettings } from '../federation-test-data';
 import {
   mockTestRepo,

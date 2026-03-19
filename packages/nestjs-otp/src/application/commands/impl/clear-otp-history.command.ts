@@ -1,7 +1,5 @@
-import {
-  OtpInterface,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
+import { OtpInterface } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 interface ClearOtpHistoryCommandOptions {
   keepHistoryDays?: number;

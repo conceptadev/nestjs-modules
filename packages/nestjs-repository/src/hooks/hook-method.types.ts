@@ -1,11 +1,12 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
+import { DeepPartial } from '@concepta/nestjs-common';
+
+import { RepositoryContextInterface } from '../context/interfaces/repository-context.interface';
 import {
-  DeepPartial,
   RepositoryFindOptions,
   RepositoryFindOneOptions,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
+} from '../repository/interfaces/repository-options.interface';
 
 // =============================================================================
 // Read Operations

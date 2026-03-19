@@ -6,7 +6,7 @@ import {
   OrderSortKeyArr,
   WhereCondition,
   WhereConditionArr,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { SCondition } from '../crud-query.types';
 

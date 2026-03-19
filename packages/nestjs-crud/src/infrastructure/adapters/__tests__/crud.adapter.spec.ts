@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 
-import { Where, WhereOperator } from '@concepta/nestjs-common';
-import { createMockRepository } from '@concepta/nestjs-common/testing';
+import { Where, WhereOperator } from '@concepta/nestjs-repository';
+import { createMockRepository } from '@concepta/nestjs-repository/testing';
 
 import { TestCrudAdapter } from '../../../__fixtures__/crud/adapters/test-crud.adapter';
 import { mockCrudContext } from '../../../__fixtures__/crud/mocks/crud-context.mock';

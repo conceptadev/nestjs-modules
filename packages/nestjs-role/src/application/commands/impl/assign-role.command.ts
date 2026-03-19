@@ -1,4 +1,4 @@
-import { RepositoryContextInterface } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 export class AssignRoleCommand {
   constructor(

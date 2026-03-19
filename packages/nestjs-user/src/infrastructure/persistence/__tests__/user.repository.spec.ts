@@ -1,8 +1,8 @@
+import { UserEntityInterface } from '@concepta/nestjs-common';
 import {
   RepositoryContextInterface,
   RepositoryInterface,
-  UserEntityInterface,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { createMockUserEntity } from '../../../__tests__/helpers/mock.helpers';
 import { User } from '../../../domain/aggregates/user';

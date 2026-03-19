@@ -25,6 +25,8 @@ entries keyed by `key`, `type`, and `assigneeId` with optional TTL expiration.
 - [DTOs](#dtos)
 - [Exceptions](#exceptions)
 - [HTTP Controller with CRUD Module](#http-controller-with-crud-module)
+- [Entry Points](#entry-points)
+- [Seeding](#seeding)
 - [Environment Variables](#environment-variables)
 
 ## Installation
@@ -179,7 +181,8 @@ and hook configuration for the operation.
 Use `AppContextHost.merge()` to create a context:
 
 ```ts
-import { AppContextHost, RepositoryContextInterface } from '@concepta/nestjs-common';
+import { AppContextHost } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 const ctx = AppContextHost.merge<RepositoryContextInterface>(() => ({
   entity: 'userCache',
@@ -369,7 +372,7 @@ The `expiresIn` field accepts time span strings: `'60'`, `'2 days'`, `'10h'`,
 
 Use `@concepta/nestjs-crud` to expose cache operations as REST endpoints. The
 gateway request/handler classes are exported from
-`@concepta/nestjs-cache/optional-crud`.
+`@concepta/nestjs-cache/optional/crud`.
 
 ```ts
 import { Module } from '@nestjs/common';
@@ -395,7 +398,7 @@ import {
   ListCachesRequestHandler,
   ReadCacheRequest,
   ReadCacheRequestHandler,
-} from '@concepta/nestjs-cache/optional-crud';
+} from '@concepta/nestjs-cache/optional/crud';
 
 @Module({
   imports: [
@@ -467,6 +470,22 @@ This is a minimal example. `CrudModule.forFeature()` supports additional
 options including custom resolvers, route guards, serialization groups,
 and per-operation overrides. See the `@concepta/nestjs-crud` documentation
 for the full API.
+
+## Entry Points
+
+| Import Path | Contents |
+| --- | --- |
+| `@concepta/nestjs-cache` | Module, aggregate, commands, queries, events, handlers, DTOs, repository, exceptions |
+| `@concepta/nestjs-cache/optional/crud` | CRUD request/handler classes, paginated DTO |
+| `@concepta/nestjs-cache/optional/seeding` | `CacheFactory` |
+
+## Seeding
+
+A `CacheFactory` is available for test seeding:
+
+```ts
+import { CacheFactory } from '@concepta/nestjs-cache/optional/seeding';
+```
 
 ## Environment Variables
 

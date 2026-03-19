@@ -13,12 +13,11 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 
+import { Ctx, Operation } from '@concepta/nestjs-common';
 import {
   getDynamicRepositoryToken,
-  Operation,
-  Ctx,
-} from '@concepta/nestjs-common';
-import { RepositoryModule } from '@concepta/nestjs-repository';
+  RepositoryModule,
+} from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
 import { CrudUpdateHandler } from '../application/commands/handlers/crud-update.handler';

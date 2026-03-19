@@ -1,10 +1,7 @@
 import { Logger } from '@nestjs/common';
 
-import {
-  TransactionInterface,
-  TransactionManagerInterface,
-} from '@concepta/nestjs-common';
-
+import { TransactionManagerInterface } from './interfaces/transaction-manager.interface';
+import { TransactionInterface } from './interfaces/transaction.interface';
 import { TransactionFactoryRegistry } from './transaction-factory-registry';
 
 /**

@@ -1,4 +1,4 @@
-import { getDynamicRepositoryToken } from '@concepta/nestjs-common';
+import { getDynamicRepositoryToken } from '@concepta/nestjs-repository';
 
 import { CACHE_CUSTOM_REPOSITORY_TOKEN } from '../../../cache.constants';
 import { CacheMapper } from '../../persistence/cache.mapper';

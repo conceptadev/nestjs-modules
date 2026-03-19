@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { WhereOperator } from '@concepta/nestjs-common';
+import { WhereOperator } from '@concepta/nestjs-repository';
 
 import {
   isSortOrder,

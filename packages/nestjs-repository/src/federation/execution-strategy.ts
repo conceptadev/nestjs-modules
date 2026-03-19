@@ -1,4 +1,4 @@
-import { OrderClause, OrderSortKey } from '@concepta/nestjs-common';
+import { OrderClause, OrderSortKey } from '../repository/repository.types';
 
 import { FederationException } from './exceptions/federation.exception';
 import { FederatedRelation, FederationStrategy } from './federation.types';

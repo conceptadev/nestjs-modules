@@ -1,10 +1,9 @@
 import { Module, DynamicModule } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
-import { getDynamicRepositoryToken } from '@concepta/nestjs-common';
-
 import { RepositoryDuplicateKeyException } from '../exceptions/repository-duplicate-key.exception';
 import { RepositoryModule } from '../repository.module';
+import { getDynamicRepositoryToken } from '../utils/get-dynamic-repository-token';
 
 import {
   REPOSITORY_REGISTRY,

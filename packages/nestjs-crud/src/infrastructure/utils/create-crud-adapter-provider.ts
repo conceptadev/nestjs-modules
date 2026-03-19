@@ -3,7 +3,7 @@ import { PlainLiteralObject, Provider, Type } from '@nestjs/common';
 import {
   getDynamicRepositoryToken,
   RepositoryInterface,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { CrudAdapter } from '../adapters/crud.adapter';
 

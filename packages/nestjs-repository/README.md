@@ -28,6 +28,7 @@ control, and a two-level repository hook system.
 - [Federation](#federation)
 - [Injecting Repositories](#injecting-repositories)
 - [Exceptions](#exceptions)
+- [Entry Points](#entry-points)
 
 ## Installation
 
@@ -158,8 +159,7 @@ RepositoryModule (forRoot / forFeature)
 ## Repository Adapter
 
 `RepositoryAdapter` is the abstract base class that all driver-specific
-repository implementations extend. It implements `RepositoryInterface` from
-`@concepta/nestjs-common`.
+repository implementations extend. It implements `RepositoryInterface`.
 
 ### Abstract Methods
 
@@ -233,10 +233,10 @@ automatically from entity relation metadata by `RepositoryAdapter.resolveJoinCla
 
 ### Join Helper
 
-The `Join` helper from `@concepta/nestjs-common` builds `JoinClause` arrays:
+The `Join` helper builds `JoinClause` arrays:
 
 ```ts
-import { Join } from '@concepta/nestjs-common';
+import { Join } from '@concepta/nestjs-repository';
 
 // Load a single relation (LEFT join by default)
 const [users, total] = await userRepo.findAndCount({
@@ -326,7 +326,7 @@ JOINs. See [Federation](#federation) for details.
 
 ## Where Clause Builder
 
-The `Where` helper from `@concepta/nestjs-common` builds ORM-agnostic
+The `Where` helper builds ORM-agnostic
 `WhereClause` AST objects that `RepositoryAdapter` implementations translate
 into driver-specific queries.
 
@@ -346,7 +346,7 @@ into driver-specific queries.
 Pass the entity type as a generic parameter on each call:
 
 ```ts
-import { Where } from '@concepta/nestjs-common';
+import { Where } from '@concepta/nestjs-repository';
 
 // Simple equality
 const activeOrders = await orderRepo.find(
@@ -381,7 +381,7 @@ Bind the entity type once with `Where.for<Entity>()`. All subsequent calls
 type-check field names against the entity:
 
 ```ts
-import { Where } from '@concepta/nestjs-common';
+import { Where } from '@concepta/nestjs-repository';
 
 const w = Where.for<OrderEntity>();
 
@@ -490,7 +490,7 @@ const orders = await orderRepo.findAndCount({
 
 ## Order Clause Builder
 
-The `OrderBy` helper from `@concepta/nestjs-common` builds ORM-agnostic
+The `OrderBy` helper builds ORM-agnostic
 `OrderClause` arrays that `RepositoryAdapter` implementations translate
 into driver-specific sort options.
 
@@ -499,7 +499,7 @@ into driver-specific sort options.
 Pass the entity type as a generic parameter on each call:
 
 ```ts
-import { OrderBy } from '@concepta/nestjs-common';
+import { OrderBy } from '@concepta/nestjs-repository';
 
 // Single sort
 const users = await userRepo.find(
@@ -521,7 +521,7 @@ Bind the entity type once with `OrderBy.for<Entity>()`. All subsequent calls
 type-check field names against the entity:
 
 ```ts
-import { OrderBy } from '@concepta/nestjs-common';
+import { OrderBy } from '@concepta/nestjs-repository';
 
 const o = OrderBy.for<UserEntity>();
 
@@ -995,11 +995,11 @@ relations: {
 
 ## Injecting Repositories
 
-Use `@InjectDynamicRepository()` from `@concepta/nestjs-common` to inject
+Use `@InjectDynamicRepository()` to inject
 repositories registered via `forFeature()`:
 
 ```ts
-import { InjectDynamicRepository } from '@concepta/nestjs-common';
+import { InjectDynamicRepository } from '@concepta/nestjs-repository';
 
 @Injectable()
 export class OrderService {
@@ -1025,3 +1025,10 @@ The injection token is derived from the `key` provided in
 | `TransactionRequiredException` | `MANDATORY` propagation requires a transaction but none exists |
 | `TransactionTimeoutException` | Transaction exceeded timeout duration |
 | `FederationException` | Unsupported federated query (e.g., OR across federated relations) |
+
+## Entry Points
+
+| Import Path | Contents |
+| --- | --- |
+| `@concepta/nestjs-repository` | Module, adapter, repository interfaces, Where/OrderBy/Join builders, transaction management, hooks, federation, decorators, exceptions |
+| `@concepta/nestjs-repository/testing` | `createMockTransaction`, `createMockRepository`, `createMockContext`, `MockTransactionHandle` |

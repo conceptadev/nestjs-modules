@@ -4,9 +4,11 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import {
   EntityHeaderInterface,
   EventContextHost,
-  RepositoryContextInterface,
 } from '@concepta/nestjs-common';
-import { TransactionScope } from '@concepta/nestjs-repository';
+import {
+  RepositoryContextInterface,
+  TransactionScope,
+} from '@concepta/nestjs-repository';
 
 import { Otp } from '../../../domain/aggregates/otp';
 import { OtpLimitReachedException } from '../../../domain/exceptions/otp-limit-reached.exception';

@@ -1,4 +1,4 @@
-import { createMockRepository } from '@concepta/nestjs-common/testing';
+import { createMockRepository } from '@concepta/nestjs-repository/testing';
 
 import { CrudAdapter } from '../../../../../infrastructure/adapters/crud.adapter';
 

@@ -1,15 +1,12 @@
 import { PlainLiteralObject } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
-import {
-  RepositoryContextInterface,
-  RepositoryInterface,
-  RepositoryRelationMetadataInterface,
-  getDynamicRepositoryToken,
-} from '@concepta/nestjs-common';
-import { createMockRepository } from '@concepta/nestjs-common/testing';
-
+import { RepositoryContextInterface } from '../../../context/interfaces/repository-context.interface';
+import { RepositoryRelationMetadataInterface } from '../../../repository/interfaces/repository-relation-metadata.interface';
+import { RepositoryInterface } from '../../../repository/interfaces/repository.interface';
 import { RepositoryRegistryService } from '../../../services/repository-registry.service';
+import { createMockRepository } from '../../../testing/create-mock-repository';
+import { getDynamicRepositoryToken } from '../../../utils/get-dynamic-repository-token';
 import { FederationOrchestrator } from '../../federation-orchestrator.service';
 import { FederatedRelation } from '../../federation.types';
 
@@ -132,10 +129,6 @@ export function mockContext(
     trx: {} as unknown as RepositoryContextInterface['trx'],
     hooks: [],
     entity: 'TestEntity',
-    switchToRepo(entity: string) {
-      this.entity = entity;
-      return this;
-    },
     ...overrides,
   } as RepositoryContextInterface;
 }

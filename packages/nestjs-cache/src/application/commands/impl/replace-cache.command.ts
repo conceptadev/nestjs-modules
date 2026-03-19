@@ -1,8 +1,5 @@
-import {
-  CacheCreatableInterface,
-  ReferenceId,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
+import { CacheCreatableInterface, ReferenceId } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 export class ReplaceCacheCommand {
   constructor(

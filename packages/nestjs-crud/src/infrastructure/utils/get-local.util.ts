@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { RepositoryContextInterface } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
 import { CrudLocal } from '../interceptors/interfaces/crud-local.interface';

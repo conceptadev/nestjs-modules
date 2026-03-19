@@ -1,6 +1,6 @@
 import { Injectable, PlainLiteralObject } from '@nestjs/common';
 
-import { RepositoryInterface, WhereClause } from '@concepta/nestjs-common';
+import { RepositoryInterface, WhereClause } from '@concepta/nestjs-repository';
 
 import { CrudAdapter } from '../../../infrastructure/adapters/crud.adapter';
 import { CrudContextOptionsInterface } from '../../../infrastructure/interceptors/interfaces/crud-context-options.interface';

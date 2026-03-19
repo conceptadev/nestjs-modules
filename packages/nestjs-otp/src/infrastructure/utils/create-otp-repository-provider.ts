@@ -3,7 +3,7 @@ import { Provider, Type } from '@nestjs/common';
 import {
   getDynamicRepositoryToken,
   RepositoryInterface,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { OtpRepositoryInterface } from '../../domain/repositories/otp-repository.interface';
 import { OTP_CUSTOM_REPOSITORY_TOKEN } from '../../otp.constants';

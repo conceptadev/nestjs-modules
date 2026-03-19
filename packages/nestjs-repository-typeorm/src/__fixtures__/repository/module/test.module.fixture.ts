@@ -3,7 +3,6 @@ import { Module } from '@nestjs/common';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 
 import { TypeOrmRepositoryModule } from '../../../typeorm-repository.module';
-import { TestModelServiceFixture } from '../../model/test-model.service.fixture';
 import { TEST_ENTITY_TOKEN } from '../config/test.constants.fixture';
 import { TestEntityFixture } from '../entity/test.entity.fixture';
 
@@ -14,7 +13,5 @@ import { TestEntityFixture } from '../entity/test.entity.fixture';
       entities: [{ key: TEST_ENTITY_TOKEN, entity: TestEntityFixture }],
     }),
   ],
-  providers: [TestModelServiceFixture],
-  exports: [TestModelServiceFixture],
 })
 export class TestModuleFixture {}

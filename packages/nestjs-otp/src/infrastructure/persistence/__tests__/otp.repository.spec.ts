@@ -1,9 +1,6 @@
-import {
-  AppContextHost,
-  RepositoryContextInterface,
-  Where,
-} from '@concepta/nestjs-common';
-import { createMockRepository } from '@concepta/nestjs-common/testing';
+import { AppContextHost } from '@concepta/nestjs-common';
+import { RepositoryContextInterface, Where } from '@concepta/nestjs-repository';
+import { createMockRepository } from '@concepta/nestjs-repository/testing';
 
 import {
   createMockContext,

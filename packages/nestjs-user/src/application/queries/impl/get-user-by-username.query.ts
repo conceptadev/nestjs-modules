@@ -1,7 +1,5 @@
-import {
-  ReferenceUsername,
-  RepositoryContextInterface,
-} from '@concepta/nestjs-common';
+import { ReferenceUsername } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 export class GetUserByUsernameQuery {
   constructor(

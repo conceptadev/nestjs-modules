@@ -1,5 +1,4 @@
-import { OrderClause } from '@concepta/nestjs-common';
-
+import { OrderClause } from '../../repository/repository.types';
 import { FederatedRelation, FederationStrategy } from '../federation.types';
 import { FilterAnalyzer } from '../filter-analyzer';
 

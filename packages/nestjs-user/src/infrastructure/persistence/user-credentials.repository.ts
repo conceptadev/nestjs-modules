@@ -1,11 +1,13 @@
 import {
-  OrderBy,
   ReferenceId,
+  UserCredentialEntityInterface,
+} from '@concepta/nestjs-common';
+import {
+  OrderBy,
   RepositoryContextInterface,
   RepositoryInterface,
-  UserCredentialEntityInterface,
   Where,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { UserCredentials } from '../../domain/aggregates/user-credentials';
 import { UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';

@@ -3,7 +3,7 @@ import { Provider, Type } from '@nestjs/common';
 import {
   getDynamicRepositoryToken,
   RepositoryInterface,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { CACHE_CUSTOM_REPOSITORY_TOKEN } from '../../cache.constants';
 import { CacheRepositoryInterface } from '../../domain/repositories/cache-repository.interface';

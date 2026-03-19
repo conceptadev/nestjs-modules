@@ -1,7 +1,5 @@
 import { Module, DynamicModule, Provider } from '@nestjs/common';
 
-import { getDynamicRepositoryToken } from '@concepta/nestjs-common';
-
 import {
   FEDERATION_ORCHESTRATOR,
   FederationOrchestrator,
@@ -18,6 +16,7 @@ import {
   TransactionFactoryRegistry,
   TRANSACTION_FACTORY_REGISTRY,
 } from './transaction/transaction-factory-registry';
+import { getDynamicRepositoryToken } from './utils/get-dynamic-repository-token';
 
 /**
  * Repository module providing data access abstraction with transaction support.

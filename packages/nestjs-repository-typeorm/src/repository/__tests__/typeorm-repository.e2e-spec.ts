@@ -1,11 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken } from '@nestjs/typeorm';
 
-import {
-  getDynamicRepositoryToken,
-  ModelQueryException,
-  Where,
-} from '@concepta/nestjs-common';
+import { ModelQueryException } from '@concepta/nestjs-common';
+import { getDynamicRepositoryToken, Where } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
 import { TEST_ENTITY_TOKEN } from '../../__fixtures__/repository/config/test.constants.fixture';

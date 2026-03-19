@@ -1,8 +1,5 @@
-import {
-  ReferenceId,
-  RepositoryContextInterface,
-  PasswordUpdateInterface,
-} from '@concepta/nestjs-common';
+import { PasswordUpdateInterface, ReferenceId } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 export class UpdateUserPasswordCommand {
   constructor(

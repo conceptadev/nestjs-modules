@@ -1,6 +1,3 @@
-// Repository testing utilities
-export { createMockRepository } from './repository/testing/create-mock-repository';
-
 // CQRS testing utilities
 export { createMockEventPublisher } from './testing/create-mock-event-publisher';
 export { createMockCommandBus } from './testing/create-mock-command-bus';

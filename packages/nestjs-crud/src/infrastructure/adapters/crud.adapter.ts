@@ -6,17 +6,17 @@ import {
 } from '@nestjs/common';
 import { isObject, isUndefined } from '@nestjs/common/utils/shared.utils';
 
+import { DeepPartial } from '@concepta/nestjs-common';
 import {
-  DeepPartial,
   EntityColumn,
-  RepositoryInterface,
-  RepositoryFindOptions,
+  isWhereCondition,
   RepositoryFindOneOptions,
+  RepositoryFindOptions,
+  RepositoryInterface,
   Where,
   WhereClause,
   WhereCondition,
-  isWhereCondition,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
 import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';

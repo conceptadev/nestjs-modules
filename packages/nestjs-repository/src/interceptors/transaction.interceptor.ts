@@ -7,11 +7,9 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 
-import {
-  getAppContext,
-  TransactionContextInterface,
-} from '@concepta/nestjs-common';
+import { getAppContext } from '@concepta/nestjs-common';
 
+import { TransactionContextInterface } from '../context/interfaces/transaction-context.interface';
 import { TransactionalRunner } from '../transaction/transactional-runner';
 
 /**

@@ -2,12 +2,14 @@ import { PlainLiteralObject } from '@nestjs/common';
 
 import {
   WhereClause,
-  WhereCompoundOperator,
   WhereCondition,
-  WhereOperator,
   isWhereCondition,
   isWhereCompound,
-} from '@concepta/nestjs-common';
+} from '../repository/interfaces/where-clause.interface';
+import {
+  WhereCompoundOperator,
+  WhereOperator,
+} from '../repository/repository.types';
 
 import { FederationException } from './exceptions/federation.exception';
 import { FederatedRelation } from './federation.types';

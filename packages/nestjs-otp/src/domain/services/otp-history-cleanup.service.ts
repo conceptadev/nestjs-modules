@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { RepositoryContextInterface } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../otp.constants';
 import { OtpRepositoryResolverInterface } from '../repositories/otp-repository-resolver.interface';

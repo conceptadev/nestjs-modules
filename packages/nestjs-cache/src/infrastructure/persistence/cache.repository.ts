@@ -1,9 +1,9 @@
+import { ReferenceId } from '@concepta/nestjs-common';
 import {
-  ReferenceId,
   RepositoryContextInterface,
   RepositoryInterface,
   Where,
-} from '@concepta/nestjs-common';
+} from '@concepta/nestjs-repository';
 
 import { Cache } from '../../domain/aggregates/cache';
 import { CacheRepositoryInterface } from '../../domain/repositories/cache-repository.interface';

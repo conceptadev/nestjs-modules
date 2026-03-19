@@ -6,8 +6,7 @@
  *
  * Ported from nestjs-crud __tests__/crud-federation/behavior/root-sort-behavior.spec.ts
  */
-import { WhereOperator } from '@concepta/nestjs-common';
-
+import { WhereOperator } from '../../../repository/repository.types';
 import {
   TestRoot,
   TestRelation,

@@ -7,7 +7,7 @@ build modes: fully generated, pre-decorated, and hybrid.
 ## Project
 
 [![NPM Latest](https://img.shields.io/npm/v/@concepta/nestjs-crud)](https://www.npmjs.com/package/@concepta/nestjs-crud)
-[![NPM Downloads](https://img.shields.io/npm/dw/@conceptadev/nestjs-crud)](https://www.npmjs.com/package/@concepta/nestjs-crud)
+[![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-crud)](https://www.npmjs.com/package/@concepta/nestjs-crud)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
 [![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
@@ -29,6 +29,7 @@ build modes: fully generated, pre-decorated, and hybrid.
 - [CQRS Integration](#cqrs-integration)
 - [Specifications and Hooks](#specifications-and-hooks)
 - [Exceptions](#exceptions)
+- [Entry Points](#entry-points)
 
 ## Installation
 
@@ -1009,3 +1010,9 @@ Hook method decorators from `@concepta/nestjs-repository`:
 | `CrudContextException` | Error during context building (interceptor) |
 | `CrudDecoratorException` | Invalid decorator configuration |
 | `CrudQueryException` | Error executing a query or command |
+
+## Entry Points
+
+| Import Path | Contents |
+| --- | --- |
+| `@concepta/nestjs-crud` | Module, adapter, decorators, resolvers, CQRS queries/commands/handlers, DTOs, specifications, exceptions |

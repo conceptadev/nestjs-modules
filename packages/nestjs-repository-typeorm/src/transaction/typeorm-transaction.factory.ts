@@ -2,8 +2,10 @@ import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
-import { TransactionInterface } from '@concepta/nestjs-common';
-import { TransactionFactoryInterface } from '@concepta/nestjs-repository';
+import {
+  TransactionInterface,
+  TransactionFactoryInterface,
+} from '@concepta/nestjs-repository';
 
 import { TypeOrmTransaction } from './typeorm-transaction';
 

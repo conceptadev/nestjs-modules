@@ -8,9 +8,11 @@ import {
 } from '@nestjs/typeorm';
 import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 
-import { getDynamicRepositoryToken } from '@concepta/nestjs-common';
 import { HookResolverService } from '@concepta/nestjs-hook';
-import { RelationActionConfig } from '@concepta/nestjs-repository';
+import {
+  getDynamicRepositoryToken,
+  RelationActionConfig,
+} from '@concepta/nestjs-repository';
 
 import { TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface';
 import { TypeOrmRepository } from './repository/typeorm-repository';

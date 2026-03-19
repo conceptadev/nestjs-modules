@@ -1,4 +1,4 @@
-import { RepositoryContextInterface } from '@concepta/nestjs-common';
+import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { GetUserByEmailQuery } from '../get-user-by-email.query';
 import { GetUserBySubjectQuery } from '../get-user-by-subject.query';

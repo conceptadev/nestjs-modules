@@ -1,5 +1,5 @@
-import { Where, WhereOperator } from '@concepta/nestjs-common';
-
+import { WhereOperator } from '../../repository/repository.types';
+import { Where } from '../../repository/where.helpers';
 import { FederationException } from '../exceptions/federation.exception';
 
 import {

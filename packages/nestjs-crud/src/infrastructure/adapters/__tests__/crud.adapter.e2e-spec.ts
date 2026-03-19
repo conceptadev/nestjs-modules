@@ -8,13 +8,12 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { ActionEnum, Operation } from '@concepta/nestjs-common';
 import {
-  ActionEnum,
   getDynamicRepositoryToken,
-  Operation,
+  RepositoryModule,
   Where,
-} from '@concepta/nestjs-common';
-import { RepositoryModule } from '@concepta/nestjs-repository';
+} from '@concepta/nestjs-repository';
 import {
   CommonSqliteEntity,
   TypeOrmRepository,
@@ -58,12 +57,6 @@ function ctx(
     locals: {},
     ...overrides,
   } as CrudContextInterface<TestEntityFixture>;
-
-  base.switchToRepo = (entity: string) => {
-    const overlay = Object.create(base);
-    overlay.entity = entity;
-    return overlay;
-  };
 
   return base;
 }
@@ -1098,12 +1091,6 @@ describe('CrudAdapter relations (e2e)', () => {
       locals: {},
       ...overrides,
     } as CrudContextInterface<CompanyEntity>;
-
-    base.switchToRepo = (entity: string) => {
-      const overlay = Object.create(base);
-      overlay.entity = entity;
-      return overlay;
-    };
 
     return base;
   }
