@@ -1,6 +1,6 @@
 {
   "name": "@concepta/nestjs-user",
-  "version": "8.0.0-alpha.1",
+  "version": "8.0.0-alpha.2",
   "description": "Rockets NestJS User",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -28,10 +28,10 @@
     "!dist/**/__fixtures__/**"
   ],
   "dependencies": {
-    "@concepta/nestjs-common": "8.0.0-alpha.1",
+    "@concepta/nestjs-common": "8.0.0-alpha.2",
     "@concepta/nestjs-event": "^7.0.0-alpha.10",
     "@concepta/nestjs-password": "^7.0.0-alpha.10",
-    "@concepta/nestjs-repository": "8.0.0-alpha.1",
+    "@concepta/nestjs-repository": "8.0.0-alpha.2",
     "@nestjs/common": "^11.1.9",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.9",
@@ -41,18 +41,17 @@
   "devDependencies": {
     "@concepta/nestjs-auth-jwt": "^7.0.0-alpha.10",
     "@concepta/nestjs-authentication": "^7.0.0-alpha.10",
-    "@concepta/nestjs-crud": "8.0.0-alpha.1",
-    "@concepta/nestjs-hook": "^7.0.0-alpha.10",
+    "@concepta/nestjs-crud": "8.0.0-alpha.2",
+    "@concepta/nestjs-hook": "8.0.0-alpha.2",
     "@concepta/nestjs-jwt": "^7.0.0-alpha.10",
-    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.1",
-    "@concepta/nestjs-typeorm-ext": "^7.0.0-alpha.10",
+    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.2",
     "@concepta/typeorm-seeding": "^4.0.0",
     "@faker-js/faker": "^8.4.1",
     "@nestjs/testing": "^11.1.9",
     "@nestjs/typeorm": "^11.0.0",
     "accesscontrol": "^2.2.1",
-    "supertest": "^6.3.4",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "supertest": "^6.3.4"
   },
   "peerDependencies": {
     "class-transformer": "*",

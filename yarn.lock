@@ -1462,11 +1462,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-cache@workspace:packages/nestjs-cache"
   dependencies:
-    "@concepta/nestjs-common": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-crud": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-hook": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-repository": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.1"
+    "@concepta/nestjs-common": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-crud": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-hook": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-repository": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.2"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
     "@nestjs/common": "npm:^11.1.9"
@@ -1480,7 +1480,7 @@ __metadata:
     jest-mock-extended: "npm:^4.0.0"
     supertest: "npm:^6.3.4"
   peerDependencies:
-    "@concepta/nestjs-crud": 8.0.0-alpha.1
+    "@concepta/nestjs-crud": 8.0.0-alpha.2
     "@concepta/typeorm-seeding": ^4.0.0
     "@faker-js/faker": ^8.4.1
     class-transformer: "*"
@@ -1496,7 +1496,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@concepta/nestjs-common@npm:8.0.0-alpha.1, @concepta/nestjs-common@npm:^8.0.0-alpha.1, @concepta/nestjs-common@workspace:packages/nestjs-common":
+"@concepta/nestjs-common@npm:8.0.0-alpha.1":
+  version: 8.0.0-alpha.1
+  resolution: "@concepta/nestjs-common@npm:8.0.0-alpha.1"
+  dependencies:
+    "@nestjs/common": "npm:^11.1.9"
+    "@nestjs/swagger": "npm:^11.2.2"
+    ms: "npm:^2.1.3"
+  peerDependencies:
+    class-transformer: "*"
+    class-validator: "*"
+  checksum: 10c0/3da780e6476457efc01f196f86a6256ec546c5e9519874c9662d41d2148823b93bf2814ad8ee8af86c99e679f586866cb128b9ff178096bffe5b23a4cab5d70b
+  languageName: node
+  linkType: hard
+
+"@concepta/nestjs-common@npm:8.0.0-alpha.2, @concepta/nestjs-common@npm:^8.0.0-alpha.2, @concepta/nestjs-common@workspace:packages/nestjs-common":
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-common@workspace:packages/nestjs-common"
   dependencies:
@@ -1509,8 +1523,12 @@ __metadata:
     ms: "npm:^2.1.3"
     supertest: "npm:^6.3.4"
   peerDependencies:
+    "@nestjs/cqrs": ^11.0.0
     class-transformer: "*"
     class-validator: "*"
+  peerDependenciesMeta:
+    "@nestjs/cqrs":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -1528,14 +1546,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@concepta/nestjs-crud@npm:8.0.0-alpha.1, @concepta/nestjs-crud@workspace:packages/nestjs-crud":
+"@concepta/nestjs-crud@npm:8.0.0-alpha.2, @concepta/nestjs-crud@workspace:packages/nestjs-crud":
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-crud@workspace:packages/nestjs-crud"
   dependencies:
-    "@concepta/nestjs-common": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-hook": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-repository": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.1"
+    "@concepta/nestjs-common": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-hook": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-repository": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.2"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
     "@nestjs/common": "npm:^11.1.9"
@@ -1552,7 +1570,7 @@ __metadata:
     supertest: "npm:^6.3.4"
     typeorm: "npm:^0.3.28"
   peerDependencies:
-    "@concepta/nestjs-repository-typeorm": 8.0.0-alpha.1
+    "@concepta/nestjs-repository-typeorm": 8.0.0-alpha.2
     "@nestjs/cqrs": ^11.0.0
     class-transformer: "*"
     class-validator: "*"
@@ -1652,11 +1670,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@concepta/nestjs-hook@npm:8.0.0-alpha.1, @concepta/nestjs-hook@workspace:packages/nestjs-hook":
+"@concepta/nestjs-hook@npm:8.0.0-alpha.2, @concepta/nestjs-hook@workspace:packages/nestjs-hook":
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-hook@workspace:packages/nestjs-hook"
   dependencies:
-    "@concepta/nestjs-common": "npm:^8.0.0-alpha.1"
+    "@concepta/nestjs-common": "npm:^8.0.0-alpha.2"
     "@nestjs/common": "npm:^11.1.9"
     "@nestjs/core": "npm:^11.1.9"
     "@nestjs/testing": "npm:^11.1.9"
@@ -1821,9 +1839,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-otp@workspace:packages/nestjs-otp"
   dependencies:
-    "@concepta/nestjs-common": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-repository": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.1"
+    "@concepta/nestjs-common": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-repository": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.2"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
     "@nestjs/common": "npm:^11.1.9"
@@ -1885,13 +1903,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@concepta/nestjs-repository-typeorm@npm:8.0.0-alpha.1, @concepta/nestjs-repository-typeorm@workspace:packages/nestjs-repository-typeorm":
+"@concepta/nestjs-repository-typeorm@npm:8.0.0-alpha.2, @concepta/nestjs-repository-typeorm@workspace:packages/nestjs-repository-typeorm":
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-repository-typeorm@workspace:packages/nestjs-repository-typeorm"
   dependencies:
-    "@concepta/nestjs-common": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-hook": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-repository": "npm:8.0.0-alpha.1"
+    "@concepta/nestjs-common": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-hook": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-repository": "npm:8.0.0-alpha.2"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
     "@nestjs/common": "npm:^11.1.9"
@@ -1906,12 +1924,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@concepta/nestjs-repository@npm:8.0.0-alpha.1, @concepta/nestjs-repository@workspace:packages/nestjs-repository":
+"@concepta/nestjs-repository@npm:8.0.0-alpha.2, @concepta/nestjs-repository@workspace:packages/nestjs-repository":
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-repository@workspace:packages/nestjs-repository"
   dependencies:
-    "@concepta/nestjs-common": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-hook": "npm:8.0.0-alpha.1"
+    "@concepta/nestjs-common": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-hook": "npm:8.0.0-alpha.2"
     "@nestjs/common": "npm:^11.1.9"
     "@nestjs/core": "npm:^11.1.9"
     "@nestjs/testing": "npm:^11.1.9"
@@ -1927,11 +1945,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-role@workspace:packages/nestjs-role"
   dependencies:
-    "@concepta/nestjs-common": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-crud": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-hook": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-repository": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.1"
+    "@concepta/nestjs-common": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-crud": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-hook": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-repository": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.2"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
     "@nestjs/common": "npm:^11.1.9"
@@ -1943,7 +1961,7 @@ __metadata:
     "@nestjs/typeorm": "npm:^11.0.0"
     supertest: "npm:^6.3.4"
   peerDependencies:
-    "@concepta/nestjs-crud": 8.0.0-alpha.1
+    "@concepta/nestjs-crud": 8.0.0-alpha.2
     "@concepta/typeorm-seeding": ^4.0.0
     "@faker-js/faker": ^8.4.1
     class-transformer: "*"
@@ -2007,23 +2025,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@concepta/nestjs-typeorm-ext@npm:^7.0.0-alpha.10, @concepta/nestjs-typeorm-ext@workspace:packages/nestjs-typeorm-ext":
-  version: 0.0.0-use.local
-  resolution: "@concepta/nestjs-typeorm-ext@workspace:packages/nestjs-typeorm-ext"
+"@concepta/nestjs-typeorm-ext@npm:^7.0.0-alpha.10":
+  version: 7.0.0-alpha.10
+  resolution: "@concepta/nestjs-typeorm-ext@npm:7.0.0-alpha.10"
   dependencies:
     "@concepta/nestjs-common": "npm:^7.0.0-alpha.10"
-    "@concepta/typeorm-seeding": "npm:^4.0.0"
-    "@faker-js/faker": "npm:^8.4.1"
     "@nestjs/common": "npm:^11.1.9"
-    "@nestjs/testing": "npm:^11.1.9"
     "@nestjs/typeorm": "npm:^11.0.0"
-    sqlite3: "npm:^5.1.4"
   peerDependencies:
     class-transformer: "*"
     class-validator: "*"
     typeorm: ^0.3.0
-  languageName: unknown
-  linkType: soft
+  checksum: 10c0/7f0d32625d6d13826fbdc3bb75b14561ecf7a1d3e7babb6c2c3b1b5d2d9a2bf16c906586634ad3163a53d4f738cd33a9a60b49a2064a7e296f71af21b784b50e
+  languageName: node
+  linkType: hard
 
 "@concepta/nestjs-user@npm:^7.0.0-alpha.10":
   version: 7.0.0-alpha.10
@@ -2049,16 +2064,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-user@workspace:packages/nestjs-user"
   dependencies:
-    "@concepta/nestjs-access-control": "npm:^7.0.0-alpha.10"
     "@concepta/nestjs-auth-jwt": "npm:^7.0.0-alpha.10"
     "@concepta/nestjs-authentication": "npm:^7.0.0-alpha.10"
-    "@concepta/nestjs-common": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-crud": "npm:8.0.0-alpha.1"
+    "@concepta/nestjs-common": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-crud": "npm:8.0.0-alpha.2"
     "@concepta/nestjs-event": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-hook": "npm:8.0.0-alpha.2"
     "@concepta/nestjs-jwt": "npm:^7.0.0-alpha.10"
     "@concepta/nestjs-password": "npm:^7.0.0-alpha.10"
-    "@concepta/nestjs-repository": "npm:8.0.0-alpha.1"
-    "@concepta/nestjs-typeorm-ext": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-repository": "npm:8.0.0-alpha.2"
+    "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.2"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
     "@nestjs/common": "npm:^11.1.9"
@@ -2069,6 +2084,7 @@ __metadata:
     "@nestjs/testing": "npm:^11.1.9"
     "@nestjs/typeorm": "npm:^11.0.0"
     accesscontrol: "npm:^2.2.1"
+    rxjs: "npm:^7.8.1"
     supertest: "npm:^6.3.4"
   peerDependencies:
     class-transformer: "*"
