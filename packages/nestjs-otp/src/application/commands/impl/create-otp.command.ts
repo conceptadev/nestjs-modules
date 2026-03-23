@@ -14,6 +14,7 @@ export class CreateOtpCommand {
 
   constructor(
     public readonly ctx: RepositoryContextInterface,
+    public readonly namespace: string,
     public readonly dto: OtpCreatableInterface,
     options?: CreateOtpCommandOptions,
   ) {

@@ -3,6 +3,7 @@ import {
   createMockOtpEntity,
   createMockOtpRepository,
   createMockRepositoryResolver,
+  DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Otp } from '../../../../domain/aggregates/otp';
@@ -29,7 +30,7 @@ describe(FindAssignedOtpsHandler.name, () => {
     ];
     mockRepo.findAllByAssigneeAndCategory.mockResolvedValue(otps);
 
-    const query = new FindAssignedOtpsQuery(ctx, {
+    const query = new FindAssignedOtpsQuery(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'test-assignee',
       category: 'test-category',
     });
@@ -43,7 +44,7 @@ describe(FindAssignedOtpsHandler.name, () => {
   it('should return empty array when none found', async () => {
     mockRepo.findAllByAssigneeAndCategory.mockResolvedValue([]);
 
-    const query = new FindAssignedOtpsQuery(ctx, {
+    const query = new FindAssignedOtpsQuery(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'test-assignee',
       category: 'test-category',
     });

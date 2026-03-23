@@ -16,6 +16,10 @@
     "./optional/seeding": {
       "types": "./dist/optional-seeding.d.ts",
       "default": "./dist/optional-seeding.js"
+    },
+    "./optional/invitation": {
+      "types": "./dist/optional-invitation.d.ts",
+      "default": "./dist/optional-invitation.js"
     }
   },
   "license": "BSD-3-Clause",
@@ -29,7 +33,6 @@
   ],
   "dependencies": {
     "@concepta/nestjs-common": "8.0.0-alpha.2",
-    "@concepta/nestjs-event": "^7.0.0-alpha.10",
     "@concepta/nestjs-password": "^7.0.0-alpha.10",
     "@concepta/nestjs-repository": "8.0.0-alpha.2",
     "@nestjs/common": "^11.1.9",
@@ -54,8 +57,14 @@
     "supertest": "^6.3.4"
   },
   "peerDependencies": {
+    "@concepta/nestjs-invitation": "8.0.0-alpha.2",
     "class-transformer": "*",
     "class-validator": "*",
     "typeorm": "^0.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@concepta/nestjs-invitation": {
+      "optional": true
+    }
   }
 }

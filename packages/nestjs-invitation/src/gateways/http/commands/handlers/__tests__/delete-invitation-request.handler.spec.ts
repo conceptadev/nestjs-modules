@@ -1,0 +1,67 @@
+import { Operation } from '@concepta/nestjs-common';
+
+import {
+  createMockCommandBus,
+  createMockInvitationEntity,
+  toInvitationDomain,
+} from '../../../../../__tests__/helpers/mock.helpers';
+import { DeleteInvitationRequest } from '../../impl/delete-invitation.request';
+import { DeleteInvitationRequestHandler } from '../delete-invitation-request.handler';
+
+describe(DeleteInvitationRequestHandler.name, () => {
+  let commandBus: ReturnType<typeof createMockCommandBus>;
+  let handler: DeleteInvitationRequestHandler;
+
+  beforeEach(() => {
+    commandBus = createMockCommandBus();
+    handler = new DeleteInvitationRequestHandler(commandBus as never);
+  });
+
+  it('should return null when returnDeleted is false', async () => {
+    commandBus.execute.mockResolvedValue(
+      toInvitationDomain(createMockInvitationEntity()),
+    );
+
+    const context = {
+      entity: 'Invitation',
+      params: { id: 'test-id' },
+      operation: Operation.Delete,
+      options: { route: { returnDeleted: false } },
+    } as never;
+
+    const result = await handler.execute(new DeleteInvitationRequest(context));
+
+    expect(result).toBeNull();
+  });
+
+  it('should return plain object when returnDeleted is true', async () => {
+    commandBus.execute.mockResolvedValue(
+      toInvitationDomain(createMockInvitationEntity()),
+    );
+
+    const context = {
+      entity: 'Invitation',
+      params: { id: 'test-id' },
+      operation: Operation.Delete,
+      options: { route: { returnDeleted: true } },
+    } as never;
+
+    const result = await handler.execute(new DeleteInvitationRequest(context));
+
+    expect(result).not.toBeNull();
+    expect(result!.id).toBe('test-id');
+  });
+
+  it('should throw when id is not a string', async () => {
+    const context = {
+      entity: 'Invitation',
+      params: { id: 42 },
+      operation: Operation.Delete,
+      options: { route: { returnDeleted: false } },
+    } as never;
+
+    await expect(
+      handler.execute(new DeleteInvitationRequest(context)),
+    ).rejects.toThrow();
+  });
+});

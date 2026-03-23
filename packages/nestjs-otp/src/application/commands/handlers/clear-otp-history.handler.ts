@@ -20,7 +20,7 @@ export class ClearOtpHistoryHandler
   ) {}
 
   async execute(command: ClearOtpHistoryCommand): Promise<void> {
-    const { ctx, otp } = command;
+    const { ctx, namespace, otp } = command;
     const { assigneeId, category } = otp;
 
     const keepHistoryDays =
@@ -32,6 +32,7 @@ export class ClearOtpHistoryHandler
 
     return this.txScope.run(ctx, async () => {
       await this.historyCleanup.cleanup(ctx, {
+        namespace,
         assigneeId,
         category,
         keepHistoryDays,

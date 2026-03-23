@@ -1,0 +1,143 @@
+import { randomUUID } from 'crypto';
+
+import {
+  DomainFactory,
+  EntityHeaderInterface,
+  EventContextHost,
+  LiteralObject,
+} from '@concepta/nestjs-common';
+import {
+  AggregateMetaInterface,
+  DomainAggregate,
+} from '@concepta/nestjs-common/aggregate';
+
+import { InvitationDispatchedMetadataInterface } from '../events/interfaces/invitation-dispatched-metadata.interface';
+import { InvitationAcceptedEvent } from '../events/invitation-accepted.event';
+import { InvitationCreatedEvent } from '../events/invitation-created.event';
+import { InvitationDispatchedEvent } from '../events/invitation-dispatched.event';
+import { InvitationRemovedEvent } from '../events/invitation-removed.event';
+import { InvitationRevokedEvent } from '../events/invitation-revoked.event';
+import { InvitationAlreadyAcceptedException } from '../exceptions/invitation-already-accepted.exception';
+import { InvitationRevokedException } from '../exceptions/invitation-revoked.exception';
+import { InvitationCreatableInterface } from '../interfaces/invitation-creatable.interface';
+import { InvitationInterface } from '../interfaces/invitation.interface';
+
+export class Invitation extends DomainAggregate<InvitationInterface> {
+  constructor(
+    id: string,
+    props: InvitationInterface,
+    version?: number,
+    meta?: AggregateMetaInterface,
+  ) {
+    super(id, props, version, meta);
+  }
+
+  get code() {
+    return this.props.code;
+  }
+  get category() {
+    return this.props.category;
+  }
+  get userId() {
+    return this.props.userId;
+  }
+  get constraints() {
+    return this.props.constraints;
+  }
+  get dateAccepted() {
+    return this.props.dateAccepted;
+  }
+  get dateRevoked() {
+    return this.props.dateRevoked;
+  }
+
+  get active(): boolean {
+    return this.props.dateAccepted === null && this.props.dateRevoked === null;
+  }
+
+  get isAccepted(): boolean {
+    return this.props.dateAccepted !== null;
+  }
+
+  get isRevoked(): boolean {
+    return this.props.dateRevoked !== null;
+  }
+
+  static create(
+    eventContext: EventContextHost<EntityHeaderInterface>,
+    dto: InvitationCreatableInterface,
+  ): Invitation {
+    return Invitation.createWithId(eventContext, randomUUID(), dto);
+  }
+
+  static createWithId(
+    eventContext: EventContextHost<EntityHeaderInterface>,
+    id: string,
+    dto: InvitationCreatableInterface,
+  ): Invitation {
+    const { code, category, userId, constraints } = dto;
+
+    const invitation = new Invitation(id, {
+      code,
+      category,
+      userId,
+      constraints: constraints ?? undefined,
+      dateAccepted: null,
+      dateRevoked: null,
+    });
+
+    invitation.apply(
+      new InvitationCreatedEvent(eventContext, invitation.toPlain()),
+    );
+
+    return invitation;
+  }
+
+  accept(
+    eventContext: EventContextHost<EntityHeaderInterface>,
+    payload?: LiteralObject,
+  ): void {
+    if (this.isAccepted) {
+      throw new InvitationAlreadyAcceptedException();
+    }
+
+    if (this.isRevoked) {
+      throw new InvitationRevokedException();
+    }
+
+    this.props.dateAccepted = new Date();
+
+    this.apply(
+      new InvitationAcceptedEvent(eventContext, this.toPlain(), payload),
+    );
+  }
+
+  dispatch(
+    eventContext: EventContextHost<
+      EntityHeaderInterface,
+      InvitationDispatchedMetadataInterface
+    >,
+  ): void {
+    this.apply(new InvitationDispatchedEvent(eventContext, this.toPlain()));
+  }
+
+  remove(eventContext: EventContextHost<EntityHeaderInterface>): void {
+    this.apply(new InvitationRemovedEvent(eventContext, this.toPlain()));
+  }
+
+  revoke(eventContext: EventContextHost<EntityHeaderInterface>): void {
+    if (this.isRevoked) {
+      return;
+    }
+
+    if (this.isAccepted) {
+      throw new InvitationAlreadyAcceptedException();
+    }
+
+    this.props.dateRevoked = new Date();
+
+    this.apply(new InvitationRevokedEvent(eventContext, this.toPlain()));
+  }
+}
+
+Invitation satisfies DomainFactory<InvitationCreatableInterface, Invitation>;

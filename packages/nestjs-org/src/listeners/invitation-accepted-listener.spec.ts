@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken } from '@nestjs/typeorm';
 
 import {
-  INVITATION_MODULE_CATEGORY_ORG_KEY,
   InvitationEntityInterface,
   UserEntityInterface,
   OrgEntityInterface,
@@ -35,7 +34,7 @@ import { OwnerModuleFixture } from '../__fixtures__/owner.module.fixture';
 import { UserEntityFixture } from '../__fixtures__/user-entity.fixture';
 
 describe(InvitationAcceptedListener, () => {
-  const category = INVITATION_MODULE_CATEGORY_ORG_KEY;
+  const category = 'org';
   let app: INestApplication;
   let seedingSource: SeedingSource;
   let testUser: UserEntityInterface;

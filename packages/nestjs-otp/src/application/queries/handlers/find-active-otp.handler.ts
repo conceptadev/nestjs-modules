@@ -14,9 +14,9 @@ export class FindActiveOtpHandler implements IQueryHandler<FindActiveOtpQuery> {
   ) {}
 
   async execute(query: FindActiveOtpQuery): Promise<Otp | null> {
-    const { ctx, otp } = query;
+    const { ctx, namespace, otp } = query;
 
-    const otpRepo = this.repositoryResolver.resolve(ctx.entity);
+    const otpRepo = this.repositoryResolver.resolve(namespace);
 
     return otpRepo.findActiveByPasscode(ctx, {
       category: otp.category,

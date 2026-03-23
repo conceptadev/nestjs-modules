@@ -4,6 +4,7 @@ import {
   createMockOtpRepository,
   createMockOtpSettings,
   createMockRepositoryResolver,
+  DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception';
@@ -32,7 +33,7 @@ describe(ValidateOtpHandler.name, () => {
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
 
-    const query = new ValidateOtpQuery(ctx, {
+    const query = new ValidateOtpQuery(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'test-passcode',
     });
@@ -48,7 +49,7 @@ describe(ValidateOtpHandler.name, () => {
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
 
-    const query = new ValidateOtpQuery(ctx, {
+    const query = new ValidateOtpQuery(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'test-passcode',
     });
@@ -68,7 +69,7 @@ describe(ValidateOtpHandler.name, () => {
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
     (mockSettings.types['uuid'].validator as jest.Mock).mockReturnValue(false);
 
-    const query = new ValidateOtpQuery(ctx, {
+    const query = new ValidateOtpQuery(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'wrong-passcode',
     });
@@ -87,7 +88,7 @@ describe(ValidateOtpHandler.name, () => {
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
 
-    const query = new ValidateOtpQuery(ctx, {
+    const query = new ValidateOtpQuery(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'test-passcode',
     });
@@ -100,7 +101,7 @@ describe(ValidateOtpHandler.name, () => {
   it('should return null when no active OTP found', async () => {
     mockRepo.findActiveByPasscode.mockResolvedValue(null);
 
-    const query = new ValidateOtpQuery(ctx, {
+    const query = new ValidateOtpQuery(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'missing',
     });
@@ -116,7 +117,7 @@ describe(ValidateOtpHandler.name, () => {
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
 
-    const query = new ValidateOtpQuery(ctx, {
+    const query = new ValidateOtpQuery(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'test-passcode',
     });

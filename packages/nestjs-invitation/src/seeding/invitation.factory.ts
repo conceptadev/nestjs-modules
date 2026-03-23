@@ -2,8 +2,9 @@ import { randomUUID } from 'crypto';
 
 import { faker } from '@faker-js/faker';
 
-import { InvitationEntityInterface } from '@concepta/nestjs-common';
 import { Factory } from '@concepta/typeorm-seeding';
+
+import { InvitationEntityInterface } from '../infrastructure/persistence/interfaces/invitation-entity.interface';
 
 export class InvitationFactory extends Factory<InvitationEntityInterface> {
   protected async entity(

@@ -3,11 +3,11 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
 import {
   AssigneeRelationInterface,
-  EntityHeaderInterface,
   EventContextHost,
 } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
+import { OtpEventHeaderInterface } from '../../../domain/events/interfaces/otp-event-header.interface';
 import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception';
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
 import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface';
@@ -34,10 +34,10 @@ export class ConsumeOtpHandler
   async execute(
     command: ConsumeOtpCommand,
   ): Promise<AssigneeRelationInterface | null> {
-    const { ctx, otp } = command;
+    const { ctx, namespace, otp } = command;
     const { category, passcode } = otp;
 
-    const otpRepo = this.repositoryResolver.resolve(ctx.entity);
+    const otpRepo = this.repositoryResolver.resolve(namespace);
 
     let result: AssigneeRelationInterface | null = null;
 
@@ -62,8 +62,8 @@ export class ConsumeOtpHandler
         return;
       }
 
-      const eventContext = EventContextHost.builder<EntityHeaderInterface>()
-        .setHeader('entity', ctx.entity)
+      const eventContext = EventContextHost.builder<OtpEventHeaderInterface>()
+        .setHeader('namespace', namespace)
         .build();
 
       this.eventPublisher.mergeObjectContext(activeOtp);

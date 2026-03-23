@@ -4,28 +4,40 @@ import {
   Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
 
 import { createSettingsProvider } from '@concepta/nestjs-common';
+import { TransactionScope } from '@concepta/nestjs-repository';
 
+import { AcceptInvitationHandler } from './application/commands/handlers/accept-invitation.handler';
+import { CreateInvitationByEmailHandler } from './application/commands/handlers/create-invitation-by-email.handler';
+import { CreateInvitationHandler } from './application/commands/handlers/create-invitation.handler';
+import { RemoveInvitationHandler } from './application/commands/handlers/remove-invitation.handler';
+import { RevokeInvitationsHandler } from './application/commands/handlers/revoke-invitations.handler';
+import { SendInvitationHandler } from './application/commands/handlers/send-invitation.handler';
+import { InvitationAcceptedListener } from './application/listeners/invitation-accepted.listener';
+import { InvitationDispatchedListener } from './application/listeners/invitation-dispatched.listener';
+import { InvitationRevokedListener } from './application/listeners/invitation-revoked.listener';
+import { FindInvitationByCodeHandler } from './application/queries/handlers/find-invitation-by-code.handler';
+import { GetInvitationHandler } from './application/queries/handlers/get-invitation.handler';
 import { invitationDefaultConfig } from './config/invitation-default.config';
+import { InvitationEmailPolicy } from './domain/policies/invitation-email.policy';
+import { InvitationOtpPolicy } from './domain/policies/invitation-otp.policy';
+import { InvitationEmailPort } from './domain/ports/invitation-email.port';
+import { InvitationOtpPort } from './domain/ports/invitation-otp.port';
+import { InvitationUserPort } from './domain/ports/invitation-user.port';
+import { InvitationService } from './domain/services/invitation.service';
+import { InvitationMapper } from './infrastructure/persistence/invitation.mapper';
+import { createInvitationEmailPolicyProvider } from './infrastructure/utils/create-invitation-email-policy-provider';
+import { createInvitationOtpPolicyProvider } from './infrastructure/utils/create-invitation-otp-policy-provider';
+import { createInvitationRepositoryProvider } from './infrastructure/utils/create-invitation-repository-provider';
 import { InvitationOptionsExtrasInterface } from './interfaces/options/invitation-options-extras.interface';
 import { InvitationOptionsInterface } from './interfaces/options/invitation-options.interface';
 import { InvitationSettingsInterface } from './interfaces/options/invitation-settings.interface';
-import { InvitationEmailServiceInterface } from './interfaces/services/invitation-email-service.interface';
-import { InvitationOtpServiceInterface } from './interfaces/services/invitation-otp-service.interface';
-import { InvitationUserModelServiceInterface } from './interfaces/services/invitation-user-model.service.interface';
 import {
-  INVITATION_MODULE_EMAIL_SERVICE_TOKEN,
-  INVITATION_MODULE_OTP_SERVICE_TOKEN,
+  INVITATION_MODULE_DEFAULT_ENTITY_KEY,
   INVITATION_MODULE_SETTINGS_TOKEN,
-  INVITATION_MODULE_USER_MODEL_SERVICE_TOKEN,
 } from './invitation.constants';
-import { InvitationAcceptanceService } from './services/invitation-acceptance.service';
-import { InvitationAttemptService } from './services/invitation-attempt.service';
-import { InvitationModelService } from './services/invitation-model.service';
-import { InvitationRevocationService } from './services/invitation-revocation.service';
-import { InvitationSendService } from './services/invitation-send.service';
-import { InvitationService } from './services/invitation.service';
 
 const RAW_OPTIONS_TOKEN = Symbol('__INVITATION_MODULE_RAW_OPTIONS_TOKEN__');
 
@@ -38,7 +50,10 @@ export const {
   optionsInjectionToken: RAW_OPTIONS_TOKEN,
 })
   .setExtras<InvitationOptionsExtrasInterface>(
-    { global: false },
+    {
+      global: false,
+      entities: { invitation: INVITATION_MODULE_DEFAULT_ENTITY_KEY },
+    },
     definitionTransform,
   )
   .build();
@@ -54,18 +69,16 @@ function definitionTransform(
   extras: InvitationOptionsExtrasInterface,
 ): DynamicModule {
   const { imports = [], providers = [] } = definition;
-  const { global = false } = extras;
+  const { global = false, entities } = extras;
+  const entityKey =
+    entities?.invitation ?? INVITATION_MODULE_DEFAULT_ENTITY_KEY;
 
   return {
     ...definition,
     global,
     imports: createInvitationImports({ imports }),
-    providers: createInvitationProviders({ providers }),
-    exports: [
-      ConfigModule,
-      RAW_OPTIONS_TOKEN,
-      ...(createInvitationExports() ?? []),
-    ],
+    providers: createInvitationProviders({ providers, entityKey }),
+    exports: [ConfigModule, RAW_OPTIONS_TOKEN, ...createInvitationExports()],
   };
 }
 
@@ -75,40 +88,46 @@ export function createInvitationImports(options: {
   return [
     ...(options.imports || []),
     ConfigModule.forFeature(invitationDefaultConfig),
+    CqrsModule.forRoot(),
   ];
 }
 
-export function createInvitationExports(): DynamicModule['exports'] {
-  return [
-    INVITATION_MODULE_SETTINGS_TOKEN,
-    INVITATION_MODULE_OTP_SERVICE_TOKEN,
-    INVITATION_MODULE_EMAIL_SERVICE_TOKEN,
-    INVITATION_MODULE_USER_MODEL_SERVICE_TOKEN,
-    InvitationService,
-    InvitationModelService,
-    InvitationAcceptanceService,
-    InvitationRevocationService,
-    InvitationAttemptService,
-    InvitationSendService,
-  ];
+export function createInvitationExports(): Required<
+  Pick<DynamicModule, 'exports'>
+>['exports'] {
+  return [INVITATION_MODULE_SETTINGS_TOKEN, InvitationMapper];
 }
 
 export function createInvitationProviders(options: {
   overrides?: InvitationOptions;
   providers?: Provider[];
+  entityKey: string;
 }): Provider[] {
   return [
     ...(options.providers ?? []),
     InvitationService,
-    InvitationAcceptanceService,
-    InvitationRevocationService,
-    InvitationModelService,
-    InvitationAttemptService,
     createInvitationSettingsProvider(options.overrides),
-    createInvitationOtpServiceProvider(options.overrides),
-    createInvitationEmailServiceProvider(options.overrides),
-    createInvitationUserModelServiceProvider(options.overrides),
-    createInvitationSendServiceProvider(options.overrides),
+    createInvitationRepositoryProvider(options.entityKey),
+    createInvitationOtpPolicyProvider(),
+    createInvitationEmailPolicyProvider(),
+    createInvitationOtpPortProvider(),
+    createInvitationUserPortProvider(),
+    createInvitationEmailPortProvider(),
+    InvitationMapper,
+    // command handlers
+    CreateInvitationHandler,
+    CreateInvitationByEmailHandler,
+    SendInvitationHandler,
+    AcceptInvitationHandler,
+    RevokeInvitationsHandler,
+    RemoveInvitationHandler,
+    // query handlers
+    GetInvitationHandler,
+    FindInvitationByCodeHandler,
+    // event listeners
+    InvitationDispatchedListener,
+    InvitationRevokedListener,
+    InvitationAcceptedListener,
   ];
 }
 
@@ -126,68 +145,50 @@ export function createInvitationSettingsProvider(
   });
 }
 
-export function createInvitationOtpServiceProvider(
-  optionsOverrides?: InvitationOptions,
-): Provider {
+function createInvitationOtpPortProvider(): Provider {
   return {
-    provide: INVITATION_MODULE_OTP_SERVICE_TOKEN,
-    inject: [RAW_OPTIONS_TOKEN],
-    useFactory: async (options: InvitationOptionsInterface) =>
-      optionsOverrides?.otpService ?? options.otpService,
-  };
-}
-
-export function createInvitationEmailServiceProvider(
-  optionsOverrides?: InvitationOptions,
-): Provider {
-  return {
-    provide: INVITATION_MODULE_EMAIL_SERVICE_TOKEN,
-    inject: [RAW_OPTIONS_TOKEN],
-    useFactory: async (options: InvitationOptionsInterface) =>
-      optionsOverrides?.emailService ?? options.emailService,
-  };
-}
-
-export function createInvitationUserModelServiceProvider(
-  optionsOverrides?: InvitationOptions,
-): Provider {
-  return {
-    provide: INVITATION_MODULE_USER_MODEL_SERVICE_TOKEN,
-    inject: [RAW_OPTIONS_TOKEN],
-    useFactory: async (options: InvitationOptionsInterface) =>
-      optionsOverrides?.userModelService ?? options.userModelService,
-  };
-}
-
-export function createInvitationSendServiceProvider(
-  optionsOverrides?: InvitationOptions,
-): Provider {
-  return {
-    provide: InvitationSendService,
+    provide: InvitationOtpPort,
     inject: [
       RAW_OPTIONS_TOKEN,
-      INVITATION_MODULE_SETTINGS_TOKEN,
-      INVITATION_MODULE_EMAIL_SERVICE_TOKEN,
-      INVITATION_MODULE_OTP_SERVICE_TOKEN,
-      INVITATION_MODULE_USER_MODEL_SERVICE_TOKEN,
-      InvitationModelService,
+      InvitationOtpPolicy,
+      CommandBus,
+      QueryBus,
+      TransactionScope,
     ],
-    useFactory: async (
+    useFactory: (
       options: InvitationOptionsInterface,
-      settings: InvitationSettingsInterface,
-      emailService: InvitationEmailServiceInterface,
-      otpService: InvitationOtpServiceInterface,
-      userModelService: InvitationUserModelServiceInterface,
-      invitationModelService: InvitationModelService,
+      otpPolicy: InvitationOtpPolicy,
+      commandBus: CommandBus,
+      queryBus: QueryBus,
+      txScope: TransactionScope,
     ) =>
-      optionsOverrides?.invitationSendService ??
-      options.invitationSendService ??
-      new InvitationSendService(
-        settings,
-        emailService,
-        otpService,
-        userModelService,
-        invitationModelService,
+      new InvitationOtpPort(
+        options.ports.otp,
+        otpPolicy,
+        commandBus,
+        queryBus,
+        txScope,
       ),
+  };
+}
+
+function createInvitationUserPortProvider(): Provider {
+  return {
+    provide: InvitationUserPort,
+    inject: [RAW_OPTIONS_TOKEN, QueryBus],
+    useFactory: (options: InvitationOptionsInterface, queryBus: QueryBus) =>
+      new InvitationUserPort(options.ports.user, queryBus),
+  };
+}
+
+function createInvitationEmailPortProvider(): Provider {
+  return {
+    provide: InvitationEmailPort,
+    inject: [RAW_OPTIONS_TOKEN, InvitationEmailPolicy, CommandBus],
+    useFactory: (
+      options: InvitationOptionsInterface,
+      emailPolicy: InvitationEmailPolicy,
+      commandBus: CommandBus,
+    ) => new InvitationEmailPort(options.ports.email, emailPolicy, commandBus),
   };
 }

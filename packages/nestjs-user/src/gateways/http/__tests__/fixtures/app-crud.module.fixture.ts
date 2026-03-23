@@ -14,7 +14,6 @@ import {
   CrudModule,
   UseCrudLocals,
 } from '@concepta/nestjs-crud';
-import { EventModule } from '@concepta/nestjs-event';
 import { HookModule, UseHooks } from '@concepta/nestjs-hook';
 import { PasswordModule } from '@concepta/nestjs-password';
 import { RepositoryModule } from '@concepta/nestjs-repository';
@@ -58,7 +57,6 @@ const USER_CREDENTIALS_ENTITY_KEY_FIXTURE = 'user-credentials';
       defaultResolver: CrudCqrsResolver,
     }),
     HookModule.forRoot({}),
-    EventModule.forRoot({}),
     PasswordModule.forRoot({}),
     RepositoryModule.forFeature({
       module: TypeOrmRepositoryModule,

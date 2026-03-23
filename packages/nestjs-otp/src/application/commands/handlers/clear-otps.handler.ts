@@ -16,9 +16,9 @@ export class ClearOtpsHandler implements ICommandHandler<ClearOtpsCommand> {
   ) {}
 
   async execute(command: ClearOtpsCommand): Promise<void> {
-    const { ctx, otp } = command;
+    const { ctx, namespace, otp } = command;
 
-    const otpRepo = this.repositoryResolver.resolve(ctx.entity);
+    const otpRepo = this.repositoryResolver.resolve(namespace);
 
     return this.txScope.run(ctx, async () => {
       const otps = await otpRepo.findAllByAssigneeAndCategory(ctx, {

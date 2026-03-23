@@ -3,6 +3,7 @@ import {
   createMockOtpEntity,
   createMockOtpRepository,
   createMockRepositoryResolver,
+  DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Otp } from '../../../../domain/aggregates/otp';
@@ -27,7 +28,7 @@ describe(GetOtpHandler.name, () => {
     const otp = toOtpDomain(createMockOtpEntity());
     mockRepo.get.mockResolvedValue(otp);
 
-    const query = new GetOtpQuery(ctx, 'test-id');
+    const query = new GetOtpQuery(ctx, DEFAULT_OTP_NAMESPACE, 'test-id');
 
     const result = await handler.execute(query);
 
@@ -39,7 +40,7 @@ describe(GetOtpHandler.name, () => {
   it('should throw OtpNotFoundException when not found', async () => {
     mockRepo.get.mockResolvedValue(null);
 
-    const query = new GetOtpQuery(ctx, 'missing');
+    const query = new GetOtpQuery(ctx, DEFAULT_OTP_NAMESPACE, 'missing');
 
     await expect(handler.execute(query)).rejects.toThrow(OtpNotFoundException);
   });

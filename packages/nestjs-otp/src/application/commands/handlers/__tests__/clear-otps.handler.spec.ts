@@ -4,6 +4,7 @@ import {
   createMockOtpRepository,
   createMockRepositoryResolver,
   createMockTransaction,
+  DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { ClearOtpsCommand } from '../../impl/clear-otps.command';
@@ -30,7 +31,7 @@ describe(ClearOtpsHandler.name, () => {
     ];
     mockRepo.findAllByAssigneeAndCategory.mockResolvedValue(otps);
 
-    const command = new ClearOtpsCommand(ctx, {
+    const command = new ClearOtpsCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'test-assignee',
       category: 'test-category',
     });
@@ -50,7 +51,7 @@ describe(ClearOtpsHandler.name, () => {
   it('should not call removeAll when no OTPs found', async () => {
     mockRepo.findAllByAssigneeAndCategory.mockResolvedValue([]);
 
-    const command = new ClearOtpsCommand(ctx, {
+    const command = new ClearOtpsCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'test-assignee',
       category: 'test-category',
     });

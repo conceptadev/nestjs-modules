@@ -1,12 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import {
-  EntityHeaderInterface,
-  EventContextHost,
-} from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
+import { OtpEventHeaderInterface } from '../../../domain/events/interfaces/otp-event-header.interface';
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
 import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../../otp.constants';
 import { DeactivateOtpCommand } from '../impl/deactivate-otp.command';
@@ -23,9 +21,9 @@ export class DeactivateOtpHandler
   ) {}
 
   async execute(command: DeactivateOtpCommand): Promise<void> {
-    const { ctx, otp } = command;
+    const { ctx, namespace, otp } = command;
 
-    const otpRepo = this.repositoryResolver.resolve(ctx.entity);
+    const otpRepo = this.repositoryResolver.resolve(namespace);
 
     return this.txScope.run(ctx, async (trx) => {
       const activeOtp = await otpRepo.findActiveByAssignee(ctx, {
@@ -34,8 +32,8 @@ export class DeactivateOtpHandler
       });
 
       if (activeOtp) {
-        const eventContext = EventContextHost.builder<EntityHeaderInterface>()
-          .setHeader('entity', ctx.entity)
+        const eventContext = EventContextHost.builder<OtpEventHeaderInterface>()
+          .setHeader('namespace', namespace)
           .build();
 
         const aggregate = this.eventPublisher.mergeObjectContext(activeOtp);

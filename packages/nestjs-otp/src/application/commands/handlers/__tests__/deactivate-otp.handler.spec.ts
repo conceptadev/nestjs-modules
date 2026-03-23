@@ -5,6 +5,7 @@ import {
   createMockOtpRepository,
   createMockRepositoryResolver,
   createMockTransaction,
+  DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { DeactivateOtpCommand } from '../../impl/deactivate-otp.command';
@@ -34,7 +35,7 @@ describe(DeactivateOtpHandler.name, () => {
     const activeOtp = toOtpDomain(createMockOtpEntity({ active: true }));
     mockRepo.findActiveByAssignee.mockResolvedValue(activeOtp);
 
-    const command = new DeactivateOtpCommand(ctx, {
+    const command = new DeactivateOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'test-assignee',
       category: 'test-category',
     });
@@ -55,7 +56,7 @@ describe(DeactivateOtpHandler.name, () => {
     const activeOtp = toOtpDomain(createMockOtpEntity({ active: true }));
     mockRepo.findActiveByAssignee.mockResolvedValue(activeOtp);
 
-    const command = new DeactivateOtpCommand(ctx, {
+    const command = new DeactivateOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'test-assignee',
       category: 'test-category',
     });
@@ -69,7 +70,7 @@ describe(DeactivateOtpHandler.name, () => {
   it('should do nothing when no active OTP exists', async () => {
     mockRepo.findActiveByAssignee.mockResolvedValue(null);
 
-    const command = new DeactivateOtpCommand(ctx, {
+    const command = new DeactivateOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'test-assignee',
       category: 'test-category',
     });

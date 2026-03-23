@@ -1,0 +1,43 @@
+import {
+  createMockInvitationService,
+  createMockInvitationContext,
+} from '../../../../__tests__/helpers/mock.helpers';
+import { Invitation } from '../../../../domain/aggregates/invitation';
+import { InvitationService } from '../../../../domain/services/invitation.service';
+import { CreateInvitationCommand } from '../../impl/create-invitation.command';
+import { CreateInvitationHandler } from '../create-invitation.handler';
+
+describe(CreateInvitationHandler.name, () => {
+  const ctx = createMockInvitationContext();
+  let mockService: jest.Mocked<InvitationService>;
+  let handler: CreateInvitationHandler;
+
+  beforeEach(() => {
+    mockService = createMockInvitationService();
+    handler = new CreateInvitationHandler(mockService);
+  });
+
+  it('should delegate to InvitationService.create', async () => {
+    const dto = {
+      code: 'test-code',
+      category: 'user',
+      userId: 'test-user-id',
+      constraints: undefined,
+    };
+
+    const mockInvitation = new Invitation('inv-id', {
+      code: 'test-code',
+      category: 'user',
+      userId: 'test-user-id',
+      constraints: undefined,
+      dateAccepted: null,
+      dateRevoked: null,
+    });
+    mockService.create.mockResolvedValue(mockInvitation);
+
+    const result = await handler.execute(new CreateInvitationCommand(ctx, dto));
+
+    expect(result).toBeInstanceOf(Invitation);
+    expect(mockService.create).toHaveBeenCalledWith(ctx, dto);
+  });
+});

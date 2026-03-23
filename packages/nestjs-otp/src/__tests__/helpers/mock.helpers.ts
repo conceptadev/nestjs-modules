@@ -1,6 +1,6 @@
+import { EventContextHost } from '@concepta/nestjs-common';
 import {
   createMockCommandBus,
-  createMockEventContext as createMockEventContextBase,
   createMockEventPublisher,
   createMockQueryBus,
 } from '@concepta/nestjs-common/testing';
@@ -10,11 +10,14 @@ import {
 } from '@concepta/nestjs-repository/testing';
 
 import { Otp } from '../../domain/aggregates/otp';
+import { OtpEventHeaderInterface } from '../../domain/events/interfaces/otp-event-header.interface';
 import { OtpSettingsInterface } from '../../infrastructure/config/interfaces/otp-settings.interface';
 import { OtpEntityInterface } from '../../infrastructure/persistence/interfaces/otp-entity.interface';
 import { OtpRepositoryResolver } from '../../infrastructure/persistence/otp-repository.resolver';
 import { OtpMapper } from '../../infrastructure/persistence/otp.mapper';
 import { OtpRepository } from '../../infrastructure/persistence/otp.repository';
+
+export const DEFAULT_OTP_NAMESPACE = 'userOtp';
 
 export {
   createMockCommandBus,
@@ -51,8 +54,10 @@ export function createMockContext(entity = 'userOtp') {
   return createMockContextBase(entity);
 }
 
-export function createMockEventContext(entity = 'userOtp') {
-  return createMockEventContextBase(entity);
+export function createMockEventContext(namespace = DEFAULT_OTP_NAMESPACE) {
+  return EventContextHost.builder<OtpEventHeaderInterface>()
+    .setHeader('namespace', namespace)
+    .build();
 }
 
 export function createMockOtpEntity(

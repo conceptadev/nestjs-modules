@@ -1,53 +1,26 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 
-import {
-  AppContextHost,
-  INVITATION_MODULE_CATEGORY_USER_KEY,
-  InvitationAcceptedEventPayloadInterface,
-} from '@concepta/nestjs-common';
-import { EventAsyncInterface, EventListenerOn } from '@concepta/nestjs-event';
+import { AppContextHost } from '@concepta/nestjs-common';
+import { InvitationAcceptedEvent } from '@concepta/nestjs-invitation';
 import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { UserException } from '../../domain/exceptions/user.exception';
-import { UserSettingsInterface } from '../../infrastructure/config/interfaces/user-settings.interface';
-import { USER_MODULE_SETTINGS_TOKEN } from '../../user.constants';
 import { UpdateUserCommand } from '../commands/impl/update-user.command';
 
-@Injectable()
+@EventsHandler(InvitationAcceptedEvent)
 export class InvitationAcceptedListener
-  extends EventListenerOn<
-    EventAsyncInterface<InvitationAcceptedEventPayloadInterface, boolean>
-  >
-  implements OnModuleInit
+  implements IEventHandler<InvitationAcceptedEvent>
 {
-  constructor(
-    @Inject(USER_MODULE_SETTINGS_TOKEN)
-    private settings: UserSettingsInterface,
-    private readonly commandBus: CommandBus,
-  ) {
-    super();
-  }
+  constructor(private readonly commandBus: CommandBus) {}
 
-  onModuleInit() {
-    if (this.settings.invitationAcceptedEvent) {
-      this.on(this.settings.invitationAcceptedEvent);
-    }
-  }
+  async handle(event: InvitationAcceptedEvent) {
+    const { invitation } = event;
 
-  async listen(
-    event: EventAsyncInterface<
-      InvitationAcceptedEventPayloadInterface,
-      boolean
-    >,
-  ) {
-    if (
-      event.payload.invitation.category !== INVITATION_MODULE_CATEGORY_USER_KEY
-    ) {
-      return true;
+    if (invitation.category !== 'user') {
+      return;
     }
 
-    const { userId } = event.payload.invitation;
+    const { userId } = invitation;
 
     if (typeof userId !== 'string') {
       throw new UserException({
@@ -61,7 +34,5 @@ export class InvitationAcceptedListener
     await this.commandBus.execute(
       new UpdateUserCommand(ctx, userId, { active: true }),
     );
-
-    return true;
   }
 }

@@ -16,7 +16,6 @@ import { SetUserPasswordHandler } from './application/commands/handlers/set-user
 import { UpdateUserCredentialHandler } from './application/commands/handlers/update-user-credential.handler';
 import { UpdateUserPasswordHandler } from './application/commands/handlers/update-user-password.handler';
 import { UpdateUserHandler } from './application/commands/handlers/update-user.handler';
-import { InvitationAcceptedListener } from './application/listeners/invitation-accepted.listener';
 import { GetUserByEmailHandler } from './application/queries/handlers/get-user-by-email.handler';
 import { GetUserBySubjectHandler } from './application/queries/handlers/get-user-by-subject.handler';
 import { GetUserByUsernameHandler } from './application/queries/handlers/get-user-by-username.handler';
@@ -113,8 +112,6 @@ export function createUserProviders(options: {
     GetUserByEmailHandler,
     GetUserByUsernameHandler,
     GetUserBySubjectHandler,
-    // Listener
-    InvitationAcceptedListener,
     // Credentials infrastructure (only when credentials entity is configured)
     ...createUserCredentialProviders(
       options.entities.credentials,

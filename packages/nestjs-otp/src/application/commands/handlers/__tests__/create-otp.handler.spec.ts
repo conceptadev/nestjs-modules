@@ -6,6 +6,7 @@ import {
   createMockOtpSettings,
   createMockRepositoryResolver,
   createMockTransaction,
+  DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Otp } from '../../../../domain/aggregates/otp';
@@ -45,7 +46,7 @@ describe(CreateOtpHandler.name, () => {
   });
 
   it('should create an OTP and save it', async () => {
-    const command = new CreateOtpCommand(ctx, validDto);
+    const command = new CreateOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, validDto);
 
     const result = await handler.execute(command);
 
@@ -58,7 +59,7 @@ describe(CreateOtpHandler.name, () => {
   });
 
   it('should throw OtpTypeNotDefinedException for unknown type', async () => {
-    const command = new CreateOtpCommand(ctx, {
+    const command = new CreateOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       ...validDto,
       type: 'unknown',
     });
@@ -69,7 +70,7 @@ describe(CreateOtpHandler.name, () => {
   });
 
   it('should register onCommit and onRollback callbacks', async () => {
-    const command = new CreateOtpCommand(ctx, validDto);
+    const command = new CreateOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, validDto);
 
     await handler.execute(command);
 
@@ -84,9 +85,14 @@ describe(CreateOtpHandler.name, () => {
       );
       mockRepo.findActiveByAssignee.mockResolvedValue(existingOtp);
 
-      const command = new CreateOtpCommand(ctx, validDto, {
-        duplicateStrategy: 'DEACTIVATE',
-      });
+      const command = new CreateOtpCommand(
+        ctx,
+        DEFAULT_OTP_NAMESPACE,
+        validDto,
+        {
+          duplicateStrategy: 'DEACTIVATE',
+        },
+      );
       await handler.execute(command);
 
       expect(mockRepo.findActiveByAssignee).toHaveBeenCalled();
@@ -95,9 +101,14 @@ describe(CreateOtpHandler.name, () => {
     });
 
     it('should not deactivate when duplicateStrategy is ALLOW', async () => {
-      const command = new CreateOtpCommand(ctx, validDto, {
-        duplicateStrategy: 'ALLOW',
-      });
+      const command = new CreateOtpCommand(
+        ctx,
+        DEFAULT_OTP_NAMESPACE,
+        validDto,
+        {
+          duplicateStrategy: 'ALLOW',
+        },
+      );
       await handler.execute(command);
 
       expect(mockRepo.findActiveByAssignee).not.toHaveBeenCalled();
@@ -107,7 +118,11 @@ describe(CreateOtpHandler.name, () => {
       mockSettings.duplicateStrategy = 'DEACTIVATE';
       mockRepo.findActiveByAssignee.mockResolvedValue(null);
 
-      const command = new CreateOtpCommand(ctx, validDto);
+      const command = new CreateOtpCommand(
+        ctx,
+        DEFAULT_OTP_NAMESPACE,
+        validDto,
+      );
       await handler.execute(command);
 
       expect(mockRepo.findActiveByAssignee).toHaveBeenCalled();
@@ -118,10 +133,15 @@ describe(CreateOtpHandler.name, () => {
     it('should throw OtpLimitReachedException when rate limit exceeded', async () => {
       mockRepo.countCreatedSince.mockResolvedValue(5);
 
-      const command = new CreateOtpCommand(ctx, validDto, {
-        rateSeconds: 60,
-        rateThreshold: 3,
-      });
+      const command = new CreateOtpCommand(
+        ctx,
+        DEFAULT_OTP_NAMESPACE,
+        validDto,
+        {
+          rateSeconds: 60,
+          rateThreshold: 3,
+        },
+      );
 
       await expect(handler.execute(command)).rejects.toThrow(
         OtpLimitReachedException,
@@ -131,16 +151,25 @@ describe(CreateOtpHandler.name, () => {
     it('should not throw when under rate limit', async () => {
       mockRepo.countCreatedSince.mockResolvedValue(1);
 
-      const command = new CreateOtpCommand(ctx, validDto, {
-        rateSeconds: 60,
-        rateThreshold: 3,
-      });
+      const command = new CreateOtpCommand(
+        ctx,
+        DEFAULT_OTP_NAMESPACE,
+        validDto,
+        {
+          rateSeconds: 60,
+          rateThreshold: 3,
+        },
+      );
 
       await expect(handler.execute(command)).resolves.toBeInstanceOf(Otp);
     });
 
     it('should skip rate limiting when rateSeconds is not set', async () => {
-      const command = new CreateOtpCommand(ctx, validDto);
+      const command = new CreateOtpCommand(
+        ctx,
+        DEFAULT_OTP_NAMESPACE,
+        validDto,
+      );
 
       await handler.execute(command);
 
@@ -152,7 +181,11 @@ describe(CreateOtpHandler.name, () => {
       mockSettings.rateThreshold = 5;
       mockRepo.countCreatedSince.mockResolvedValue(0);
 
-      const command = new CreateOtpCommand(ctx, validDto);
+      const command = new CreateOtpCommand(
+        ctx,
+        DEFAULT_OTP_NAMESPACE,
+        validDto,
+      );
       await handler.execute(command);
 
       expect(mockRepo.countCreatedSince).toHaveBeenCalled();

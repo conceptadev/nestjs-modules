@@ -15,9 +15,9 @@ export class GetOtpHandler implements IQueryHandler<GetOtpQuery> {
   ) {}
 
   async execute(query: GetOtpQuery): Promise<Otp> {
-    const { ctx, id } = query;
+    const { ctx, namespace, id } = query;
 
-    const otpRepo = this.repositoryResolver.resolve(ctx.entity);
+    const otpRepo = this.repositoryResolver.resolve(namespace);
 
     const otp = await otpRepo.get(ctx, id);
 

@@ -28,16 +28,18 @@ export class OtpHistoryCleanupListener
       eventContext,
       otp: { assigneeId, category },
     } = event;
+    const { namespace } = eventContext.headers;
     const { keepHistoryDays } = this.settings;
 
     if (keepHistoryDays === undefined) return;
 
-    const ctx = AppContextHost.merge<RepositoryContextInterface>(
-      () => eventContext.headers,
-    );
+    const ctx = AppContextHost.merge<RepositoryContextInterface>(() => ({
+      entity: namespace,
+    }));
 
     await this.txScope.run(ctx, async () => {
       await this.historyCleanup.cleanup(ctx, {
+        namespace,
         assigneeId,
         category,
         keepHistoryDays,

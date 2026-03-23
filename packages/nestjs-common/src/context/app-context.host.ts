@@ -1,10 +1,11 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { ExecutionContext, PlainLiteralObject } from '@nestjs/common';
 
 import { ContextMergeException } from './exceptions/context-merge.exception';
 import {
   AppContextInterface,
   AppContextMergeInterface,
 } from './interfaces/app-context.interface';
+import { ContextOverlayInterface } from './interfaces/context-overlay.interface';
 import { isAppContext } from './is-app-context.util';
 
 /**
@@ -32,6 +33,35 @@ export const APP_CONTEXT_KEY = Symbol('APP_CONTEXT_KEY');
 export class AppContextHost<T extends PlainLiteralObject = PlainLiteralObject>
   implements AppContextInterface<T>
 {
+  /**
+   * Define a lazy overlay method on this context instance.
+   *
+   * The overlay's `resolve()` is not called until the handler invokes
+   * `ctx.<name>()`. At that point, `resolve()` returns the overlay props.
+   *
+   * Idempotent — if `name` already exists on `this`, returns `this`.
+   */
+  defineOverlay<Name extends string, Props extends PlainLiteralObject>(
+    contextOverlay: ContextOverlayInterface<Name, Props>,
+    executionContext: ExecutionContext,
+  ): this & Record<Name, () => this & Props> {
+    type Result = this & Record<Name, () => this & Props>;
+
+    if (contextOverlay.name in this) return this as Result;
+
+    Object.defineProperty(this, contextOverlay.name, {
+      value: () => {
+        const values = contextOverlay.resolve(executionContext);
+        return Object.assign(Object.create(this), values);
+      },
+      enumerable: false,
+      configurable: false,
+      writable: false,
+    });
+
+    return this as Result;
+  }
+
   /**
    * Check if a property has been registered.
    */

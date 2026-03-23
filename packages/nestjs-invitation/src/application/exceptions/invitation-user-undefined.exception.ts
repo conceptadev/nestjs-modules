@@ -1,0 +1,19 @@
+import { RuntimeExceptionOptions } from '@concepta/nestjs-common';
+
+import { InvitationException } from '../../domain/exceptions/invitation.exception';
+
+/**
+ * Thrown when a user cannot be resolved from the user port.
+ */
+export class InvitationUserUndefinedException extends InvitationException {
+  static errorMessage =
+    "Can't resolve a valid user from the user port. Check invitation module port configuration.";
+
+  constructor(options?: RuntimeExceptionOptions) {
+    super({
+      message: InvitationUserUndefinedException.errorMessage,
+      ...options,
+    });
+    this.errorCode = 'INVITATION_USER_UNDEFINED_ERROR';
+  }
+}

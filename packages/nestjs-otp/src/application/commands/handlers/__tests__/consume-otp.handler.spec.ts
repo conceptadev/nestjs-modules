@@ -6,6 +6,7 @@ import {
   createMockOtpSettings,
   createMockRepositoryResolver,
   createMockTransaction,
+  DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception';
@@ -42,7 +43,7 @@ describe(ConsumeOtpHandler.name, () => {
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
 
-    const command = new ConsumeOtpCommand(ctx, {
+    const command = new ConsumeOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'test-passcode',
     });
@@ -59,7 +60,7 @@ describe(ConsumeOtpHandler.name, () => {
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
 
-    const command = new ConsumeOtpCommand(ctx, {
+    const command = new ConsumeOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'test-passcode',
     });
@@ -78,7 +79,7 @@ describe(ConsumeOtpHandler.name, () => {
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
 
-    const command = new ConsumeOtpCommand(ctx, {
+    const command = new ConsumeOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'test-passcode',
     });
@@ -92,7 +93,7 @@ describe(ConsumeOtpHandler.name, () => {
   it('should return null and not delete when no active OTP found', async () => {
     mockRepo.findActiveByPasscode.mockResolvedValue(null);
 
-    const command = new ConsumeOtpCommand(ctx, {
+    const command = new ConsumeOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'missing',
     });
@@ -109,7 +110,7 @@ describe(ConsumeOtpHandler.name, () => {
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
 
-    const command = new ConsumeOtpCommand(ctx, {
+    const command = new ConsumeOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'test-passcode',
     });
@@ -127,7 +128,7 @@ describe(ConsumeOtpHandler.name, () => {
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
     (mockSettings.types['uuid'].validator as jest.Mock).mockReturnValue(false);
 
-    const command = new ConsumeOtpCommand(ctx, {
+    const command = new ConsumeOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'wrong-passcode',
     });
@@ -147,7 +148,7 @@ describe(ConsumeOtpHandler.name, () => {
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
 
-    const command = new ConsumeOtpCommand(ctx, {
+    const command = new ConsumeOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'test-passcode',
     });

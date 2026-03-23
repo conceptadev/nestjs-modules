@@ -15,14 +15,15 @@ export class OtpHistoryCleanupService {
   async cleanup(
     ctx: RepositoryContextInterface,
     options: {
+      namespace: string;
       assigneeId: string;
       category: string;
       keepHistoryDays: number;
     },
   ): Promise<void> {
-    const { assigneeId, category, keepHistoryDays } = options;
+    const { namespace, assigneeId, category, keepHistoryDays } = options;
 
-    const otpRepo = this.repositoryResolver.resolve(ctx.entity);
+    const otpRepo = this.repositoryResolver.resolve(namespace);
 
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - keepHistoryDays);

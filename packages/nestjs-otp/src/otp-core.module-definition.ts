@@ -20,6 +20,8 @@ import { FindAssignedOtpsHandler } from './application/queries/handlers/find-ass
 import { GetOtpHandler } from './application/queries/handlers/get-otp.handler';
 import { ValidateOtpHandler } from './application/queries/handlers/validate-otp.handler';
 import { OtpHistoryCleanupService } from './domain/services/otp-history-cleanup.service';
+import { OtpContextInterceptor } from './gateways/otp-context.interceptor';
+import { OtpContextOverlay } from './gateways/otp-context.overlay';
 import { OtpExtrasInterface } from './infrastructure/config/interfaces/otp-extras.interface';
 import { OtpOptionsInterface } from './infrastructure/config/interfaces/otp-options.interface';
 import { OtpSettingsInterface } from './infrastructure/config/interfaces/otp-settings.interface';
@@ -108,6 +110,9 @@ export function createOtpProviders(options: {
     FindAssignedOtpsHandler,
     GetOtpHandler,
     ValidateOtpHandler,
+    // Gateway overlays
+    OtpContextOverlay,
+    OtpContextInterceptor,
     ...(options.providers ?? []),
   ];
 }

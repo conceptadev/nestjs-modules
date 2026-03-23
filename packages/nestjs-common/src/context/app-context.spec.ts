@@ -1,5 +1,17 @@
+import { ExecutionContext } from '@nestjs/common';
+
 import { AppContextHost, APP_CONTEXT_KEY } from './app-context.host';
 import { getAppContext } from './get-app-context.util';
+import { ContextOverlayInterface } from './interfaces/context-overlay.interface';
+
+const mockExecutionContext = {} as ExecutionContext;
+
+function createOverlay<
+  Name extends string,
+  Props extends Record<string, unknown>,
+>(name: Name, props: Props): ContextOverlayInterface<Name, Props> {
+  return { name, resolve: () => props };
+}
 
 describe('AppContextHost', () => {
   describe('register', () => {
@@ -180,6 +192,71 @@ describe('AppContextHost', () => {
         };
       }).toThrow(TypeError);
       expect(ctx.locals).toEqual({ original: true });
+    });
+  });
+
+  describe('registerOverlay', () => {
+    it('should define a callable method on the instance', () => {
+      const ctx = new AppContextHost();
+      const overlay = createOverlay('withFoo', { foo: 'bar' });
+      const typed = ctx.defineOverlay(overlay, mockExecutionContext);
+      expect(typeof typed.withFoo).toBe('function');
+    });
+
+    it('should return this for chaining', () => {
+      const ctx = new AppContextHost();
+      const overlay = createOverlay('withFoo', { foo: 'bar' });
+      const result = ctx.defineOverlay(overlay, mockExecutionContext);
+      expect(result).toBe(ctx);
+    });
+
+    it('should be a no-op when name already exists', () => {
+      const ctx = new AppContextHost();
+      const first = createOverlay('withFoo', { foo: 'first' });
+      const second = createOverlay('withFoo', { foo: 'second' });
+      const typed = ctx.defineOverlay(first, mockExecutionContext);
+      typed.defineOverlay(second, mockExecutionContext);
+      const child = typed.withFoo();
+      expect(child.foo).toBe('first');
+    });
+
+    it('should not be enumerable', () => {
+      const ctx = new AppContextHost();
+      const overlay = createOverlay('withFoo', { foo: 'bar' });
+      ctx.defineOverlay(overlay, mockExecutionContext);
+      expect({ ...ctx }).toEqual({});
+    });
+
+    it('should not call resolve at registration time', () => {
+      const ctx = new AppContextHost();
+      const resolveSpy = jest.fn(() => ({ foo: 'bar' }));
+      const overlay: ContextOverlayInterface<'withFoo', { foo: string }> = {
+        name: 'withFoo',
+        resolve: resolveSpy,
+      };
+      ctx.defineOverlay(overlay, mockExecutionContext);
+      expect(resolveSpy).not.toHaveBeenCalled();
+    });
+
+    it('should call resolve lazily when the overlay method is invoked', () => {
+      const ctx = new AppContextHost();
+      const resolveSpy = jest.fn(() => ({ foo: 'bar' }));
+      const overlay: ContextOverlayInterface<'withFoo', { foo: string }> = {
+        name: 'withFoo',
+        resolve: resolveSpy,
+      };
+      const typed = ctx.defineOverlay(overlay, mockExecutionContext);
+
+      typed.withFoo();
+      expect(resolveSpy).toHaveBeenCalledWith(mockExecutionContext);
+    });
+
+    it('should keep overlays independent per instance', () => {
+      const ctx1 = new AppContextHost();
+      const ctx2 = new AppContextHost();
+      const overlay = createOverlay('withFoo', { foo: 'bar' });
+      ctx1.defineOverlay(overlay, mockExecutionContext);
+      expect('withFoo' in ctx2).toBe(false);
     });
   });
 });

@@ -16,9 +16,9 @@ export class FindAssignedOtpsHandler
   ) {}
 
   async execute(query: FindAssignedOtpsQuery): Promise<Otp[]> {
-    const { ctx, otp } = query;
+    const { ctx, namespace, otp } = query;
 
-    const otpRepo = this.repositoryResolver.resolve(ctx.entity);
+    const otpRepo = this.repositoryResolver.resolve(namespace);
 
     return otpRepo.findAllByAssigneeAndCategory(ctx, {
       assigneeId: otp.assigneeId,

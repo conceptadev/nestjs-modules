@@ -4,6 +4,7 @@ import {
   createMockOtpRepository,
   createMockRepositoryResolver,
   createMockTransaction,
+  DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { RemoveOtpCommand } from '../../impl/remove-otp.command';
@@ -28,7 +29,7 @@ describe(RemoveOtpHandler.name, () => {
     const found = toOtpDomain(createMockOtpEntity());
     mockRepo.findByPasscode.mockResolvedValue(found);
 
-    const command = new RemoveOtpCommand(ctx, {
+    const command = new RemoveOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'test-assignee',
       category: 'test-category',
       passcode: 'test-passcode',
@@ -49,7 +50,7 @@ describe(RemoveOtpHandler.name, () => {
   it('should not call remove when OTP is not found', async () => {
     mockRepo.findByPasscode.mockResolvedValue(null);
 
-    const command = new RemoveOtpCommand(ctx, {
+    const command = new RemoveOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'test-assignee',
       category: 'test-category',
       passcode: 'missing',
@@ -63,7 +64,7 @@ describe(RemoveOtpHandler.name, () => {
   it('should run within a transaction', async () => {
     mockRepo.findByPasscode.mockResolvedValue(null);
 
-    const command = new RemoveOtpCommand(ctx, {
+    const command = new RemoveOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'a',
       category: 'c',
       passcode: 'p',

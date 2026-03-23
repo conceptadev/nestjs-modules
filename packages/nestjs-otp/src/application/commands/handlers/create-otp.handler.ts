@@ -1,16 +1,14 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import {
-  EntityHeaderInterface,
-  EventContextHost,
-} from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
 import {
   RepositoryContextInterface,
   TransactionScope,
 } from '@concepta/nestjs-repository';
 
 import { Otp } from '../../../domain/aggregates/otp';
+import { OtpEventHeaderInterface } from '../../../domain/events/interfaces/otp-event-header.interface';
 import { OtpLimitReachedException } from '../../../domain/exceptions/otp-limit-reached.exception';
 import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception';
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
@@ -36,7 +34,14 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
   ) {}
 
   async execute(command: CreateOtpCommand): Promise<Otp> {
-    const { ctx, dto, duplicateStrategy, rateSeconds, rateThreshold } = command;
+    const {
+      ctx,
+      namespace,
+      dto,
+      duplicateStrategy,
+      rateSeconds,
+      rateThreshold,
+    } = command;
 
     if (!this.settings.types[dto.type]) {
       throw new OtpTypeNotDefinedException(dto.type);
@@ -45,12 +50,12 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
     const validatedDto = await validateOtpDto(OtpCreateDto, dto);
     const { assigneeId, category, type, expiresIn } = validatedDto;
 
-    const otpRepo = this.repositoryResolver.resolve(ctx.entity);
+    const otpRepo = this.repositoryResolver.resolve(namespace);
 
     const passcode = this.settings.types[dto.type].generator();
 
-    const eventContext = EventContextHost.builder<EntityHeaderInterface>()
-      .setHeader('entity', ctx.entity)
+    const eventContext = EventContextHost.builder<OtpEventHeaderInterface>()
+      .setHeader('namespace', namespace)
       .build();
 
     return this.txScope.run(ctx, async (trx) => {

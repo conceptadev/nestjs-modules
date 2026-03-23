@@ -24,10 +24,10 @@ export class ValidateOtpHandler implements IQueryHandler<ValidateOtpQuery> {
   async execute(
     query: ValidateOtpQuery,
   ): Promise<AssigneeRelationInterface | null> {
-    const { ctx, otp } = query;
+    const { ctx, namespace, otp } = query;
     const { category, passcode } = otp;
 
-    const otpRepo = this.repositoryResolver.resolve(ctx.entity);
+    const otpRepo = this.repositoryResolver.resolve(namespace);
 
     const activeOtp = await otpRepo.findActiveByPasscode(ctx, {
       category,

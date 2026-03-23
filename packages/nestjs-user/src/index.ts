@@ -57,9 +57,6 @@ export { GetUserByEmailHandler } from './application/queries/handlers/get-user-b
 export { GetUserBySubjectHandler } from './application/queries/handlers/get-user-by-subject.handler';
 export { GetUserByUsernameHandler } from './application/queries/handlers/get-user-by-username.handler';
 
-// listeners
-export { InvitationAcceptedListener } from './application/listeners/invitation-accepted.listener';
-
 // domain services
 export { UserCredentialsService } from './domain/services/user-credentials.service';
 

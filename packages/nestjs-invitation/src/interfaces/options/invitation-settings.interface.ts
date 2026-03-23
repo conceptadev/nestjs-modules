@@ -1,21 +1,7 @@
-import { InvitationOtpSettingsInterface } from './invitation-otp-settings.interface';
+import { InvitationOtpSettingsInterface } from '../../domain/interfaces/invitation-otp-settings.interface';
+import { InvitationEmailSettings } from '../../domain/policies/invitation-email.policy';
 
 export interface InvitationSettingsInterface {
-  email: {
-    from: string;
-    baseUrl: string;
-    templates: {
-      invitation: {
-        logo: string;
-        fileName: string;
-        subject: string;
-      };
-      invitationAccepted: {
-        logo: string;
-        fileName: string;
-        subject: string;
-      };
-    };
-  };
+  email: InvitationEmailSettings;
   otp: InvitationOtpSettingsInterface;
 }

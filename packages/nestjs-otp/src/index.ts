@@ -52,6 +52,11 @@ export { FindAssignedOtpsHandler } from './application/queries/handlers/find-ass
 export { GetOtpHandler } from './application/queries/handlers/get-otp.handler';
 export { ValidateOtpHandler } from './application/queries/handlers/validate-otp.handler';
 
+// context overlay
+export { OtpContextOverlay } from './gateways/otp-context.overlay';
+export { OtpContextInterceptor } from './gateways/otp-context.interceptor';
+export { OtpNamespace } from './gateways/decorators/otp-namespace.decorator';
+
 // interfaces
 export { OtpExtrasInterface } from './infrastructure/config/interfaces/otp-extras.interface';
 export { OtpOptionsInterface } from './infrastructure/config/interfaces/otp-options.interface';

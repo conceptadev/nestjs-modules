@@ -2,12 +2,12 @@ import { randomUUID } from 'crypto';
 
 import {
   DomainFactory,
-  EntityHeaderInterface,
   EventContextHost,
   OtpInterface,
 } from '@concepta/nestjs-common';
 import { DomainAggregate } from '@concepta/nestjs-common/aggregate';
 
+import { OtpEventHeaderInterface } from '../events/interfaces/otp-event-header.interface';
 import { OtpConsumedEvent } from '../events/otp-consumed.event';
 import { OtpCreatedEvent } from '../events/otp-created.event';
 import { OtpDeactivatedEvent } from '../events/otp-deactivated.event';
@@ -47,14 +47,14 @@ export class Otp extends DomainAggregate<OtpInterface> {
   }
 
   static create(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<OtpEventHeaderInterface>,
     props: OtpCreateProps,
   ): Otp {
     return Otp.createWithId(eventContext, randomUUID(), props);
   }
 
   static createWithId(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<OtpEventHeaderInterface>,
     id: string,
     props: OtpCreateProps,
   ): Otp {
@@ -75,7 +75,7 @@ export class Otp extends DomainAggregate<OtpInterface> {
     return otp;
   }
 
-  deactivate(eventContext: EventContextHost<EntityHeaderInterface>): void {
+  deactivate(eventContext: EventContextHost<OtpEventHeaderInterface>): void {
     this.props = {
       ...this.props,
       active: false,
@@ -86,7 +86,7 @@ export class Otp extends DomainAggregate<OtpInterface> {
     this.apply(new OtpDeactivatedEvent(eventContext, this.toPlain()));
   }
 
-  consume(eventContext: EventContextHost<EntityHeaderInterface>): void {
+  consume(eventContext: EventContextHost<OtpEventHeaderInterface>): void {
     this.apply(new OtpConsumedEvent(eventContext, this.toPlain()));
   }
 

@@ -3,6 +3,7 @@ import {
   createMockOtpEntity,
   createMockOtpRepository,
   createMockRepositoryResolver,
+  DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Otp } from '../../../../domain/aggregates/otp';
@@ -26,7 +27,7 @@ describe(FindActiveOtpHandler.name, () => {
     const otp = toOtpDomain(createMockOtpEntity());
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
 
-    const query = new FindActiveOtpQuery(ctx, {
+    const query = new FindActiveOtpQuery(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'test-passcode',
     });
@@ -40,7 +41,7 @@ describe(FindActiveOtpHandler.name, () => {
   it('should return null when no active OTP found', async () => {
     mockRepo.findActiveByPasscode.mockResolvedValue(null);
 
-    const query = new FindActiveOtpQuery(ctx, {
+    const query = new FindActiveOtpQuery(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',
       passcode: 'missing',
     });

@@ -16,9 +16,9 @@ export class RemoveOtpHandler implements ICommandHandler<RemoveOtpCommand> {
   ) {}
 
   async execute(command: RemoveOtpCommand): Promise<void> {
-    const { ctx, otp } = command;
+    const { ctx, namespace, otp } = command;
 
-    const otpRepo = this.repositoryResolver.resolve(ctx.entity);
+    const otpRepo = this.repositoryResolver.resolve(namespace);
 
     return this.txScope.run(ctx, async () => {
       const found = await otpRepo.findByPasscode(ctx, {

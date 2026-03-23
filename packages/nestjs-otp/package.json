@@ -43,6 +43,7 @@
     "@faker-js/faker": "^8.4.1",
     "class-transformer": "*",
     "class-validator": "*",
+    "rxjs": "^7.1.0",
     "typeorm": "^0.3.0"
   },
   "peerDependenciesMeta": {
