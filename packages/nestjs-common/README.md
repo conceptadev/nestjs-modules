@@ -184,7 +184,6 @@ Small, composable interfaces for common entity fields:
 | `@Ctx()` | Parameter decorator for injecting context |
 | `ContextOverlayInterface` | Interface for defining lazy context overlays (e.g. `withCache`, `withRole`) |
 | `EventContextHost` | Creates event context with entity headers |
-| `EventContextBuilder` | Fluent builder for event context objects |
 | `AppContextInterface` | App context shape |
 | `HookContextInterface` | Hook context shape |
 | `EventContextInterface` | Event context shape |

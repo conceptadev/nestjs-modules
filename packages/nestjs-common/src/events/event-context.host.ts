@@ -1,6 +1,5 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { EventContextBuilder } from './event-context-builder';
 import { EventContextInterface } from './interfaces/event-context-interface';
 
 export class EventContextHost<
@@ -15,13 +14,6 @@ export class EventContextHost<
     this.headers = { ...headers };
     this.metadata = { ...metadata };
     Object.freeze(this);
-  }
-
-  static builder<
-    H extends PlainLiteralObject = PlainLiteralObject,
-    M extends PlainLiteralObject = PlainLiteralObject,
-  >(): EventContextBuilder<H, M, {}, {}> {
-    return EventContextBuilder.start<H, M>();
   }
 
   getHeader<K extends keyof H>(key: K): H[K] {

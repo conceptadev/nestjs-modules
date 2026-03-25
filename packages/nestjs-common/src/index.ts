@@ -130,5 +130,4 @@ export { ContextOverlayInterface } from './context/interfaces/context-overlay.in
 export { HookContextInterface } from './context/interfaces/hook-context.interface';
 // Event context
 export { EventContextHost } from './events/event-context.host';
-export { EventContextBuilder } from './events/event-context-builder';
 export { EventContextInterface } from './events/interfaces/event-context-interface';
