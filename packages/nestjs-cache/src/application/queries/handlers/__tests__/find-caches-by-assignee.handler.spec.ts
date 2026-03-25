@@ -1,15 +1,15 @@
 import {
   createMockCacheRepository,
   createMockRepositoryResolver,
-  createMockContext,
   createMockCacheEntity,
   toCacheDomain,
+  DEFAULT_CACHE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { FindCachesByAssigneeQuery } from '../../impl/find-caches-by-assignee.query';
 import { FindCachesByAssigneeHandler } from '../find-caches-by-assignee.handler';
 
 describe(FindCachesByAssigneeHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockCacheRepository>;
   let handler: FindCachesByAssigneeHandler;
 
@@ -28,7 +28,7 @@ describe(FindCachesByAssigneeHandler.name, () => {
     ]);
 
     const result = await handler.execute(
-      new FindCachesByAssigneeQuery(ctx, 'test-assignee'),
+      new FindCachesByAssigneeQuery(ctx, DEFAULT_CACHE_NAMESPACE, 'test-assignee'),
     );
 
     expect(result).toHaveLength(2);
@@ -38,7 +38,7 @@ describe(FindCachesByAssigneeHandler.name, () => {
     mockRepo.findAllByAssignee.mockResolvedValue([]);
 
     const result = await handler.execute(
-      new FindCachesByAssigneeQuery(ctx, 'no-match'),
+      new FindCachesByAssigneeQuery(ctx, DEFAULT_CACHE_NAMESPACE, 'no-match'),
     );
 
     expect(result).toEqual([]);

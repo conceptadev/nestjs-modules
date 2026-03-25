@@ -1,10 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import {
-  EntityHeaderInterface,
-  EventContextHost,
-} from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { Role } from '../../../domain/aggregates/role';
@@ -22,13 +19,11 @@ export class ReplaceRoleHandler implements ICommandHandler<ReplaceRoleCommand> {
   ) {}
 
   async execute(command: ReplaceRoleCommand): Promise<Role> {
-    const { ctx, id, dto } = command;
+    const { ctx, namespace, id, dto } = command;
 
-    const roleRepo = this.repositoryResolver.resolve(ctx.entity);
+    const roleRepo = this.repositoryResolver.resolve(namespace);
 
-    const eventContext = EventContextHost.builder<EntityHeaderInterface>()
-      .setHeader('entity', ctx.entity)
-      .build();
+    const eventContext = new EventContextHost({ namespace }, {});
 
     return this.txScope.run(ctx, async (trx) => {
       const existing = await roleRepo.get(ctx, id);

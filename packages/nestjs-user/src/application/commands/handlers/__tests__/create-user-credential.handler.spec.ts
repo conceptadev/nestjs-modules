@@ -1,5 +1,3 @@
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
-
 import {
   createMockTxScope,
   createMockUserCredentialsService,
@@ -7,8 +5,6 @@ import {
 import { UserCredentials } from '../../../../domain/aggregates/user-credentials';
 import { CreateUserCredentialCommand } from '../../impl/create-user-credential.command';
 import { CreateUserCredentialHandler } from '../create-user-credential.handler';
-
-const ctx = {} as RepositoryContextInterface;
 
 describe(CreateUserCredentialHandler.name, () => {
   const userCredentialsService = createMockUserCredentialsService();
@@ -25,12 +21,12 @@ describe(CreateUserCredentialHandler.name, () => {
 
   it('should delegate to userCredentialsService.setPassword', async () => {
     const result = await handler.execute(
-      new CreateUserCredentialCommand(ctx, 'user-1', 'secret'),
+      new CreateUserCredentialCommand({}, 'user-1', 'secret'),
     );
 
     expect(result).toBe(mockCredentials);
     expect(userCredentialsService.setPassword).toHaveBeenCalledWith(
-      ctx,
+      {},
       expect.anything(),
       'user-1',
       'secret',

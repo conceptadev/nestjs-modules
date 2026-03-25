@@ -1,4 +1,4 @@
-import { Injectable, Type } from '@nestjs/common';
+import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 
 import {
@@ -6,7 +6,6 @@ import {
   ReferenceId,
   ReferenceIdInterface,
 } from '@concepta/nestjs-common';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { InvitationUserInterface } from '../interfaces/invitation-user.interface';
 
@@ -15,12 +14,12 @@ export type InvitationUserResult =
   | null;
 
 export interface GetUserByIdQueryInterface {
-  ctx: RepositoryContextInterface;
+  ctx: PlainLiteralObject;
   id: ReferenceId;
 }
 
 export interface GetUserByEmailQueryInterface {
-  ctx: RepositoryContextInterface;
+  ctx: PlainLiteralObject;
   email: ReferenceEmail;
 }
 
@@ -37,7 +36,7 @@ export class InvitationUserPort {
   ) {}
 
   async getById(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     userId: ReferenceId,
   ): Promise<InvitationUserResult> {
     return this.queryBus.execute(
@@ -46,7 +45,7 @@ export class InvitationUserPort {
   }
 
   async getByEmail(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     email: ReferenceEmail,
   ): Promise<InvitationUserResult> {
     return this.queryBus.execute(

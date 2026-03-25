@@ -3,9 +3,9 @@ import {
   createMockRoleRepositoryResolver,
   createMockTransaction,
   createMockEventPublisher,
-  createMockContext,
   createMockRoleEntity,
   toRoleDomain,
+  DEFAULT_ROLE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Role } from '../../../../domain/aggregates/role';
 import { RoleNotFoundException } from '../../../exceptions/role-not-found.exception';
@@ -13,7 +13,7 @@ import { UpdateRoleCommand } from '../../impl/update-role.command';
 import { UpdateRoleHandler } from '../update-role.handler';
 
 describe(UpdateRoleHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockRoleRepository>;
   let handler: UpdateRoleHandler;
   let trxHandle: ReturnType<typeof createMockTransaction>['trxHandle'];
@@ -38,7 +38,7 @@ describe(UpdateRoleHandler.name, () => {
 
     const dto = { name: 'NewName' };
     const result = await handler.execute(
-      new UpdateRoleCommand(ctx, 'test-role-id', dto),
+      new UpdateRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id', dto),
     );
 
     expect(result).toBeInstanceOf(Role);
@@ -54,7 +54,7 @@ describe(UpdateRoleHandler.name, () => {
 
     const dto = { name: 'NewName', description: 'NewDesc' };
     const result = await handler.execute(
-      new UpdateRoleCommand(ctx, 'test-role-id', dto),
+      new UpdateRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id', dto),
     );
 
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
@@ -74,7 +74,7 @@ describe(UpdateRoleHandler.name, () => {
     mockRepo.get.mockResolvedValue(existing);
 
     const dto = { name: 'Updated' };
-    await handler.execute(new UpdateRoleCommand(ctx, 'test-role-id', dto));
+    await handler.execute(new UpdateRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id', dto));
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
     expect(trxHandle.onRollback).toHaveBeenCalledTimes(1);
@@ -85,7 +85,7 @@ describe(UpdateRoleHandler.name, () => {
 
     const dto = { name: 'NewName' };
     await expect(
-      handler.execute(new UpdateRoleCommand(ctx, 'missing-id', dto)),
+      handler.execute(new UpdateRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'missing-id', dto)),
     ).rejects.toThrow(RoleNotFoundException);
   });
 });

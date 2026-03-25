@@ -16,8 +16,9 @@ export class UpdateCacheRequestHandler {
 
     assertCacheId(id);
 
-    const cache = await this.commandBus.execute<UpdateCacheCommand, Cache>(
-      new UpdateCacheCommand(context, id, dto),
+    const { namespace } = context.withCache();
+    const cache = await this.commandBus.execute(
+      new UpdateCacheCommand(context, namespace, id, dto),
     );
     return cache.toPlain();
   }

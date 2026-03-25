@@ -1,7 +1,6 @@
-import { Injectable, Type } from '@nestjs/common';
+import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { InvitationEventPayloadInterface } from '../events/interfaces/invitation-event-payload.interface';
 import {
@@ -10,7 +9,7 @@ import {
 } from '../policies/invitation-email.policy';
 
 export interface SendInvitationEmailCommandInterface {
-  ctx: RepositoryContextInterface;
+  ctx: PlainLiteralObject;
   invitation: InvitationEventPayloadInterface;
   passcode: string;
   tokenExp: Date;
@@ -20,7 +19,7 @@ export interface SendInvitationEmailCommandInterface {
 }
 
 export interface SendAcceptedEmailCommandInterface {
-  ctx: RepositoryContextInterface;
+  ctx: PlainLiteralObject;
   invitation: InvitationEventPayloadInterface;
   from: string;
   template: InvitationEmailTemplateSettings;
@@ -40,7 +39,7 @@ export class InvitationEmailPort {
   ) {}
 
   async sendInvitation(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     invitation: InvitationEventPayloadInterface,
     params: {
       passcode: string;
@@ -61,7 +60,7 @@ export class InvitationEmailPort {
   }
 
   async sendAccepted(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     invitation: InvitationEventPayloadInterface,
   ): Promise<void> {
     const { from } = this.policy;

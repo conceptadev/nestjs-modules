@@ -1,9 +1,10 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import { PasswordUpdateInterface, ReferenceId } from '@concepta/nestjs-common';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 export class UpdateUserCredentialCommand {
   constructor(
-    public readonly ctx: RepositoryContextInterface,
+    public readonly ctx: PlainLiteralObject,
     public readonly userId: ReferenceId,
     public readonly passwordDto: PasswordUpdateInterface,
   ) {}

@@ -1,14 +1,12 @@
 import { IEvent } from '@nestjs/cqrs';
 
-import {
-  EntityHeaderInterface,
-  EventContextHost,
-  RoleInterface,
-} from '@concepta/nestjs-common';
+import { EventContextHost, RoleInterface } from '@concepta/nestjs-common';
+
+import { RoleEventHeaderInterface } from './interfaces/role-event-header.interface';
 
 export class RoleCreatedEvent implements IEvent {
   constructor(
-    public readonly eventContext: EventContextHost<EntityHeaderInterface>,
+    public readonly eventContext: EventContextHost<RoleEventHeaderInterface>,
     public readonly role: RoleInterface,
   ) {}
 }

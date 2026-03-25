@@ -3,7 +3,7 @@ import {
   createMockRepositoryResolver,
   createMockTransaction,
   createMockEventPublisher,
-  createMockContext,
+  DEFAULT_CACHE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../../domain/aggregates/cache';
 import { CacheExpirationPolicy } from '../../../../domain/policies/cache-expiration.policy';
@@ -11,7 +11,7 @@ import { CreateCacheCommand } from '../../impl/create-cache.command';
 import { CreateCacheHandler } from '../create-cache.handler';
 
 describe(CreateCacheHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   const policy = new CacheExpirationPolicy({ expiresIn: '1h' });
   let mockRepo: ReturnType<typeof createMockCacheRepository>;
   let handler: CreateCacheHandler;
@@ -39,7 +39,7 @@ describe(CreateCacheHandler.name, () => {
       expiresIn: '1h',
     };
 
-    const result = await handler.execute(new CreateCacheCommand(ctx, dto));
+    const result = await handler.execute(new CreateCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto));
 
     expect(result).toBeInstanceOf(Cache);
     expect(result.key).toBe('test-key');
@@ -54,7 +54,7 @@ describe(CreateCacheHandler.name, () => {
       expiresIn: '1h',
     };
 
-    await handler.execute(new CreateCacheCommand(ctx, dto));
+    await handler.execute(new CreateCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto));
 
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
   });
@@ -68,7 +68,7 @@ describe(CreateCacheHandler.name, () => {
       expiresIn: null,
     };
 
-    await handler.execute(new CreateCacheCommand(ctx, dto));
+    await handler.execute(new CreateCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto));
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
     expect(trxHandle.onRollback).toHaveBeenCalledTimes(1);

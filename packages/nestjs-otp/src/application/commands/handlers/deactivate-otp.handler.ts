@@ -3,8 +3,6 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
 import { EventContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
-
-import { OtpEventHeaderInterface } from '../../../domain/events/interfaces/otp-event-header.interface';
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
 import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../../otp.constants';
 import { DeactivateOtpCommand } from '../impl/deactivate-otp.command';
@@ -32,9 +30,7 @@ export class DeactivateOtpHandler
       });
 
       if (activeOtp) {
-        const eventContext = EventContextHost.builder<OtpEventHeaderInterface>()
-          .setHeader('namespace', namespace)
-          .build();
+        const eventContext = new EventContextHost({ namespace }, {});
 
         const aggregate = this.eventPublisher.mergeObjectContext(activeOtp);
         aggregate.deactivate(eventContext);

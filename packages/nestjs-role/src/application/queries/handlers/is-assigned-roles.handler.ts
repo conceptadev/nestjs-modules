@@ -15,13 +15,13 @@ export class IsAssignedRolesHandler
   ) {}
 
   async execute(query: IsAssignedRolesQuery): Promise<boolean> {
-    const { ctx, roleIds, assigneeId } = query;
+    const { ctx, namespace, roleIds, assigneeId } = query;
 
     if (roleIds.length === 0) {
       return false;
     }
 
-    const assignmentRepo = this.repositoryResolver.resolve(ctx.entity);
+    const assignmentRepo = this.repositoryResolver.resolve(namespace);
 
     const count = await assignmentRepo.countByRoleIdsAndAssignee(
       ctx,

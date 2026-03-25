@@ -15,9 +15,9 @@ export class GetCacheHandler implements IQueryHandler<GetCacheQuery> {
   ) {}
 
   async execute(query: GetCacheQuery): Promise<Cache> {
-    const { ctx, id } = query;
+    const { ctx, namespace, id } = query;
 
-    const cacheRepo = this.repositoryResolver.resolve(ctx.entity);
+    const cacheRepo = this.repositoryResolver.resolve(namespace);
 
     const cache = await cacheRepo.get(ctx, id);
 

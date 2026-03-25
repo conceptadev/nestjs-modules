@@ -6,8 +6,6 @@ import {
   EventContextHost,
 } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
-
-import { OtpEventHeaderInterface } from '../../../domain/events/interfaces/otp-event-header.interface';
 import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception';
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
 import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface';
@@ -62,9 +60,7 @@ export class ConsumeOtpHandler
         return;
       }
 
-      const eventContext = EventContextHost.builder<OtpEventHeaderInterface>()
-        .setHeader('namespace', namespace)
-        .build();
+      const eventContext = new EventContextHost({ namespace }, {});
 
       this.eventPublisher.mergeObjectContext(activeOtp);
 

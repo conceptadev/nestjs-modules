@@ -1,6 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
-
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
+import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
 
 import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../otp.constants';
 import { OtpRepositoryResolverInterface } from '../repositories/otp-repository-resolver.interface';
@@ -13,7 +11,7 @@ export class OtpHistoryCleanupService {
   ) {}
 
   async cleanup(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     options: {
       namespace: string;
       assigneeId: string;

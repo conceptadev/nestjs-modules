@@ -1,6 +1,5 @@
 import {
   createMockInvitationService,
-  createMockInvitationContext,
   createMockInvitationEntity,
   toInvitationDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
@@ -10,7 +9,7 @@ import { RemoveInvitationCommand } from '../../impl/remove-invitation.command';
 import { RemoveInvitationHandler } from '../remove-invitation.handler';
 
 describe(RemoveInvitationHandler.name, () => {
-  const ctx = createMockInvitationContext();
+  const ctx = {};
   let mockService: jest.Mocked<InvitationService>;
   let handler: RemoveInvitationHandler;
 

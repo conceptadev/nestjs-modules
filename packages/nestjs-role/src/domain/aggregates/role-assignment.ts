@@ -2,12 +2,12 @@ import { randomUUID } from 'crypto';
 
 import {
   type DomainFactory,
-  EntityHeaderInterface,
   EventContextHost,
   RoleAssignmentInterface,
 } from '@concepta/nestjs-common';
 import { DomainAggregate } from '@concepta/nestjs-common/aggregate';
 
+import { RoleEventHeaderInterface } from '../events/interfaces/role-event-header.interface';
 import { RoleAssignedEvent } from '../events/role-assigned.event';
 import { RoleRevokedEvent } from '../events/role-revoked.event';
 
@@ -26,14 +26,14 @@ export class RoleAssignment extends DomainAggregate<RoleAssignmentInterface> {
   }
 
   static create(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<RoleEventHeaderInterface>,
     props: RoleAssignmentCreateProps,
   ): RoleAssignment {
     return RoleAssignment.createWithId(eventContext, randomUUID(), props);
   }
 
   static createWithId(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<RoleEventHeaderInterface>,
     id: string,
     props: RoleAssignmentCreateProps,
   ): RoleAssignment {
@@ -49,7 +49,7 @@ export class RoleAssignment extends DomainAggregate<RoleAssignmentInterface> {
     return instance;
   }
 
-  revoke(eventContext: EventContextHost<EntityHeaderInterface>): void {
+  revoke(eventContext: EventContextHost<RoleEventHeaderInterface>): void {
     this.apply(new RoleRevokedEvent(eventContext, this.toPlain()));
   }
 }

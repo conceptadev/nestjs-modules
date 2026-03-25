@@ -1,5 +1,4 @@
 import {
-  createMockContext,
   createMockOtpEntity,
   createMockOtpRepository,
   createMockRepositoryResolver,
@@ -15,7 +14,7 @@ describe(RemoveOtpHandler.name, () => {
   let mockRepo: ReturnType<typeof createMockOtpRepository>;
   let mockTx: ReturnType<typeof createMockTransaction>;
 
-  const ctx = createMockContext();
+  const ctx = {};
 
   beforeEach(() => {
     mockRepo = createMockOtpRepository();

@@ -16,8 +16,9 @@ export class ReplaceRoleRequestHandler {
 
     assertRoleId(id);
 
+    const { namespace } = context.withRole();
     const role = await this.commandBus.execute<ReplaceRoleCommand, Role>(
-      new ReplaceRoleCommand(context, id, dto),
+      new ReplaceRoleCommand(context, namespace, id, dto),
     );
     return role.toPlain();
   }

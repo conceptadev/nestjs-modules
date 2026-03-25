@@ -195,41 +195,15 @@ to expose OTP operations as REST endpoints.
 
 ## App Context
 
-Commands, queries, and repository methods require a `RepositoryContextInterface`
-as their first argument. This context carries the entity key, transaction state,
-and hook configuration for the operation.
-
-Use `AppContextHost.merge()` to create a context:
-
-```ts
-import { AppContextHost } from '@concepta/nestjs-common';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
-
-const ctx = AppContextHost.merge<RepositoryContextInterface>(() => ({
-  entity: 'userOtp',
-}));
-```
-
-The `entity` value must match a key registered via `OtpModule.forFeature()`.
-
-When an existing context is available (e.g. from a transaction scope), pass it
-as the second argument to inherit its properties:
+Commands, queries, and repository methods accept a `PlainLiteralObject` as
+their `ctx` argument. This context is threaded through the transaction scope
+and repository layer automatically. In HTTP contexts the gateway provides
+the context; for programmatic use, pass any plain object:
 
 ```ts
-const childCtx = AppContextHost.merge<RepositoryContextInterface>(
-  () => ({ entity: 'emailOtp' }),
-  parentCtx,
+const otp = await this.commandBus.execute<CreateOtpCommand, Otp>(
+  new CreateOtpCommand({}, 'userOtp', dto),
 );
-```
-
-The factory receives a `has` function to conditionally set properties only when
-they are not already present on the parent context:
-
-```ts
-const ctx = AppContextHost.merge<RepositoryContextInterface>((has) => ({
-  entity: 'userOtp',
-  ...(!has('trx') && { trx: myTransactionManager }),
-}), parentCtx);
 ```
 
 ## Commands
@@ -363,7 +337,7 @@ const plain = otp.toPlain();
 ## Repository
 
 `OtpRepository` uses a ctx-first calling convention. All methods take
-`RepositoryContextInterface` as the first argument.
+`PlainLiteralObject` as the first argument.
 
 The repository receives a DI-injected `OtpMapper` that converts database
 entities to `Otp` aggregates via `toDomain()` and aggregates back to

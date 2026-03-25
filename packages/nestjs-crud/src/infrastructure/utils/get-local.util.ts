@@ -1,12 +1,10 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
-
 import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
 import { CrudLocal } from '../interceptors/interfaces/crud-local.interface';
 
 function hasLocals(
-  ctx: RepositoryContextInterface,
+  ctx: PlainLiteralObject,
 ): ctx is CrudContextInterface {
   return 'locals' in ctx;
 }
@@ -22,7 +20,7 @@ function hasLocals(
  * @returns The frozen resolved value, or undefined if not present
  */
 export function getLocal<T extends PlainLiteralObject>(
-  ctx: RepositoryContextInterface | undefined,
+  ctx: PlainLiteralObject | undefined,
   localClass: CrudLocal<T>,
 ): Readonly<T> | undefined {
   if (!ctx || !hasLocals(ctx)) return undefined;

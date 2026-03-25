@@ -579,7 +579,7 @@ const orders = await orderRepo.find({
 ### Passing Context
 
 All repository methods accept an optional `ctx` property in their options.
-The `ctx` carries a `RepositoryContextInterface` that includes the entity key,
+The `ctx` is a `PlainLiteralObject` that carries the entity key,
 transaction state, and hook configuration. When `ctx` has an active `trx`
 (TransactionManager), the repository automatically uses the transactional
 connection — no manual wiring required.
@@ -656,7 +656,7 @@ This ensures domain events are only published after the transaction succeeds.
 
 ```ts
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-import { EntityHeaderInterface, EventContextHost } from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 @CommandHandler(CreateOrderCommand)
@@ -668,13 +668,11 @@ export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
   ) {}
 
   async execute(command: CreateOrderCommand): Promise<Order> {
-    const { ctx, dto } = command;
+    const { ctx, namespace, dto } = command;
 
-    const orderRepo = this.repositoryResolver.resolve(ctx.entity);
+    const orderRepo = this.repositoryResolver.resolve(namespace);
 
-    const eventContext = EventContextHost.builder<EntityHeaderInterface>()
-      .setHeader('entity', ctx.entity)
-      .build();
+    const eventContext = new EventContextHost({ namespace }, {});
 
     return this.txScope.run(ctx, async (trx) => {
       const order = this.eventPublisher.mergeObjectContext(
@@ -1031,4 +1029,4 @@ The injection token is derived from the `key` provided in
 | Import Path | Contents |
 | --- | --- |
 | `@concepta/nestjs-repository` | Module, adapter, repository interfaces, Where/OrderBy/Join builders, transaction management, hooks, federation, decorators, exceptions |
-| `@concepta/nestjs-repository/testing` | `createMockTransaction`, `createMockRepository`, `createMockContext`, `MockTransactionHandle` |
+| `@concepta/nestjs-repository/testing` | `createMockTransaction`, `createMockRepository`, `MockTransactionHandle` |

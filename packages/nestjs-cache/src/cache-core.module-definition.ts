@@ -3,6 +3,7 @@ import {
   DynamicModule,
   Provider,
 } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 
@@ -29,6 +30,8 @@ import { CacheExtrasInterface } from './infrastructure/config/interfaces/cache-e
 import { CacheOptionsInterface } from './infrastructure/config/interfaces/cache-options.interface';
 import { CacheSettingsInterface } from './infrastructure/config/interfaces/cache-settings.interface';
 import { CacheRepositoryResolver } from './infrastructure/persistence/cache-repository.resolver';
+import { CacheContextInterceptor } from './gateways/cache-context.interceptor';
+import { CacheContextOverlay } from './gateways/cache-context.overlay';
 import { CacheMapper } from './infrastructure/persistence/cache.mapper';
 import { createCacheExpirationPolicyProvider } from './infrastructure/utils/create-cache-expiration-policy-provider';
 
@@ -103,6 +106,11 @@ export function createCacheProviders(options: {
     GetCacheHandler,
     FindOneCacheHandler,
     FindCachesByAssigneeHandler,
+    CacheContextOverlay,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheContextInterceptor,
+    },
     ...(options.providers ?? []),
   ];
 }

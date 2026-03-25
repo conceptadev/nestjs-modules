@@ -419,18 +419,34 @@ this metadata and passes it to the email port.
 
 ### Handling an Event
 
+Listen for invitation events from any module. For example, to activate a user
+when their invitation is accepted:
+
 ```ts
-import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { CommandBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { InvitationAcceptedEvent } from '@concepta/nestjs-invitation';
 
 @EventsHandler(InvitationAcceptedEvent)
-export class OnInvitationAccepted implements IEventHandler<InvitationAcceptedEvent> {
-  handle(event: InvitationAcceptedEvent): void {
-    const { eventContext, invitation, payload } = event;
-    // e.g. add user to organization based on payload
+export class ActivateUserOnInvitationAccepted
+  implements IEventHandler<InvitationAcceptedEvent>
+{
+  constructor(private readonly commandBus: CommandBus) {}
+
+  async handle(event: InvitationAcceptedEvent) {
+    const { invitation } = event;
+
+    // Only handle invitations in the 'user' category
+    if (invitation.category !== 'user') return;
+
+    // Activate the invited user
+    await this.commandBus.execute(
+      new UpdateUserCommand({}, invitation.userId, { active: true }),
+    );
   }
 }
 ```
+
+Register the listener as a provider in your module to start receiving events.
 
 ## DTOs
 

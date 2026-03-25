@@ -20,13 +20,19 @@ export class DeleteRoleAssignmentRequestHandler {
 
     assertRoleId(id);
 
+    const { namespace } = context.withRole();
     const assignment = await this.queryBus.execute<
       GetRoleAssignmentQuery,
       RoleAssignment
-    >(new GetRoleAssignmentQuery(context, id));
+    >(new GetRoleAssignmentQuery(context, namespace, id));
 
     await this.commandBus.execute(
-      new RevokeRoleCommand(context, assignment.roleId, assignment.assigneeId),
+      new RevokeRoleCommand(
+        context,
+        namespace,
+        assignment.roleId,
+        assignment.assigneeId,
+      ),
     );
 
     return null;

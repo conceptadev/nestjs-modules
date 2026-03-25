@@ -3,6 +3,7 @@ import {
   DynamicModule,
   Provider,
 } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 
@@ -25,6 +26,8 @@ import { RoleExtrasInterface } from './infrastructure/config/interfaces/role-ext
 import { RoleOptionsInterface } from './infrastructure/config/interfaces/role-options.interface';
 import { RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface';
 import { roleDefaultConfig } from './infrastructure/config/role-default.config';
+import { RoleContextInterceptor } from './gateways/role-context.interceptor';
+import { RoleContextOverlay } from './gateways/role-context.overlay';
 import { RoleAssignmentRepositoryResolver } from './infrastructure/persistence/role-assignment-repository.resolver';
 import { RoleAssignmentMapper } from './infrastructure/persistence/role-assignment.mapper';
 import { RoleRepositoryResolver } from './infrastructure/persistence/role-repository.resolver';
@@ -121,6 +124,11 @@ export function createRoleProviders(options: {
     GetAssignedRolesHandler,
     IsAssignedRoleHandler,
     IsAssignedRolesHandler,
+    RoleContextOverlay,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RoleContextInterceptor,
+    },
     ...(options.providers ?? []),
   ];
 }

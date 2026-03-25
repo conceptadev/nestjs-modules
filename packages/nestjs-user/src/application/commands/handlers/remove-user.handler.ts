@@ -24,7 +24,7 @@ export class RemoveUserHandler
   async execute(command: RemoveUserCommand): Promise<User> {
     const { ctx, id } = command;
 
-    const eventContext = EventContextHost.builder().build();
+    const eventContext = new EventContextHost({}, {});
 
     return this.txScope.run(ctx, async (trx) => {
       const existing = await this.userRepository.get(ctx, id);

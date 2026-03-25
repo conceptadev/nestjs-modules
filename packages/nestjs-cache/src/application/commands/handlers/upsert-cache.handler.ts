@@ -1,10 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import {
-  EntityHeaderInterface,
-  EventContextHost,
-} from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants';
@@ -24,14 +21,12 @@ export class UpsertCacheHandler implements ICommandHandler<UpsertCacheCommand> {
   ) {}
 
   async execute(command: UpsertCacheCommand): Promise<Cache> {
-    const { ctx, dto } = command;
+    const { ctx, namespace, dto } = command;
     const { key, type, data, assigneeId, expiresIn } = dto;
 
-    const cacheRepo = this.repositoryResolver.resolve(ctx.entity);
+    const cacheRepo = this.repositoryResolver.resolve(namespace);
 
-    const eventContext = EventContextHost.builder<EntityHeaderInterface>()
-      .setHeader('entity', ctx.entity)
-      .build();
+    const eventContext = new EventContextHost({ namespace }, {});
 
     return this.txScope.run(ctx, async (trx) => {
       let cache: Cache;

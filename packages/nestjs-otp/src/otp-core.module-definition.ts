@@ -3,6 +3,7 @@ import {
   DynamicModule,
   Provider,
 } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 
@@ -112,7 +113,10 @@ export function createOtpProviders(options: {
     ValidateOtpHandler,
     // Gateway overlays
     OtpContextOverlay,
-    OtpContextInterceptor,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: OtpContextInterceptor,
+    },
     ...(options.providers ?? []),
   ];
 }

@@ -1,3 +1,5 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import { RepositoryContextInterface } from './interfaces/repository-context.interface';
 
 /**
@@ -10,7 +12,7 @@ import { RepositoryContextInterface } from './interfaces/repository-context.inte
  *   The original context is never mutated.
  */
 export function switchToRepo(
-  ctx: RepositoryContextInterface,
+  ctx: PlainLiteralObject,
   entity: string,
 ): RepositoryContextInterface {
   if ('entity' in ctx) {
@@ -40,5 +42,5 @@ export function switchToRepo(
     });
   }
 
-  return ctx;
+  return ctx as RepositoryContextInterface;
 }

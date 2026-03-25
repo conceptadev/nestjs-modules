@@ -3,14 +3,14 @@ import {
   createMockRoleRepositoryResolver,
   createMockTransaction,
   createMockEventPublisher,
-  createMockContext,
+  DEFAULT_ROLE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Role } from '../../../../domain/aggregates/role';
 import { CreateRoleCommand } from '../../impl/create-role.command';
 import { CreateRoleHandler } from '../create-role.handler';
 
 describe(CreateRoleHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockRoleRepository>;
   let handler: CreateRoleHandler;
   let trxHandle: ReturnType<typeof createMockTransaction>['trxHandle'];
@@ -30,7 +30,7 @@ describe(CreateRoleHandler.name, () => {
   it('should return a Role instance with correct properties', async () => {
     const dto = { name: 'Admin', description: 'Administrator role' };
 
-    const result = await handler.execute(new CreateRoleCommand(ctx, dto));
+    const result = await handler.execute(new CreateRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, dto));
 
     expect(result).toBeInstanceOf(Role);
     expect(result.name).toBe('Admin');
@@ -40,7 +40,7 @@ describe(CreateRoleHandler.name, () => {
   it('should save and return the created role', async () => {
     const dto = { name: 'Admin', description: 'Admin' };
 
-    const result = await handler.execute(new CreateRoleCommand(ctx, dto));
+    const result = await handler.execute(new CreateRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, dto));
 
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
     expect(result.toPlain()).toEqual({
@@ -57,7 +57,7 @@ describe(CreateRoleHandler.name, () => {
   it('should register onCommit and onRollback', async () => {
     const dto = { name: 'Admin', description: 'Admin' };
 
-    await handler.execute(new CreateRoleCommand(ctx, dto));
+    await handler.execute(new CreateRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, dto));
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
     expect(trxHandle.onRollback).toHaveBeenCalledTimes(1);

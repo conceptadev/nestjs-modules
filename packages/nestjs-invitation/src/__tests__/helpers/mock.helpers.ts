@@ -1,12 +1,8 @@
 import {
   createMockCommandBus,
-  createMockEventContext as createMockEventContextBase,
   createMockEventPublisher,
 } from '@concepta/nestjs-common/testing';
-import {
-  createMockContext as createMockContextBase,
-  createMockTransaction,
-} from '@concepta/nestjs-repository/testing';
+import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
 import { Invitation } from '../../domain/aggregates/invitation';
 import { InvitationService } from '../../domain/services/invitation.service';
@@ -43,14 +39,6 @@ export function createMockInvitationRepository(): jest.Mocked<InvitationReposito
     remove: jest.fn(),
     removeAll: jest.fn(),
   } as unknown as jest.Mocked<InvitationRepository>;
-}
-
-export function createMockInvitationContext(entity = 'invitation') {
-  return createMockContextBase(entity);
-}
-
-export function createMockInvitationEventContext(entity = 'invitation') {
-  return createMockEventContextBase(entity);
 }
 
 export function createMockInvitationEntity(

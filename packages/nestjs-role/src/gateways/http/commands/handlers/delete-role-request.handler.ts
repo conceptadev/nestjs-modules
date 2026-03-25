@@ -15,7 +15,8 @@ export class DeleteRoleRequestHandler {
 
     assertRoleId(id);
 
-    await this.commandBus.execute(new RemoveRoleCommand(context, id));
+    const { namespace } = context.withRole();
+    await this.commandBus.execute(new RemoveRoleCommand(context, namespace, id));
 
     return null;
   }

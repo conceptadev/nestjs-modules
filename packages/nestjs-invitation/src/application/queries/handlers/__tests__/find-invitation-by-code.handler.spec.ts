@@ -1,6 +1,5 @@
 import {
   createMockInvitationRepository,
-  createMockInvitationContext,
   createMockInvitationEntity,
   toInvitationDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
@@ -9,7 +8,7 @@ import { FindInvitationByCodeQuery } from '../../impl/find-invitation-by-code.qu
 import { FindInvitationByCodeHandler } from '../find-invitation-by-code.handler';
 
 describe(FindInvitationByCodeHandler.name, () => {
-  const ctx = createMockInvitationContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockInvitationRepository>;
   let handler: FindInvitationByCodeHandler;
 

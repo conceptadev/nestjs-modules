@@ -6,7 +6,7 @@ import {
 import { UserCredentialsMapper } from '../../../infrastructure/persistence/user-credentials.mapper';
 import { UserCredentials } from '../user-credentials';
 
-const eventContext = EventContextHost.builder().build();
+const eventContext = new EventContextHost({}, {});
 const mapper = new UserCredentialsMapper();
 
 const mockEntity: UserCredentialEntityInterface = {

@@ -1,4 +1,4 @@
-import { Injectable, Type } from '@nestjs/common';
+import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
 import {
@@ -7,33 +7,30 @@ import {
   OtpInterface,
   ReferenceId,
 } from '@concepta/nestjs-common';
-import {
-  RepositoryContextInterface,
-  TransactionScope,
-} from '@concepta/nestjs-repository';
+import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { InvitationOtpPolicy } from '../policies/invitation-otp.policy';
 
 export interface CreateOtpCommandInterface {
-  ctx: RepositoryContextInterface;
+  ctx: PlainLiteralObject;
   namespace: string;
   dto: OtpCreatableInterface;
 }
 
 export interface ConsumeOtpCommandInterface {
-  ctx: RepositoryContextInterface;
+  ctx: PlainLiteralObject;
   namespace: string;
   otp: Pick<OtpInterface, 'category' | 'passcode'>;
 }
 
 export interface ClearOtpsCommandInterface {
-  ctx: RepositoryContextInterface;
+  ctx: PlainLiteralObject;
   namespace: string;
   otp: Pick<OtpInterface, 'assigneeId' | 'category'>;
 }
 
 export interface ValidateOtpQueryInterface {
-  ctx: RepositoryContextInterface;
+  ctx: PlainLiteralObject;
   namespace: string;
   otp: Pick<OtpInterface, 'category' | 'passcode'>;
 }
@@ -56,7 +53,7 @@ export class InvitationOtpPort {
   ) {}
 
   async create(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     category: string,
     assigneeId: ReferenceId,
   ): Promise<OtpInterface> {
@@ -85,7 +82,7 @@ export class InvitationOtpPort {
   }
 
   async consume(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     category: string,
     passcode: string,
   ): Promise<AssigneeRelationInterface | null> {
@@ -99,7 +96,7 @@ export class InvitationOtpPort {
   }
 
   async clear(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     category: string,
     assigneeId: ReferenceId,
   ): Promise<void> {
@@ -113,7 +110,7 @@ export class InvitationOtpPort {
   }
 
   async validate(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     category: string,
     passcode: string,
   ): Promise<AssigneeRelationInterface | null> {

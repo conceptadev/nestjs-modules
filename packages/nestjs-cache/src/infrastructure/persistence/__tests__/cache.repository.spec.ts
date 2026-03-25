@@ -1,10 +1,7 @@
 import { Where } from '@concepta/nestjs-repository';
 import { createMockRepository } from '@concepta/nestjs-repository/testing';
 
-import {
-  createMockContext,
-  toCacheDomain,
-} from '../../../__tests__/helpers/mock.helpers';
+import { toCacheDomain } from '../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../domain/aggregates/cache';
 import { CacheMapper } from '../cache.mapper';
 import { CacheRepository } from '../cache.repository';
@@ -31,7 +28,7 @@ describe(CacheRepository.name, () => {
     typeof createMockRepository<CacheEntityInterface>
   >;
   const w = Where.for<CacheEntityInterface>();
-  const ctx = createMockContext();
+  const ctx = {};
 
   beforeEach(() => {
     mockRepoInterface = createMockRepository<CacheEntityInterface>();

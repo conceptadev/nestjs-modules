@@ -16,9 +16,9 @@ export class FindCachesByAssigneeHandler
   ) {}
 
   async execute(query: FindCachesByAssigneeQuery): Promise<Cache[]> {
-    const { ctx, assigneeId } = query;
+    const { ctx, namespace, assigneeId } = query;
 
-    const cacheRepo = this.repositoryResolver.resolve(ctx.entity);
+    const cacheRepo = this.repositoryResolver.resolve(namespace);
 
     return cacheRepo.findAllByAssignee(ctx, assigneeId);
   }

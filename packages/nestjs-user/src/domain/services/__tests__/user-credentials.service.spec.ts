@@ -3,7 +3,6 @@ import {
   PasswordCreationServiceInterface,
   PasswordStorageServiceInterface,
 } from '@concepta/nestjs-password';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import {
   createMockEventPublisher,
@@ -19,8 +18,7 @@ import { UserPasswordPolicy } from '../../policies/user-password.policy';
 import { UserCredentialsService } from '../user-credentials.service';
 
 describe(UserCredentialsService.name, () => {
-  const ctx = {} as RepositoryContextInterface;
-  const eventContext = EventContextHost.builder().build();
+  const eventContext = new EventContextHost({}, {});
   const mockCredentialEntity = createMockUserCredentialEntity();
 
   function createMockPasswordCreationService() {
@@ -74,7 +72,7 @@ describe(UserCredentialsService.name, () => {
       userCredentialsRepository.findActiveByUserId.mockResolvedValue(null);
 
       const result = await service.setPassword(
-        ctx,
+        {},
         eventContext,
         'user-1',
         'pass',
@@ -94,7 +92,7 @@ describe(UserCredentialsService.name, () => {
       );
 
       await expect(
-        service.setPassword(ctx, eventContext, 'user-1', 'pass'),
+        service.setPassword({}, eventContext, 'user-1', 'pass'),
       ).rejects.toThrow(UserCredentialsAlreadyExistException);
     });
   });
@@ -107,7 +105,7 @@ describe(UserCredentialsService.name, () => {
         userCredentialsRepository.findActiveByUserId.mockResolvedValue(null);
 
         await expect(
-          service.updatePassword(ctx, eventContext, 'user-1', 'new-pass'),
+          service.updatePassword({}, eventContext, 'user-1', 'new-pass'),
         ).resolves.toBeUndefined();
 
         expect(passwordStorageService.hash).toHaveBeenCalledWith('new-pass');
@@ -121,7 +119,7 @@ describe(UserCredentialsService.name, () => {
           existing,
         );
 
-        await service.updatePassword(ctx, eventContext, 'user-1', 'new-pass');
+        await service.updatePassword({}, eventContext, 'user-1', 'new-pass');
 
         expect(existing.active).toBe(false);
         expect(userCredentialsRepository.save).toHaveBeenCalledTimes(2);
@@ -137,7 +135,7 @@ describe(UserCredentialsService.name, () => {
 
         await expect(
           service.updatePassword(
-            ctx,
+            {},
             eventContext,
             'user-1',
             'new-pass',
@@ -153,7 +151,7 @@ describe(UserCredentialsService.name, () => {
         );
 
         await expect(
-          service.updatePassword(ctx, eventContext, 'user-1', 'new-pass'),
+          service.updatePassword({}, eventContext, 'user-1', 'new-pass'),
         ).rejects.toThrow(UserPasswordCurrentInvalidException);
       });
 
@@ -167,7 +165,7 @@ describe(UserCredentialsService.name, () => {
 
         await expect(
           service.updatePassword(
-            ctx,
+            {},
             eventContext,
             'user-1',
             'new-pass',
@@ -186,7 +184,7 @@ describe(UserCredentialsService.name, () => {
 
         await expect(
           service.updatePassword(
-            ctx,
+            {},
             eventContext,
             'user-1',
             'new-pass',
@@ -209,7 +207,7 @@ describe(UserCredentialsService.name, () => {
         passwordCreationService.validateHistory.mockResolvedValue(false);
 
         await expect(
-          service.updatePassword(ctx, eventContext, 'user-1', 'old-pass'),
+          service.updatePassword({}, eventContext, 'user-1', 'old-pass'),
         ).rejects.toThrow(UserPasswordHistoryViolationException);
       });
 
@@ -223,7 +221,7 @@ describe(UserCredentialsService.name, () => {
         passwordCreationService.validateHistory.mockResolvedValue(true);
 
         await expect(
-          service.updatePassword(ctx, eventContext, 'user-1', 'unique-pass'),
+          service.updatePassword({}, eventContext, 'user-1', 'unique-pass'),
         ).resolves.toBeUndefined();
       });
     });

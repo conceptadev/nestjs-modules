@@ -1,9 +1,8 @@
 import { IEvent } from '@nestjs/cqrs';
 
-import {
-  EntityHeaderInterface,
-  EventContextHost,
-} from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
+
+import { InvitationEventHeaderInterface } from './interfaces/invitation-event-header.interface';
 
 import { InvitationDispatchedMetadataInterface } from './interfaces/invitation-dispatched-metadata.interface';
 import { InvitationEventPayloadInterface } from './interfaces/invitation-event-payload.interface';
@@ -11,7 +10,7 @@ import { InvitationEventPayloadInterface } from './interfaces/invitation-event-p
 export class InvitationDispatchedEvent implements IEvent {
   constructor(
     public readonly eventContext: EventContextHost<
-      EntityHeaderInterface,
+      InvitationEventHeaderInterface,
       InvitationDispatchedMetadataInterface
     >,
     public readonly invitation: InvitationEventPayloadInterface,

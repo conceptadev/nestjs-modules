@@ -2,12 +2,12 @@ import { randomUUID } from 'crypto';
 
 import {
   type DomainFactory,
-  EntityHeaderInterface,
   EventContextHost,
   RoleInterface,
 } from '@concepta/nestjs-common';
 import { DomainAggregate } from '@concepta/nestjs-common/aggregate';
 
+import { RoleEventHeaderInterface } from '../events/interfaces/role-event-header.interface';
 import { RoleCreatedEvent } from '../events/role-created.event';
 import { RoleReplacedEvent } from '../events/role-replaced.event';
 import { RoleUpdatedEvent } from '../events/role-updated.event';
@@ -27,14 +27,14 @@ export class Role extends DomainAggregate<RoleInterface> {
   }
 
   static create(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<RoleEventHeaderInterface>,
     props: RoleCreateProps,
   ): Role {
     return Role.createWithId(eventContext, randomUUID(), props);
   }
 
   static createWithId(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<RoleEventHeaderInterface>,
     id: string,
     props: RoleCreateProps,
   ): Role {
@@ -51,7 +51,7 @@ export class Role extends DomainAggregate<RoleInterface> {
   }
 
   update(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<RoleEventHeaderInterface>,
     dto: Partial<RoleCreateProps>,
   ): void {
     this.props = {
@@ -63,7 +63,7 @@ export class Role extends DomainAggregate<RoleInterface> {
   }
 
   replace(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<RoleEventHeaderInterface>,
     dto: RoleCreateProps,
   ): void {
     this.props = {

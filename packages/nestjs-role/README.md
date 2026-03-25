@@ -148,19 +148,19 @@ export class MyService {
     private readonly queryBus: QueryBus,
   ) {}
 
-  async createRole(ctx, name: string, description: string) {
+  async createRole(ctx, namespace: string, name: string, description: string) {
     return this.commandBus.execute(
-      new CreateRoleCommand(ctx, { name, description }),
+      new CreateRoleCommand(ctx, namespace, { name, description }),
     );
   }
 
-  async getRole(ctx, id: string) {
-    return this.queryBus.execute(new GetRoleQuery(ctx, id));
+  async getRole(ctx, namespace: string, id: string) {
+    return this.queryBus.execute(new GetRoleQuery(ctx, namespace, id));
   }
 
-  async assignRole(ctx, roleId: string, assigneeId: string) {
+  async assignRole(ctx, namespace: string, roleId: string, assigneeId: string) {
     return this.commandBus.execute(
-      new AssignRoleCommand(ctx, roleId, assigneeId),
+      new AssignRoleCommand(ctx, namespace, roleId, assigneeId),
     );
   }
 }
@@ -304,6 +304,41 @@ default repository implementations.
 - **Infrastructure** — Repositories with DI-injected mappers (`RoleMapper`,
   `RoleAssignmentMapper`), DTOs, configuration, and provider factories.
 
+## Context Overlay
+
+The role module uses a context overlay to resolve the entity namespace for
+each HTTP request. This is required when using the CRUD gateway.
+
+### RoleNamespace Decorator
+
+Apply `@RoleNamespace({ name })` to a controller (or via `extraDecorators`
+on a generated CRUD controller) to associate it with a role or assignment
+entity key:
+
+```ts
+import { RoleNamespace } from '@concepta/nestjs-role';
+
+// For generated CRUD controllers, pass via extraDecorators:
+CrudModule.forFeature<RoleInterface>({
+  crud: {
+    controller: {
+      entity: ROLE_ENTITY_KEY,
+      path: 'role',
+      extraDecorators: [RoleNamespace({ name: ROLE_ENTITY_KEY })],
+      // ...
+    },
+  },
+})
+```
+
+### How It Works
+
+1. `RoleContextOverlay` reads `@RoleNamespace` metadata via `Reflector`
+2. `RoleContextInterceptor` (global `APP_INTERCEPTOR`) calls
+   `ctx.defineOverlay(overlay, executionContext)` on each request
+3. Gateway request handlers call `ctx.withRole()` to get `{ namespace }`,
+   used as the entity key for repository resolution
+
 ## Domain Aggregates
 
 ### Role
@@ -355,14 +390,14 @@ on transaction success and uncommitted on rollback.
 
 | Command | Input | Returns | Description |
 | --- | --- | --- | --- |
-| `CreateRoleCommand` | `ctx, dto` | `Role` | Create a new role |
-| `UpdateRoleCommand` | `ctx, id, dto` | `Role` | Partial update |
-| `ReplaceRoleCommand` | `ctx, id, dto` | `Role` | Full replacement (upsert) |
-| `RemoveRoleCommand` | `ctx, id` | `void` | Hard delete |
-| `AssignRoleCommand` | `ctx, roleId, assigneeId` | `RoleAssignment` | Assign a single role |
-| `AssignRolesCommand` | `ctx, roleIds[], assigneeId` | `RoleAssignment[]` | Assign multiple roles |
-| `RevokeRoleCommand` | `ctx, roleId, assigneeId` | `void` | Revoke a single role |
-| `RevokeRolesCommand` | `ctx, roleIds[], assigneeId` | `void` | Revoke multiple roles |
+| `CreateRoleCommand` | `ctx, namespace, dto` | `Role` | Create a new role |
+| `UpdateRoleCommand` | `ctx, namespace, id, dto` | `Role` | Partial update |
+| `ReplaceRoleCommand` | `ctx, namespace, id, dto` | `Role` | Full replacement (upsert) |
+| `RemoveRoleCommand` | `ctx, namespace, id` | `void` | Hard delete |
+| `AssignRoleCommand` | `ctx, namespace, roleId, assigneeId` | `RoleAssignment` | Assign a single role |
+| `AssignRolesCommand` | `ctx, namespace, roleIds[], assigneeId` | `RoleAssignment[]` | Assign multiple roles |
+| `RevokeRoleCommand` | `ctx, namespace, roleId, assigneeId` | `void` | Revoke a single role |
+| `RevokeRolesCommand` | `ctx, namespace, roleIds[], assigneeId` | `void` | Revoke multiple roles |
 
 **Conflict detection:** `AssignRoleCommand` and `AssignRolesCommand` check for
 existing assignments and throw `RoleAssignmentConflictException` or
@@ -372,11 +407,11 @@ existing assignments and throw `RoleAssignmentConflictException` or
 
 | Query | Input | Returns | Description |
 | --- | --- | --- | --- |
-| `GetRoleQuery` | `ctx, id` | `Role` | Get role by ID (throws if not found) |
-| `GetRoleAssignmentQuery` | `ctx, id` | `RoleAssignment` | Get assignment by ID |
-| `GetAssignedRolesQuery` | `ctx, assigneeId` | `RoleAssignment[]` | All assignments for an assignee |
-| `IsAssignedRoleQuery` | `ctx, roleId, assigneeId` | `boolean` | Check single assignment |
-| `IsAssignedRolesQuery` | `ctx, roleIds[], assigneeId` | `boolean` | Check all roles assigned |
+| `GetRoleQuery` | `ctx, namespace, id` | `Role` | Get role by ID (throws if not found) |
+| `GetRoleAssignmentQuery` | `ctx, namespace, id` | `RoleAssignment` | Get assignment by ID |
+| `GetAssignedRolesQuery` | `ctx, namespace, assigneeId` | `RoleAssignment[]` | All assignments for an assignee |
+| `IsAssignedRoleQuery` | `ctx, namespace, roleId, assigneeId` | `boolean` | Check single assignment |
+| `IsAssignedRolesQuery` | `ctx, namespace, roleIds[], assigneeId` | `boolean` | Check all roles assigned |
 
 ## Domain Events
 
@@ -392,7 +427,7 @@ Subscribe to these events via `@nestjs/cqrs` event handlers (sagas or
 | `RoleRevokedEvent` | `eventContext, assignment` | `RoleAssignment.revoke` |
 
 Events are published after the transaction commits. Each event carries an
-`EventContextHost<EntityHeaderInterface>` with the entity key header.
+`EventContextHost<RoleEventHeaderInterface>` with the namespace header.
 
 ### Subscribing to Events
 
@@ -461,6 +496,7 @@ import {
   RoleCreateDto,
   RoleUpdateDto,
   RoleDto,
+  RoleNamespace,
 } from '@concepta/nestjs-role';
 import {
   RolePaginatedDto,
@@ -489,6 +525,7 @@ const ROLE_ENTITY_KEY = 'role';
           path: 'role',
           resolver: CrudCqrsResolver,
           transactional: true,
+          extraDecorators: [RoleNamespace({ name: ROLE_ENTITY_KEY })],
           request: { body: RoleCreateDto },
           response: {
             resource: RoleDto,

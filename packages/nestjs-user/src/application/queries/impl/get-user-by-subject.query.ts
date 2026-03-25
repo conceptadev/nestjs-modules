@@ -1,9 +1,10 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import { ReferenceSubject } from '@concepta/nestjs-common';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 export class GetUserBySubjectQuery {
   constructor(
-    public readonly ctx: RepositoryContextInterface,
+    public readonly ctx: PlainLiteralObject,
     public readonly subject: ReferenceSubject,
   ) {}
 }

@@ -4,7 +4,6 @@ import {
   CacheCreatableInterface,
   CacheInterface,
   DomainFactory,
-  EntityHeaderInterface,
   EventContextHost,
 } from '@concepta/nestjs-common';
 import {
@@ -12,6 +11,7 @@ import {
   DomainAggregate,
 } from '@concepta/nestjs-common/aggregate';
 
+import { CacheEventHeaderInterface } from '../events/interfaces/cache-event-header.interface';
 import { CacheCreatedEvent } from '../events/cache-created.event';
 import { CacheExtendedEvent } from '../events/cache-extended.event';
 import { CacheReplacedEvent } from '../events/cache-replaced.event';
@@ -44,7 +44,7 @@ export class Cache extends DomainAggregate<CacheInterface> {
   }
 
   static create(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<CacheEventHeaderInterface>,
     dto: CacheCreatableInterface,
     expirationDate: Date | null,
   ): Cache {
@@ -52,7 +52,7 @@ export class Cache extends DomainAggregate<CacheInterface> {
   }
 
   static createWithId(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<CacheEventHeaderInterface>,
     id: string,
     dto: CacheCreatableInterface,
     expirationDate: Date | null,
@@ -73,7 +73,7 @@ export class Cache extends DomainAggregate<CacheInterface> {
   }
 
   replace(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<CacheEventHeaderInterface>,
     dto: CacheCreatableInterface,
     expirationDate: Date | null,
   ): void {
@@ -90,7 +90,7 @@ export class Cache extends DomainAggregate<CacheInterface> {
   }
 
   updateData(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<CacheEventHeaderInterface>,
     newData: string | null,
   ): void {
     this.props = {
@@ -102,7 +102,7 @@ export class Cache extends DomainAggregate<CacheInterface> {
   }
 
   extend(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<CacheEventHeaderInterface>,
     expirationDate: Date | null,
   ): void {
     this.props = {

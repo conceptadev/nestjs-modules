@@ -11,8 +11,9 @@ export class CreateRoleRequestHandler {
 
   async execute(command: CreateRoleRequest) {
     const { context, dto } = command;
+    const { namespace } = context.withRole();
     const role = await this.commandBus.execute<CreateRoleCommand, Role>(
-      new CreateRoleCommand(context, dto),
+      new CreateRoleCommand(context, namespace, dto),
     );
     return role.toPlain();
   }

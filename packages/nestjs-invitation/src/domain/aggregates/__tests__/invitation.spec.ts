@@ -1,17 +1,12 @@
-import {
-  EntityHeaderInterface,
-  EventContextHost,
-} from '@concepta/nestjs-common';
-import { createMockEventContext } from '@concepta/nestjs-common/testing';
+import { EventContextHost } from '@concepta/nestjs-common';
 
-import { InvitationDispatchedMetadataInterface } from '../../events/interfaces/invitation-dispatched-metadata.interface';
 import { InvitationAlreadyAcceptedException } from '../../exceptions/invitation-already-accepted.exception';
 import { InvitationRevokedException } from '../../exceptions/invitation-revoked.exception';
 import { InvitationCreatableInterface } from '../../interfaces/invitation-creatable.interface';
 import { Invitation } from '../invitation';
 
 describe(Invitation.name, () => {
-  const eventContext = createMockEventContext('invitation');
+  const eventContext = new EventContextHost({}, {});
 
   const validCreateDto: InvitationCreatableInterface = {
     code: 'test-code',
@@ -141,13 +136,10 @@ describe(Invitation.name, () => {
     it('should not change any state', () => {
       const invitation = Invitation.create(eventContext, validCreateDto);
 
-      const dispatchContext = EventContextHost.builder<
-        EntityHeaderInterface,
-        InvitationDispatchedMetadataInterface
-      >()
-        .setHeader('entity', 'invitation')
-        .mergeMeta({ passcode: 'abc', tokenExp: new Date() })
-        .build();
+      const dispatchContext = new EventContextHost(
+        {},
+        { passcode: 'abc', tokenExp: new Date() },
+      );
 
       invitation.dispatch(dispatchContext);
 

@@ -1,5 +1,6 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import { OtpCreatableInterface } from '@concepta/nestjs-common';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 interface CreateOtpCommandOptions {
   duplicateStrategy?: 'ALLOW' | 'DEACTIVATE';
@@ -13,7 +14,7 @@ export class CreateOtpCommand {
   public readonly rateThreshold?: number;
 
   constructor(
-    public readonly ctx: RepositoryContextInterface,
+    public readonly ctx: PlainLiteralObject,
     public readonly namespace: string,
     public readonly dto: OtpCreatableInterface,
     options?: CreateOtpCommandOptions,

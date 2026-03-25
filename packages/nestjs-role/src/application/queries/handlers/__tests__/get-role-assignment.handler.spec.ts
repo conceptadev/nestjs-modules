@@ -1,9 +1,9 @@
 import {
   createMockRoleAssignmentRepository,
   createMockAssignmentRepositoryResolver,
-  createMockContext,
   createMockRoleAssignmentEntity,
   toRoleAssignmentDomain,
+  DEFAULT_ROLE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { RoleAssignment } from '../../../../domain/aggregates/role-assignment';
 import { RoleAssignmentNotFoundException } from '../../../exceptions/role-assignment-not-found.exception';
@@ -11,7 +11,7 @@ import { GetRoleAssignmentQuery } from '../../impl/get-role-assignment.query';
 import { GetRoleAssignmentHandler } from '../get-role-assignment.handler';
 
 describe(GetRoleAssignmentHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockRoleAssignmentRepository>;
   let handler: GetRoleAssignmentHandler;
 
@@ -28,7 +28,7 @@ describe(GetRoleAssignmentHandler.name, () => {
     mockRepo.get.mockResolvedValue(existing);
 
     const result = await handler.execute(
-      new GetRoleAssignmentQuery(ctx, 'test-assignment-id'),
+      new GetRoleAssignmentQuery(ctx, DEFAULT_ROLE_NAMESPACE, 'test-assignment-id'),
     );
 
     expect(result).toBeInstanceOf(RoleAssignment);
@@ -47,7 +47,7 @@ describe(GetRoleAssignmentHandler.name, () => {
     mockRepo.get.mockResolvedValue(null);
 
     await expect(
-      handler.execute(new GetRoleAssignmentQuery(ctx, 'missing-id')),
+      handler.execute(new GetRoleAssignmentQuery(ctx, DEFAULT_ROLE_NAMESPACE, 'missing-id')),
     ).rejects.toThrow(RoleAssignmentNotFoundException);
   });
 });

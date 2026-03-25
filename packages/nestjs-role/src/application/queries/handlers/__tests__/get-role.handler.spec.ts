@@ -1,9 +1,9 @@
 import {
   createMockRoleRepository,
   createMockRoleRepositoryResolver,
-  createMockContext,
   createMockRoleEntity,
   toRoleDomain,
+  DEFAULT_ROLE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Role } from '../../../../domain/aggregates/role';
 import { RoleNotFoundException } from '../../../exceptions/role-not-found.exception';
@@ -11,7 +11,7 @@ import { GetRoleQuery } from '../../impl/get-role.query';
 import { GetRoleHandler } from '../get-role.handler';
 
 describe(GetRoleHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockRoleRepository>;
   let handler: GetRoleHandler;
 
@@ -25,7 +25,7 @@ describe(GetRoleHandler.name, () => {
     const existing = toRoleDomain(createMockRoleEntity());
     mockRepo.get.mockResolvedValue(existing);
 
-    const result = await handler.execute(new GetRoleQuery(ctx, 'test-role-id'));
+    const result = await handler.execute(new GetRoleQuery(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id'));
 
     expect(result).toBeInstanceOf(Role);
     expect(result.toPlain()).toEqual({
@@ -43,7 +43,7 @@ describe(GetRoleHandler.name, () => {
     mockRepo.get.mockResolvedValue(null);
 
     await expect(
-      handler.execute(new GetRoleQuery(ctx, 'missing-id')),
+      handler.execute(new GetRoleQuery(ctx, DEFAULT_ROLE_NAMESPACE, 'missing-id')),
     ).rejects.toThrow(RoleNotFoundException);
   });
 });

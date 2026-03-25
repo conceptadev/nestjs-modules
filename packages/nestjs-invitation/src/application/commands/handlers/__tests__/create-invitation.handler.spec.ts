@@ -1,6 +1,5 @@
 import {
   createMockInvitationService,
-  createMockInvitationContext,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Invitation } from '../../../../domain/aggregates/invitation';
 import { InvitationService } from '../../../../domain/services/invitation.service';
@@ -8,7 +7,7 @@ import { CreateInvitationCommand } from '../../impl/create-invitation.command';
 import { CreateInvitationHandler } from '../create-invitation.handler';
 
 describe(CreateInvitationHandler.name, () => {
-  const ctx = createMockInvitationContext();
+  const ctx = {};
   let mockService: jest.Mocked<InvitationService>;
   let handler: CreateInvitationHandler;
 

@@ -1,5 +1,3 @@
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
-
 import {
   createMockUserEntity,
   createMockUserRepository,
@@ -15,7 +13,6 @@ import { GetUserBySubjectHandler } from '../get-user-by-subject.handler';
 import { GetUserByUsernameHandler } from '../get-user-by-username.handler';
 import { GetUserHandler } from '../get-user.handler';
 
-const ctx = {} as RepositoryContextInterface;
 const mockUser = toUserDomain(createMockUserEntity());
 
 describe(GetUserHandler.name, () => {
@@ -29,14 +26,14 @@ describe(GetUserHandler.name, () => {
 
   it('should return user when found', async () => {
     repo.get.mockResolvedValue(mockUser);
-    const result = await handler.execute(new GetUserQuery(ctx, 'user-1'));
+    const result = await handler.execute(new GetUserQuery({}, 'user-1'));
     expect(result).toBe(mockUser);
-    expect(repo.get).toHaveBeenCalledWith(ctx, 'user-1');
+    expect(repo.get).toHaveBeenCalledWith(expect.any(Object), 'user-1');
   });
 
   it('should return null when not found', async () => {
     repo.get.mockResolvedValue(null);
-    const result = await handler.execute(new GetUserQuery(ctx, 'missing'));
+    const result = await handler.execute(new GetUserQuery({}, 'missing'));
     expect(result).toBeNull();
   });
 });
@@ -53,16 +50,16 @@ describe(GetUserByEmailHandler.name, () => {
   it('should return user when found', async () => {
     repo.findByEmail.mockResolvedValue(mockUser);
     const result = await handler.execute(
-      new GetUserByEmailQuery(ctx, 'a@b.com'),
+      new GetUserByEmailQuery({}, 'a@b.com'),
     );
     expect(result).toBe(mockUser);
-    expect(repo.findByEmail).toHaveBeenCalledWith(ctx, 'a@b.com');
+    expect(repo.findByEmail).toHaveBeenCalledWith(expect.any(Object), 'a@b.com');
   });
 
   it('should return null when not found', async () => {
     repo.findByEmail.mockResolvedValue(null);
     const result = await handler.execute(
-      new GetUserByEmailQuery(ctx, 'missing@b.com'),
+      new GetUserByEmailQuery({}, 'missing@b.com'),
     );
     expect(result).toBeNull();
   });
@@ -80,16 +77,16 @@ describe(GetUserByUsernameHandler.name, () => {
   it('should return user when found', async () => {
     repo.findByUsername.mockResolvedValue(mockUser);
     const result = await handler.execute(
-      new GetUserByUsernameQuery(ctx, 'john'),
+      new GetUserByUsernameQuery({}, 'john'),
     );
     expect(result).toBe(mockUser);
-    expect(repo.findByUsername).toHaveBeenCalledWith(ctx, 'john');
+    expect(repo.findByUsername).toHaveBeenCalledWith(expect.any(Object), 'john');
   });
 
   it('should return null when not found', async () => {
     repo.findByUsername.mockResolvedValue(null);
     const result = await handler.execute(
-      new GetUserByUsernameQuery(ctx, 'missing'),
+      new GetUserByUsernameQuery({}, 'missing'),
     );
     expect(result).toBeNull();
   });
@@ -107,16 +104,16 @@ describe(GetUserBySubjectHandler.name, () => {
   it('should return user when found', async () => {
     repo.get.mockResolvedValue(mockUser);
     const result = await handler.execute(
-      new GetUserBySubjectQuery(ctx, 'sub-1'),
+      new GetUserBySubjectQuery({}, 'sub-1'),
     );
     expect(result).toBe(mockUser);
-    expect(repo.get).toHaveBeenCalledWith(ctx, 'sub-1');
+    expect(repo.get).toHaveBeenCalledWith(expect.any(Object), 'sub-1');
   });
 
   it('should return null when not found', async () => {
     repo.get.mockResolvedValue(null);
     const result = await handler.execute(
-      new GetUserBySubjectQuery(ctx, 'missing'),
+      new GetUserBySubjectQuery({}, 'missing'),
     );
     expect(result).toBeNull();
   });

@@ -1,17 +1,14 @@
 import {
+  EventContextHost,
   RoleAssignmentEntityInterface,
   RoleEntityInterface,
 } from '@concepta/nestjs-common';
 import {
   createMockCommandBus,
-  createMockEventContext as createMockEventContextBase,
   createMockEventPublisher,
   createMockQueryBus,
 } from '@concepta/nestjs-common/testing';
-import {
-  createMockContext as createMockContextBase,
-  createMockTransaction,
-} from '@concepta/nestjs-repository/testing';
+import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
 import { RoleAssignmentRepositoryResolver } from '../../infrastructure/persistence/role-assignment-repository.resolver';
 import { RoleAssignmentMapper } from '../../infrastructure/persistence/role-assignment.mapper';
@@ -19,6 +16,8 @@ import { RoleAssignmentRepository } from '../../infrastructure/persistence/role-
 import { RoleRepositoryResolver } from '../../infrastructure/persistence/role-repository.resolver';
 import { RoleMapper } from '../../infrastructure/persistence/role.mapper';
 import { RoleRepository } from '../../infrastructure/persistence/role.repository';
+
+export const DEFAULT_ROLE_NAMESPACE = 'Role';
 
 export {
   createMockCommandBus,
@@ -67,12 +66,10 @@ export function createMockAssignmentRepositoryResolver(
   } as unknown as jest.Mocked<RoleAssignmentRepositoryResolver>;
 }
 
-export function createMockContext(entity = 'Role') {
-  return createMockContextBase(entity);
-}
-
-export function createMockEventContext(entity = 'Role') {
-  return createMockEventContextBase(entity);
+export function createMockEventContext(
+  namespace = DEFAULT_ROLE_NAMESPACE,
+) {
+  return new EventContextHost({ namespace }, {});
 }
 
 export function createMockRoleEntity(

@@ -17,6 +17,7 @@ import { UserCacheEntityFixture } from '../../../../__tests__/fixtures/entities/
 import { UserEntityFixture } from '../../../../__tests__/fixtures/entities/user-entity.fixture';
 import { CACHE_MODULE_CACHE_ENTITY_KEY } from '../../../../cache.constants';
 import { CacheModule } from '../../../../cache.module';
+import { CacheNamespace } from '../../../../gateways/decorators/cache-namespace.decorator';
 import { CacheCreateDto } from '../../../../infrastructure/dtos/cache-create.dto';
 import { CachePaginatedDto } from '../../../../infrastructure/dtos/cache-paginated.dto';
 import { CacheUpdateDto } from '../../../../infrastructure/dtos/cache-update.dto';
@@ -67,6 +68,9 @@ import { ReadCacheRequest } from '../../queries/impl/read-cache.request';
           path: 'cache/user',
           resolver: CrudCqrsResolver,
           transactional: true,
+          extraDecorators: [
+            CacheNamespace({ name: CACHE_MODULE_CACHE_ENTITY_KEY }),
+          ],
           request: { body: CacheCreateDto },
           response: {
             resource: CacheDto,

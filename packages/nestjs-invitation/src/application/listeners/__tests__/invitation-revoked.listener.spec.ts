@@ -1,7 +1,4 @@
-import {
-  EntityHeaderInterface,
-  EventContextHost,
-} from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
 
 import { InvitationRevokedEvent } from '../../../domain/events/invitation-revoked.event';
 import { InvitationOtpPort } from '../../../domain/ports/invitation-otp.port';
@@ -19,9 +16,7 @@ describe(InvitationRevokedListener.name, () => {
   });
 
   it('should call otpPort.clear with category and userId from event', async () => {
-    const eventContext = EventContextHost.builder<EntityHeaderInterface>()
-      .setHeader('entity', 'invitation')
-      .build();
+    const eventContext = new EventContextHost({}, {});
 
     const event = new InvitationRevokedEvent(eventContext, {
       id: 'inv-1',

@@ -2,16 +2,16 @@ import {
   createMockCacheRepository,
   createMockRepositoryResolver,
   createMockTransaction,
-  createMockContext,
   createMockCacheEntity,
   toCacheDomain,
+  DEFAULT_CACHE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../../domain/aggregates/cache';
 import { RemoveCacheCommand } from '../../impl/remove-cache.command';
 import { RemoveCacheHandler } from '../remove-cache.handler';
 
 describe(RemoveCacheHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockCacheRepository>;
   let handler: RemoveCacheHandler;
 
@@ -29,7 +29,7 @@ describe(RemoveCacheHandler.name, () => {
     mockRepo.get.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
     const result = await handler.execute(
-      new RemoveCacheCommand(ctx, 'test-id'),
+      new RemoveCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, 'test-id'),
     );
 
     expect(result).toBeInstanceOf(Cache);
@@ -39,7 +39,7 @@ describe(RemoveCacheHandler.name, () => {
   it('should call remove on the repository', async () => {
     mockRepo.get.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
-    await handler.execute(new RemoveCacheCommand(ctx, 'test-id'));
+    await handler.execute(new RemoveCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, 'test-id'));
 
     expect(mockRepo.remove).toHaveBeenCalledTimes(1);
   });

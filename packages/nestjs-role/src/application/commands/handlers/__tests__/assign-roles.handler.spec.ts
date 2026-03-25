@@ -3,14 +3,14 @@ import {
   createMockAssignmentRepositoryResolver,
   createMockTransaction,
   createMockEventPublisher,
-  createMockContext,
+  DEFAULT_ROLE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { RoleAssignmentsConflictException } from '../../../exceptions/role-assignments-conflict.exception';
 import { AssignRolesCommand } from '../../impl/assign-roles.command';
 import { AssignRolesHandler } from '../assign-roles.handler';
 
 describe(AssignRolesHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockRoleAssignmentRepository>;
   let handler: AssignRolesHandler;
   let trxHandle: ReturnType<typeof createMockTransaction>['trxHandle'];
@@ -31,7 +31,7 @@ describe(AssignRolesHandler.name, () => {
     mockRepo.countByRoleIdsAndAssignee.mockResolvedValue(0);
 
     const result = await handler.execute(
-      new AssignRolesCommand(ctx, ['role-1', 'role-2'], 'user-1'),
+      new AssignRolesCommand(ctx, DEFAULT_ROLE_NAMESPACE, ['role-1', 'role-2'], 'user-1'),
     );
 
     expect(result).toHaveLength(2);
@@ -62,7 +62,7 @@ describe(AssignRolesHandler.name, () => {
   it('should register onCommit and onRollback', async () => {
     mockRepo.countByRoleIdsAndAssignee.mockResolvedValue(0);
 
-    await handler.execute(new AssignRolesCommand(ctx, ['role-1'], 'user-1'));
+    await handler.execute(new AssignRolesCommand(ctx, DEFAULT_ROLE_NAMESPACE, ['role-1'], 'user-1'));
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
     expect(trxHandle.onRollback).toHaveBeenCalledTimes(1);
@@ -73,7 +73,7 @@ describe(AssignRolesHandler.name, () => {
 
     await expect(
       handler.execute(
-        new AssignRolesCommand(ctx, ['role-1', 'role-2'], 'user-1'),
+        new AssignRolesCommand(ctx, DEFAULT_ROLE_NAMESPACE, ['role-1', 'role-2'], 'user-1'),
       ),
     ).rejects.toThrow(RoleAssignmentsConflictException);
   });

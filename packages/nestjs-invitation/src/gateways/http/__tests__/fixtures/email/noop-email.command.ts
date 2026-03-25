@@ -1,4 +1,4 @@
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
+import { PlainLiteralObject } from '@nestjs/common';
 
 import { InvitationEventPayloadInterface } from '../../../../../domain/events/interfaces/invitation-event-payload.interface';
 import { InvitationEmailTemplateSettings } from '../../../../../domain/policies/invitation-email.policy';
@@ -14,7 +14,7 @@ export class NoopSendInvitationEmailCommand
     Object.assign(this, params);
   }
 
-  ctx!: RepositoryContextInterface;
+  ctx!: PlainLiteralObject;
   invitation!: InvitationEventPayloadInterface;
   passcode!: string;
   tokenExp!: Date;
@@ -30,7 +30,7 @@ export class NoopSendAcceptedEmailCommand
     Object.assign(this, params);
   }
 
-  ctx!: RepositoryContextInterface;
+  ctx!: PlainLiteralObject;
   invitation!: InvitationEventPayloadInterface;
   from!: string;
   template!: InvitationEmailTemplateSettings;

@@ -174,54 +174,62 @@ Infrastructure (Repository, Mapper, DTOs, Config)
 
 ## App Context
 
-Commands, queries, and repository methods require a `RepositoryContextInterface`
-as their first argument. This context carries the entity key, transaction state,
-and hook configuration for the operation.
-
-Use `AppContextHost.merge()` to create a context:
-
-```ts
-import { AppContextHost } from '@concepta/nestjs-common';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
-
-const ctx = AppContextHost.merge<RepositoryContextInterface>(() => ({
-  entity: 'userCache',
-}));
-```
-
-The `entity` value must match a key registered via `CacheModule.forFeature()`.
-
-When an existing context is available (e.g. from a gateway or transaction scope),
-pass it as the second argument to inherit its properties:
+Commands, queries, and repository methods accept a `PlainLiteralObject` as
+their `ctx` argument. This context is threaded through the transaction scope
+and repository layer automatically. In HTTP contexts the gateway provides
+the context; for programmatic use, pass any plain object:
 
 ```ts
-const childCtx = AppContextHost.merge<RepositoryContextInterface>(
-  () => ({ entity: 'sessionCache' }),
-  parentCtx,
+const cache = await this.commandBus.execute<CreateCacheCommand, Cache>(
+  new CreateCacheCommand({}, 'userCache', dto),
 );
 ```
 
-The factory receives a `has` function to conditionally set properties only when
-they are not already present on the parent context:
+## Context Overlay
+
+The cache module uses a context overlay to resolve the entity namespace for
+each HTTP request. This is required when using the CRUD gateway.
+
+### CacheNamespace Decorator
+
+Apply `@CacheNamespace({ name })` to a controller (or via `extraDecorators`
+on a generated CRUD controller) to associate it with a cache entity key:
 
 ```ts
-const ctx = AppContextHost.merge<RepositoryContextInterface>((has) => ({
-  entity: 'userCache',
-  ...(!has('trx') && { trx: myTransactionManager }),
-}), parentCtx);
+import { CacheNamespace } from '@concepta/nestjs-cache';
+
+// For generated CRUD controllers, pass via extraDecorators:
+CrudModule.forFeature<CacheInterface>({
+  crud: {
+    controller: {
+      entity: 'userCache',
+      path: 'cache/user',
+      extraDecorators: [CacheNamespace({ name: 'userCache' })],
+      // ...
+    },
+  },
+})
 ```
+
+### How It Works
+
+1. `CacheContextOverlay` reads `@CacheNamespace` metadata via `Reflector`
+2. `CacheContextInterceptor` (global `APP_INTERCEPTOR`) calls
+   `ctx.defineOverlay(overlay, executionContext)` on each request
+3. Gateway request handlers call `ctx.withCache()` to get `{ namespace }`,
+   used as the entity key for repository resolution
 
 ## Commands
 
 | Command | Description |
 | --- | --- |
-| `CreateCacheCommand` | Create a new cache entry |
-| `UpdateCacheCommand` | Partial update (data and expiresIn) |
-| `ReplaceCacheCommand` | Full replacement (creates if ID not found) |
-| `UpsertCacheCommand` | Create or update by key/type/assigneeId |
-| `RemoveCacheCommand` | Hard delete by ID |
-| `ArchiveCacheCommand` | Soft delete by ID |
-| `ClearCachesByAssigneeCommand` | Remove all entries for an assignee |
+| `CreateCacheCommand` | `(ctx, namespace, dto)` -- Create a new cache entry |
+| `UpdateCacheCommand` | `(ctx, namespace, id, dto)` -- Partial update (data and expiresIn) |
+| `ReplaceCacheCommand` | `(ctx, namespace, id, dto)` -- Full replacement (creates if ID not found) |
+| `UpsertCacheCommand` | `(ctx, namespace, dto)` -- Create or update by key/type/assigneeId |
+| `RemoveCacheCommand` | `(ctx, namespace, id)` -- Hard delete by ID |
+| `ArchiveCacheCommand` | `(ctx, namespace, id)` -- Soft delete by ID |
+| `ClearCachesByAssigneeCommand` | `(ctx, namespace, assigneeId)` -- Remove all entries for an assignee |
 
 ### Dispatching a Command
 
@@ -230,7 +238,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateCacheCommand, Cache } from '@concepta/nestjs-cache';
 
 const cache = await this.commandBus.execute<CreateCacheCommand, Cache>(
-  new CreateCacheCommand(ctx, {
+  new CreateCacheCommand(ctx, 'userCache', {
     key: 'dashboard-filter',
     type: 'user-preference',
     assigneeId: userId,
@@ -244,9 +252,9 @@ const cache = await this.commandBus.execute<CreateCacheCommand, Cache>(
 
 | Query | Description |
 | --- | --- |
-| `GetCacheQuery` | Get by ID (throws `CacheNotFoundException`) |
-| `FindOneCacheQuery` | Find by key/type/assigneeId (returns null) |
-| `FindCachesByAssigneeQuery` | Find all entries for an assigneeId |
+| `GetCacheQuery` | `(ctx, namespace, id)` -- Get by ID (throws `CacheNotFoundException`) |
+| `FindOneCacheQuery` | `(ctx, namespace, key, type, assigneeId)` -- Find by key/type/assigneeId (returns null) |
+| `FindCachesByAssigneeQuery` | `(ctx, namespace, assigneeId)` -- Find all entries for an assigneeId |
 
 ### Dispatching a Query
 
@@ -255,7 +263,7 @@ import { QueryBus } from '@nestjs/cqrs';
 import { FindOneCacheQuery, Cache } from '@concepta/nestjs-cache';
 
 const cache = await this.queryBus.execute<FindOneCacheQuery, Cache | null>(
-  new FindOneCacheQuery(ctx, 'dashboard-filter', 'user-preference', userId),
+  new FindOneCacheQuery(ctx, 'userCache', 'dashboard-filter', 'user-preference', userId),
 );
 ```
 
@@ -322,7 +330,7 @@ const plain = cache.toPlain();
 ## Repository
 
 `CacheRepository` uses a ctx-first calling convention for multi-tenancy
-support. All methods take `RepositoryContextInterface` as the first argument.
+support. All methods take `PlainLiteralObject` as the first argument.
 
 The repository receives a DI-injected `CacheMapper` that converts database
 entities to `Cache` aggregates via `toDomain()` and aggregates back to
@@ -383,6 +391,7 @@ import {
   CacheCreateDto,
   CacheUpdateDto,
   CacheDto,
+  CacheNamespace,
 } from '@concepta/nestjs-cache';
 import {
   CachePaginatedDto,
@@ -410,6 +419,7 @@ import {
           path: 'cache/user',
           resolver: CrudCqrsResolver,
           transactional: true,
+          extraDecorators: [CacheNamespace({ name: 'userCache' })],
           request: { body: CacheCreateDto },
           response: {
             resource: CacheDto,

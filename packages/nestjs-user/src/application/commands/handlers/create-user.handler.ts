@@ -28,7 +28,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   async execute(command: CreateUserCommand): Promise<User> {
     const { ctx, dto } = command;
 
-    const userEventContext = EventContextHost.builder().build();
+    const userEventContext = new EventContextHost({}, {});
 
     return this.txScope.run(ctx, async (trx) => {
       const user = this.eventPublisher.mergeObjectContext(

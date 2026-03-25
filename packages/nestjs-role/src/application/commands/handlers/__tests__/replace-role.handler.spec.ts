@@ -3,16 +3,16 @@ import {
   createMockRoleRepositoryResolver,
   createMockTransaction,
   createMockEventPublisher,
-  createMockContext,
   createMockRoleEntity,
   toRoleDomain,
+  DEFAULT_ROLE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Role } from '../../../../domain/aggregates/role';
 import { ReplaceRoleCommand } from '../../impl/replace-role.command';
 import { ReplaceRoleHandler } from '../replace-role.handler';
 
 describe(ReplaceRoleHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockRoleRepository>;
   let handler: ReplaceRoleHandler;
   let trxHandle: ReturnType<typeof createMockTransaction>['trxHandle'];
@@ -37,7 +37,7 @@ describe(ReplaceRoleHandler.name, () => {
 
     const dto = { name: 'NewName', description: 'NewDesc' };
     const result = await handler.execute(
-      new ReplaceRoleCommand(ctx, 'test-role-id', dto),
+      new ReplaceRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id', dto),
     );
 
     expect(result).toBeInstanceOf(Role);
@@ -53,7 +53,7 @@ describe(ReplaceRoleHandler.name, () => {
 
     const dto = { name: 'NewName', description: 'NewDesc' };
     const result = await handler.execute(
-      new ReplaceRoleCommand(ctx, 'test-role-id', dto),
+      new ReplaceRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id', dto),
     );
 
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
@@ -73,7 +73,7 @@ describe(ReplaceRoleHandler.name, () => {
 
     const dto = { name: 'Brand New', description: 'Created via replace' };
     const result = await handler.execute(
-      new ReplaceRoleCommand(ctx, 'new-role-id', dto),
+      new ReplaceRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'new-role-id', dto),
     );
 
     expect(result).toBeInstanceOf(Role);
@@ -94,7 +94,7 @@ describe(ReplaceRoleHandler.name, () => {
     mockRepo.get.mockResolvedValue(existing);
 
     const dto = { name: 'Replaced', description: 'Replaced' };
-    await handler.execute(new ReplaceRoleCommand(ctx, 'test-role-id', dto));
+    await handler.execute(new ReplaceRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id', dto));
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
     expect(trxHandle.onRollback).toHaveBeenCalledTimes(1);

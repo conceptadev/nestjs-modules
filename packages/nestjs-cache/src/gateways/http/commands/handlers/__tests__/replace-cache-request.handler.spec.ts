@@ -6,6 +6,7 @@ import { CrudReplaceCommand } from '@concepta/nestjs-crud';
 
 import {
   createMockCommandBus,
+  createMockCacheContext,
   createMockCacheEntity,
   toCacheDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
@@ -25,10 +26,10 @@ describe(ReplaceCacheRequestHandler.name, () => {
       toCacheDomain(createMockCacheEntity({ data: 'replaced-data' })),
     );
 
-    const context = {
+    const context = createMockCacheContext({
       entity: 'UserCache',
       params: { id: 'test-id' },
-    } as never;
+    }) as never;
     const dto: CacheCreatableInterface = {
       key: 'test-key',
       type: 'test-type',
@@ -48,10 +49,10 @@ describe(ReplaceCacheRequestHandler.name, () => {
   });
 
   it('should throw when id is not a string', async () => {
-    const context = {
+    const context = createMockCacheContext({
       entity: 'UserCache',
       params: { id: undefined },
-    } as never;
+    }) as never;
     const dto: CacheCreatableInterface = {
       key: 'k',
       type: 't',

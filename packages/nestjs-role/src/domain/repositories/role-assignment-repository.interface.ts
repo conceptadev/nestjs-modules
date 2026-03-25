@@ -1,60 +1,61 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import { ReferenceId } from '@concepta/nestjs-common';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { RoleAssignment } from '../aggregates/role-assignment';
 
 export interface RoleAssignmentRepositoryInterface {
   get(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     id: ReferenceId,
   ): Promise<RoleAssignment | null>;
 
   findByAssignee(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     assigneeId: string,
   ): Promise<RoleAssignment[]>;
 
   findOne(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleId: string,
     assigneeId: string,
   ): Promise<RoleAssignment | null>;
 
   findByRoleIdsAndAssignee(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleIds: string[],
     assigneeId: string,
   ): Promise<RoleAssignment[]>;
 
   countByRoleIdAndAssignee(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleId: string,
     assigneeId: string,
   ): Promise<number>;
 
   countByRoleIdsAndAssignee(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleIds: string[],
     assigneeId: string,
   ): Promise<number>;
 
   save(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleAssignment: RoleAssignment,
   ): Promise<void>;
 
   saveMany(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleAssignments: RoleAssignment[],
   ): Promise<void>;
 
   remove(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleAssignment: RoleAssignment,
   ): Promise<void>;
 
   removeMany(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleAssignments: RoleAssignment[],
   ): Promise<void>;
 }

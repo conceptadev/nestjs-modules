@@ -3,11 +3,9 @@ import { randomUUID } from 'crypto';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import {
-  AppContextHost,
   EventContextHost,
   UserCredentialEntityInterface,
 } from '@concepta/nestjs-common';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { AppRepoModuleFixture } from '../../../__tests__/fixtures/app-repo.module.fixture';
 import { User } from '../../../domain/aggregates/user';
@@ -25,8 +23,7 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
   let moduleFixture: TestingModule;
   let credentialsRepository: UserCredentialsRepositoryInterface;
   let userRepository: UserRepositoryInterface;
-  const ctx = new AppContextHost() as unknown as RepositoryContextInterface;
-  const eventContext = EventContextHost.builder().build();
+  const eventContext = new EventContextHost({}, {});
   const credentialsMapper = new UserCredentialsMapper();
 
   let testUser: User;
@@ -49,7 +46,7 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
       email: 'cred-test@example.com',
       username: 'credtestuser',
     });
-    await userRepository.save(ctx, testUser);
+    await userRepository.save({}, testUser);
   });
 
   afterEach(async () => {
@@ -63,10 +60,10 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
         passwordHash: 'hash1',
         passwordSalt: 'salt1',
       });
-      await credentialsRepository.save(ctx, creds);
+      await credentialsRepository.save({}, creds);
 
       const found = await credentialsRepository.findActiveByUserId(
-        ctx,
+        {},
         testUser.id,
       );
 
@@ -77,7 +74,7 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
 
     it('should return null when no credentials exist', async () => {
       const found = await credentialsRepository.findActiveByUserId(
-        ctx,
+        {},
         testUser.id,
       );
 
@@ -91,10 +88,10 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
         passwordSalt: 'salt1',
       });
       creds.deactivate(eventContext);
-      await credentialsRepository.save(ctx, creds);
+      await credentialsRepository.save({}, creds);
 
       const found = await credentialsRepository.findActiveByUserId(
-        ctx,
+        {},
         testUser.id,
       );
 
@@ -109,25 +106,25 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
         passwordHash: 'hash1',
         passwordSalt: 'salt1',
       });
-      await credentialsRepository.save(ctx, creds1);
+      await credentialsRepository.save({}, creds1);
 
       creds1.deactivate(eventContext);
-      await credentialsRepository.save(ctx, creds1);
+      await credentialsRepository.save({}, creds1);
 
       const creds2 = UserCredentials.create(eventContext, {
         userId: testUser.id,
         passwordHash: 'hash2',
         passwordSalt: 'salt2',
       });
-      await credentialsRepository.save(ctx, creds2);
+      await credentialsRepository.save({}, creds2);
 
-      const found = await credentialsRepository.findByUserId(ctx, testUser.id);
+      const found = await credentialsRepository.findByUserId({}, testUser.id);
 
       expect(found).toHaveLength(2);
     });
 
     it('should return empty array when none exist', async () => {
-      const found = await credentialsRepository.findByUserId(ctx, testUser.id);
+      const found = await credentialsRepository.findByUserId({}, testUser.id);
 
       expect(found).toHaveLength(0);
     });
@@ -150,20 +147,20 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
         version: 1,
       };
       const oldCreds = credentialsMapper.toDomain(oldEntity);
-      await credentialsRepository.save(ctx, oldCreds);
+      await credentialsRepository.save({}, oldCreds);
 
       const recentCreds = UserCredentials.create(eventContext, {
         userId: testUser.id,
         passwordHash: 'recent-hash',
         passwordSalt: 'recent-salt',
       });
-      await credentialsRepository.save(ctx, recentCreds);
+      await credentialsRepository.save({}, recentCreds);
 
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
       const found = await credentialsRepository.findByUserId(
-        ctx,
+        {},
         testUser.id,
         thirtyDaysAgo,
       );
@@ -190,16 +187,16 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
         version: 1,
       };
       const olderCreds = credentialsMapper.toDomain(olderEntity);
-      await credentialsRepository.save(ctx, olderCreds);
+      await credentialsRepository.save({}, olderCreds);
 
       const newerCreds = UserCredentials.create(eventContext, {
         userId: testUser.id,
         passwordHash: 'newer-hash',
         passwordSalt: 'newer-salt',
       });
-      await credentialsRepository.save(ctx, newerCreds);
+      await credentialsRepository.save({}, newerCreds);
 
-      const found = await credentialsRepository.findByUserId(ctx, testUser.id);
+      const found = await credentialsRepository.findByUserId({}, testUser.id);
 
       expect(found).toHaveLength(2);
       expect(found[0].id).toBe(newerCreds.id);
@@ -215,10 +212,10 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
         passwordSalt: 'salt1',
       });
 
-      await credentialsRepository.save(ctx, creds);
+      await credentialsRepository.save({}, creds);
 
       const found = await credentialsRepository.findActiveByUserId(
-        ctx,
+        {},
         testUser.id,
       );
       expect(found).not.toBeNull();
@@ -231,13 +228,13 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
         passwordHash: 'hash1',
         passwordSalt: 'salt1',
       });
-      await credentialsRepository.save(ctx, creds);
+      await credentialsRepository.save({}, creds);
 
       creds.deactivate(eventContext);
-      await credentialsRepository.save(ctx, creds);
+      await credentialsRepository.save({}, creds);
 
       const found = await credentialsRepository.findActiveByUserId(
-        ctx,
+        {},
         testUser.id,
       );
       expect(found).toBeNull();

@@ -1,16 +1,11 @@
 import { UserCredentialEntityInterface } from '@concepta/nestjs-common';
-import {
-  RepositoryContextInterface,
-  RepositoryInterface,
-} from '@concepta/nestjs-repository';
+import { RepositoryInterface } from '@concepta/nestjs-repository';
 
 import { UserCredentials } from '../../../domain/aggregates/user-credentials';
 import { UserCredentialsMapper } from '../user-credentials.mapper';
 import { UserCredentialsRepository } from '../user-credentials.repository';
 
 const credentialsMapper = new UserCredentialsMapper();
-
-const ctx = {} as RepositoryContextInterface;
 
 const mockEntity: UserCredentialEntityInterface = {
   id: 'cred-1',
@@ -55,7 +50,7 @@ describe(UserCredentialsRepository.name, () => {
     it('should return UserCredentials when found', async () => {
       innerRepo.findOne.mockResolvedValue(mockEntity);
 
-      const result = await repository.findActiveByUserId(ctx, 'user-1');
+      const result = await repository.findActiveByUserId({}, 'user-1');
 
       expect(result).toBeInstanceOf(UserCredentials);
       expect(result!.userId).toBe('user-1');
@@ -65,7 +60,7 @@ describe(UserCredentialsRepository.name, () => {
     it('should return null when not found', async () => {
       innerRepo.findOne.mockResolvedValue(null);
 
-      const result = await repository.findActiveByUserId(ctx, 'missing');
+      const result = await repository.findActiveByUserId({}, 'missing');
 
       expect(result).toBeNull();
     });
@@ -75,7 +70,7 @@ describe(UserCredentialsRepository.name, () => {
     it('should return array of UserCredentials', async () => {
       innerRepo.find.mockResolvedValue([mockEntity]);
 
-      const result = await repository.findByUserId(ctx, 'user-1');
+      const result = await repository.findByUserId({}, 'user-1');
 
       expect(result).toHaveLength(1);
       expect(result[0]).toBeInstanceOf(UserCredentials);
@@ -84,7 +79,7 @@ describe(UserCredentialsRepository.name, () => {
     it('should return empty array when none found', async () => {
       innerRepo.find.mockResolvedValue([]);
 
-      const result = await repository.findByUserId(ctx, 'user-1');
+      const result = await repository.findByUserId({}, 'user-1');
 
       expect(result).toHaveLength(0);
     });
@@ -93,7 +88,7 @@ describe(UserCredentialsRepository.name, () => {
       innerRepo.find.mockResolvedValue([]);
       const limitDate = new Date('2024-06-01');
 
-      await repository.findByUserId(ctx, 'user-1', limitDate);
+      await repository.findByUserId({}, 'user-1', limitDate);
 
       expect(innerRepo.find).toHaveBeenCalledTimes(1);
       const options = innerRepo.find.mock.calls[0][0];
@@ -103,7 +98,7 @@ describe(UserCredentialsRepository.name, () => {
     it('should work without limitDate', async () => {
       innerRepo.find.mockResolvedValue([]);
 
-      await repository.findByUserId(ctx, 'user-1');
+      await repository.findByUserId({}, 'user-1');
 
       expect(innerRepo.find).toHaveBeenCalledTimes(1);
     });
@@ -116,12 +111,12 @@ describe(UserCredentialsRepository.name, () => {
       const entry = credentialsMapper.toDomain(mockEntity);
       const stampSpy = jest.spyOn(entry, 'stampUpdated');
 
-      await repository.save(ctx, entry);
+      await repository.save({}, entry);
 
       expect(stampSpy).toHaveBeenCalledTimes(1);
       expect(innerRepo.upsert).toHaveBeenCalledWith(
         credentialsMapper.toPersistence(entry),
-        { ctx },
+        { ctx: {} },
       );
     });
   });

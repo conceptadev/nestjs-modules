@@ -24,6 +24,7 @@ import { RoleCreateDto } from '../../../../infrastructure/dtos/role-create.dto';
 import { RolePaginatedDto } from '../../../../infrastructure/dtos/role-paginated.dto';
 import { RoleUpdateDto } from '../../../../infrastructure/dtos/role-update.dto';
 import { RoleDto } from '../../../../infrastructure/dtos/role.dto';
+import { RoleNamespace } from '../../../../gateways/decorators/role-namespace.decorator';
 import { RoleModule } from '../../../../role.module';
 import { CreateRoleAssignmentRequestHandler } from '../../commands/handlers/create-role-assignment-request.handler';
 import { CreateRoleRequestHandler } from '../../commands/handlers/create-role-request.handler';
@@ -82,6 +83,7 @@ const USER_ROLE_ENTITY_KEY = 'userRole';
           path: 'role',
           resolver: CrudCqrsResolver,
           transactional: true,
+          extraDecorators: [RoleNamespace({ name: ROLE_ENTITY_KEY })],
           request: { body: RoleCreateDto },
           response: {
             resource: RoleDto,
@@ -132,6 +134,7 @@ const USER_ROLE_ENTITY_KEY = 'userRole';
           path: 'role-assignment/user',
           resolver: CrudCqrsResolver,
           transactional: true,
+          extraDecorators: [RoleNamespace({ name: USER_ROLE_ENTITY_KEY })],
           request: { body: RoleAssignmentCreateDto },
           response: {
             resource: RoleAssignmentDto,

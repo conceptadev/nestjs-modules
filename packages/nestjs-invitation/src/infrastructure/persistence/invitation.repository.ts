@@ -1,6 +1,7 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import { ReferenceId } from '@concepta/nestjs-common';
 import {
-  RepositoryContextInterface,
   RepositoryInterface,
   Where,
 } from '@concepta/nestjs-repository';
@@ -18,7 +19,7 @@ export class InvitationRepository implements InvitationRepositoryInterface {
   ) {}
 
   async get(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     id: ReferenceId,
   ): Promise<Invitation | null> {
     const w = Where.for<InvitationEntityInterface>();
@@ -32,7 +33,7 @@ export class InvitationRepository implements InvitationRepositoryInterface {
   }
 
   async findOneByCode(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     code: string,
   ): Promise<Invitation | null> {
     const w = Where.for<InvitationEntityInterface>();
@@ -46,7 +47,7 @@ export class InvitationRepository implements InvitationRepositoryInterface {
   }
 
   async findAllByUserAndCategory(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     userId: ReferenceId,
     category: string,
   ): Promise<Invitation[]> {
@@ -61,7 +62,7 @@ export class InvitationRepository implements InvitationRepositoryInterface {
   }
 
   async save(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     invitation: Invitation,
   ): Promise<void> {
     invitation.stampUpdated();
@@ -71,7 +72,7 @@ export class InvitationRepository implements InvitationRepositoryInterface {
   }
 
   async remove(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     invitation: Invitation,
   ): Promise<void> {
     await this.repository.delete(this.mapper.toPersistence(invitation), {
@@ -80,7 +81,7 @@ export class InvitationRepository implements InvitationRepositoryInterface {
   }
 
   async removeAll(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     invitations: Invitation[],
   ): Promise<void> {
     await this.repository.deleteMany(

@@ -4,8 +4,9 @@ import {
   ReferenceUsername,
   UserEntityInterface,
 } from '@concepta/nestjs-common';
+import { PlainLiteralObject } from '@nestjs/common';
+
 import {
-  RepositoryContextInterface,
   RepositoryInterface,
   Where,
 } from '@concepta/nestjs-repository';
@@ -22,7 +23,7 @@ export class UserRepository implements UserRepositoryInterface {
   ) {}
 
   async get(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     id: ReferenceId,
   ): Promise<User | null> {
     const w = Where.for<UserEntityInterface>();
@@ -36,7 +37,7 @@ export class UserRepository implements UserRepositoryInterface {
   }
 
   async findByEmail(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     email: ReferenceEmail,
   ): Promise<User | null> {
     const w = Where.for<UserEntityInterface>();
@@ -50,7 +51,7 @@ export class UserRepository implements UserRepositoryInterface {
   }
 
   async findByUsername(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     username: ReferenceUsername,
   ): Promise<User | null> {
     const w = Where.for<UserEntityInterface>();
@@ -63,12 +64,12 @@ export class UserRepository implements UserRepositoryInterface {
     return entity ? this.mapper.toDomain(entity) : null;
   }
 
-  async save(ctx: RepositoryContextInterface, user: User): Promise<void> {
+  async save(ctx: PlainLiteralObject, user: User): Promise<void> {
     user.stampUpdated();
     await this.repository.upsert(this.mapper.toPersistence(user), { ctx });
   }
 
-  async remove(ctx: RepositoryContextInterface, user: User): Promise<void> {
+  async remove(ctx: PlainLiteralObject, user: User): Promise<void> {
     await this.repository.delete(this.mapper.toPersistence(user), { ctx });
   }
 }

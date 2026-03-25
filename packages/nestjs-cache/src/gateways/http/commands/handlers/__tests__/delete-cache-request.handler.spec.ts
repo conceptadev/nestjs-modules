@@ -3,6 +3,7 @@ import { CrudDeleteCommand } from '@concepta/nestjs-crud';
 
 import {
   createMockCommandBus,
+  createMockCacheContext,
   createMockCacheEntity,
   toCacheDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
@@ -22,12 +23,12 @@ describe(DeleteCacheRequestHandler.name, () => {
       toCacheDomain(createMockCacheEntity()),
     );
 
-    const context = {
+    const context = createMockCacheContext({
       entity: 'UserCache',
       params: { id: 'test-id' },
       operation: Operation.Delete,
       options: { route: { returnDeleted: false } },
-    } as never;
+    }) as never;
 
     const result = await handler.execute(
       new CrudDeleteCommand<CacheInterface>(context),
@@ -41,12 +42,12 @@ describe(DeleteCacheRequestHandler.name, () => {
       toCacheDomain(createMockCacheEntity()),
     );
 
-    const context = {
+    const context = createMockCacheContext({
       entity: 'UserCache',
       params: { id: 'test-id' },
       operation: Operation.Delete,
       options: { route: { returnDeleted: true } },
-    } as never;
+    }) as never;
 
     const result = await handler.execute(
       new CrudDeleteCommand<CacheInterface>(context),
@@ -61,12 +62,12 @@ describe(DeleteCacheRequestHandler.name, () => {
       toCacheDomain(createMockCacheEntity()),
     );
 
-    const context = {
+    const context = createMockCacheContext({
       entity: 'UserCache',
       params: { id: 'test-id' },
       operation: Operation.SoftDelete,
       options: { route: { returnDeleted: false } },
-    } as never;
+    }) as never;
 
     await handler.execute(new CrudDeleteCommand<CacheInterface>(context));
 
@@ -74,12 +75,12 @@ describe(DeleteCacheRequestHandler.name, () => {
   });
 
   it('should throw when id is not a string', async () => {
-    const context = {
+    const context = createMockCacheContext({
       entity: 'UserCache',
       params: { id: 42 },
       operation: Operation.Delete,
       options: { route: { returnDeleted: false } },
-    } as never;
+    }) as never;
 
     await expect(
       handler.execute(new CrudDeleteCommand<CacheInterface>(context)),

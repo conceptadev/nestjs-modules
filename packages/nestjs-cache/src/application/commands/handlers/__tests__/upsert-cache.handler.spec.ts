@@ -3,9 +3,9 @@ import {
   createMockRepositoryResolver,
   createMockTransaction,
   createMockEventPublisher,
-  createMockContext,
   createMockCacheEntity,
   toCacheDomain,
+  DEFAULT_CACHE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../../domain/aggregates/cache';
 import { CacheExpirationPolicy } from '../../../../domain/policies/cache-expiration.policy';
@@ -13,7 +13,7 @@ import { UpsertCacheCommand } from '../../impl/upsert-cache.command';
 import { UpsertCacheHandler } from '../upsert-cache.handler';
 
 describe(UpsertCacheHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   const policy = new CacheExpirationPolicy({ expiresIn: '1h' });
   let mockRepo: ReturnType<typeof createMockCacheRepository>;
   let handler: UpsertCacheHandler;
@@ -41,7 +41,7 @@ describe(UpsertCacheHandler.name, () => {
   it('should update existing cache when found', async () => {
     mockRepo.findOne.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
-    const result = await handler.execute(new UpsertCacheCommand(ctx, dto));
+    const result = await handler.execute(new UpsertCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto));
 
     expect(result).toBeInstanceOf(Cache);
     expect(result.data).toBe('upsert-data');
@@ -50,7 +50,7 @@ describe(UpsertCacheHandler.name, () => {
   it('should create a new cache when not found', async () => {
     mockRepo.findOne.mockResolvedValue(null);
 
-    const result = await handler.execute(new UpsertCacheCommand(ctx, dto));
+    const result = await handler.execute(new UpsertCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto));
 
     expect(result).toBeInstanceOf(Cache);
     expect(result.key).toBe('test-key');
@@ -59,7 +59,7 @@ describe(UpsertCacheHandler.name, () => {
   it('should save in both paths', async () => {
     mockRepo.findOne.mockResolvedValue(null);
 
-    await handler.execute(new UpsertCacheCommand(ctx, dto));
+    await handler.execute(new UpsertCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto));
 
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
   });

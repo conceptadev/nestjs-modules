@@ -1,9 +1,7 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import { ReferenceId } from '@concepta/nestjs-common';
-import {
-  RepositoryContextInterface,
-  RepositoryInterface,
-  Where,
-} from '@concepta/nestjs-repository';
+import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
 import { Otp } from '../../domain/aggregates/otp';
 import { OtpRepositoryInterface } from '../../domain/repositories/otp-repository.interface';
@@ -18,7 +16,7 @@ export class OtpRepository implements OtpRepositoryInterface {
   ) {}
 
   async get(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     id: ReferenceId,
   ): Promise<Otp | null> {
     const w = Where.for<OtpEntityInterface>();
@@ -32,7 +30,7 @@ export class OtpRepository implements OtpRepositoryInterface {
   }
 
   async findActiveByPasscode(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     options: { category: string; passcode: string },
   ): Promise<Otp | null> {
     const { category, passcode } = options;
@@ -51,7 +49,7 @@ export class OtpRepository implements OtpRepositoryInterface {
   }
 
   async findByPasscode(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     options: { category: string; passcode: string },
   ): Promise<Otp | null> {
     const { category, passcode } = options;
@@ -66,7 +64,7 @@ export class OtpRepository implements OtpRepositoryInterface {
   }
 
   async findActiveByAssignee(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     options: { assigneeId: string; category: string },
   ): Promise<Otp | null> {
     const { assigneeId, category } = options;
@@ -85,7 +83,7 @@ export class OtpRepository implements OtpRepositoryInterface {
   }
 
   async findAllByAssigneeAndCategory(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     options: { assigneeId: string; category: string },
   ): Promise<Otp[]> {
     const { assigneeId, category } = options;
@@ -100,7 +98,7 @@ export class OtpRepository implements OtpRepositoryInterface {
   }
 
   async countCreatedSince(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     options: { assigneeId: string; category: string; cutoffDate: Date },
   ): Promise<number> {
     const { assigneeId, category, cutoffDate } = options;
@@ -117,7 +115,7 @@ export class OtpRepository implements OtpRepositoryInterface {
   }
 
   async findOlderThan(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     options: { assigneeId: string; category: string; cutoffDate: Date },
   ): Promise<Otp[]> {
     const { assigneeId, category, cutoffDate } = options;
@@ -135,16 +133,16 @@ export class OtpRepository implements OtpRepositoryInterface {
     return entities.map((e) => this.mapper.toDomain(e));
   }
 
-  async save(ctx: RepositoryContextInterface, otp: Otp): Promise<void> {
+  async save(ctx: PlainLiteralObject, otp: Otp): Promise<void> {
     otp.stampUpdated();
     await this.repository.upsert(this.mapper.toPersistence(otp), { ctx });
   }
 
-  async remove(ctx: RepositoryContextInterface, otp: Otp): Promise<void> {
+  async remove(ctx: PlainLiteralObject, otp: Otp): Promise<void> {
     await this.repository.delete(this.mapper.toPersistence(otp), { ctx });
   }
 
-  async removeAll(ctx: RepositoryContextInterface, otps: Otp[]): Promise<void> {
+  async removeAll(ctx: PlainLiteralObject, otps: Otp[]): Promise<void> {
     await this.repository.deleteMany(
       otps.map((otp) => this.mapper.toPersistence(otp)),
       { ctx },

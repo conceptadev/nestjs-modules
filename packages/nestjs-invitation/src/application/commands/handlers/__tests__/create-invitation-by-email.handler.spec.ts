@@ -1,6 +1,5 @@
 import {
   createMockInvitationService,
-  createMockInvitationContext,
   createMockInvitationEntity,
   toInvitationDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
@@ -10,7 +9,7 @@ import { CreateInvitationByEmailCommand } from '../../impl/create-invitation-by-
 import { CreateInvitationByEmailHandler } from '../create-invitation-by-email.handler';
 
 describe(CreateInvitationByEmailHandler.name, () => {
-  const ctx = createMockInvitationContext();
+  const ctx = {};
   let mockService: jest.Mocked<InvitationService>;
   let handler: CreateInvitationByEmailHandler;
 

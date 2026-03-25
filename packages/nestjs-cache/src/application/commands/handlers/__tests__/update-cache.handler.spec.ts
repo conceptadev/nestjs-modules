@@ -3,9 +3,9 @@ import {
   createMockRepositoryResolver,
   createMockTransaction,
   createMockEventPublisher,
-  createMockContext,
   createMockCacheEntity,
   toCacheDomain,
+  DEFAULT_CACHE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../../domain/aggregates/cache';
 import { CacheExpirationPolicy } from '../../../../domain/policies/cache-expiration.policy';
@@ -13,7 +13,7 @@ import { UpdateCacheCommand } from '../../impl/update-cache.command';
 import { UpdateCacheHandler } from '../update-cache.handler';
 
 describe(UpdateCacheHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   const policy = new CacheExpirationPolicy({ expiresIn: '1h' });
   let mockRepo: ReturnType<typeof createMockCacheRepository>;
   let handler: UpdateCacheHandler;
@@ -42,7 +42,7 @@ describe(UpdateCacheHandler.name, () => {
     };
 
     const result = await handler.execute(
-      new UpdateCacheCommand(ctx, 'test-id', dto),
+      new UpdateCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, 'test-id', dto),
     );
 
     expect(result).toBeInstanceOf(Cache);
@@ -60,7 +60,7 @@ describe(UpdateCacheHandler.name, () => {
       expiresIn: null,
     };
 
-    await handler.execute(new UpdateCacheCommand(ctx, 'test-id', dto));
+    await handler.execute(new UpdateCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, 'test-id', dto));
 
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
   });

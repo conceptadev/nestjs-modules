@@ -176,7 +176,7 @@ an optional `ctx` (repository context) for transaction and hook support.
 
 ### Transaction Awareness
 
-When a `RepositoryContextInterface` with an active `trx` is provided,
+When a `PlainLiteralObject` context with an active `trx` is provided,
 `TypeOrmRepository` automatically:
 
 1. Resolves the TypeORM transaction via `ctx.trx.getOrStart(transactionKey)`

@@ -1,19 +1,20 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import { ReferenceId } from '@concepta/nestjs-common';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { UserCredentials } from '../aggregates/user-credentials';
 
 export interface UserCredentialsRepositoryInterface {
   findActiveByUserId(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     userId: ReferenceId,
   ): Promise<UserCredentials | null>;
 
   findByUserId(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     userId: ReferenceId,
     limitDate?: Date,
   ): Promise<UserCredentials[]>;
 
-  save(ctx: RepositoryContextInterface, entry: UserCredentials): Promise<void>;
+  save(ctx: PlainLiteralObject, entry: UserCredentials): Promise<void>;
 }

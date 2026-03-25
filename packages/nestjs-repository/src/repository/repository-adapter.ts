@@ -93,7 +93,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
    * Switch the context's entity to this repository's entity key.
    */
   protected entityCtx(
-    ctx?: RepositoryContextInterface,
+    ctx?: PlainLiteralObject,
   ): RepositoryContextInterface | undefined {
     if (!ctx) return undefined;
     return switchToRepo(ctx, this.entityKey);

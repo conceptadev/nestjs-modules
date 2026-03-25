@@ -16,8 +16,9 @@ export class UpdateRoleRequestHandler {
 
     assertRoleId(id);
 
+    const { namespace } = context.withRole();
     const role = await this.commandBus.execute<UpdateRoleCommand, Role>(
-      new UpdateRoleCommand(context, id, dto),
+      new UpdateRoleCommand(context, namespace, id, dto),
     );
     return role.toPlain();
   }

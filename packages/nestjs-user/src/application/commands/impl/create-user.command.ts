@@ -1,9 +1,10 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import { UserCreatableInterface } from '@concepta/nestjs-common';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 export class CreateUserCommand {
   constructor(
-    public readonly ctx: RepositoryContextInterface,
+    public readonly ctx: PlainLiteralObject,
     public readonly dto: UserCreatableInterface,
   ) {}
 }

@@ -1,5 +1,4 @@
 import { createMockCommandBus } from '@concepta/nestjs-common/testing';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import {
   createMockTxScope,
@@ -11,8 +10,6 @@ import { UserNotFoundException } from '../../../exceptions/user-not-found.except
 import { UpdateUserCredentialCommand } from '../../impl/update-user-credential.command';
 import { UpdateUserPasswordCommand } from '../../impl/update-user-password.command';
 import { UpdateUserPasswordHandler } from '../update-user-password.handler';
-
-const ctx = {} as RepositoryContextInterface;
 
 describe(UpdateUserPasswordHandler.name, () => {
   const userRepository = createMockUserRepository();
@@ -36,7 +33,7 @@ describe(UpdateUserPasswordHandler.name, () => {
     const passwordDto = { password: 'new-pass', passwordCurrent: 'old-pass' };
 
     await handler.execute(
-      new UpdateUserPasswordCommand(ctx, 'user-1', passwordDto),
+      new UpdateUserPasswordCommand({}, 'user-1', passwordDto),
     );
 
     expect(commandBus.execute).toHaveBeenCalledTimes(1);
@@ -51,7 +48,7 @@ describe(UpdateUserPasswordHandler.name, () => {
 
     await expect(
       handler.execute(
-        new UpdateUserPasswordCommand(ctx, 'missing', {
+        new UpdateUserPasswordCommand({}, 'missing', {
           password: 'new',
         }),
       ),

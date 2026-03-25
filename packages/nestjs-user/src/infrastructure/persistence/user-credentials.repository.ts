@@ -2,9 +2,10 @@ import {
   ReferenceId,
   UserCredentialEntityInterface,
 } from '@concepta/nestjs-common';
+import { PlainLiteralObject } from '@nestjs/common';
+
 import {
   OrderBy,
-  RepositoryContextInterface,
   RepositoryInterface,
   Where,
 } from '@concepta/nestjs-repository';
@@ -23,7 +24,7 @@ export class UserCredentialsRepository
   ) {}
 
   async findActiveByUserId(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     userId: ReferenceId,
   ): Promise<UserCredentials | null> {
     const w = Where.for<UserCredentialEntityInterface>();
@@ -37,7 +38,7 @@ export class UserCredentialsRepository
   }
 
   async findByUserId(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     userId: ReferenceId,
     limitDate?: Date,
   ): Promise<UserCredentials[]> {
@@ -59,7 +60,7 @@ export class UserCredentialsRepository
   }
 
   async save(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     entry: UserCredentials,
   ): Promise<void> {
     entry.stampUpdated();

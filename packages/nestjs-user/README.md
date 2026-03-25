@@ -1,8 +1,8 @@
 # @concepta/nestjs-user
 
-User management module for NestJS using DDD/CQRS. Provides user CRUD,
-credential management with password policies (reuse prevention, current
-password validation), and invitation-based activation.
+User management module for NestJS using DDD/CQRS. Provides user CRUD
+and credential management with password policies (reuse prevention, current
+password validation).
 
 ## Project
 
@@ -132,7 +132,6 @@ interface UserOptionsInterface {
 }
 
 interface UserSettingsInterface {
-  invitationAcceptedEvent?: EventClassInterface;
   password?: {
     reuseAfterDays?: number;   // Days before password reuse (default: 730)
     requireCurrent?: boolean;  // Require current password on update (default: false)
@@ -160,8 +159,7 @@ Infrastructure (Repositories, Mappers, DTOs, Config)
   `UserCredentials` aggregate extending
   `DomainAggregate<UserCredentialInterface>`, domain events,
   `UserCredentialsService`, `UserPasswordPolicy`
-- **Application** -- 7 commands and 4 queries dispatched via `@nestjs/cqrs`,
-  invitation-accepted event listener
+- **Application** -- 7 commands and 4 queries dispatched via `@nestjs/cqrs`
 - **Infrastructure** -- `UserRepository` and `UserCredentialsRepository` with
   ctx-first signatures, `UserMapper` and `UserCredentialsMapper` for
   entity-to-aggregate conversion (DI-injected), DTOs, config
@@ -275,13 +273,6 @@ const user = await this.commandBus.execute<CreateUserCommand, User>(
 | `UserCredentialsDeactivatedEvent` | `eventContext, credentials` (no password fields) | `UserCredentials.deactivate` |
 
 Events are published after the transaction commits.
-
-### Invitation Listener
-
-When `invitationAcceptedEvent` is configured in settings, the module
-registers `InvitationAcceptedListener` which listens for the configured
-event and activates the user by dispatching `UpdateUserCommand` with
-`active: true`.
 
 ## Password Management
 

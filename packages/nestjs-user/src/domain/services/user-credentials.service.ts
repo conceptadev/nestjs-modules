@@ -13,10 +13,9 @@ import {
   PasswordStorageService,
   PasswordStorageServiceInterface,
 } from '@concepta/nestjs-password';
-import {
-  RepositoryContextInterface,
-  TransactionScope,
-} from '@concepta/nestjs-repository';
+import { PlainLiteralObject } from '@nestjs/common';
+
+import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { USER_CREDENTIALS_REPOSITORY_TOKEN } from '../../user.constants';
 import { UserCredentials } from '../aggregates/user-credentials';
@@ -41,7 +40,7 @@ export class UserCredentialsService {
   ) {}
 
   async setPassword(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     eventContext: EventContextHost,
     userId: ReferenceId,
     password: string,
@@ -62,7 +61,7 @@ export class UserCredentialsService {
   }
 
   async updatePassword(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     eventContext: EventContextHost,
     userId: ReferenceId,
     password: string,
@@ -97,7 +96,7 @@ export class UserCredentialsService {
   }
 
   protected async createCredentials(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     eventContext: EventContextHost,
     userId: ReferenceId,
     passwordStorage: PasswordStorageInterface,
@@ -119,7 +118,7 @@ export class UserCredentialsService {
   }
 
   protected async deactivateCredentials(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     eventContext: EventContextHost,
     credentials: UserCredentials,
   ): Promise<void> {
@@ -147,7 +146,7 @@ export class UserCredentialsService {
   }
 
   protected async validateHistory(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     userId: ReferenceId,
     password: string,
   ): Promise<void> {

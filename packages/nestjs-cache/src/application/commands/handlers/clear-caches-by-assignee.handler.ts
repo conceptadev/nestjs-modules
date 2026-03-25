@@ -18,9 +18,9 @@ export class ClearCachesByAssigneeHandler
   ) {}
 
   async execute(command: ClearCachesByAssigneeCommand): Promise<void> {
-    const { ctx, assigneeId } = command;
+    const { ctx, namespace, assigneeId } = command;
 
-    const cacheRepo = this.repositoryResolver.resolve(ctx.entity);
+    const cacheRepo = this.repositoryResolver.resolve(namespace);
 
     return this.txScope.run(ctx, async () => {
       await cacheRepo.removeAllByAssignee(ctx, assigneeId);

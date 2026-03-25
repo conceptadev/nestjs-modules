@@ -1,9 +1,7 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import { ReferenceId } from '@concepta/nestjs-common';
-import {
-  RepositoryContextInterface,
-  RepositoryInterface,
-  Where,
-} from '@concepta/nestjs-repository';
+import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
 import { Cache } from '../../domain/aggregates/cache';
 import { CacheRepositoryInterface } from '../../domain/repositories/cache-repository.interface';
@@ -18,7 +16,7 @@ export class CacheRepository implements CacheRepositoryInterface {
   ) {}
 
   async get(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     id: ReferenceId,
   ): Promise<Cache | null> {
     const w = Where.for<CacheEntityInterface>();
@@ -32,7 +30,7 @@ export class CacheRepository implements CacheRepositoryInterface {
   }
 
   async findOne(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     options: { key: string; type: string; assigneeId: string },
   ): Promise<Cache | null> {
     const { key, type, assigneeId } = options;
@@ -51,7 +49,7 @@ export class CacheRepository implements CacheRepositoryInterface {
   }
 
   async findAllByAssignee(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     assigneeId: string,
   ): Promise<Cache[]> {
     const w = Where.for<CacheEntityInterface>();
@@ -64,17 +62,17 @@ export class CacheRepository implements CacheRepositoryInterface {
     return entities.map((e) => this.mapper.toDomain(e));
   }
 
-  async save(ctx: RepositoryContextInterface, cache: Cache): Promise<void> {
+  async save(ctx: PlainLiteralObject, cache: Cache): Promise<void> {
     cache.stampUpdated();
     await this.repository.upsert(this.mapper.toPersistence(cache), { ctx });
   }
 
-  async remove(ctx: RepositoryContextInterface, cache: Cache): Promise<void> {
+  async remove(ctx: PlainLiteralObject, cache: Cache): Promise<void> {
     await this.repository.delete(this.mapper.toPersistence(cache), { ctx });
   }
 
   async removeAllByAssignee(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     assigneeId: string,
   ): Promise<void> {
     const caches = await this.findAllByAssignee(ctx, assigneeId);
@@ -86,7 +84,7 @@ export class CacheRepository implements CacheRepositoryInterface {
   }
 
   async softRemove(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     cache: Cache,
   ): Promise<void> {
     cache.stampDeleted();

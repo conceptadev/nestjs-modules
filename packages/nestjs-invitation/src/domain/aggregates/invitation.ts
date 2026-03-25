@@ -2,7 +2,6 @@ import { randomUUID } from 'crypto';
 
 import {
   DomainFactory,
-  EntityHeaderInterface,
   EventContextHost,
   LiteralObject,
 } from '@concepta/nestjs-common';
@@ -11,6 +10,7 @@ import {
   DomainAggregate,
 } from '@concepta/nestjs-common/aggregate';
 
+import { InvitationEventHeaderInterface } from '../events/interfaces/invitation-event-header.interface';
 import { InvitationDispatchedMetadataInterface } from '../events/interfaces/invitation-dispatched-metadata.interface';
 import { InvitationAcceptedEvent } from '../events/invitation-accepted.event';
 import { InvitationCreatedEvent } from '../events/invitation-created.event';
@@ -64,14 +64,14 @@ export class Invitation extends DomainAggregate<InvitationInterface> {
   }
 
   static create(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<InvitationEventHeaderInterface>,
     dto: InvitationCreatableInterface,
   ): Invitation {
     return Invitation.createWithId(eventContext, randomUUID(), dto);
   }
 
   static createWithId(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<InvitationEventHeaderInterface>,
     id: string,
     dto: InvitationCreatableInterface,
   ): Invitation {
@@ -94,7 +94,7 @@ export class Invitation extends DomainAggregate<InvitationInterface> {
   }
 
   accept(
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    eventContext: EventContextHost<InvitationEventHeaderInterface>,
     payload?: LiteralObject,
   ): void {
     if (this.isAccepted) {
@@ -114,18 +114,18 @@ export class Invitation extends DomainAggregate<InvitationInterface> {
 
   dispatch(
     eventContext: EventContextHost<
-      EntityHeaderInterface,
+      InvitationEventHeaderInterface,
       InvitationDispatchedMetadataInterface
     >,
   ): void {
     this.apply(new InvitationDispatchedEvent(eventContext, this.toPlain()));
   }
 
-  remove(eventContext: EventContextHost<EntityHeaderInterface>): void {
+  remove(eventContext: EventContextHost<InvitationEventHeaderInterface>): void {
     this.apply(new InvitationRemovedEvent(eventContext, this.toPlain()));
   }
 
-  revoke(eventContext: EventContextHost<EntityHeaderInterface>): void {
+  revoke(eventContext: EventContextHost<InvitationEventHeaderInterface>): void {
     if (this.isRevoked) {
       return;
     }

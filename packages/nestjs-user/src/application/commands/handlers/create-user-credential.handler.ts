@@ -22,7 +22,7 @@ export class CreateUserCredentialHandler
     const { ctx, userId, password } = command;
 
     return this.txScope.run(ctx, async () => {
-      const eventContext = EventContextHost.builder().build();
+      const eventContext = new EventContextHost({}, {});
 
       return this.userCredentialsService.setPassword(
         ctx,

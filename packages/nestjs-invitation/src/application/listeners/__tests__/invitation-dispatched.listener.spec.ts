@@ -1,9 +1,5 @@
-import {
-  EntityHeaderInterface,
-  EventContextHost,
-} from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
 
-import { InvitationDispatchedMetadataInterface } from '../../../domain/events/interfaces/invitation-dispatched-metadata.interface';
 import { InvitationEventPayloadInterface } from '../../../domain/events/interfaces/invitation-event-payload.interface';
 import { InvitationDispatchedEvent } from '../../../domain/events/invitation-dispatched.event';
 import { InvitationEmailPort } from '../../../domain/ports/invitation-email.port';
@@ -23,13 +19,10 @@ describe(InvitationDispatchedListener.name, () => {
   it('should call emailPort.sendInvitation with invitation and OTP data from meta', async () => {
     const tokenExp = new Date('2026-02-01');
 
-    const eventContext = EventContextHost.builder<
-      EntityHeaderInterface,
-      InvitationDispatchedMetadataInterface
-    >()
-      .setHeader('entity', 'invitation')
-      .mergeMeta({ passcode: 'abc123', tokenExp })
-      .build();
+    const eventContext = new EventContextHost(
+      {},
+      { passcode: 'abc123', tokenExp },
+    );
 
     const invitation: InvitationEventPayloadInterface = {
       id: 'inv-1',

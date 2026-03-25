@@ -1,8 +1,5 @@
 import { UserEntityInterface } from '@concepta/nestjs-common';
-import {
-  RepositoryContextInterface,
-  RepositoryInterface,
-} from '@concepta/nestjs-repository';
+import { RepositoryInterface } from '@concepta/nestjs-repository';
 
 import { createMockUserEntity } from '../../../__tests__/helpers/mock.helpers';
 import { User } from '../../../domain/aggregates/user';
@@ -10,8 +7,6 @@ import { UserMapper } from '../user.mapper';
 import { UserRepository } from '../user.repository';
 
 const userMapper = new UserMapper();
-
-const ctx = {} as RepositoryContextInterface;
 
 const mockEntity = createMockUserEntity();
 
@@ -44,7 +39,7 @@ describe(UserRepository.name, () => {
     it('should return User when found', async () => {
       innerRepo.findOne.mockResolvedValue(mockEntity);
 
-      const result = await repository.get(ctx, 'user-1');
+      const result = await repository.get({}, 'user-1');
 
       expect(result).toBeInstanceOf(User);
       expect(result!.id).toBe('user-1');
@@ -54,7 +49,7 @@ describe(UserRepository.name, () => {
     it('should return null when not found', async () => {
       innerRepo.findOne.mockResolvedValue(null);
 
-      const result = await repository.get(ctx, 'missing');
+      const result = await repository.get({}, 'missing');
 
       expect(result).toBeNull();
     });
@@ -64,7 +59,7 @@ describe(UserRepository.name, () => {
     it('should return User when found', async () => {
       innerRepo.findOne.mockResolvedValue(mockEntity);
 
-      const result = await repository.findByEmail(ctx, 'a@b.com');
+      const result = await repository.findByEmail({}, 'a@b.com');
 
       expect(result).toBeInstanceOf(User);
       expect(result!.email).toBe('a@b.com');
@@ -73,7 +68,7 @@ describe(UserRepository.name, () => {
     it('should return null when not found', async () => {
       innerRepo.findOne.mockResolvedValue(null);
 
-      const result = await repository.findByEmail(ctx, 'missing@b.com');
+      const result = await repository.findByEmail({}, 'missing@b.com');
 
       expect(result).toBeNull();
     });
@@ -83,7 +78,7 @@ describe(UserRepository.name, () => {
     it('should return User when found', async () => {
       innerRepo.findOne.mockResolvedValue(mockEntity);
 
-      const result = await repository.findByUsername(ctx, 'john');
+      const result = await repository.findByUsername({}, 'john');
 
       expect(result).toBeInstanceOf(User);
       expect(result!.username).toBe('john');
@@ -92,7 +87,7 @@ describe(UserRepository.name, () => {
     it('should return null when not found', async () => {
       innerRepo.findOne.mockResolvedValue(null);
 
-      const result = await repository.findByUsername(ctx, 'missing');
+      const result = await repository.findByUsername({}, 'missing');
 
       expect(result).toBeNull();
     });
@@ -105,12 +100,12 @@ describe(UserRepository.name, () => {
       const user = userMapper.toDomain(mockEntity);
       const stampSpy = jest.spyOn(user, 'stampUpdated');
 
-      await repository.save(ctx, user);
+      await repository.save({}, user);
 
       expect(stampSpy).toHaveBeenCalledTimes(1);
       expect(innerRepo.upsert).toHaveBeenCalledWith(
         userMapper.toPersistence(user),
-        { ctx },
+        { ctx: {} },
       );
     });
   });
@@ -120,7 +115,7 @@ describe(UserRepository.name, () => {
       innerRepo.delete.mockResolvedValue(mockEntity);
 
       const user = userMapper.toDomain(mockEntity);
-      await repository.remove(ctx, user);
+      await repository.remove({}, user);
 
       expect(innerRepo.delete).toHaveBeenCalledTimes(1);
     });

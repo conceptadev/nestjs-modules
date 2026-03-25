@@ -1,7 +1,4 @@
-import {
-  EntityHeaderInterface,
-  HookContextInterface,
-} from '@concepta/nestjs-common';
+import { HookContextInterface } from '@concepta/nestjs-common';
 
 import { TransactionContextInterface } from './transaction-context.interface';
 
@@ -13,5 +10,6 @@ import { TransactionContextInterface } from './transaction-context.interface';
  */
 export interface RepositoryContextInterface
   extends TransactionContextInterface,
-    HookContextInterface,
-    EntityHeaderInterface {}
+    HookContextInterface {
+  entity: string;
+}

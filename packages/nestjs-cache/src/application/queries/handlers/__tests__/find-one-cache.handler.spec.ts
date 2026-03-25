@@ -1,15 +1,15 @@
 import {
   createMockCacheRepository,
   createMockRepositoryResolver,
-  createMockContext,
   createMockCacheEntity,
   toCacheDomain,
+  DEFAULT_CACHE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { FindOneCacheQuery } from '../../impl/find-one-cache.query';
 import { FindOneCacheHandler } from '../find-one-cache.handler';
 
 describe(FindOneCacheHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockCacheRepository>;
   let handler: FindOneCacheHandler;
 
@@ -22,7 +22,7 @@ describe(FindOneCacheHandler.name, () => {
     mockRepo.findOne.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
     const result = await handler.execute(
-      new FindOneCacheQuery(ctx, 'key', 'type', 'assignee'),
+      new FindOneCacheQuery(ctx, DEFAULT_CACHE_NAMESPACE, 'key', 'type', 'assignee'),
     );
 
     expect(result).not.toBeNull();
@@ -33,7 +33,7 @@ describe(FindOneCacheHandler.name, () => {
     mockRepo.findOne.mockResolvedValue(null);
 
     const result = await handler.execute(
-      new FindOneCacheQuery(ctx, 'key', 'type', 'assignee'),
+      new FindOneCacheQuery(ctx, DEFAULT_CACHE_NAMESPACE, 'key', 'type', 'assignee'),
     );
 
     expect(result).toBeNull();

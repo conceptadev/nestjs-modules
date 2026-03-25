@@ -1,5 +1,4 @@
 import {
-  createMockContext,
   createMockOtpEntity,
   createMockEventPublisher,
   createMockOtpRepository,
@@ -16,7 +15,7 @@ describe(DeactivateOtpHandler.name, () => {
   let mockRepo: ReturnType<typeof createMockOtpRepository>;
   let mockTx: ReturnType<typeof createMockTransaction>;
 
-  const ctx = createMockContext();
+  const ctx = {};
 
   beforeEach(() => {
     mockRepo = createMockOtpRepository();

@@ -1,10 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import {
-  EntityHeaderInterface,
-  EventContextHost,
-} from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { RoleAssignment } from '../../../domain/aggregates/role-assignment';
@@ -23,13 +20,11 @@ export class AssignRoleHandler implements ICommandHandler<AssignRoleCommand> {
   ) {}
 
   async execute(command: AssignRoleCommand): Promise<RoleAssignment> {
-    const { ctx, roleId, assigneeId } = command;
+    const { ctx, namespace, roleId, assigneeId } = command;
 
-    const assignmentRepo = this.repositoryResolver.resolve(ctx.entity);
+    const assignmentRepo = this.repositoryResolver.resolve(namespace);
 
-    const eventContext = EventContextHost.builder<EntityHeaderInterface>()
-      .setHeader('entity', ctx.entity)
-      .build();
+    const eventContext = new EventContextHost({ namespace }, {});
 
     return this.txScope.run(ctx, async (trx) => {
       const count = await assignmentRepo.countByRoleIdAndAssignee(

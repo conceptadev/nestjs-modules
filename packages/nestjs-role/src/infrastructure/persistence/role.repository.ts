@@ -1,9 +1,7 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import { ReferenceId, RoleEntityInterface } from '@concepta/nestjs-common';
-import {
-  RepositoryContextInterface,
-  RepositoryInterface,
-  Where,
-} from '@concepta/nestjs-repository';
+import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
 import { Role } from '../../domain/aggregates/role';
 import { RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface';
@@ -17,7 +15,7 @@ export class RoleRepository implements RoleRepositoryInterface {
   ) {}
 
   async get(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     id: ReferenceId,
   ): Promise<Role | null> {
     const w = Where.for<RoleEntityInterface>();
@@ -30,12 +28,12 @@ export class RoleRepository implements RoleRepositoryInterface {
     return entity ? this.mapper.toDomain(entity) : null;
   }
 
-  async save(ctx: RepositoryContextInterface, role: Role): Promise<void> {
+  async save(ctx: PlainLiteralObject, role: Role): Promise<void> {
     role.stampUpdated();
     await this.repository.upsert(this.mapper.toPersistence(role), { ctx });
   }
 
-  async remove(ctx: RepositoryContextInterface, role: Role): Promise<void> {
+  async remove(ctx: PlainLiteralObject, role: Role): Promise<void> {
     await this.repository.delete(this.mapper.toPersistence(role), { ctx });
   }
 }

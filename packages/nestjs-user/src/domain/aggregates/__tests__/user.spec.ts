@@ -6,7 +6,7 @@ import {
 } from '../../../__tests__/helpers/mock.helpers';
 import { User } from '../user';
 
-const eventContext = EventContextHost.builder().build();
+const eventContext = new EventContextHost({}, {});
 const mockEntity = createMockUserEntity();
 
 describe(User.name, () => {

@@ -1,5 +1,4 @@
 import {
-  createMockContext,
   createMockOtpRepository,
   createMockOtpSettings,
   createMockRepositoryResolver,
@@ -15,7 +14,7 @@ describe(ClearOtpHistoryHandler.name, () => {
   let mockSettings: ReturnType<typeof createMockOtpSettings>;
   let historyCleanup: OtpHistoryCleanupService;
 
-  const ctx = createMockContext();
+  const ctx = {};
 
   beforeEach(() => {
     const mockRepo = createMockOtpRepository();

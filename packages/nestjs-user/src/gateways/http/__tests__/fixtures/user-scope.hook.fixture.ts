@@ -5,10 +5,11 @@ import {
   UserEntityInterface,
 } from '@concepta/nestjs-common';
 import { getLocal } from '@concepta/nestjs-crud';
+import { PlainLiteralObject } from '@nestjs/common';
+
 import {
   BeforeFindOne,
   RepoHook,
-  RepositoryContextInterface,
   RepositoryFindOneOptions,
   RepoSpec,
   Where,
@@ -22,7 +23,7 @@ export class UserScopeHookFixture {
   @BeforeFindOne(RepoSpec.isEntity('user'))
   async scopeUserLookup(
     options: RepositoryFindOneOptions<UserEntityInterface>,
-    ctx?: RepositoryContextInterface,
+    ctx?: PlainLiteralObject,
   ): Promise<RepositoryFindOneOptions<UserEntityInterface>> {
     const authorizedUser = getLocal(ctx, AuthorizedUserLocalFixture);
 
@@ -41,7 +42,7 @@ export class UserScopeHookFixture {
   @BeforeFindOne(RepoSpec.isEntity('user-credentials'))
   async scopeCredentialsLookup(
     options: RepositoryFindOneOptions<UserCredentialEntityInterface>,
-    ctx?: RepositoryContextInterface,
+    ctx?: PlainLiteralObject,
   ): Promise<RepositoryFindOneOptions<UserCredentialEntityInterface>> {
     const authorizedUser = getLocal(ctx, AuthorizedUserLocalFixture);
 

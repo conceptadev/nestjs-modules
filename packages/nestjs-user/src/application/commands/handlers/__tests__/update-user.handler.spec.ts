@@ -1,5 +1,3 @@
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
-
 import {
   createMockEventPublisher,
   createMockTxScope,
@@ -11,8 +9,6 @@ import { User } from '../../../../domain/aggregates/user';
 import { UserNotFoundException } from '../../../exceptions/user-not-found.exception';
 import { UpdateUserCommand } from '../../impl/update-user.command';
 import { UpdateUserHandler } from '../update-user.handler';
-
-const ctx = {} as RepositoryContextInterface;
 
 describe(UpdateUserHandler.name, () => {
   const userRepository = createMockUserRepository();
@@ -30,7 +26,7 @@ describe(UpdateUserHandler.name, () => {
     userRepository.get.mockResolvedValue(toUserDomain(createMockUserEntity()));
 
     const result = await handler.execute(
-      new UpdateUserCommand(ctx, 'user-1', { active: false }),
+      new UpdateUserCommand({},'user-1', { active: false }),
     );
 
     expect(result).toBeInstanceOf(User);
@@ -43,7 +39,7 @@ describe(UpdateUserHandler.name, () => {
     userRepository.get.mockResolvedValue(null);
 
     await expect(
-      handler.execute(new UpdateUserCommand(ctx, 'missing', { active: false })),
+      handler.execute(new UpdateUserCommand({},'missing', { active: false })),
     ).rejects.toThrow(UserNotFoundException);
   });
 });

@@ -271,8 +271,8 @@ Database Driver (TypeORM, etc.)
 - **Controller** — Decorated class with operation methods. Can be fully
   generated, hand-written, or a hybrid of both.
 - **CrudContextInterceptor** — Parses the HTTP request into a
-  `CrudContextInterface` (route params, query string, options), resolves
-  CrudLocal providers, and runs response transforms after the controller.
+  `CrudContextInterface` (entity name, route params, query string, options),
+  resolves CrudLocal providers, and runs response transforms after the controller.
 - **Resolver** — Dispatches the operation to the adapter directly, through
   a handler, or through the CQRS bus.
 - **CrudAdapter** — Wraps a `RepositoryInterface` and adds pagination,

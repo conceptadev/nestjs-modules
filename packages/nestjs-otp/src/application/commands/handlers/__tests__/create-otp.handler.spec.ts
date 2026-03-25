@@ -1,5 +1,4 @@
 import {
-  createMockContext,
   createMockEventPublisher,
   createMockOtpEntity,
   createMockOtpRepository,
@@ -21,7 +20,7 @@ describe(CreateOtpHandler.name, () => {
   let mockTx: ReturnType<typeof createMockTransaction>;
   let mockSettings: ReturnType<typeof createMockOtpSettings>;
 
-  const ctx = createMockContext();
+  const ctx = {};
 
   const validDto = {
     category: 'test-category',

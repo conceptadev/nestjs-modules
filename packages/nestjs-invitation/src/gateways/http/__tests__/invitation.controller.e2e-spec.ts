@@ -6,8 +6,6 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken } from '@nestjs/typeorm';
 
-import { AppContextHost } from '@concepta/nestjs-common';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
 import { InvitationCreatableInterface } from '../../../domain/interfaces/invitation-creatable.interface';
@@ -90,10 +88,7 @@ describe('InvitationController (e2e)', () => {
 
     it('PATCH /invitation-acceptance/:code', async () => {
       const { code } = invitation;
-      const ctx = AppContextHost.merge<RepositoryContextInterface>(() => ({
-        entity: '',
-      }));
-      const otp = await otpPort.create(ctx, orgCategory, user.id);
+      const otp = await otpPort.create({}, orgCategory, user.id);
 
       await supertest(app.getHttpServer())
         .patch(`/invitation-acceptance/${code}`)
@@ -126,10 +121,7 @@ describe('InvitationController (e2e)', () => {
 
     it('PATCH /invitation-acceptance/:code', async () => {
       const { code } = invitation;
-      const ctx = AppContextHost.merge<RepositoryContextInterface>(() => ({
-        entity: '',
-      }));
-      const otp = await otpPort.create(ctx, userCategory, user.id);
+      const otp = await otpPort.create({}, userCategory, user.id);
 
       await supertest(app.getHttpServer())
         .patch(`/invitation-acceptance/${code}`)

@@ -1,8 +1,9 @@
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
+import { PlainLiteralObject } from '@nestjs/common';
 
 export class FindCachesByAssigneeQuery {
   constructor(
-    public readonly ctx: RepositoryContextInterface,
+    public readonly ctx: PlainLiteralObject,
+    public readonly namespace: string,
     public readonly assigneeId: string,
   ) {}
 }

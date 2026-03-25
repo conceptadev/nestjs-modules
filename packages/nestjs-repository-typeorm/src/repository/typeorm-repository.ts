@@ -21,14 +21,14 @@ import {
 
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { DeepPartial, RuntimeException } from '@concepta/nestjs-common';
+import { AppContextHost, DeepPartial, RuntimeException } from '@concepta/nestjs-common';
 import { HookResolverService } from '@concepta/nestjs-hook';
 import {
   isWhereCondition,
   JoinClause,
   RelationActionConfig,
   RepositoryAdapter,
-  RepositoryContextInterface,
+  TransactionContextInterface,
   RepositoryCreateOptions,
   RepositoryDeleteOptions,
   RepositoryFindOneOptions,
@@ -101,10 +101,14 @@ export class TypeOrmRepository<
    * Creates the driver transaction lazily on first access via `getOrStart()`.
    */
   protected async getRepo(
-    ctx?: RepositoryContextInterface,
+    ctx?: PlainLiteralObject,
   ): Promise<Repository<Entity>> {
-    if (this.options.transactionKey && ctx?.trx) {
-      const tx = await ctx.trx.getOrStart(this.options.transactionKey);
+    const trxCtx = AppContextHost.merge<TransactionContextInterface>(
+      () => ({}),
+      ctx,
+    );
+    if (this.options.transactionKey && trxCtx.trx) {
+      const tx = await trxCtx.trx.getOrStart(this.options.transactionKey);
       return tx.getClient<EntityManager>().getRepository(this.metadata.type);
     }
     return this.repo;
@@ -113,9 +117,13 @@ export class TypeOrmRepository<
   /**
    * Mark the transaction as dirty (write operation occurred)
    */
-  protected markDirty(ctx?: RepositoryContextInterface): void {
+  protected markDirty(ctx?: PlainLiteralObject): void {
     if (this.options.transactionKey) {
-      ctx?.trx?.get(this.options.transactionKey)?.markDirty();
+      const trxCtx = AppContextHost.merge<TransactionContextInterface>(
+        () => ({}),
+        ctx,
+      );
+      trxCtx.trx?.get(this.options.transactionKey)?.markDirty();
     }
   }
 

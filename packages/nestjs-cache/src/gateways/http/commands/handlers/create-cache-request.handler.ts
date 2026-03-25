@@ -11,8 +11,9 @@ export class CreateCacheRequestHandler {
 
   async execute(command: CreateCacheRequest) {
     const { context, dto } = command;
-    const cache = await this.commandBus.execute<CreateCacheCommand, Cache>(
-      new CreateCacheCommand(context, dto),
+    const { namespace } = context.withCache();
+    const cache = await this.commandBus.execute(
+      new CreateCacheCommand(context, namespace, dto),
     );
     return cache.toPlain();
   }

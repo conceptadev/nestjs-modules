@@ -1,7 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
 import { ActionEnum, Operation } from '@concepta/nestjs-common';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import { CrudParsedQueryInterface } from '../../request/interfaces/crud-parsed-query.interface';
 import { CrudSpecContextInterface } from '../../specifications/interfaces/crud-spec-context.interface';
@@ -10,8 +9,12 @@ import { CrudContextOptionsInterface } from './crud-context-options.interface';
 
 export interface CrudContextInterface<
   T extends PlainLiteralObject = PlainLiteralObject,
-> extends RepositoryContextInterface,
+> extends PlainLiteralObject,
     CrudSpecContextInterface {
+  /**
+   * The entity name for this CRUD context (used for adapter resolution).
+   */
+  entity: string;
   /**
    * Route parameter values from URL path (e.g., `\{ id: 5, userId: 'abc' \}`).
    * Simple key-value object, not WhereCondition[].

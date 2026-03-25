@@ -37,7 +37,7 @@ yarn add @concepta/nestjs-common
 | --- | --- |
 | `@concepta/nestjs-common` | Main entry -- DTOs, interfaces, enums, utilities |
 | `@concepta/nestjs-common/aggregate` | Aggregate infrastructure -- `DomainAggregate`, `DomainMapper`, `DomainAggregateDto`, `AggregateMetaInterface` |
-| `@concepta/nestjs-common/testing` | `createMockEventPublisher`, `createMockCommandBus`, `createMockQueryBus`, `createMockContext`, `createMockEventContext` |
+| `@concepta/nestjs-common/testing` | `createMockEventPublisher`, `createMockCommandBus`, `createMockQueryBus` |
 
 ## Domain Aggregates
 
@@ -179,15 +179,15 @@ Small, composable interfaces for common entity fields:
 
 | Export | Description |
 | --- | --- |
-| `AppContextHost` | Creates and merges application context objects |
-| `getAppContext()` | Retrieves the current app context |
+| `AppContextHost` | Per-request context container with `register()` for read-only properties and `defineOverlay()` for lazy overlay methods |
+| `getAppContext()` | Retrieves the current app context from a request |
 | `@Ctx()` | Parameter decorator for injecting context |
+| `ContextOverlayInterface` | Interface for defining lazy context overlays (e.g. `withCache`, `withRole`) |
 | `EventContextHost` | Creates event context with entity headers |
 | `EventContextBuilder` | Fluent builder for event context objects |
 | `AppContextInterface` | App context shape |
 | `HookContextInterface` | Hook context shape |
 | `EventContextInterface` | Event context shape |
-| `EntityHeaderInterface` | Entity key header for events |
 
 ## DTOs
 

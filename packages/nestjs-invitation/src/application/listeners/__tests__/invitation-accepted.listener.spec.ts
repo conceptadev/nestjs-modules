@@ -1,4 +1,4 @@
-import { createMockEventContext } from '@concepta/nestjs-common/testing';
+import { EventContextHost } from '@concepta/nestjs-common';
 
 import { InvitationEventPayloadInterface } from '../../../domain/events/interfaces/invitation-event-payload.interface';
 import { InvitationAcceptedEvent } from '../../../domain/events/invitation-accepted.event';
@@ -17,7 +17,7 @@ describe(InvitationAcceptedListener.name, () => {
   });
 
   it('should call emailPort.sendAccepted with the invitation from the event', async () => {
-    const eventContext = createMockEventContext('invitation');
+    const eventContext = new EventContextHost({}, {});
 
     const invitation: InvitationEventPayloadInterface = {
       id: 'inv-1',

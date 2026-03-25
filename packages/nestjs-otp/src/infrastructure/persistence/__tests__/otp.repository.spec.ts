@@ -1,9 +1,7 @@
-import { AppContextHost } from '@concepta/nestjs-common';
-import { RepositoryContextInterface, Where } from '@concepta/nestjs-repository';
+import { Where } from '@concepta/nestjs-repository';
 import { createMockRepository } from '@concepta/nestjs-repository/testing';
 
 import {
-  createMockContext,
   createMockOtpEntity,
   toOtpDomain,
 } from '../../../__tests__/helpers/mock.helpers';
@@ -22,7 +20,7 @@ describe(OtpRepository.name, () => {
 
   const w = Where.for<OtpEntityInterface>();
   const entity = createMockOtpEntity();
-  const ctx = createMockContext();
+  const ctx = {};
 
   beforeEach(() => {
     mockRepository = createMockRepository<OtpEntityInterface>();
@@ -53,11 +51,7 @@ describe(OtpRepository.name, () => {
 
     it('should pass ctx to repository', async () => {
       mockRepository.findOne.mockResolvedValue(entity);
-      const specificCtx = AppContextHost.merge<RepositoryContextInterface>(
-        () => ({
-          entity: 'userOtp',
-        }),
-      );
+      const specificCtx = {};
 
       await repo.get(specificCtx, 'test-id');
 
@@ -213,11 +207,7 @@ describe(OtpRepository.name, () => {
 
     it('should pass ctx to repository', async () => {
       mockRepository.count.mockResolvedValue(0);
-      const specificCtx = AppContextHost.merge<RepositoryContextInterface>(
-        () => ({
-          entity: 'userOtp',
-        }),
-      );
+      const specificCtx = {};
 
       await repo.countCreatedSince(specificCtx, {
         assigneeId: 'user-1',

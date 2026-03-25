@@ -1,6 +1,5 @@
 import { UserCreatableInterface } from '@concepta/nestjs-common';
 import { createMockCommandBus } from '@concepta/nestjs-common/testing';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import {
   createMockEventPublisher,
@@ -11,8 +10,6 @@ import { User } from '../../../../domain/aggregates/user';
 import { CreateUserCredentialCommand } from '../../impl/create-user-credential.command';
 import { CreateUserCommand } from '../../impl/create-user.command';
 import { CreateUserHandler } from '../create-user.handler';
-
-const ctx = {} as RepositoryContextInterface;
 
 describe(CreateUserHandler.name, () => {
   const userRepository = createMockUserRepository();
@@ -38,7 +35,7 @@ describe(CreateUserHandler.name, () => {
       username: 'john',
     };
 
-    const result = await handler.execute(new CreateUserCommand(ctx, dto));
+    const result = await handler.execute(new CreateUserCommand({}, dto));
 
     expect(result).toBeInstanceOf(User);
     expect(result.email).toBe('a@b.com');
@@ -53,7 +50,7 @@ describe(CreateUserHandler.name, () => {
       password: 'secret',
     };
 
-    const result = await handler.execute(new CreateUserCommand(ctx, dto));
+    const result = await handler.execute(new CreateUserCommand({}, dto));
 
     expect(commandBus.execute).toHaveBeenCalledTimes(1);
     const dispatched = commandBus.execute.mock
@@ -68,7 +65,7 @@ describe(CreateUserHandler.name, () => {
       username: 'john',
     };
 
-    await handler.execute(new CreateUserCommand(ctx, dto));
+    await handler.execute(new CreateUserCommand({}, dto));
 
     expect(commandBus.execute).not.toHaveBeenCalled();
   });

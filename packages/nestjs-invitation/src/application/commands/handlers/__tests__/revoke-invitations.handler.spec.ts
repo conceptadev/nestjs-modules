@@ -1,13 +1,12 @@
 import {
   createMockInvitationService,
-  createMockInvitationContext,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { InvitationService } from '../../../../domain/services/invitation.service';
 import { RevokeInvitationsCommand } from '../../impl/revoke-invitations.command';
 import { RevokeInvitationsHandler } from '../revoke-invitations.handler';
 
 describe(RevokeInvitationsHandler.name, () => {
-  const ctx = createMockInvitationContext();
+  const ctx = {};
   let mockService: jest.Mocked<InvitationService>;
   let handler: RevokeInvitationsHandler;
 

@@ -128,8 +128,6 @@ export { Ctx } from './context/ctx.decorator';
 export { AppContextInterface } from './context/interfaces/app-context.interface';
 export { ContextOverlayInterface } from './context/interfaces/context-overlay.interface';
 export { HookContextInterface } from './context/interfaces/hook-context.interface';
-export { EntityHeaderInterface } from './events/headers/interfaces/entity-header.interface';
-
 // Event context
 export { EventContextHost } from './events/event-context.host';
 export { EventContextBuilder } from './events/event-context-builder';

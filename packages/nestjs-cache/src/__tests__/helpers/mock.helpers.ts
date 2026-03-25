@@ -1,18 +1,21 @@
+import { ExecutionContext } from '@nestjs/common';
+
+import { AppContextHost, EventContextHost } from '@concepta/nestjs-common';
 import {
   createMockCommandBus,
-  createMockEventContext as createMockEventContextBase,
   createMockEventPublisher,
 } from '@concepta/nestjs-common/testing';
-import {
-  createMockContext as createMockContextBase,
-  createMockTransaction,
-} from '@concepta/nestjs-repository/testing';
+import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
 import { Cache } from '../../domain/aggregates/cache';
 import { CacheRepositoryResolver } from '../../infrastructure/persistence/cache-repository.resolver';
 import { CacheMapper } from '../../infrastructure/persistence/cache.mapper';
 import { CacheRepository } from '../../infrastructure/persistence/cache.repository';
+import { CacheContextInterface } from '../../gateways/interfaces/cache-context.interface';
+import { WithCacheContextInterface } from '../../gateways/interfaces/with-cache-context.interface';
 import { CacheEntityInterface } from '../../infrastructure/persistence/interfaces/cache-entity.interface';
+
+export const DEFAULT_CACHE_NAMESPACE = 'UserCache';
 
 export {
   createMockCommandBus,
@@ -41,12 +44,10 @@ export function createMockRepositoryResolver(
   } as unknown as jest.Mocked<CacheRepositoryResolver>;
 }
 
-export function createMockContext(entity = 'UserCache') {
-  return createMockContextBase(entity);
-}
-
-export function createMockEventContext(entity = 'UserCache') {
-  return createMockEventContextBase(entity);
+export function createMockEventContext(
+  namespace = DEFAULT_CACHE_NAMESPACE,
+) {
+  return new EventContextHost({ namespace }, {});
 }
 
 export function createMockCacheEntity(
@@ -65,6 +66,24 @@ export function createMockCacheEntity(
     version: 1,
     ...overrides,
   };
+}
+
+export function createMockCacheContext(
+  overrides: Record<string, unknown> = {},
+  namespace = DEFAULT_CACHE_NAMESPACE,
+): WithCacheContextInterface {
+  const ctx = new AppContextHost();
+
+  const ctxWithOverlay = ctx.defineOverlay<'withCache', CacheContextInterface>(
+    { name: 'withCache', resolve: () => ({ namespace }) },
+    {} as ExecutionContext,
+  );
+
+  for (const [key, value] of Object.entries(overrides)) {
+    ctxWithOverlay.register(key, value);
+  }
+
+  return ctxWithOverlay;
 }
 
 const cacheMapper = new CacheMapper();

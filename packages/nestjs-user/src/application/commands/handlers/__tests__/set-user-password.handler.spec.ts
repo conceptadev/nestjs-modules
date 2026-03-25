@@ -1,5 +1,4 @@
 import { createMockCommandBus } from '@concepta/nestjs-common/testing';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
 
 import {
   createMockTxScope,
@@ -12,8 +11,6 @@ import { UserNotFoundException } from '../../../exceptions/user-not-found.except
 import { CreateUserCredentialCommand } from '../../impl/create-user-credential.command';
 import { SetUserPasswordCommand } from '../../impl/set-user-password.command';
 import { SetUserPasswordHandler } from '../set-user-password.handler';
-
-const ctx = {} as RepositoryContextInterface;
 
 describe(SetUserPasswordHandler.name, () => {
   const userRepository = createMockUserRepository();
@@ -33,7 +30,7 @@ describe(SetUserPasswordHandler.name, () => {
     userRepository.get.mockResolvedValue(toUserDomain(createMockUserEntity()));
 
     const result = await handler.execute(
-      new SetUserPasswordCommand(ctx, 'user-1', 'secret'),
+      new SetUserPasswordCommand({}, 'user-1', 'secret'),
     );
 
     expect(result).toBe(mockCredentials);
@@ -48,7 +45,7 @@ describe(SetUserPasswordHandler.name, () => {
     userRepository.get.mockResolvedValue(null);
 
     await expect(
-      handler.execute(new SetUserPasswordCommand(ctx, 'missing', 'secret')),
+      handler.execute(new SetUserPasswordCommand({}, 'missing', 'secret')),
     ).rejects.toThrow(UserNotFoundException);
   });
 });

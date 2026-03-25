@@ -15,9 +15,9 @@ export class GetRoleHandler implements IQueryHandler<GetRoleQuery> {
   ) {}
 
   async execute(query: GetRoleQuery): Promise<Role> {
-    const { ctx, id } = query;
+    const { ctx, namespace, id } = query;
 
-    const roleRepo = this.repositoryResolver.resolve(ctx.entity);
+    const roleRepo = this.repositoryResolver.resolve(namespace);
 
     const role = await roleRepo.get(ctx, id);
 

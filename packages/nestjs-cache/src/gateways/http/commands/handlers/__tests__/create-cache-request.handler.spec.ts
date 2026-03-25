@@ -6,6 +6,7 @@ import { CrudCreateCommand } from '@concepta/nestjs-crud';
 
 import {
   createMockCommandBus,
+  createMockCacheContext,
   createMockCacheEntity,
   toCacheDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
@@ -24,7 +25,7 @@ describe(CreateCacheRequestHandler.name, () => {
     const entity = createMockCacheEntity();
     commandBus.execute.mockResolvedValue(toCacheDomain(entity));
 
-    const context = { entity: 'UserCache' } as never;
+    const context = createMockCacheContext({ entity: 'UserCache' }) as never;
     const dto: CacheCreatableInterface = {
       key: 'test-key',
       type: 'test-type',

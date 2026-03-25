@@ -20,15 +20,16 @@ export class DeleteCacheRequestHandler {
 
     assertCacheId(id);
 
+    const { namespace } = context.withCache();
     let cache: Cache;
 
     if (context.operation === Operation.SoftDelete) {
       cache = await this.commandBus.execute(
-        new ArchiveCacheCommand(context, id),
+        new ArchiveCacheCommand(context, namespace, id),
       );
     } else {
       cache = await this.commandBus.execute(
-        new RemoveCacheCommand(context, id),
+        new RemoveCacheCommand(context, namespace, id),
       );
     }
 

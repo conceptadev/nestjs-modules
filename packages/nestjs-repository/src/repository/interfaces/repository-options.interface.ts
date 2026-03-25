@@ -1,6 +1,5 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { RepositoryContextInterface } from '../../context/interfaces/repository-context.interface';
 import { OrderClause } from '../repository.types';
 
 import { JoinClause } from './join-clause.interface';
@@ -9,10 +8,8 @@ import { WhereClause } from './where-clause.interface';
 /**
  * Base options with optional context.
  */
-export interface RepositoryBaseOptions<
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
-> {
-  ctx?: Ctx;
+export interface RepositoryBaseOptions {
+  ctx?: PlainLiteralObject;
 }
 
 /**

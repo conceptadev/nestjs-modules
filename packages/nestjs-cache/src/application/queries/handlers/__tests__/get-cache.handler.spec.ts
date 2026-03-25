@@ -1,16 +1,16 @@
 import {
   createMockCacheRepository,
   createMockRepositoryResolver,
-  createMockContext,
   createMockCacheEntity,
   toCacheDomain,
+  DEFAULT_CACHE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../../domain/aggregates/cache';
 import { GetCacheQuery } from '../../impl/get-cache.query';
 import { GetCacheHandler } from '../get-cache.handler';
 
 describe(GetCacheHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockCacheRepository>;
   let handler: GetCacheHandler;
 
@@ -23,7 +23,7 @@ describe(GetCacheHandler.name, () => {
     const entity = createMockCacheEntity();
     mockRepo.get.mockResolvedValue(toCacheDomain(entity));
 
-    const result = await handler.execute(new GetCacheQuery(ctx, 'test-id'));
+    const result = await handler.execute(new GetCacheQuery(ctx, DEFAULT_CACHE_NAMESPACE, 'test-id'));
 
     expect(result).toBeInstanceOf(Cache);
     expect(result.id).toBe('test-id');

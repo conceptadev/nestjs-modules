@@ -2,16 +2,16 @@ import {
   createMockRoleRepository,
   createMockRoleRepositoryResolver,
   createMockTransaction,
-  createMockContext,
   createMockRoleEntity,
   toRoleDomain,
+  DEFAULT_ROLE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { RoleNotFoundException } from '../../../exceptions/role-not-found.exception';
 import { RemoveRoleCommand } from '../../impl/remove-role.command';
 import { RemoveRoleHandler } from '../remove-role.handler';
 
 describe(RemoveRoleHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockRoleRepository>;
   let handler: RemoveRoleHandler;
 
@@ -29,7 +29,7 @@ describe(RemoveRoleHandler.name, () => {
     const existing = toRoleDomain(createMockRoleEntity());
     mockRepo.get.mockResolvedValue(existing);
 
-    await handler.execute(new RemoveRoleCommand(ctx, 'test-role-id'));
+    await handler.execute(new RemoveRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id'));
 
     expect(mockRepo.remove).toHaveBeenCalledTimes(1);
     expect(mockRepo.remove).toHaveBeenCalledWith(ctx, existing);
@@ -39,7 +39,7 @@ describe(RemoveRoleHandler.name, () => {
     mockRepo.get.mockResolvedValue(null);
 
     await expect(
-      handler.execute(new RemoveRoleCommand(ctx, 'missing-id')),
+      handler.execute(new RemoveRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'missing-id')),
     ).rejects.toThrow(RoleNotFoundException);
   });
 });

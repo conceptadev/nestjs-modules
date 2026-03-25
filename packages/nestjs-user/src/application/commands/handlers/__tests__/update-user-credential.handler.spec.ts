@@ -1,13 +1,9 @@
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
-
 import {
   createMockTxScope,
   createMockUserCredentialsService,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { UpdateUserCredentialCommand } from '../../impl/update-user-credential.command';
 import { UpdateUserCredentialHandler } from '../update-user-credential.handler';
-
-const ctx = {} as RepositoryContextInterface;
 
 describe(UpdateUserCredentialHandler.name, () => {
   const userCredentialsService = createMockUserCredentialsService();
@@ -24,11 +20,11 @@ describe(UpdateUserCredentialHandler.name, () => {
     const passwordDto = { password: 'new-pass', passwordCurrent: 'old-pass' };
 
     await handler.execute(
-      new UpdateUserCredentialCommand(ctx, 'user-1', passwordDto),
+      new UpdateUserCredentialCommand({}, 'user-1', passwordDto),
     );
 
     expect(userCredentialsService.updatePassword).toHaveBeenCalledWith(
-      ctx,
+      {},
       expect.anything(),
       'user-1',
       'new-pass',
@@ -40,11 +36,11 @@ describe(UpdateUserCredentialHandler.name, () => {
     const passwordDto = { password: 'new-pass' };
 
     await handler.execute(
-      new UpdateUserCredentialCommand(ctx, 'user-1', passwordDto),
+      new UpdateUserCredentialCommand({}, 'user-1', passwordDto),
     );
 
     expect(userCredentialsService.updatePassword).toHaveBeenCalledWith(
-      ctx,
+      {},
       expect.anything(),
       'user-1',
       'new-pass',

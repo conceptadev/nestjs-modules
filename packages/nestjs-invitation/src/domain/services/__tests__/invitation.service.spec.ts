@@ -1,6 +1,5 @@
 import {
   createMockInvitationRepository,
-  createMockInvitationContext,
   createMockInvitationEntity,
   createMockEventPublisher,
   createMockTransaction,
@@ -14,7 +13,7 @@ import { InvitationUserPort } from '../../ports/invitation-user.port';
 import { InvitationService } from '../invitation.service';
 
 describe(InvitationService.name, () => {
-  const ctx = createMockInvitationContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockInvitationRepository>;
   let mockOtpPort: jest.Mocked<InvitationOtpPort>;
   let mockUserPort: jest.Mocked<InvitationUserPort>;

@@ -3,15 +3,8 @@ import { randomUUID } from 'crypto';
 import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
 import { EventPublisher } from '@nestjs/cqrs';
 
-import {
-  EntityHeaderInterface,
-  EventContextHost,
-  ReferenceId,
-} from '@concepta/nestjs-common';
-import {
-  RepositoryContextInterface,
-  TransactionScope,
-} from '@concepta/nestjs-repository';
+import { EventContextHost, ReferenceId } from '@concepta/nestjs-common';
+import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { InvitationNotFoundException } from '../../application/exceptions/invitation-not-found.exception';
 import { InvitationUserUndefinedException } from '../../application/exceptions/invitation-user-undefined.exception';
@@ -37,13 +30,11 @@ export class InvitationService {
   ) {}
 
   async create(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     dto: InvitationCreatableInterface,
   ): Promise<Invitation> {
     return this.txScope.run(ctx, async (trx) => {
-      const eventContext = EventContextHost.builder<EntityHeaderInterface>()
-        .setHeader('entity', ctx.entity)
-        .build();
+      const eventContext = new EventContextHost({}, {});
 
       const invitation = this.eventPublisher.mergeObjectContext(
         Invitation.create(eventContext, dto),
@@ -61,7 +52,7 @@ export class InvitationService {
   }
 
   async createByEmail(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     dto: InvitationCreatableByEmailInterface,
   ): Promise<Invitation> {
     return this.txScope.run(ctx, async () => {
@@ -83,7 +74,7 @@ export class InvitationService {
   }
 
   async send(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     invitation: Invitation,
   ): Promise<void> {
     return this.txScope.run(ctx, async (trx) => {
@@ -97,16 +88,13 @@ export class InvitationService {
 
       const otp = await this.otpPort.create(ctx, category, userId);
 
-      const eventContext = EventContextHost.builder<
-        EntityHeaderInterface,
+      const eventContext = new EventContextHost<
+        PlainLiteralObject,
         InvitationDispatchedMetadataInterface
-      >()
-        .setHeader('entity', ctx.entity)
-        .mergeMeta({
-          passcode: otp.passcode,
-          tokenExp: otp.expirationDate,
-        })
-        .build();
+      >({}, {
+        passcode: otp.passcode,
+        tokenExp: otp.expirationDate,
+      });
 
       const merged = this.eventPublisher.mergeObjectContext(invitation);
       merged.dispatch(eventContext);
@@ -117,7 +105,7 @@ export class InvitationService {
   }
 
   async sendById(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     invitationId: ReferenceId,
   ): Promise<void> {
     const invitation = await this.invitationRepo.get(ctx, invitationId);
@@ -130,7 +118,7 @@ export class InvitationService {
   }
 
   async accept(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     code: string,
     passcode: string,
     payload?: PlainLiteralObject,
@@ -159,9 +147,7 @@ export class InvitationService {
         return null;
       }
 
-      const eventContext = EventContextHost.builder<EntityHeaderInterface>()
-        .setHeader('entity', '')
-        .build();
+      const eventContext = new EventContextHost({}, {});
 
       const merged = this.eventPublisher.mergeObjectContext(invitation);
       merged.accept(eventContext, payload);
@@ -179,7 +165,7 @@ export class InvitationService {
   }
 
   async remove(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     id: ReferenceId,
   ): Promise<Invitation> {
     return this.txScope.run(ctx, async (trx) => {
@@ -189,9 +175,7 @@ export class InvitationService {
         throw new InvitationNotFoundException(String(id));
       }
 
-      const eventContext = EventContextHost.builder<EntityHeaderInterface>()
-        .setHeader('entity', ctx.entity)
-        .build();
+      const eventContext = new EventContextHost({}, {});
 
       const merged = this.eventPublisher.mergeObjectContext(invitation);
       merged.remove(eventContext);
@@ -206,7 +190,7 @@ export class InvitationService {
   }
 
   async revokeByEmail(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     email: string,
     category: string,
   ): Promise<void> {
@@ -220,7 +204,7 @@ export class InvitationService {
   }
 
   async revokeByUserId(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     userId: ReferenceId,
     category: string,
   ): Promise<void> {
@@ -236,16 +220,14 @@ export class InvitationService {
       return;
     }
 
-    const eventContext = EventContextHost.builder<EntityHeaderInterface>()
-      .setHeader('entity', ctx.entity)
-      .build();
+    const eventContext = new EventContextHost({}, {});
 
     await this.revokeActive(ctx, eventContext, activeInvitations);
   }
 
   protected async revokeActive(
-    ctx: RepositoryContextInterface,
-    eventContext: EventContextHost<EntityHeaderInterface>,
+    ctx: PlainLiteralObject,
+    eventContext: EventContextHost,
     invitations: Invitation[],
   ): Promise<void> {
     return this.txScope.run(ctx, async (trx) => {

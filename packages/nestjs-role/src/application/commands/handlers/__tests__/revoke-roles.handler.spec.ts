@@ -3,15 +3,15 @@ import {
   createMockAssignmentRepositoryResolver,
   createMockTransaction,
   createMockEventPublisher,
-  createMockContext,
   createMockRoleAssignmentEntity,
   toRoleAssignmentDomain,
+  DEFAULT_ROLE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { RevokeRolesCommand } from '../../impl/revoke-roles.command';
 import { RevokeRolesHandler } from '../revoke-roles.handler';
 
 describe(RevokeRolesHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockRoleAssignmentRepository>;
   let handler: RevokeRolesHandler;
   let trxHandle: ReturnType<typeof createMockTransaction>['trxHandle'];
@@ -49,7 +49,7 @@ describe(RevokeRolesHandler.name, () => {
     ]);
 
     await handler.execute(
-      new RevokeRolesCommand(ctx, ['role-1', 'role-2'], 'user-1'),
+      new RevokeRolesCommand(ctx, DEFAULT_ROLE_NAMESPACE, ['role-1', 'role-2'], 'user-1'),
     );
 
     expect(mockRepo.findByRoleIdsAndAssignee).toHaveBeenCalledWith(
@@ -69,7 +69,7 @@ describe(RevokeRolesHandler.name, () => {
     mockRepo.findByRoleIdsAndAssignee.mockResolvedValue([assignment]);
 
     await handler.execute(
-      new RevokeRolesCommand(ctx, ['test-role-id'], 'test-assignee-id'),
+      new RevokeRolesCommand(ctx, DEFAULT_ROLE_NAMESPACE, ['test-role-id'], 'test-assignee-id'),
     );
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
@@ -83,7 +83,7 @@ describe(RevokeRolesHandler.name, () => {
     mockRepo.findByRoleIdsAndAssignee.mockResolvedValue([assignment]);
 
     await handler.execute(
-      new RevokeRolesCommand(ctx, ['role-1', 'role-2'], 'user-1'),
+      new RevokeRolesCommand(ctx, DEFAULT_ROLE_NAMESPACE, ['role-1', 'role-2'], 'user-1'),
     );
 
     expect(mockRepo.removeMany).toHaveBeenCalledTimes(1);

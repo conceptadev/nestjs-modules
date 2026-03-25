@@ -1,12 +1,10 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import {
   ReferenceId,
   RoleAssignmentEntityInterface,
 } from '@concepta/nestjs-common';
-import {
-  RepositoryContextInterface,
-  RepositoryInterface,
-  Where,
-} from '@concepta/nestjs-repository';
+import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
 import { RoleAssignment } from '../../domain/aggregates/role-assignment';
 import { RoleAssignmentRepositoryInterface } from '../../domain/repositories/role-assignment-repository.interface';
@@ -22,7 +20,7 @@ export class RoleAssignmentRepository
   ) {}
 
   async get(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     id: ReferenceId,
   ): Promise<RoleAssignment | null> {
     const w = Where.for<RoleAssignmentEntityInterface>();
@@ -36,7 +34,7 @@ export class RoleAssignmentRepository
   }
 
   async findByAssignee(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     assigneeId: string,
   ): Promise<RoleAssignment[]> {
     const w = Where.for<RoleAssignmentEntityInterface>();
@@ -50,7 +48,7 @@ export class RoleAssignmentRepository
   }
 
   async findOne(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleId: string,
     assigneeId: string,
   ): Promise<RoleAssignment | null> {
@@ -65,7 +63,7 @@ export class RoleAssignmentRepository
   }
 
   async findByRoleIdsAndAssignee(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleIds: string[],
     assigneeId: string,
   ): Promise<RoleAssignment[]> {
@@ -80,7 +78,7 @@ export class RoleAssignmentRepository
   }
 
   async countByRoleIdAndAssignee(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleId: string,
     assigneeId: string,
   ): Promise<number> {
@@ -93,7 +91,7 @@ export class RoleAssignmentRepository
   }
 
   async countByRoleIdsAndAssignee(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleIds: string[],
     assigneeId: string,
   ): Promise<number> {
@@ -106,7 +104,7 @@ export class RoleAssignmentRepository
   }
 
   async save(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleAssignment: RoleAssignment,
   ): Promise<void> {
     roleAssignment.stampUpdated();
@@ -121,7 +119,7 @@ export class RoleAssignmentRepository
    * potential issues with parallel writes in the same transaction.
    */
   async saveMany(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleAssignments: RoleAssignment[],
   ): Promise<void> {
     for (const ra of roleAssignments) {
@@ -130,7 +128,7 @@ export class RoleAssignmentRepository
   }
 
   async remove(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleAssignment: RoleAssignment,
   ): Promise<void> {
     await this.repository.delete(this.mapper.toPersistence(roleAssignment), {
@@ -139,7 +137,7 @@ export class RoleAssignmentRepository
   }
 
   async removeMany(
-    ctx: RepositoryContextInterface,
+    ctx: PlainLiteralObject,
     roleAssignments: RoleAssignment[],
   ): Promise<void> {
     await this.repository.deleteMany(

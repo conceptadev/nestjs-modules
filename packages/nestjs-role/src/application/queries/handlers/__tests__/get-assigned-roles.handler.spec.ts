@@ -1,15 +1,15 @@
 import {
   createMockRoleAssignmentRepository,
   createMockAssignmentRepositoryResolver,
-  createMockContext,
   createMockRoleAssignmentEntity,
   toRoleAssignmentDomain,
+  DEFAULT_ROLE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { GetAssignedRolesQuery } from '../../impl/get-assigned-roles.query';
 import { GetAssignedRolesHandler } from '../get-assigned-roles.handler';
 
 describe(GetAssignedRolesHandler.name, () => {
-  const ctx = createMockContext();
+  const ctx = {};
   let mockRepo: ReturnType<typeof createMockRoleAssignmentRepository>;
   let handler: GetAssignedRolesHandler;
 
@@ -31,7 +31,7 @@ describe(GetAssignedRolesHandler.name, () => {
     mockRepo.findByAssignee.mockResolvedValue([assignment1, assignment2]);
 
     const result = await handler.execute(
-      new GetAssignedRolesQuery(ctx, 'user-1'),
+      new GetAssignedRolesQuery(ctx, DEFAULT_ROLE_NAMESPACE, 'user-1'),
     );
 
     expect(mockRepo.findByAssignee).toHaveBeenCalledWith(ctx, 'user-1');
@@ -44,7 +44,7 @@ describe(GetAssignedRolesHandler.name, () => {
     mockRepo.findByAssignee.mockResolvedValue([]);
 
     const result = await handler.execute(
-      new GetAssignedRolesQuery(ctx, 'user-1'),
+      new GetAssignedRolesQuery(ctx, DEFAULT_ROLE_NAMESPACE, 'user-1'),
     );
 
     expect(result).toEqual([]);

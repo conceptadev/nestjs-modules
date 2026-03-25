@@ -15,9 +15,9 @@ export class IsAssignedRoleHandler
   ) {}
 
   async execute(query: IsAssignedRoleQuery): Promise<boolean> {
-    const { ctx, roleId, assigneeId } = query;
+    const { ctx, namespace, roleId, assigneeId } = query;
 
-    const assignmentRepo = this.repositoryResolver.resolve(ctx.entity);
+    const assignmentRepo = this.repositoryResolver.resolve(namespace);
 
     const count = await assignmentRepo.countByRoleIdAndAssignee(
       ctx,

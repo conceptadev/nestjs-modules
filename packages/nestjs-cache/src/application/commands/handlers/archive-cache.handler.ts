@@ -20,9 +20,9 @@ export class ArchiveCacheHandler
   ) {}
 
   async execute(command: ArchiveCacheCommand): Promise<Cache> {
-    const { ctx, id } = command;
+    const { ctx, namespace, id } = command;
 
-    const cacheRepo = this.repositoryResolver.resolve(ctx.entity);
+    const cacheRepo = this.repositoryResolver.resolve(namespace);
 
     return this.txScope.run(ctx, async () => {
       const cache = await cacheRepo.get(ctx, id);

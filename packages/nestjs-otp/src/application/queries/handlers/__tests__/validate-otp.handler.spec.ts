@@ -1,5 +1,4 @@
 import {
-  createMockContext,
   createMockOtpEntity,
   createMockOtpRepository,
   createMockOtpSettings,
@@ -17,7 +16,7 @@ describe(ValidateOtpHandler.name, () => {
   let mockRepo: ReturnType<typeof createMockOtpRepository>;
   let mockSettings: OtpSettingsInterface;
 
-  const ctx = createMockContext();
+  const ctx = {};
 
   beforeEach(() => {
     mockRepo = createMockOtpRepository();

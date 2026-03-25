@@ -16,9 +16,9 @@ export class GetAssignedRolesHandler
   ) {}
 
   async execute(query: GetAssignedRolesQuery): Promise<RoleAssignment[]> {
-    const { ctx, assigneeId } = query;
+    const { ctx, namespace, assigneeId } = query;
 
-    const assignmentRepo = this.repositoryResolver.resolve(ctx.entity);
+    const assignmentRepo = this.repositoryResolver.resolve(namespace);
 
     return assignmentRepo.findByAssignee(ctx, assigneeId);
   }

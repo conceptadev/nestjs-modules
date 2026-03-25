@@ -22,7 +22,7 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand> {
   async execute(command: UpdateUserCommand): Promise<User> {
     const { ctx, id, dto } = command;
 
-    const eventContext = EventContextHost.builder().build();
+    const eventContext = new EventContextHost({}, {});
 
     return this.txScope.run(ctx, async (trx) => {
       const existing = await this.userRepository.get(ctx, id);

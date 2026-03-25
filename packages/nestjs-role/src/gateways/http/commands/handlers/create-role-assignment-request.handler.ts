@@ -11,10 +11,11 @@ export class CreateRoleAssignmentRequestHandler {
 
   async execute(command: CreateRoleAssignmentRequest) {
     const { context, dto } = command;
+    const { namespace } = context.withRole();
     const assignment = await this.commandBus.execute<
       AssignRoleCommand,
       RoleAssignment
-    >(new AssignRoleCommand(context, dto.roleId, dto.assigneeId));
+    >(new AssignRoleCommand(context, namespace, dto.roleId, dto.assigneeId));
     return assignment.toPlain();
   }
 }

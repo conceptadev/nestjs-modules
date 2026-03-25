@@ -16,8 +16,9 @@ export class ReplaceCacheRequestHandler {
 
     assertCacheId(id);
 
-    const cache = await this.commandBus.execute<ReplaceCacheCommand, Cache>(
-      new ReplaceCacheCommand(context, id, dto),
+    const { namespace } = context.withCache();
+    const cache = await this.commandBus.execute(
+      new ReplaceCacheCommand(context, namespace, id, dto),
     );
     return cache.toPlain();
   }

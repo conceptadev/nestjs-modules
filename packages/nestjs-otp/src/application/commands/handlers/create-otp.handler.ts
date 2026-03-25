@@ -1,14 +1,12 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
+import { PlainLiteralObject } from '@nestjs/common';
+
 import { EventContextHost } from '@concepta/nestjs-common';
-import {
-  RepositoryContextInterface,
-  TransactionScope,
-} from '@concepta/nestjs-repository';
+import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { Otp } from '../../../domain/aggregates/otp';
-import { OtpEventHeaderInterface } from '../../../domain/events/interfaces/otp-event-header.interface';
 import { OtpLimitReachedException } from '../../../domain/exceptions/otp-limit-reached.exception';
 import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception';
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
@@ -54,9 +52,7 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
 
     const passcode = this.settings.types[dto.type].generator();
 
-    const eventContext = EventContextHost.builder<OtpEventHeaderInterface>()
-      .setHeader('namespace', namespace)
-      .build();
+    const eventContext = new EventContextHost({ namespace }, {});
 
     return this.txScope.run(ctx, async (trx) => {
       await this.validateRateLimit({
@@ -108,7 +104,7 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
   protected async validateRateLimit(params: {
     otpRepo: OtpRepositoryInterface;
     dto: OtpCreateDto;
-    ctx: RepositoryContextInterface;
+    ctx: PlainLiteralObject;
     rateSeconds?: number;
     rateThreshold?: number;
   }): Promise<void> {

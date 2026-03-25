@@ -19,7 +19,7 @@ export class UpdateUserCredentialHandler
     const { ctx, userId, passwordDto } = command;
 
     return this.txScope.run(ctx, async () => {
-      const eventContext = EventContextHost.builder().build();
+      const eventContext = new EventContextHost({}, {});
 
       await this.userCredentialsService.updatePassword(
         ctx,

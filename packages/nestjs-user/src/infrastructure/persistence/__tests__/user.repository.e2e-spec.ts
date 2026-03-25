@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { AppContextHost, EventContextHost } from '@concepta/nestjs-common';
-import { RepositoryContextInterface } from '@concepta/nestjs-repository';
+import { EventContextHost } from '@concepta/nestjs-common';
 
 import { AppRepoModuleFixture } from '../../../__tests__/fixtures/app-repo.module.fixture';
 import { User } from '../../../domain/aggregates/user';
@@ -12,8 +11,7 @@ import { UserRepository } from '../user.repository';
 describe(UserRepository.name + ' (e2e)', () => {
   let moduleFixture: TestingModule;
   let userRepository: UserRepositoryInterface;
-  const ctx = new AppContextHost() as unknown as RepositoryContextInterface;
-  const eventContext = EventContextHost.builder().build();
+  const eventContext = new EventContextHost({}, {});
 
   beforeEach(async () => {
     moduleFixture = await Test.createTestingModule({
@@ -35,9 +33,9 @@ describe(UserRepository.name + ' (e2e)', () => {
         email: 'a@b.com',
         username: 'john',
       });
-      await userRepository.save(ctx, user);
+      await userRepository.save({}, user);
 
-      const found = await userRepository.get(ctx, user.id);
+      const found = await userRepository.get({}, user.id);
 
       expect(found).toBeInstanceOf(User);
       expect(found!.id).toBe(user.id);
@@ -47,7 +45,7 @@ describe(UserRepository.name + ' (e2e)', () => {
     });
 
     it('should return null when not found', async () => {
-      const found = await userRepository.get(ctx, 'nonexistent');
+      const found = await userRepository.get({}, 'nonexistent');
 
       expect(found).toBeNull();
     });
@@ -59,10 +57,10 @@ describe(UserRepository.name + ' (e2e)', () => {
         email: 'find-by-email@test.com',
         username: 'emailuser',
       });
-      await userRepository.save(ctx, user);
+      await userRepository.save({}, user);
 
       const found = await userRepository.findByEmail(
-        ctx,
+        {},
         'find-by-email@test.com',
       );
 
@@ -71,7 +69,7 @@ describe(UserRepository.name + ' (e2e)', () => {
     });
 
     it('should return null when not found', async () => {
-      const found = await userRepository.findByEmail(ctx, 'nobody@example.com');
+      const found = await userRepository.findByEmail({}, 'nobody@example.com');
 
       expect(found).toBeNull();
     });
@@ -83,16 +81,16 @@ describe(UserRepository.name + ' (e2e)', () => {
         email: 'u@b.com',
         username: 'uniqueuser',
       });
-      await userRepository.save(ctx, user);
+      await userRepository.save({}, user);
 
-      const found = await userRepository.findByUsername(ctx, 'uniqueuser');
+      const found = await userRepository.findByUsername({}, 'uniqueuser');
 
       expect(found).toBeInstanceOf(User);
       expect(found!.username).toBe('uniqueuser');
     });
 
     it('should return null when not found', async () => {
-      const found = await userRepository.findByUsername(ctx, 'ghost');
+      const found = await userRepository.findByUsername({}, 'ghost');
 
       expect(found).toBeNull();
     });
@@ -105,9 +103,9 @@ describe(UserRepository.name + ' (e2e)', () => {
         username: 'newuser',
       });
 
-      await userRepository.save(ctx, user);
+      await userRepository.save({}, user);
 
-      const found = await userRepository.get(ctx, user.id);
+      const found = await userRepository.get({}, user.id);
       expect(found).not.toBeNull();
       expect(found!.id).toBe(user.id);
     });
@@ -117,12 +115,12 @@ describe(UserRepository.name + ' (e2e)', () => {
         email: 'update@b.com',
         username: 'updateuser',
       });
-      await userRepository.save(ctx, user);
+      await userRepository.save({}, user);
 
       user.update(eventContext, { email: 'updated@b.com' });
-      await userRepository.save(ctx, user);
+      await userRepository.save({}, user);
 
-      const found = await userRepository.get(ctx, user.id);
+      const found = await userRepository.get({}, user.id);
       expect(found!.email).toBe('updated@b.com');
       expect(found!.version).toBe(2);
     });
@@ -134,11 +132,11 @@ describe(UserRepository.name + ' (e2e)', () => {
         email: 'delete@b.com',
         username: 'deleteuser',
       });
-      await userRepository.save(ctx, user);
+      await userRepository.save({}, user);
 
-      await userRepository.remove(ctx, user);
+      await userRepository.remove({}, user);
 
-      const found = await userRepository.get(ctx, user.id);
+      const found = await userRepository.get({}, user.id);
       expect(found).toBeNull();
     });
   });

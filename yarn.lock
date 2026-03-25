@@ -2092,13 +2092,9 @@ __metadata:
     rxjs: "npm:^7.8.1"
     supertest: "npm:^6.3.4"
   peerDependencies:
-    "@concepta/nestjs-invitation": 8.0.0-alpha.2
     class-transformer: "*"
     class-validator: "*"
     typeorm: ^0.3.0
-  peerDependenciesMeta:
-    "@concepta/nestjs-invitation":
-      optional: true
   languageName: unknown
   linkType: soft
 
