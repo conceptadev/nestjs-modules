@@ -2,9 +2,8 @@ import { IEvent } from '@nestjs/cqrs';
 
 import { EventContextHost } from '@concepta/nestjs-common';
 
-import { InvitationEventHeaderInterface } from './interfaces/invitation-event-header.interface';
-
 import { InvitationDispatchedMetadataInterface } from './interfaces/invitation-dispatched-metadata.interface';
+import { InvitationEventHeaderInterface } from './interfaces/invitation-event-header.interface';
 import { InvitationEventPayloadInterface } from './interfaces/invitation-event-payload.interface';
 
 export class InvitationDispatchedEvent implements IEvent {

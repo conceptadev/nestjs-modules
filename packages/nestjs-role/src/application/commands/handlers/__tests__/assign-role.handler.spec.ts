@@ -49,7 +49,9 @@ describe(AssignRoleHandler.name, () => {
   it('should register onCommit and onRollback', async () => {
     mockRepo.countByRoleIdAndAssignee.mockResolvedValue(0);
 
-    await handler.execute(new AssignRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'role-1', 'user-1'));
+    await handler.execute(
+      new AssignRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'role-1', 'user-1'),
+    );
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
     expect(trxHandle.onRollback).toHaveBeenCalledTimes(1);
@@ -59,7 +61,9 @@ describe(AssignRoleHandler.name, () => {
     mockRepo.countByRoleIdAndAssignee.mockResolvedValue(1);
 
     await expect(
-      handler.execute(new AssignRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'role-1', 'user-1')),
+      handler.execute(
+        new AssignRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'role-1', 'user-1'),
+      ),
     ).rejects.toThrow(RoleAssignmentConflictException);
   });
 });

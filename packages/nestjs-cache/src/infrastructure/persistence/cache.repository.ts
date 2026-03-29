@@ -15,10 +15,7 @@ export class CacheRepository implements CacheRepositoryInterface {
     private readonly mapper: CacheMapper,
   ) {}
 
-  async get(
-    ctx: PlainLiteralObject,
-    id: ReferenceId,
-  ): Promise<Cache | null> {
+  async get(ctx: PlainLiteralObject, id: ReferenceId): Promise<Cache | null> {
     const w = Where.for<CacheEntityInterface>();
 
     const entity = await this.repository.findOne({
@@ -83,10 +80,7 @@ export class CacheRepository implements CacheRepositoryInterface {
     );
   }
 
-  async softRemove(
-    ctx: PlainLiteralObject,
-    cache: Cache,
-  ): Promise<void> {
+  async softRemove(ctx: PlainLiteralObject, cache: Cache): Promise<void> {
     cache.stampDeleted();
     await this.repository.softDelete(this.mapper.toPersistence(cache), { ctx });
   }

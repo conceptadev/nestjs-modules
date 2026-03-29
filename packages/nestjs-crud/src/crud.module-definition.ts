@@ -15,6 +15,7 @@ import { crudDefaultConfig } from './infrastructure/config/crud-default.config';
 import { CrudModuleOptionsExtrasInterface } from './infrastructure/config/interfaces/crud-module-options-extras.interface';
 import { CrudModuleOptionsInterface } from './infrastructure/config/interfaces/crud-module-options.interface';
 import { CrudModuleSettingsInterface } from './infrastructure/config/interfaces/crud-module-settings.interface';
+import { CrudContextOverlay } from './infrastructure/interceptors/crud-context.overlay';
 import { CrudAdapterResolver } from './infrastructure/resolvers/crud-adapter.resolver';
 import { CrudOperationResolver } from './infrastructure/resolvers/crud-operation.resolver';
 import { CrudLocalResolverService } from './infrastructure/services/crud-local-resolver.service';
@@ -78,6 +79,7 @@ export function createCrudExports(options?: {
 
   return [
     CRUD_MODULE_SETTINGS_TOKEN,
+    CrudContextOverlay,
     CrudMetaview,
     CrudAdapterResolver,
     CrudOperationResolver,
@@ -97,6 +99,7 @@ export function createCrudProviders(options: {
 
   return [
     ...providers,
+    CrudContextOverlay,
     CrudMetaview,
     CrudAdapterResolver,
     CrudOperationResolver,

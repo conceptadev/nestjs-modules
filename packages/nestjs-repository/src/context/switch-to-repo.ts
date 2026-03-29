@@ -5,8 +5,7 @@ import { RepositoryContextInterface } from './interfaces/repository-context.inte
 /**
  * Set or switch the repository entity on a context.
  *
- * - **First call** (entity not yet set): sets entity directly on the
- *   context and initializes `hooks` to `[]` if absent. Returns the context.
+ * - **First call** (entity not yet set): sets entity directly on the context.
  * - **Subsequent calls** (entity already set): returns a prototype-chain
  *   overlay (`Object.create(ctx)`) that shadows only `entity`.
  *   The original context is never mutated.
@@ -32,15 +31,6 @@ export function switchToRepo(
     configurable: false,
     writable: false,
   });
-
-  if (!('hooks' in ctx)) {
-    Object.defineProperty(ctx, 'hooks', {
-      value: [],
-      enumerable: true,
-      configurable: false,
-      writable: false,
-    });
-  }
 
   return ctx as RepositoryContextInterface;
 }

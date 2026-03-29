@@ -1,262 +1,281 @@
 import { ExecutionContext } from '@nestjs/common';
 
+import { AppContextLike } from './app-context-like.type';
 import { AppContextHost, APP_CONTEXT_KEY } from './app-context.host';
+import { OverlayNotDefinedException } from './exceptions/overlay-not-defined.exception';
 import { getAppContext } from './get-app-context.util';
 import { ContextOverlayInterface } from './interfaces/context-overlay.interface';
+import { OverlayRef } from './overlay-ref';
 
 const mockExecutionContext = {} as ExecutionContext;
+
+const FooRef = new OverlayRef<'withFoo', { foo: string }>('withFoo');
+const BarRef = new OverlayRef<'withBar', { bar: number }>('withBar');
 
 function createOverlay<
   Name extends string,
   Props extends Record<string, unknown>,
->(name: Name, props: Props): ContextOverlayInterface<Name, Props> {
-  return { name, resolve: () => props };
+>(
+  ref: OverlayRef<Name, Props>,
+  props: Props,
+): ContextOverlayInterface<Name, Props> {
+  return { ref, resolve: () => props, attach: jest.fn() };
 }
 
 describe('AppContextHost', () => {
-  describe('register', () => {
-    it('should register a property on the context', () => {
-      const ctx = new AppContextHost<{ operation: string }>();
-      const typed = ctx.register('operation', 'List');
-      expect(typed.operation).toBe('List');
-    });
-
-    it('should allow registering multiple properties', () => {
-      const ctx = new AppContextHost<{
-        operation: string;
-        action: string;
-      }>();
-      const typed = ctx
-        .register('operation', 'List')
-        .register('action', 'read');
-      expect(typed.operation).toBe('List');
-      expect(typed.action).toBe('read');
-    });
-
-    it('should throw when registering the same key twice', () => {
-      const ctx = new AppContextHost<{ operation: string }>();
-      ctx.register('operation', 'List');
-      expect(() => ctx.register('operation', 'Create')).toThrow(
-        'Cannot overwrite read-only property: "operation"',
-      );
-    });
-
-    it('should make properties read-only', () => {
-      const ctx = new AppContextHost<{ operation: string }>();
-      const typed = ctx.register('operation', 'List');
-
-      // In strict mode, assignment to read-only property throws
-      expect(() => {
-        (typed as { operation: string }).operation = 'Update';
-      }).toThrow(TypeError);
-      expect(typed.operation).toBe('List');
-    });
-
-    it('should make properties enumerable for spread operator', () => {
-      const ctx = new AppContextHost<{
-        operation: string;
-        action: string;
-      }>();
-      ctx.register('operation', 'List');
-      ctx.register('action', 'read');
-
-      const spread = { ...ctx };
-      expect(spread).toEqual({ operation: 'List', action: 'read' });
-    });
-
-    it('should return this for chaining', () => {
-      const ctx = new AppContextHost<{
-        operation: string;
-        action: string;
-      }>();
-      const result = ctx.register('operation', 'List');
-      expect(result).toBe(ctx);
-    });
-  });
-
-  describe('has', () => {
-    it('should return false for unregistered keys', () => {
-      const ctx = new AppContextHost<{ test: string }>();
-      expect(ctx.has('test')).toBe(false);
-    });
-
-    it('should return true for registered keys', () => {
-      const ctx = new AppContextHost<{ test: string }>();
-      ctx.register('test', 'value');
-      expect(ctx.has('test')).toBe(true);
-    });
-  });
-
-  describe('merge', () => {
-    it('should create a new context when ctx is undefined', () => {
-      const ctx = AppContextHost.merge<{ foo: string }>(() => ({
-        foo: 'bar',
-      }));
-      expect(ctx.foo).toBe('bar');
-    });
-
-    it('should use existing context when provided', () => {
-      const existing = new AppContextHost<{ a: string; b: number }>();
-      existing.register('a', 'hello');
-
-      const ctx = AppContextHost.merge<{ a: string; b: number }>(
-        () => ({ a: 'hello', b: 42 }),
-        existing,
-      );
-
-      expect(ctx).toBe(existing);
-      expect(ctx.a).toBe('hello');
-      expect(ctx.b).toBe(42);
-    });
-
-    it('should allow factory to return multiple properties', () => {
-      const ctx = AppContextHost.merge<{ x: number; y: number }>(() => ({
-        x: 1,
-        y: 2,
-      }));
-      expect(ctx.x).toBe(1);
-      expect(ctx.y).toBe(2);
-    });
-
-    it('should skip keys already on the context', () => {
-      const existing = new AppContextHost<{ a: string; b: number }>();
-      existing.register('a', 'original');
-
-      const ctx = AppContextHost.merge(
-        () => ({ a: 'replaced', b: 42 }),
-        existing,
-      );
-
-      expect(ctx.a).toBe('original');
-      expect(ctx.b).toBe(42);
-    });
-
-    it('should pass has() to the factory', () => {
-      const existing = new AppContextHost<{ a: string; b: number }>();
-      existing.register('a', 'hello');
-
-      const ctx = AppContextHost.merge<{ a: string; b: number }>(
-        (has) => ({
-          ...(!has('a') && { a: 'replaced' }),
-          b: 42,
-        }),
-        existing,
-      );
-
-      expect(ctx.a).toBe('hello');
-      expect(ctx.b).toBe(42);
-    });
-
-    it('should throw ContextMergeException for undefined values', () => {
-      expect(() =>
-        AppContextHost.merge<{ foo: string }>(
-          () => ({ foo: undefined }) as unknown as { foo: string },
-        ),
-      ).toThrow('AppContextHost.apply() must provide a value');
-    });
-
-    it('should support async factory', async () => {
-      const ctx = await AppContextHost.mergeAsync<{ foo: string }>(() => ({
-        foo: 'bar',
-      }));
-      expect(ctx.foo).toBe('bar');
-    });
-
-    it('should allow spreading the merged context', () => {
-      const ctx = AppContextHost.merge<{ foo: string; num: number }>(() => ({
-        foo: 'bar',
-        num: 42,
-      }));
-      expect({ ...ctx }).toEqual({ foo: 'bar', num: 42 });
-    });
-  });
-
-  describe('nested objects', () => {
-    it('should allow mutation of nested objects', () => {
-      const ctx = AppContextHost.merge<{ locals: Record<string, unknown> }>(
-        () => ({ locals: {} }),
-      );
-      ctx.locals.tenantId = 'abc';
-      expect(ctx.locals.tenantId).toBe('abc');
-    });
-
-    it('should not allow reassigning the nested object reference', () => {
-      const ctx = AppContextHost.merge<{ locals: Record<string, unknown> }>(
-        () => ({ locals: { original: true } }),
-      );
-
-      // In strict mode, assignment to read-only property throws
-      expect(() => {
-        (ctx as { locals: Record<string, unknown> }).locals = {
-          replaced: true,
-        };
-      }).toThrow(TypeError);
-      expect(ctx.locals).toEqual({ original: true });
-    });
-  });
-
-  describe('registerOverlay', () => {
+  describe('defineOverlay', () => {
     it('should define a callable method on the instance', () => {
       const ctx = new AppContextHost();
-      const overlay = createOverlay('withFoo', { foo: 'bar' });
-      const typed = ctx.defineOverlay(overlay, mockExecutionContext);
-      expect(typeof typed.withFoo).toBe('function');
+      ctx.defineOverlay(
+        createOverlay(FooRef, { foo: 'bar' }),
+        mockExecutionContext,
+      );
+      expect(typeof (ctx as unknown as Record<string, unknown>).withFoo).toBe(
+        'function',
+      );
     });
 
-    it('should return this for chaining', () => {
+    it('should be idempotent when name already exists', () => {
       const ctx = new AppContextHost();
-      const overlay = createOverlay('withFoo', { foo: 'bar' });
-      const result = ctx.defineOverlay(overlay, mockExecutionContext);
-      expect(result).toBe(ctx);
-    });
-
-    it('should be a no-op when name already exists', () => {
-      const ctx = new AppContextHost();
-      const first = createOverlay('withFoo', { foo: 'first' });
-      const second = createOverlay('withFoo', { foo: 'second' });
-      const typed = ctx.defineOverlay(first, mockExecutionContext);
-      typed.defineOverlay(second, mockExecutionContext);
-      const child = typed.withFoo();
-      expect(child.foo).toBe('first');
+      ctx.defineOverlay(
+        createOverlay(FooRef, { foo: 'first' }),
+        mockExecutionContext,
+      );
+      ctx.defineOverlay(
+        createOverlay(FooRef, { foo: 'second' }),
+        mockExecutionContext,
+      );
+      expect(ctx.with(FooRef).foo).toBe('first');
     });
 
     it('should not be enumerable', () => {
       const ctx = new AppContextHost();
-      const overlay = createOverlay('withFoo', { foo: 'bar' });
-      ctx.defineOverlay(overlay, mockExecutionContext);
+      ctx.defineOverlay(
+        createOverlay(FooRef, { foo: 'bar' }),
+        mockExecutionContext,
+      );
       expect({ ...ctx }).toEqual({});
     });
 
-    it('should not call resolve at registration time', () => {
+    it('should call resolve eagerly at definition time', () => {
       const ctx = new AppContextHost();
       const resolveSpy = jest.fn(() => ({ foo: 'bar' }));
       const overlay: ContextOverlayInterface<'withFoo', { foo: string }> = {
-        name: 'withFoo',
+        ref: FooRef,
         resolve: resolveSpy,
+        attach: jest.fn(),
       };
       ctx.defineOverlay(overlay, mockExecutionContext);
-      expect(resolveSpy).not.toHaveBeenCalled();
+      expect(resolveSpy).toHaveBeenCalledWith(mockExecutionContext);
     });
 
-    it('should call resolve lazily when the overlay method is invoked', () => {
+    it('should not call resolve again when the overlay method is invoked', () => {
       const ctx = new AppContextHost();
       const resolveSpy = jest.fn(() => ({ foo: 'bar' }));
       const overlay: ContextOverlayInterface<'withFoo', { foo: string }> = {
-        name: 'withFoo',
+        ref: FooRef,
         resolve: resolveSpy,
+        attach: jest.fn(),
       };
-      const typed = ctx.defineOverlay(overlay, mockExecutionContext);
+      ctx.defineOverlay(overlay, mockExecutionContext);
 
-      typed.withFoo();
-      expect(resolveSpy).toHaveBeenCalledWith(mockExecutionContext);
+      ctx.with(FooRef);
+      ctx.with(FooRef);
+      expect(resolveSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should work without ExecutionContext (e.g. transaction overlay)', () => {
+      const ctx = new AppContextHost();
+      ctx.defineOverlay(createOverlay(FooRef, { foo: 'no-context' }));
+      expect(ctx.with(FooRef).foo).toBe('no-context');
     });
 
     it('should keep overlays independent per instance', () => {
       const ctx1 = new AppContextHost();
       const ctx2 = new AppContextHost();
-      const overlay = createOverlay('withFoo', { foo: 'bar' });
-      ctx1.defineOverlay(overlay, mockExecutionContext);
-      expect('withFoo' in ctx2).toBe(false);
+      ctx1.defineOverlay(
+        createOverlay(FooRef, { foo: 'bar' }),
+        mockExecutionContext,
+      );
+      expect(ctx2.supports(FooRef)).toBe(false);
+    });
+  });
+
+  describe('define', () => {
+    it('should define an overlay by ref and values', () => {
+      const ctx = new AppContextHost();
+      ctx.define(FooRef, { foo: 'direct' });
+      expect(ctx.with(FooRef).foo).toBe('direct');
+    });
+
+    it('should be idempotent like defineOverlay', () => {
+      const ctx = new AppContextHost();
+      ctx.define(FooRef, { foo: 'first' });
+      ctx.define(FooRef, { foo: 'second' });
+      expect(ctx.with(FooRef).foo).toBe('first');
+    });
+
+    it('should work alongside defineOverlay', () => {
+      const ctx = new AppContextHost();
+      ctx.defineOverlay(
+        createOverlay(FooRef, { foo: 'overlay' }),
+        mockExecutionContext,
+      );
+      ctx.define(BarRef, { bar: 99 });
+      expect(ctx.with(FooRef).foo).toBe('overlay');
+      expect(ctx.with(BarRef).bar).toBe(99);
+    });
+  });
+
+  describe('with', () => {
+    it('should return the resolved overlay props', () => {
+      const ctx = new AppContextHost();
+      ctx.defineOverlay(
+        createOverlay(FooRef, { foo: 'bar' }),
+        mockExecutionContext,
+      );
+      expect(ctx.with(FooRef)).toEqual({ foo: 'bar' });
+    });
+
+    it('should throw OverlayNotDefinedException if not defined', () => {
+      const ctx = new AppContextHost();
+      expect(() => ctx.with(FooRef)).toThrow(OverlayNotDefinedException);
+    });
+  });
+
+  describe('require', () => {
+    it('should return this for chaining', () => {
+      const ctx = new AppContextHost();
+      ctx.defineOverlay(
+        createOverlay(FooRef, { foo: 'bar' }),
+        mockExecutionContext,
+      );
+      const typed = ctx.require(FooRef);
+      expect(typed).toBe(ctx);
+    });
+
+    it('should provide typed access to overlay methods', () => {
+      const ctx = new AppContextHost();
+      ctx.defineOverlay(
+        createOverlay(FooRef, { foo: 'bar' }),
+        mockExecutionContext,
+      );
+      const typed = ctx.require(FooRef);
+      expect(typed.withFoo().foo).toBe('bar');
+    });
+  });
+
+  describe('supports', () => {
+    it('should return false for undefined overlays', () => {
+      const ctx = new AppContextHost();
+      expect(ctx.supports(FooRef)).toBe(false);
+    });
+
+    it('should return true for defined overlays', () => {
+      const ctx = new AppContextHost();
+      ctx.defineOverlay(
+        createOverlay(FooRef, { foo: 'bar' }),
+        mockExecutionContext,
+      );
+      expect(ctx.supports(FooRef)).toBe(true);
+    });
+  });
+
+  describe('proxy guard', () => {
+    it('should throw OverlayNotDefinedException for undefined with* access', () => {
+      const ctx = new AppContextHost();
+      expect(() =>
+        (ctx as never as Record<string, CallableFunction>).withFoo(),
+      ).toThrow(OverlayNotDefinedException);
+    });
+
+    it('should not throw for non-with* property access', () => {
+      const ctx = new AppContextHost();
+      expect(
+        (ctx as unknown as Record<string, unknown>).something,
+      ).toBeUndefined();
+    });
+  });
+
+  describe('optional', () => {
+    it('should return resolved overlay when defined', () => {
+      const ctx = new AppContextHost();
+      ctx.defineOverlay(
+        createOverlay(FooRef, { foo: 'bar' }),
+        mockExecutionContext,
+      );
+      const result = ctx.optional().withFoo() as unknown as { foo: string };
+      expect(result.foo).toBe('bar');
+    });
+
+    it('should return ctx when overlay is not defined', () => {
+      const ctx = new AppContextHost();
+      const result = ctx.optional().withFoo();
+      expect(result).toBe(ctx);
+    });
+  });
+
+  describe('independent overlay access', () => {
+    it('should access each overlay independently via require', () => {
+      const ctx = new AppContextHost();
+      ctx.defineOverlay(
+        createOverlay(FooRef, { foo: 'hello' }),
+        mockExecutionContext,
+      );
+      ctx.defineOverlay(
+        createOverlay(BarRef, { bar: 42 }),
+        mockExecutionContext,
+      );
+
+      const typed = ctx.require(FooRef, BarRef);
+      expect(typed.withFoo().foo).toBe('hello');
+      expect(typed.withBar().bar).toBe(42);
+    });
+
+    it('should isolate same-named props across overlays', () => {
+      const RefA = new OverlayRef<'withA', { namespace: string }>('withA');
+      const RefB = new OverlayRef<'withB', { namespace: string }>('withB');
+
+      const ctx = new AppContextHost();
+      ctx.defineOverlay(
+        createOverlay(RefA, { namespace: 'cache' }),
+        mockExecutionContext,
+      );
+      ctx.defineOverlay(
+        createOverlay(RefB, { namespace: 'role' }),
+        mockExecutionContext,
+      );
+
+      expect(ctx.with(RefA).namespace).toBe('cache');
+      expect(ctx.with(RefB).namespace).toBe('role');
+    });
+  });
+
+  describe('from', () => {
+    it('should return existing AppContextHost as-is', () => {
+      const ctx = new AppContextHost();
+      expect(AppContextHost.from(ctx)).toBe(ctx);
+    });
+
+    it('should return new AppContextHost for undefined', () => {
+      const ctx = AppContextHost.from(undefined);
+      expect(ctx).toBeInstanceOf(AppContextHost);
+    });
+
+    it('should return new AppContextHost for null', () => {
+      const ctx = AppContextHost.from(null);
+      expect(ctx).toBeInstanceOf(AppContextHost);
+    });
+
+    it('should return new AppContextHost for empty object', () => {
+      const ctx = AppContextHost.from({});
+      expect(ctx).toBeInstanceOf(AppContextHost);
+    });
+
+    it('should throw for non-empty non-AppContextHost object', () => {
+      expect(() =>
+        AppContextHost.from({ foo: 'bar' } as AppContextLike),
+      ).toThrow('Expected AppContextHost or nullish value');
     });
   });
 });
@@ -264,7 +283,7 @@ describe('AppContextHost', () => {
 describe('getAppContext', () => {
   it('should create a new context on first access', () => {
     const req = { query: {} };
-    const ctx = getAppContext<{ params: Record<string, string> }>(req);
+    const ctx = getAppContext(req);
     expect(ctx).toBeInstanceOf(AppContextHost);
   });
 
@@ -275,16 +294,19 @@ describe('getAppContext', () => {
     expect(ctx1).toBe(ctx2);
   });
 
-  it('should preserve registered properties across accesses', () => {
+  it('should preserve overlays across accesses', () => {
     const req = { query: {} };
-    const ctx1 = getAppContext<{ params: { id: string } }>(req);
-    ctx1.register('params', { id: '123' });
+    const ctx1 = getAppContext(req);
+    ctx1.defineOverlay(
+      createOverlay(FooRef, { foo: '123' }),
+      mockExecutionContext,
+    );
 
-    const ctx2 = getAppContext<{ params: { id: string } }>(req);
-    expect(ctx2.params).toEqual({ id: '123' });
+    const ctx2 = getAppContext(req);
+    expect(ctx2.with(FooRef).foo).toBe('123');
   });
 
-  it('should store context using CONTEXT_KEY symbol', () => {
+  it('should store context using APP_CONTEXT_KEY symbol', () => {
     const req: Record<string | symbol, unknown> = { query: {} };
     const ctx = getAppContext(req);
     expect(req[APP_CONTEXT_KEY]).toBe(ctx);

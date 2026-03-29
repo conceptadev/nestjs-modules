@@ -1,0 +1,141 @@
+import {
+  ExecutionContext,
+  forwardRef,
+  HttpStatus,
+  Inject,
+  Injectable,
+  PlainLiteralObject,
+} from '@nestjs/common';
+
+import {
+  ContextOverlayInterface,
+  getAppContext,
+  Operation,
+  OverlayRef,
+  RuntimeException,
+} from '@concepta/nestjs-common';
+
+import { ControllerTarget, MethodHandler } from '../../crud.types';
+import { CrudContextException } from '../exceptions/crud-context.exception';
+import { CrudQueryParser } from '../request/crud-query.parser';
+import { CrudMetaview } from '../services/crud-metaview.service';
+import { operationToAction } from '../utils/crud-infra.utils';
+
+import { CrudContextInterface } from './interfaces/crud-context.interface';
+import { CrudRouteOptionsInterface } from './interfaces/crud-route-options.interface';
+
+export const CrudCtx = new OverlayRef<'withCrud', CrudContextInterface>(
+  'withCrud',
+);
+
+@Injectable()
+export class CrudContextOverlay<
+  T extends PlainLiteralObject = PlainLiteralObject,
+> implements ContextOverlayInterface<'withCrud', CrudContextInterface<T>>
+{
+  readonly ref = CrudCtx;
+
+  constructor(
+    @Inject(forwardRef(() => CrudMetaview))
+    private reflectionService: CrudMetaview<T>,
+  ) {}
+
+  resolve(context: ExecutionContext): CrudContextInterface<T> {
+    try {
+      const req = context.switchToHttp().getRequest();
+      const target = context.getClass();
+      const handler = context.getHandler();
+
+      const ctxOptions = this.reflectionService.getContextOptions(
+        target,
+        handler,
+      );
+
+      const parser = CrudQueryParser.create<T>();
+      parser.parseQuery(req.query);
+
+      if (req.params) {
+        parser.parseParams(req.params, ctxOptions.params ?? {});
+      }
+
+      const entity = this.reflectionService.getEntity(target);
+
+      if (!entity) {
+        throw new CrudContextException({
+          message: `No entity defined for ${target.name} (use @CrudEntity or @CrudController)`,
+        });
+      }
+
+      const operation = this.reflectionService.getOperation(handler);
+
+      if (!operation) {
+        throw new CrudContextException({
+          message: `No CRUD operation defined for ${target.name}.${handler.name}`,
+        });
+      }
+
+      const route = this.getRouteOptions(target, handler, operation);
+
+      return {
+        entity,
+        operation,
+        action: operationToAction(operation),
+        params: parser.getRouteParams(),
+        query: parser.getParsedQuery(),
+        options: {
+          query: ctxOptions.query,
+          params: ctxOptions.params,
+          route,
+        },
+      } as CrudContextInterface<T>;
+    } catch (error) {
+      throw new CrudContextException({
+        httpStatus:
+          error instanceof RuntimeException
+            ? error.httpStatus
+            : HttpStatus.BAD_REQUEST,
+        originalError: error,
+      });
+    }
+  }
+
+  attach(context: ExecutionContext): void {
+    const request = context.switchToHttp().getRequest();
+    const ctx = getAppContext(request);
+    ctx.defineOverlay(this, context);
+  }
+
+  private getRouteOptions(
+    target: ControllerTarget,
+    handler: MethodHandler,
+    operation: Operation,
+  ): CrudRouteOptionsInterface<T> {
+    const queryOptions = this.reflectionService.getQuery(handler);
+    const commandOptions = this.reflectionService.getCommand(handler);
+
+    const routeOptions: CrudRouteOptionsInterface<T> = {
+      query: queryOptions?.resolved,
+      queryHandler: this.reflectionService.getQueryHandler(handler),
+      command: commandOptions?.resolved,
+      commandHandler: this.reflectionService.getCommandHandler(handler),
+    };
+
+    switch (operation) {
+      case Operation.Delete:
+      case Operation.SoftDelete:
+        routeOptions.returnDeleted = this.reflectionService.getReturnDeleted(
+          target,
+          handler,
+        );
+        break;
+      case Operation.Restore:
+        routeOptions.returnRestored = this.reflectionService.getReturnRestored(
+          target,
+          handler,
+        );
+        break;
+    }
+
+    return routeOptions;
+  }
+}

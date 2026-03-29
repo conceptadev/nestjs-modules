@@ -31,8 +31,8 @@ import { CrudList } from '../infrastructure/decorators/operations/crud-list.deco
 import { CrudRead } from '../infrastructure/decorators/operations/crud-read.decorator';
 import { CrudUpdate } from '../infrastructure/decorators/operations/crud-update.decorator';
 import { UseCrudLocals } from '../infrastructure/decorators/routes/crud-locals.decorator';
-import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/crud-context.interface';
 import { CrudLocalInterface } from '../infrastructure/interceptors/interfaces/crud-local.interface';
+import { WithCrudContextInterface } from '../infrastructure/interceptors/interfaces/with-crud-context.interface';
 import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver';
 import { CrudOperationResolver } from '../infrastructure/resolvers/crud-operation.resolver';
 import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface';
@@ -230,17 +230,17 @@ describe('CrudModule.forFeature', () => {
       ) {}
 
       @CrudList()
-      list(@Ctx() context: CrudContextInterface<CompanyEntity>) {
+      list(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
         return this.crudResolver.list(context);
       }
 
       @CrudRead()
-      read(@Ctx() context: CrudContextInterface<CompanyEntity>) {
+      read(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
         return this.crudResolver.read(context);
       }
 
       @CrudRead({ path: 'custom/:id' })
-      customRead(@Ctx() context: CrudContextInterface<CompanyEntity>) {
+      customRead(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
         return this.crudResolver.read(context);
       }
     }
@@ -388,20 +388,20 @@ describe('CrudModule.forFeature', () => {
 
       // Has @CrudList but NO @Ctx - forFeature will add parameter decorators
       @CrudList()
-      list(context: CrudContextInterface<CompanyEntity>) {
+      list(context: WithCrudContextInterface<CompanyEntity>) {
         return this.crudResolver.list(context);
       }
 
       // Custom method name with operation decorator for read
       @CrudRead()
-      findById(context: CrudContextInterface<CompanyEntity>) {
+      findById(context: WithCrudContextInterface<CompanyEntity>) {
         return this.crudResolver.read(context);
       }
 
       // Mutation method - has @CrudCreate but NO @Ctx/@CrudBody
       @CrudCreate()
       create(
-        context: CrudContextInterface<CompanyEntity>,
+        context: WithCrudContextInterface<CompanyEntity>,
         dto: Partial<CompanyEntity>,
       ) {
         return this.crudResolver.create(context, dto);
@@ -616,13 +616,13 @@ describe('CrudModule.forFeature', () => {
       ) {}
 
       @CrudList()
-      list(context: CrudContextInterface<CompanyEntity>) {
+      list(context: WithCrudContextInterface<CompanyEntity>) {
         return this.crudResolver.list(context);
       }
 
       @CrudCreate()
       create(
-        context: CrudContextInterface<CompanyEntity>,
+        context: WithCrudContextInterface<CompanyEntity>,
         dto: Partial<CompanyEntity>,
       ) {
         return this.crudResolver.create(context, dto);
@@ -630,7 +630,7 @@ describe('CrudModule.forFeature', () => {
 
       @CrudUpdate()
       update(
-        context: CrudContextInterface<CompanyEntity>,
+        context: WithCrudContextInterface<CompanyEntity>,
         dto: Partial<CompanyEntity>,
       ) {
         return this.crudResolver.update(context, dto);
@@ -819,16 +819,18 @@ describe('CrudModule.forFeature', () => {
 
       async resolve(
         _context: ExecutionContext,
-        _crudContext: CrudContextInterface,
+        _ctx: WithCrudContextInterface,
+        _locals: Readonly<Record<string, unknown>>,
       ): Promise<{ firstName: string; lastName: string }> {
         return { firstName: 'John', lastName: 'Doe' };
       }
 
       async transform(
         context: ExecutionContext,
-        crudContext: CrudContextInterface,
+        _ctx: WithCrudContextInterface,
+        locals: Readonly<Record<string, unknown>>,
       ): Promise<void> {
-        transformSpy(context, crudContext.locals);
+        transformSpy(context, locals);
       }
     }
 
@@ -850,7 +852,7 @@ describe('CrudModule.forFeature', () => {
       ) {}
 
       @CrudRead()
-      async read(@Ctx() context: CrudContextInterface<CompanyEntity>) {
+      async read(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
         return this.crudResolver.read(context);
       }
     }
@@ -906,14 +908,16 @@ describe('CrudModule.forFeature', () => {
       expect(local).toBeInstanceOf(CurrentUserLocal);
     });
 
-    it('should resolve CrudLocal and pass to controller via request.locals', async () => {
+    it('should resolve CrudLocal and make accessible via withLocal', async () => {
       const server = app.getHttpServer();
       const res = await request(server).get('/company-e/1');
 
       expect(res.status).toBe(200);
       expect(crudResolverReadSpy).toHaveBeenCalledTimes(1);
-      expect(crudResolverReadSpy.mock.calls[0][0].locals).toEqual({
-        currentUser: { firstName: 'John', lastName: 'Doe' },
+      const ctx = crudResolverReadSpy.mock.calls[0][0];
+      expect(ctx.withLocal(CurrentUserLocal)).toEqual({
+        firstName: 'John',
+        lastName: 'Doe',
       });
     });
 

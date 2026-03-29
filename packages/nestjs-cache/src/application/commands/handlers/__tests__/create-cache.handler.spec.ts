@@ -39,7 +39,9 @@ describe(CreateCacheHandler.name, () => {
       expiresIn: '1h',
     };
 
-    const result = await handler.execute(new CreateCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto));
+    const result = await handler.execute(
+      new CreateCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto),
+    );
 
     expect(result).toBeInstanceOf(Cache);
     expect(result.key).toBe('test-key');
@@ -54,7 +56,9 @@ describe(CreateCacheHandler.name, () => {
       expiresIn: '1h',
     };
 
-    await handler.execute(new CreateCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto));
+    await handler.execute(
+      new CreateCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto),
+    );
 
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
   });
@@ -68,7 +72,9 @@ describe(CreateCacheHandler.name, () => {
       expiresIn: null,
     };
 
-    await handler.execute(new CreateCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto));
+    await handler.execute(
+      new CreateCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto),
+    );
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
     expect(trxHandle.onRollback).toHaveBeenCalledTimes(1);

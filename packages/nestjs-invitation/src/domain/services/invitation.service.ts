@@ -44,8 +44,8 @@ export class InvitationService {
 
       await this.send(ctx, invitation);
 
-      trx.onCommit(ctx, () => invitation.commit());
-      trx.onRollback(ctx, () => invitation.uncommit());
+      trx.onCommit(() => invitation.commit());
+      trx.onRollback(() => invitation.uncommit());
 
       return invitation;
     });
@@ -73,10 +73,7 @@ export class InvitationService {
     });
   }
 
-  async send(
-    ctx: PlainLiteralObject,
-    invitation: Invitation,
-  ): Promise<void> {
+  async send(ctx: PlainLiteralObject, invitation: Invitation): Promise<void> {
     return this.txScope.run(ctx, async (trx) => {
       const { category, userId } = invitation;
 
@@ -91,16 +88,19 @@ export class InvitationService {
       const eventContext = new EventContextHost<
         PlainLiteralObject,
         InvitationDispatchedMetadataInterface
-      >({}, {
-        passcode: otp.passcode,
-        tokenExp: otp.expirationDate,
-      });
+      >(
+        {},
+        {
+          passcode: otp.passcode,
+          tokenExp: otp.expirationDate,
+        },
+      );
 
       const merged = this.eventPublisher.mergeObjectContext(invitation);
       merged.dispatch(eventContext);
 
-      trx.onCommit(ctx, () => merged.commit());
-      trx.onRollback(ctx, () => merged.uncommit());
+      trx.onCommit(() => merged.commit());
+      trx.onRollback(() => merged.uncommit());
     });
   }
 
@@ -157,17 +157,14 @@ export class InvitationService {
       // revoke all other active invitations for this user+category
       await this.revokeByUserId(ctx, invitation.userId, category);
 
-      trx.onCommit(ctx, () => merged.commit());
-      trx.onRollback(ctx, () => merged.uncommit());
+      trx.onCommit(() => merged.commit());
+      trx.onRollback(() => merged.uncommit());
 
       return merged;
     });
   }
 
-  async remove(
-    ctx: PlainLiteralObject,
-    id: ReferenceId,
-  ): Promise<Invitation> {
+  async remove(ctx: PlainLiteralObject, id: ReferenceId): Promise<Invitation> {
     return this.txScope.run(ctx, async (trx) => {
       const invitation = await this.invitationRepo.get(ctx, id);
 
@@ -182,8 +179,8 @@ export class InvitationService {
 
       await this.invitationRepo.remove(ctx, merged);
 
-      trx.onCommit(ctx, () => merged.commit());
-      trx.onRollback(ctx, () => merged.uncommit());
+      trx.onCommit(() => merged.commit());
+      trx.onRollback(() => merged.uncommit());
 
       return merged;
     });
@@ -235,8 +232,8 @@ export class InvitationService {
         const merged = this.eventPublisher.mergeObjectContext(invitation);
         merged.revoke(eventContext);
         await this.invitationRepo.save(ctx, merged);
-        trx.onCommit(ctx, () => merged.commit());
-        trx.onRollback(ctx, () => merged.uncommit());
+        trx.onCommit(() => merged.commit());
+        trx.onRollback(() => merged.uncommit());
       }
     });
   }

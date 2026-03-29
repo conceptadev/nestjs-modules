@@ -53,7 +53,10 @@ describe(GetUserByEmailHandler.name, () => {
       new GetUserByEmailQuery({}, 'a@b.com'),
     );
     expect(result).toBe(mockUser);
-    expect(repo.findByEmail).toHaveBeenCalledWith(expect.any(Object), 'a@b.com');
+    expect(repo.findByEmail).toHaveBeenCalledWith(
+      expect.any(Object),
+      'a@b.com',
+    );
   });
 
   it('should return null when not found', async () => {
@@ -80,7 +83,10 @@ describe(GetUserByUsernameHandler.name, () => {
       new GetUserByUsernameQuery({}, 'john'),
     );
     expect(result).toBe(mockUser);
-    expect(repo.findByUsername).toHaveBeenCalledWith(expect.any(Object), 'john');
+    expect(repo.findByUsername).toHaveBeenCalledWith(
+      expect.any(Object),
+      'john',
+    );
   });
 
   it('should return null when not found', async () => {

@@ -1,7 +1,11 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { ContextOverlayInterface } from '@concepta/nestjs-common';
+import {
+  ContextOverlayInterface,
+  getAppContext,
+  OverlayRef,
+} from '@concepta/nestjs-common';
 
 import {
   ROLE_NAMESPACE_KEY,
@@ -9,11 +13,15 @@ import {
 } from './decorators/role-namespace.decorator';
 import { RoleContextInterface } from './interfaces/role-context.interface';
 
+export const RoleCtx = new OverlayRef<'withRole', RoleContextInterface>(
+  'withRole',
+);
+
 @Injectable()
 export class RoleContextOverlay
   implements ContextOverlayInterface<'withRole', RoleContextInterface>
 {
-  readonly name = 'withRole';
+  readonly ref = RoleCtx;
 
   constructor(private readonly reflector: Reflector) {}
 
@@ -23,5 +31,11 @@ export class RoleContextOverlay
       [context.getHandler(), context.getClass()],
     );
     return { namespace: options?.name ?? '' };
+  }
+
+  attach(context: ExecutionContext): void {
+    const request = context.switchToHttp().getRequest();
+    const ctx = getAppContext(request);
+    ctx.defineOverlay(this, context);
   }
 }

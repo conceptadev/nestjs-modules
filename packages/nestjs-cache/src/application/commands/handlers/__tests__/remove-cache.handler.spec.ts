@@ -39,7 +39,9 @@ describe(RemoveCacheHandler.name, () => {
   it('should call remove on the repository', async () => {
     mockRepo.get.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
-    await handler.execute(new RemoveCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, 'test-id'));
+    await handler.execute(
+      new RemoveCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, 'test-id'),
+    );
 
     expect(mockRepo.remove).toHaveBeenCalledTimes(1);
   });

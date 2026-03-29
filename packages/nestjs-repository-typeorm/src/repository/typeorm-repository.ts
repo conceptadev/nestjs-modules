@@ -21,14 +21,18 @@ import {
 
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { AppContextHost, DeepPartial, RuntimeException } from '@concepta/nestjs-common';
+import {
+  AppContextHost,
+  AppContextLike,
+  DeepPartial,
+  RuntimeException,
+} from '@concepta/nestjs-common';
 import { HookResolverService } from '@concepta/nestjs-hook';
 import {
   isWhereCondition,
   JoinClause,
   RelationActionConfig,
   RepositoryAdapter,
-  TransactionContextInterface,
   RepositoryCreateOptions,
   RepositoryDeleteOptions,
   RepositoryFindOneOptions,
@@ -40,6 +44,7 @@ import {
   WhereClause,
   WhereCondition,
   WhereOperator,
+  TrxCtx,
 } from '@concepta/nestjs-repository';
 
 import { TypeOrmEntityNameException } from '../exceptions/typeorm-entity-name.exception';
@@ -100,16 +105,14 @@ export class TypeOrmRepository<
    * Get the repository, using transactional EntityManager if available.
    * Creates the driver transaction lazily on first access via `getOrStart()`.
    */
-  protected async getRepo(
-    ctx?: PlainLiteralObject,
-  ): Promise<Repository<Entity>> {
-    const trxCtx = AppContextHost.merge<TransactionContextInterface>(
-      () => ({}),
-      ctx,
-    );
-    if (this.options.transactionKey && trxCtx.trx) {
-      const tx = await trxCtx.trx.getOrStart(this.options.transactionKey);
-      return tx.getClient<EntityManager>().getRepository(this.metadata.type);
+  protected async getRepo(ctx?: AppContextLike): Promise<Repository<Entity>> {
+    if (this.options.transactionKey) {
+      const context = AppContextHost.from(ctx);
+      if (context.supports(TrxCtx)) {
+        const { trx } = context.with(TrxCtx);
+        const tx = await trx.getOrStart(this.options.transactionKey);
+        return tx.getClient<EntityManager>().getRepository(this.metadata.type);
+      }
     }
     return this.repo;
   }
@@ -117,14 +120,15 @@ export class TypeOrmRepository<
   /**
    * Mark the transaction as dirty (write operation occurred)
    */
-  protected markDirty(ctx?: PlainLiteralObject): void {
-    if (this.options.transactionKey) {
-      const trxCtx = AppContextHost.merge<TransactionContextInterface>(
-        () => ({}),
-        ctx,
-      );
-      trxCtx.trx?.get(this.options.transactionKey)?.markDirty();
-    }
+  protected markDirty(ctx?: AppContextLike): void {
+    if (!this.options.transactionKey) return;
+
+    const context = AppContextHost.from(ctx);
+    if (!context.supports(TrxCtx)) return;
+
+    const { trx } = context.with(TrxCtx);
+    const tx = trx.get(this.options.transactionKey);
+    tx?.markDirty();
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

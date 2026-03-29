@@ -31,7 +31,12 @@ describe(AssignRolesHandler.name, () => {
     mockRepo.countByRoleIdsAndAssignee.mockResolvedValue(0);
 
     const result = await handler.execute(
-      new AssignRolesCommand(ctx, DEFAULT_ROLE_NAMESPACE, ['role-1', 'role-2'], 'user-1'),
+      new AssignRolesCommand(
+        ctx,
+        DEFAULT_ROLE_NAMESPACE,
+        ['role-1', 'role-2'],
+        'user-1',
+      ),
     );
 
     expect(result).toHaveLength(2);
@@ -62,7 +67,9 @@ describe(AssignRolesHandler.name, () => {
   it('should register onCommit and onRollback', async () => {
     mockRepo.countByRoleIdsAndAssignee.mockResolvedValue(0);
 
-    await handler.execute(new AssignRolesCommand(ctx, DEFAULT_ROLE_NAMESPACE, ['role-1'], 'user-1'));
+    await handler.execute(
+      new AssignRolesCommand(ctx, DEFAULT_ROLE_NAMESPACE, ['role-1'], 'user-1'),
+    );
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
     expect(trxHandle.onRollback).toHaveBeenCalledTimes(1);
@@ -73,7 +80,12 @@ describe(AssignRolesHandler.name, () => {
 
     await expect(
       handler.execute(
-        new AssignRolesCommand(ctx, DEFAULT_ROLE_NAMESPACE, ['role-1', 'role-2'], 'user-1'),
+        new AssignRolesCommand(
+          ctx,
+          DEFAULT_ROLE_NAMESPACE,
+          ['role-1', 'role-2'],
+          'user-1',
+        ),
       ),
     ).rejects.toThrow(RoleAssignmentsConflictException);
   });

@@ -1,15 +1,12 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import {
   ReferenceEmail,
   ReferenceId,
   ReferenceUsername,
   UserEntityInterface,
 } from '@concepta/nestjs-common';
-import { PlainLiteralObject } from '@nestjs/common';
-
-import {
-  RepositoryInterface,
-  Where,
-} from '@concepta/nestjs-repository';
+import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
 import { User } from '../../domain/aggregates/user';
 import { UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
@@ -22,10 +19,7 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly mapper: UserMapper,
   ) {}
 
-  async get(
-    ctx: PlainLiteralObject,
-    id: ReferenceId,
-  ): Promise<User | null> {
+  async get(ctx: PlainLiteralObject, id: ReferenceId): Promise<User | null> {
     const w = Where.for<UserEntityInterface>();
 
     const entity = await this.repository.findOne({

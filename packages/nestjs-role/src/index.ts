@@ -77,6 +77,9 @@ export { RoleResource, RoleAssignmentResource } from './role.types';
 
 // exceptions
 export { RoleException } from './application/exceptions/role.exception';
+// context overlay
+export { RoleContextOverlay, RoleCtx } from './gateways/role-context.overlay';
+
 export { RoleAssignmentConflictException } from './application/exceptions/role-assignment-conflict.exception';
 export { RoleAssignmentsConflictException } from './application/exceptions/role-assignments-conflict.exception';
 export { RoleEntityNotFoundException } from './infrastructure/exceptions/role-entity-not-found.exception';

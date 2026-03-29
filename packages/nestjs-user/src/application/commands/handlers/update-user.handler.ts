@@ -37,8 +37,8 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand> {
 
       await this.userRepository.save(ctx, user);
 
-      trx.onCommit(ctx, () => user.commit());
-      trx.onRollback(ctx, () => user.uncommit());
+      trx.onCommit(() => user.commit());
+      trx.onRollback(() => user.uncommit());
 
       return user;
     });

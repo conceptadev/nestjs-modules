@@ -33,7 +33,9 @@ export { TransactionTimeoutException } from './exceptions/transaction-timeout.ex
 // ═══════════════════════════════════════════════════════════════════
 export { TransactionFactoryInterface } from './interfaces/transaction-factory.interface';
 export { TransactionManager } from './transaction/transaction-manager';
+export { TransactionContextOverlay } from './transaction/transaction-context.overlay';
 export { TransactionScope } from './transaction/transaction-scope';
+export { TrxCtx } from './context/interfaces/transaction-context.interface';
 export { TransactionalRunner } from './transaction/transactional-runner';
 export {
   Transactional,
@@ -218,6 +220,7 @@ export { getDynamicRepositoryToken } from './utils/get-dynamic-repository-token'
 export { InjectDynamicRepository } from './decorators/inject-dynamic-repository.decorator';
 
 // Transaction interfaces
+export { TransactionHandleInterface } from './transaction/interfaces/transaction-handle.interface';
 export { TransactionInterface } from './transaction/interfaces/transaction.interface';
 export { TransactionManagerInterface } from './transaction/interfaces/transaction-manager.interface';
 

@@ -37,7 +37,9 @@ describe(RevokeRoleHandler.name, () => {
     );
     mockRepo.findOne.mockResolvedValue(existing);
 
-    await handler.execute(new RevokeRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'role-1', 'user-1'));
+    await handler.execute(
+      new RevokeRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'role-1', 'user-1'),
+    );
 
     expect(mockRepo.findOne).toHaveBeenCalledWith(ctx, 'role-1', 'user-1');
     expect(mockRepo.remove).toHaveBeenCalledTimes(1);
@@ -49,7 +51,12 @@ describe(RevokeRoleHandler.name, () => {
     mockRepo.findOne.mockResolvedValue(existing);
 
     await handler.execute(
-      new RevokeRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id', 'test-assignee-id'),
+      new RevokeRoleCommand(
+        ctx,
+        DEFAULT_ROLE_NAMESPACE,
+        'test-role-id',
+        'test-assignee-id',
+      ),
     );
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
@@ -59,7 +66,9 @@ describe(RevokeRoleHandler.name, () => {
   it('should do nothing when assignment not found', async () => {
     mockRepo.findOne.mockResolvedValue(null);
 
-    await handler.execute(new RevokeRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'role-1', 'user-1'));
+    await handler.execute(
+      new RevokeRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'role-1', 'user-1'),
+    );
 
     expect(mockRepo.remove).not.toHaveBeenCalled();
   });

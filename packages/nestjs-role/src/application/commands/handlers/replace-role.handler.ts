@@ -40,8 +40,8 @@ export class ReplaceRoleHandler implements ICommandHandler<ReplaceRoleCommand> {
 
       await roleRepo.save(ctx, role);
 
-      trx.onCommit(ctx, () => role.commit());
-      trx.onRollback(ctx, () => role.uncommit());
+      trx.onCommit(() => role.commit());
+      trx.onRollback(() => role.uncommit());
 
       return role;
     });

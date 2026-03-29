@@ -4,7 +4,7 @@ import { DeepPartial } from '@concepta/nestjs-common';
 
 import { CrudCreateBatchInterface } from '../../dtos/interfaces/crud-create-batch.interface';
 import { CrudResponsePaginatedInterface } from '../../dtos/interfaces/crud-response-paginated.interface';
-import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface';
+import { WithCrudContextInterface } from '../../interceptors/interfaces/with-crud-context.interface';
 
 /**
  * Interface for CRUD resolver implementations.
@@ -19,43 +19,43 @@ import { CrudContextInterface } from '../../interceptors/interfaces/crud-context
  */
 export interface CrudResolverInterface {
   list<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
   ): Promise<CrudResponsePaginatedInterface<Entity>>;
 
   read<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
   ): Promise<Entity>;
 
   create<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
     dto: DeepPartial<Entity>,
   ): Promise<Entity>;
 
   createBatch<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
     dto: CrudCreateBatchInterface<DeepPartial<Entity>>,
   ): Promise<Entity[]>;
 
   update<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
     dto: DeepPartial<Entity>,
   ): Promise<Entity>;
 
   replace<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
     dto: DeepPartial<Entity>,
   ): Promise<Entity>;
 
   delete<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
   ): Promise<Entity | null>;
 
   softDelete<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
   ): Promise<Entity | null>;
 
   restore<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
   ): Promise<Entity | null>;
 }
 

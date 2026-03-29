@@ -1,6 +1,4 @@
-import {
-  createMockInvitationService,
-} from '../../../../__tests__/helpers/mock.helpers';
+import { createMockInvitationService } from '../../../../__tests__/helpers/mock.helpers';
 import { Invitation } from '../../../../domain/aggregates/invitation';
 import { InvitationService } from '../../../../domain/services/invitation.service';
 import { AcceptInvitationCommand } from '../../impl/accept-invitation.command';

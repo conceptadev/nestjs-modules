@@ -4,6 +4,8 @@ import { PlainLiteralObject } from '@nestjs/common';
 import { isObject } from '@nestjs/common/utils/shared.utils';
 
 import {
+  AppContextHost,
+  AppContextLike,
   DeepPartial,
   HookContextInterface,
   RuntimeException,
@@ -91,12 +93,18 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
 
   /**
    * Switch the context's entity to this repository's entity key.
+   *
+   * Resolves the hooks overlay if available so that hooks are
+   * accessible to the repository permeator.
    */
   protected entityCtx(
-    ctx?: PlainLiteralObject,
+    ctx?: AppContextLike,
   ): RepositoryContextInterface | undefined {
     if (!ctx) return undefined;
-    return switchToRepo(ctx, this.entityKey);
+    return switchToRepo(
+      AppContextHost.from(ctx).optional().withHooks(),
+      this.entityKey,
+    );
   }
 
   // Query operations

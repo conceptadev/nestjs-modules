@@ -15,10 +15,7 @@ export class OtpRepository implements OtpRepositoryInterface {
     private readonly mapper: OtpMapper,
   ) {}
 
-  async get(
-    ctx: PlainLiteralObject,
-    id: ReferenceId,
-  ): Promise<Otp | null> {
+  async get(ctx: PlainLiteralObject, id: ReferenceId): Promise<Otp | null> {
     const w = Where.for<OtpEntityInterface>();
 
     const entity = await this.repository.findOne({

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
 import { EventPublisher } from '@nestjs/cqrs';
 
 import {
@@ -13,8 +13,6 @@ import {
   PasswordStorageService,
   PasswordStorageServiceInterface,
 } from '@concepta/nestjs-password';
-import { PlainLiteralObject } from '@nestjs/common';
-
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { USER_CREDENTIALS_REPOSITORY_TOKEN } from '../../user.constants';
@@ -110,8 +108,8 @@ export class UserCredentialsService {
 
       const merged = this.eventPublisher.mergeObjectContext(credentials);
       await this.userCredentialsRepository.save(ctx, merged);
-      trx.onCommit(ctx, () => merged.commit());
-      trx.onRollback(ctx, () => merged.uncommit());
+      trx.onCommit(() => merged.commit());
+      trx.onRollback(() => merged.uncommit());
 
       return merged;
     });
@@ -126,8 +124,8 @@ export class UserCredentialsService {
       const merged = this.eventPublisher.mergeObjectContext(credentials);
       merged.deactivate(eventContext);
       await this.userCredentialsRepository.save(ctx, merged);
-      trx.onCommit(ctx, () => merged.commit());
-      trx.onRollback(ctx, () => merged.uncommit());
+      trx.onCommit(() => merged.commit());
+      trx.onRollback(() => merged.uncommit());
     });
   }
 

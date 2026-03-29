@@ -1,22 +1,30 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { ExecutionContext, PlainLiteralObject } from '@nestjs/common';
 
-export interface AppContextInterface<
-  T extends PlainLiteralObject = PlainLiteralObject,
-> {
-  has(key: keyof T): boolean;
-  register<K extends keyof T & string>(
-    key: K,
-    value: T[K],
-  ): this & Record<K, T[K]>;
-}
+import { OverlayRef } from '../overlay-ref';
+import { RefsToMethods } from '../refs-to-methods.type';
 
-export interface AppContextMergeInterface {
-  merge<T extends PlainLiteralObject>(
-    factory: (has: (key: keyof T) => boolean) => Partial<T>,
-    ctx?: AppContextInterface<T> | Partial<T>,
-  ): AppContextInterface<T> & T;
-  mergeAsync<T extends PlainLiteralObject>(
-    factory: (has: (key: keyof T) => boolean) => Promise<Partial<T>>,
-    ctx?: AppContextInterface<T> | Partial<T>,
-  ): Promise<AppContextInterface<T> & T>;
+import { ContextOverlayInterface } from './context-overlay.interface';
+
+export interface AppContextInterface {
+  defineOverlay<Name extends string, Props extends PlainLiteralObject>(
+    contextOverlay: ContextOverlayInterface<Name, Props>,
+    context?: ExecutionContext,
+  ): void;
+
+  define<Name extends string, Props extends PlainLiteralObject>(
+    ref: OverlayRef<Name, Props>,
+    values: Props,
+  ): void;
+
+  require<R extends OverlayRef<string, PlainLiteralObject>[]>(
+    ...refs: R
+  ): this & RefsToMethods<R[number]>;
+
+  with<Name extends string, Props extends PlainLiteralObject>(
+    ref: OverlayRef<Name, Props>,
+  ): Props;
+
+  supports(ref: OverlayRef<string, PlainLiteralObject>): boolean;
+
+  optional(): Record<string, () => this>;
 }

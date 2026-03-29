@@ -40,7 +40,6 @@ export { NotAnErrorException } from './exceptions/not-an-error.exception';
 
 // Utility types and functions
 export { LiteralObject } from './utils/interfaces/literal-object.interface';
-export { Type } from './utils/interfaces/type.interface';
 export { DeepPartial } from './utils/deep-partial';
 export { mapNonErrorToException } from './utils/map-non-error-to-exception.util';
 export { mapHttpStatus } from './utils/map-http-status.util';
@@ -121,8 +120,18 @@ export { HookOption, HookWithSpec } from './hooks/hook.types';
 
 // Context host and decorators
 export { AppContextHost } from './context/app-context.host';
+export { RefsToMethods } from './context/refs-to-methods.type';
 export { getAppContext } from './context/get-app-context.util';
 export { Ctx } from './context/ctx.decorator';
+
+// Context primitives
+export { OverlayRef } from './context/overlay-ref';
+export type { AppContextLike } from './context/app-context-like.type';
+export { OverlayNotDefinedException } from './context/exceptions/overlay-not-defined.exception';
+
+// Context overlay utilities
+export { ContextOverlayInterceptor } from './context/context-overlay.interceptor';
+export { createContextInterceptorProvider } from './context/create-context-interceptor-provider';
 
 // Context interfaces
 export { AppContextInterface } from './context/interfaces/app-context.interface';

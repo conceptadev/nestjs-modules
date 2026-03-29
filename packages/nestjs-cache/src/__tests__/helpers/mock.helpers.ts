@@ -1,18 +1,21 @@
-import { ExecutionContext } from '@nestjs/common';
-
-import { AppContextHost, EventContextHost } from '@concepta/nestjs-common';
+import {
+  ActionEnum,
+  AppContextHost,
+  EventContextHost,
+  Operation,
+} from '@concepta/nestjs-common';
 import {
   createMockCommandBus,
   createMockEventPublisher,
 } from '@concepta/nestjs-common/testing';
+import { CrudContextInterface, CrudCtx } from '@concepta/nestjs-crud';
 import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
 import { Cache } from '../../domain/aggregates/cache';
+import { CacheCtx } from '../../gateways/cache-context.overlay';
 import { CacheRepositoryResolver } from '../../infrastructure/persistence/cache-repository.resolver';
 import { CacheMapper } from '../../infrastructure/persistence/cache.mapper';
 import { CacheRepository } from '../../infrastructure/persistence/cache.repository';
-import { CacheContextInterface } from '../../gateways/interfaces/cache-context.interface';
-import { WithCacheContextInterface } from '../../gateways/interfaces/with-cache-context.interface';
 import { CacheEntityInterface } from '../../infrastructure/persistence/interfaces/cache-entity.interface';
 
 export const DEFAULT_CACHE_NAMESPACE = 'UserCache';
@@ -44,9 +47,7 @@ export function createMockRepositoryResolver(
   } as unknown as jest.Mocked<CacheRepositoryResolver>;
 }
 
-export function createMockEventContext(
-  namespace = DEFAULT_CACHE_NAMESPACE,
-) {
+export function createMockEventContext(namespace = DEFAULT_CACHE_NAMESPACE) {
   return new EventContextHost({ namespace }, {});
 }
 
@@ -69,21 +70,25 @@ export function createMockCacheEntity(
 }
 
 export function createMockCacheContext(
-  overrides: Record<string, unknown> = {},
+  crudOverrides: Partial<CrudContextInterface> = {},
   namespace = DEFAULT_CACHE_NAMESPACE,
-): WithCacheContextInterface {
+) {
   const ctx = new AppContextHost();
 
-  const ctxWithOverlay = ctx.defineOverlay<'withCache', CacheContextInterface>(
-    { name: 'withCache', resolve: () => ({ namespace }) },
-    {} as ExecutionContext,
-  );
+  ctx.define(CrudCtx, {
+    entity: crudOverrides.entity ?? 'UserCache',
+    params: crudOverrides.params ?? {},
+    query: crudOverrides.query ?? {},
+    options: crudOverrides.options ?? {},
+    operation: crudOverrides.operation ?? Operation.Read,
+    action: crudOverrides.action ?? ActionEnum.READ,
+  });
 
-  for (const [key, value] of Object.entries(overrides)) {
-    ctxWithOverlay.register(key, value);
-  }
+  ctx.define(CacheCtx, { namespace });
 
-  return ctxWithOverlay;
+  // Return the resolved CRUD child — has CRUD props (own)
+  // and withCache() inherited via prototype chain.
+  return ctx.require(CrudCtx, CacheCtx).withCrud();
 }
 
 const cacheMapper = new CacheMapper();

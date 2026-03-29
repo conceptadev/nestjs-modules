@@ -3,6 +3,8 @@ export { CrudModule } from './crud.module';
 
 // interfaces
 export { CrudContextInterface } from './infrastructure/interceptors/interfaces/crud-context.interface';
+export { WithCrudContextInterface } from './infrastructure/interceptors/interfaces/with-crud-context.interface';
+export { WithLocalContextInterface } from './infrastructure/interceptors/interfaces/with-local-context.interface';
 export { CrudParsedQueryInterface } from './infrastructure/request/interfaces/crud-parsed-query.interface';
 export { CrudResponsePaginatedInterface } from './infrastructure/dtos/interfaces/crud-response-paginated.interface';
 export { CrudResponseMetrics } from './infrastructure/dtos/interfaces/crud-response-metrics.interface';
@@ -66,8 +68,12 @@ export { CrudSort } from './infrastructure/decorators/routes/crud-sort.decorator
 export { CrudValidate } from './infrastructure/decorators/routes/crud-validate.decorator';
 export { UseCrudLocals } from './infrastructure/decorators/routes/crud-locals.decorator';
 
-// locals utilities
-export { getLocal } from './infrastructure/utils/get-local.util';
+// interceptors
+export {
+  CrudContextOverlay,
+  CrudCtx,
+} from './infrastructure/interceptors/crud-context.overlay';
+export { CrudLocalsInterceptor } from './infrastructure/interceptors/crud-locals.interceptor';
 
 // param decorators
 export { CrudBody } from './infrastructure/decorators/params/crud-body.decorator';

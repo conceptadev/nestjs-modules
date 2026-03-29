@@ -6,6 +6,11 @@ import { TransactionInterface } from './transaction.interface';
  */
 export interface TransactionManagerInterface {
   /**
+   * Whether a transaction scope has claimed ownership of this manager.
+   */
+  readonly isActive: boolean;
+
+  /**
    * Get the current (top of stack) transaction for the given key.
    */
   get(key: string): TransactionInterface | null;

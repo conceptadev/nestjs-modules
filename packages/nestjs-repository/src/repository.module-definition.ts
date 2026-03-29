@@ -15,6 +15,7 @@ import {
   RepositoryRegistryService,
   REPOSITORY_REGISTRY,
 } from './services/repository-registry.service';
+import { TransactionContextOverlay } from './transaction/transaction-context.overlay';
 import {
   TransactionFactoryRegistry,
   TRANSACTION_FACTORY_REGISTRY,
@@ -69,6 +70,7 @@ export function createRepositoryProviders(options: {
       provide: FEDERATION_ORCHESTRATOR,
       useClass: FederationOrchestrator,
     },
+    TransactionContextOverlay,
     TransactionScope,
     TransactionalRunner,
     TransactionInterceptor,
@@ -77,6 +79,7 @@ export function createRepositoryProviders(options: {
 
 export function createRepositoryExports(): (
   | symbol
+  | typeof TransactionContextOverlay
   | typeof TransactionScope
   | typeof TransactionFactoryRegistry
   | typeof TransactionalRunner
@@ -87,6 +90,7 @@ export function createRepositoryExports(): (
     TRANSACTION_FACTORY_REGISTRY,
     REPOSITORY_REGISTRY,
     FEDERATION_ORCHESTRATOR,
+    TransactionContextOverlay,
     TransactionScope,
     TransactionalRunner,
     TransactionInterceptor,

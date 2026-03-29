@@ -39,8 +39,8 @@ export class RemoveUserHandler
 
       await this.userRepository.remove(ctx, user);
 
-      trx.onCommit(ctx, () => user.commit());
-      trx.onRollback(ctx, () => user.uncommit());
+      trx.onCommit(() => user.commit());
+      trx.onRollback(() => user.uncommit());
 
       return user;
     });

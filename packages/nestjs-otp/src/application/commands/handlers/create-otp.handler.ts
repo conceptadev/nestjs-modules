@@ -1,7 +1,5 @@
-import { Inject } from '@nestjs/common';
+import { Inject, PlainLiteralObject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-
-import { PlainLiteralObject } from '@nestjs/common';
 
 import { EventContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
@@ -77,8 +75,8 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
           mergedActiveOtp.deactivate(eventContext);
           await otpRepo.save(ctx, mergedActiveOtp);
 
-          trx.onCommit(ctx, () => mergedActiveOtp.commit());
-          trx.onRollback(ctx, () => mergedActiveOtp.uncommit());
+          trx.onCommit(() => mergedActiveOtp.commit());
+          trx.onRollback(() => mergedActiveOtp.uncommit());
         }
       }
 
@@ -94,8 +92,8 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
 
       await otpRepo.save(ctx, otp);
 
-      trx.onCommit(ctx, () => otp.commit());
-      trx.onRollback(ctx, () => otp.uncommit());
+      trx.onCommit(() => otp.commit());
+      trx.onRollback(() => otp.uncommit());
 
       return otp;
     });

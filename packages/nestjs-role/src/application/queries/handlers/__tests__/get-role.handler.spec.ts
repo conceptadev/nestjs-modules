@@ -25,7 +25,9 @@ describe(GetRoleHandler.name, () => {
     const existing = toRoleDomain(createMockRoleEntity());
     mockRepo.get.mockResolvedValue(existing);
 
-    const result = await handler.execute(new GetRoleQuery(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id'));
+    const result = await handler.execute(
+      new GetRoleQuery(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id'),
+    );
 
     expect(result).toBeInstanceOf(Role);
     expect(result.toPlain()).toEqual({
@@ -43,7 +45,9 @@ describe(GetRoleHandler.name, () => {
     mockRepo.get.mockResolvedValue(null);
 
     await expect(
-      handler.execute(new GetRoleQuery(ctx, DEFAULT_ROLE_NAMESPACE, 'missing-id')),
+      handler.execute(
+        new GetRoleQuery(ctx, DEFAULT_ROLE_NAMESPACE, 'missing-id'),
+      ),
     ).rejects.toThrow(RoleNotFoundException);
   });
 });

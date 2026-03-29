@@ -66,9 +66,7 @@ export function createMockAssignmentRepositoryResolver(
   } as unknown as jest.Mocked<RoleAssignmentRepositoryResolver>;
 }
 
-export function createMockEventContext(
-  namespace = DEFAULT_ROLE_NAMESPACE,
-) {
+export function createMockEventContext(namespace = DEFAULT_ROLE_NAMESPACE) {
   return new EventContextHost({ namespace }, {});
 }
 

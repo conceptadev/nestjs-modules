@@ -31,8 +31,8 @@ export class OtpHistoryCleanupListener
 
     const ctx = {};
 
-    await this.txScope.run({}, async (trx) => {
-      await this.historyCleanup.cleanup(trx, {
+    await this.txScope.run(ctx, async () => {
+      await this.historyCleanup.cleanup(ctx, {
         namespace,
         assigneeId,
         category,

@@ -23,8 +23,8 @@ describe('OtpContextOverlay', () => {
     } as unknown as ExecutionContext;
   });
 
-  it('should have name "withOtp"', () => {
-    expect(overlay.name).toBe('withOtp');
+  it('should have ref name "withOtp"', () => {
+    expect(overlay.ref.name).toBe('withOtp');
   });
 
   it('should resolve namespace from decorator metadata', () => {

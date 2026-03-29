@@ -4,10 +4,11 @@ import {
   ModuleMetadata,
   Provider,
 } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 
+import { createContextInterceptorProvider } from '@concepta/nestjs-common';
+
+import { HookContextOverlay } from './hook-context.overlay';
 import { HookResolverService } from './hook-resolver.service';
-import { HookInterceptor } from './hook.interceptor';
 import { HookModuleOptionsInterface } from './hook.interfaces';
 
 const RAW_OPTIONS_TOKEN = Symbol('__HOOK_MODULE_RAW_OPTIONS_TOKEN__');
@@ -45,7 +46,7 @@ function definitionTransform(
 export function createHookExports(): Required<
   Pick<ModuleMetadata, 'exports'>
 >['exports'] {
-  return [HookResolverService, HookInterceptor];
+  return [HookResolverService, HookContextOverlay];
 }
 
 export function createHookProviders(options: {
@@ -54,10 +55,7 @@ export function createHookProviders(options: {
   return [
     ...(options.providers ?? []),
     HookResolverService,
-    HookInterceptor,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: HookInterceptor,
-    },
+    HookContextOverlay,
+    createContextInterceptorProvider(HookContextOverlay),
   ];
 }

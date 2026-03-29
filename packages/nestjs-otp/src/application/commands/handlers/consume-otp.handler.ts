@@ -6,6 +6,7 @@ import {
   EventContextHost,
 } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
+
 import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception';
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
 import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface';
@@ -68,8 +69,8 @@ export class ConsumeOtpHandler
 
       await otpRepo.remove(ctx, activeOtp);
 
-      trx.onCommit(ctx, () => activeOtp.commit());
-      trx.onRollback(ctx, () => activeOtp.uncommit());
+      trx.onCommit(() => activeOtp.commit());
+      trx.onRollback(() => activeOtp.uncommit());
 
       result = { assigneeId: activeOtp.assigneeId };
     });

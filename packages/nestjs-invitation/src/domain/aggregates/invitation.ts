@@ -10,8 +10,8 @@ import {
   DomainAggregate,
 } from '@concepta/nestjs-common/aggregate';
 
-import { InvitationEventHeaderInterface } from '../events/interfaces/invitation-event-header.interface';
 import { InvitationDispatchedMetadataInterface } from '../events/interfaces/invitation-dispatched-metadata.interface';
+import { InvitationEventHeaderInterface } from '../events/interfaces/invitation-event-header.interface';
 import { InvitationAcceptedEvent } from '../events/invitation-accepted.event';
 import { InvitationCreatedEvent } from '../events/invitation-created.event';
 import { InvitationDispatchedEvent } from '../events/invitation-dispatched.event';

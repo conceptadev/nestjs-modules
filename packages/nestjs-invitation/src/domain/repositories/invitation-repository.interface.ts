@@ -5,10 +5,7 @@ import { ReferenceId } from '@concepta/nestjs-common';
 import { Invitation } from '../aggregates/invitation';
 
 export interface InvitationRepositoryInterface {
-  get(
-    ctx: PlainLiteralObject,
-    id: ReferenceId,
-  ): Promise<Invitation | null>;
+  get(ctx: PlainLiteralObject, id: ReferenceId): Promise<Invitation | null>;
 
   findOneByCode(
     ctx: PlainLiteralObject,
@@ -23,13 +20,7 @@ export interface InvitationRepositoryInterface {
 
   save(ctx: PlainLiteralObject, invitation: Invitation): Promise<void>;
 
-  remove(
-    ctx: PlainLiteralObject,
-    invitation: Invitation,
-  ): Promise<void>;
+  remove(ctx: PlainLiteralObject, invitation: Invitation): Promise<void>;
 
-  removeAll(
-    ctx: PlainLiteralObject,
-    invitations: Invitation[],
-  ): Promise<void>;
+  removeAll(ctx: PlainLiteralObject, invitations: Invitation[]): Promise<void>;
 }

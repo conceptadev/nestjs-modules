@@ -44,8 +44,8 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         );
       }
 
-      trx.onCommit(ctx, () => user.commit());
-      trx.onRollback(ctx, () => user.uncommit());
+      trx.onCommit(() => user.commit());
+      trx.onRollback(() => user.uncommit());
 
       return user;
     });

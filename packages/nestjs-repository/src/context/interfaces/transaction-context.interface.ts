@@ -1,17 +1,20 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { TransactionManagerInterface } from '../../transaction/interfaces/transaction-manager.interface';
+import { OverlayRef } from '@concepta/nestjs-common';
+
+import { TransactionManager } from '../../transaction/transaction-manager';
 
 /**
- * Minimal context interface for transaction management.
+ * Context interface for transaction management.
  *
- * Used by TransactionalRunner and Transaction which only
- * need to read/write the trx field.
+ * The `trx` field always holds a {@link TransactionManager}.
+ * The manager starts inert — no database transactions are opened until
+ * explicitly requested via `getOrStart()`.
  */
 export interface TransactionContextInterface extends PlainLiteralObject {
-  /**
-   * Transaction manager holding active transactions.
-   * Mutable so transaction scope can set it.
-   */
-  trx?: TransactionManagerInterface;
+  trx: TransactionManager;
 }
+
+export const TrxCtx = new OverlayRef<'withTrx', TransactionContextInterface>(
+  'withTrx',
+);

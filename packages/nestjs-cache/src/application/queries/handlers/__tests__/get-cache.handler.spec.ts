@@ -23,7 +23,9 @@ describe(GetCacheHandler.name, () => {
     const entity = createMockCacheEntity();
     mockRepo.get.mockResolvedValue(toCacheDomain(entity));
 
-    const result = await handler.execute(new GetCacheQuery(ctx, DEFAULT_CACHE_NAMESPACE, 'test-id'));
+    const result = await handler.execute(
+      new GetCacheQuery(ctx, DEFAULT_CACHE_NAMESPACE, 'test-id'),
+    );
 
     expect(result).toBeInstanceOf(Cache);
     expect(result.id).toBe('test-id');

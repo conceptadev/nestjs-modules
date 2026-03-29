@@ -74,7 +74,9 @@ describe(UpdateRoleHandler.name, () => {
     mockRepo.get.mockResolvedValue(existing);
 
     const dto = { name: 'Updated' };
-    await handler.execute(new UpdateRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id', dto));
+    await handler.execute(
+      new UpdateRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id', dto),
+    );
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
     expect(trxHandle.onRollback).toHaveBeenCalledTimes(1);
@@ -85,7 +87,9 @@ describe(UpdateRoleHandler.name, () => {
 
     const dto = { name: 'NewName' };
     await expect(
-      handler.execute(new UpdateRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'missing-id', dto)),
+      handler.execute(
+        new UpdateRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'missing-id', dto),
+      ),
     ).rejects.toThrow(RoleNotFoundException);
   });
 });

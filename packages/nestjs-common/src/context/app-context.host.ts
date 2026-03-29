@@ -1,166 +1,179 @@
 import { ExecutionContext, PlainLiteralObject } from '@nestjs/common';
 
-import { ContextMergeException } from './exceptions/context-merge.exception';
-import {
-  AppContextInterface,
-  AppContextMergeInterface,
-} from './interfaces/app-context.interface';
+import { AppContextLike } from './app-context-like.type';
+import { OverlayNotDefinedException } from './exceptions/overlay-not-defined.exception';
+import { AppContextInterface } from './interfaces/app-context.interface';
 import { ContextOverlayInterface } from './interfaces/context-overlay.interface';
-import { isAppContext } from './is-app-context.util';
+import { OverlayRef } from './overlay-ref';
+import { RefsToMethods } from './refs-to-methods.type';
 
 /**
  * Symbol key used to store the context on the request object.
  */
 export const APP_CONTEXT_KEY = Symbol('APP_CONTEXT_KEY');
 
+// ---------------------------------------------------------------------------
+// Proxy handler — intercepts undefined `with*` calls
+// ---------------------------------------------------------------------------
+
+const proxyHandler: ProxyHandler<AppContextHost> = {
+  get(target, prop, receiver) {
+    const value = Reflect.get(target, prop, receiver);
+    if (value !== undefined) return value;
+
+    if (typeof prop === 'string' && prop.startsWith('with')) {
+      throw new OverlayNotDefinedException(prop);
+    }
+
+    return value;
+  },
+};
+
 /**
- * Per-request context container with type-safe, immutable properties.
+ * Per-request context container backed by typed overlays.
  *
- * Properties registered via {@link register} are read-only and enumerable,
- * allowing safe use with the spread operator while preventing accidental mutation.
+ * Overlays are defined eagerly via {@link defineOverlay} and accessed
+ * through typed `with*()` methods. The proxy constructor intercepts
+ * calls to undefined `with*` methods and throws
+ * {@link OverlayNotDefinedException}.
  *
  * @example
  * ```typescript
- * const ctx = AppContextHost.merge<MyContext>(() => ({
- *   auth: { userId: '456' },
- * }));
+ * // In an interceptor:
+ * const ctx = getAppContext(request);
+ * ctx.defineOverlay(this.featureOverlay, context);
  *
- * AppContextHost.merge((has) => ({
- *   ...(!has('trx') && { trx: manager }),
- * }), existingCtx);
+ * // In a handler:
+ * const typed = ctx.require(WithFeature);
+ * const feature = typed.withFeature();
  * ```
  */
-export class AppContextHost<T extends PlainLiteralObject = PlainLiteralObject>
-  implements AppContextInterface<T>
-{
+export class AppContextHost implements AppContextInterface {
+  constructor() {
+    return new Proxy(this, proxyHandler);
+  }
+
   /**
-   * Define a lazy overlay method on this context instance.
+   * Define an overlay method on this context instance.
    *
-   * The overlay's `resolve()` is not called until the handler invokes
-   * `ctx.<name>()`. At that point, `resolve()` returns the overlay props.
+   * The overlay's `resolve()` is called immediately and the result is cached.
+   * Subsequent calls to `ctx.<name>()` return a prototype-chain child
+   * with the cached values merged in (preserving `instanceof AppContextHost`).
    *
-   * Idempotent — if `name` already exists on `this`, returns `this`.
+   * Idempotent — if the overlay name already exists on `this`, this is a no-op.
    */
   defineOverlay<Name extends string, Props extends PlainLiteralObject>(
     contextOverlay: ContextOverlayInterface<Name, Props>,
-    executionContext: ExecutionContext,
-  ): this & Record<Name, () => this & Props> {
-    type Result = this & Record<Name, () => this & Props>;
+    context?: ExecutionContext,
+  ): void {
+    const name = contextOverlay.ref.name;
 
-    if (contextOverlay.name in this) return this as Result;
+    if (Object.prototype.hasOwnProperty.call(this, name)) return;
 
-    Object.defineProperty(this, contextOverlay.name, {
-      value: () => {
-        const values = contextOverlay.resolve(executionContext);
+    const values = contextOverlay.resolve(context);
+
+    Object.defineProperty(this, name, {
+      value: function (this: AppContextHost) {
         return Object.assign(Object.create(this), values);
       },
       enumerable: false,
       configurable: false,
       writable: false,
     });
-
-    return this as Result;
   }
 
   /**
-   * Check if a property has been registered.
+   * Define an overlay by ref and pre-resolved values.
+   *
+   * Convenience shorthand for CLI and testing — skips the
+   * `ContextOverlayInterface` ceremony.
    */
-  has(key: keyof T): boolean {
-    return key in this;
+  define<Name extends string, Props extends PlainLiteralObject>(
+    ref: OverlayRef<Name, Props>,
+    values: Props,
+  ): void {
+    this.defineOverlay({ ref, resolve: () => values, attach: () => {} });
   }
 
   /**
-   * Register a read-only property on the context.
+   * Type-level narrowing gate.
+   *
+   * Returns `this` cast to include the typed `with*()` methods for the
+   * given refs. No runtime validation — the proxy handles undefined overlays.
    */
-  register<K extends keyof T & string>(
-    key: K,
-    value: T[K],
-  ): this & Record<K, T[K]> {
-    if (this.has(key)) {
-      throw new Error(
-        `${this.constructor.name} Cannot overwrite read-only property: "${key}"`,
-      );
+  require<R extends OverlayRef<string, PlainLiteralObject>[]>(
+    ..._refs: R
+  ): this & RefsToMethods<R[number]> {
+    return this as this & RefsToMethods<R[number]>;
+  }
+
+  /**
+   * Direct lookup by ref. Returns the resolved overlay props.
+   */
+  with<Name extends string, Props extends PlainLiteralObject>(
+    ref: OverlayRef<Name, Props>,
+  ): Props {
+    const fn = (this as Record<string, unknown>)[ref.name];
+
+    if (typeof fn !== 'function') {
+      throw new OverlayNotDefinedException(ref.name);
     }
 
-    Object.defineProperty(this, key, {
-      value,
-      enumerable: true,
-      configurable: false,
-      writable: false,
-    });
-
-    return this as this & Record<K, T[K]>;
+    return fn.call(this) as Props;
   }
 
   /**
-   * Create or populate a context via a synchronous factory.
-   *
-   * @param factory - Receives `has` checker, returns properties to register
-   * @param ctx - Existing context or plain object to merge into
+   * Check if an overlay is defined on this context.
    */
-  static merge<T extends PlainLiteralObject>(
-    factory: (has: (key: keyof T) => boolean) => Partial<T>,
-    ctx?: AppContextInterface<T> | Partial<T>,
-  ): AppContextInterface<T> & T {
-    const context = this.lift<T>(ctx);
-    return this.apply(
-      context,
-      factory((k) => context.has(k)),
+  supports(ref: OverlayRef<string, PlainLiteralObject>): boolean {
+    return ref.name in this;
+  }
+
+  /**
+   * Returns a proxy where calling any overlay method returns the
+   * resolved overlay if defined, or `this` unchanged if not.
+   */
+  optional(): Record<string, () => this> {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    return new Proxy(
+      {},
+      {
+        get(_target, prop: string) {
+          return () => {
+            try {
+              const fn = (self as unknown as Record<string, unknown>)[prop];
+              if (typeof fn === 'function') {
+                return (fn as () => unknown).call(self);
+              }
+            } catch {
+              // proxy guard threw — overlay not defined, fall through
+            }
+            return self;
+          };
+        },
+      },
     );
   }
 
   /**
-   * Create or populate a context via an async factory.
+   * Resolve an `AppContextLike` value to a guaranteed `AppContextHost`.
    *
-   * @param factory - Receives `has` checker, returns properties to register
-   * @param ctx - Existing context or plain object to merge into
+   * - `AppContextHost` → returns as-is
+   * - `undefined`, `null`, or empty `{}` → returns a new `AppContextHost`
+   * - Non-empty non-AppContextHost object → throws
    */
-  static async mergeAsync<T extends PlainLiteralObject>(
-    factory: (
-      has: (key: keyof T) => boolean,
-    ) => Partial<T> | Promise<Partial<T>>,
-    ctx?: AppContextInterface<T> | Partial<T>,
-  ): Promise<AppContextInterface<T> & T> {
-    const context = this.lift<T>(ctx);
-    const props = await factory((k) => context.has(k));
-    return this.apply(context, props);
-  }
-
-  /** Resolve or create a Host instance, promoting plain objects. */
-  private static lift<T extends PlainLiteralObject>(
-    ctx?: AppContextInterface<T> | Partial<T>,
-  ): AppContextInterface<T> {
-    if (isAppContext(ctx)) return ctx;
-
-    const host = new AppContextHost<T>();
-    if (ctx) {
-      Object.entries(ctx).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          host.register(key, value);
-        }
-      });
+  static from(value?: AppContextLike): AppContextHost {
+    if (value instanceof AppContextHost) return value;
+    if (
+      value === undefined ||
+      value === null ||
+      Object.keys(value).length === 0
+    ) {
+      return new AppContextHost();
     }
-    return host;
-  }
-
-  /** Register factory-produced properties, throwing on null/undefined values. */
-  private static apply<T extends PlainLiteralObject>(
-    context: AppContextInterface<T>,
-    props: Partial<T>,
-  ): AppContextInterface<T> & T {
-    for (const key in props) {
-      if (context.has(key)) continue;
-
-      const value = props[key];
-
-      if (value === undefined || value === null) {
-        throw new ContextMergeException(key);
-      }
-
-      context.register(key, value);
-    }
-    return context as AppContextInterface<T> & T;
+    throw new Error(
+      `Expected AppContextHost or nullish value, got ${typeof value}`,
+    );
   }
 }
-
-AppContextHost satisfies AppContextMergeInterface;

@@ -53,8 +53,7 @@ export { GetOtpHandler } from './application/queries/handlers/get-otp.handler';
 export { ValidateOtpHandler } from './application/queries/handlers/validate-otp.handler';
 
 // context overlay
-export { OtpContextOverlay } from './gateways/otp-context.overlay';
-export { OtpContextInterceptor } from './gateways/otp-context.interceptor';
+export { OtpContextOverlay, OtpCtx } from './gateways/otp-context.overlay';
 export { OtpNamespace } from './gateways/decorators/otp-namespace.decorator';
 
 // interfaces

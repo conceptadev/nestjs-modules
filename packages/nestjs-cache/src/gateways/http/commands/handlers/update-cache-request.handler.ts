@@ -3,7 +3,6 @@ import { CommandBus } from '@nestjs/cqrs';
 
 import { UpdateCacheCommand } from '../../../../application/commands/impl/update-cache.command';
 import { assertCacheId } from '../../../../application/utils/assert-cache-id.util';
-import { Cache } from '../../../../domain/aggregates/cache';
 import { UpdateCacheRequest } from '../impl/update-cache.request';
 
 @Injectable()

@@ -5,10 +5,7 @@ import { ReferenceId } from '@concepta/nestjs-common';
 import { RoleAssignment } from '../aggregates/role-assignment';
 
 export interface RoleAssignmentRepositoryInterface {
-  get(
-    ctx: PlainLiteralObject,
-    id: ReferenceId,
-  ): Promise<RoleAssignment | null>;
+  get(ctx: PlainLiteralObject, id: ReferenceId): Promise<RoleAssignment | null>;
 
   findByAssignee(
     ctx: PlainLiteralObject,
@@ -39,10 +36,7 @@ export interface RoleAssignmentRepositoryInterface {
     assigneeId: string,
   ): Promise<number>;
 
-  save(
-    ctx: PlainLiteralObject,
-    roleAssignment: RoleAssignment,
-  ): Promise<void>;
+  save(ctx: PlainLiteralObject, roleAssignment: RoleAssignment): Promise<void>;
 
   saveMany(
     ctx: PlainLiteralObject,

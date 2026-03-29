@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
 import { CreateCacheCommand } from '../../../../application/commands/impl/create-cache.command';
-import { Cache } from '../../../../domain/aggregates/cache';
 import { CreateCacheRequest } from '../impl/create-cache.request';
 
 @Injectable()

@@ -4,8 +4,8 @@ import { Ctx } from '@concepta/nestjs-common';
 import {
   CrudBody,
   CrudController,
-  CrudContextInterface,
   CrudUpdate,
+  WithCrudContextInterface,
 } from '@concepta/nestjs-crud';
 
 import { InvitationAcceptableInterface } from '../../../../domain/interfaces/invitation-acceptable.interface';
@@ -33,9 +33,11 @@ export class InvitationAcceptanceController {
     request: { body: InvitationAcceptDto },
   })
   async acceptInvitation(
-    @Ctx() context: CrudContextInterface<InvitationAcceptableInterface>,
+    @Ctx() context: WithCrudContextInterface<InvitationAcceptableInterface>,
     @CrudBody() dto: InvitationAcceptDto,
   ): Promise<void> {
-    await this.commandBus.execute(new AcceptInvitationRequest(context, dto));
+    await this.commandBus.execute(
+      new AcceptInvitationRequest(context.withCrud(), dto),
+    );
   }
 }

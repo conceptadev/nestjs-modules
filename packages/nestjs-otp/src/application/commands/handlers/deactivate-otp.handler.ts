@@ -3,6 +3,7 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
 import { EventContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
+
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
 import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../../otp.constants';
 import { DeactivateOtpCommand } from '../impl/deactivate-otp.command';
@@ -36,8 +37,8 @@ export class DeactivateOtpHandler
         aggregate.deactivate(eventContext);
         await otpRepo.save(ctx, aggregate);
 
-        trx.onCommit(ctx, () => aggregate.commit());
-        trx.onRollback(ctx, () => aggregate.uncommit());
+        trx.onCommit(() => aggregate.commit());
+        trx.onRollback(() => aggregate.uncommit());
       }
     });
   }

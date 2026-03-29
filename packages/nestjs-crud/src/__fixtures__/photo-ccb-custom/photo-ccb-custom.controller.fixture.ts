@@ -13,7 +13,7 @@ import { CrudRestore } from '../../infrastructure/decorators/operations/crud-res
 import { CrudSoftDelete } from '../../infrastructure/decorators/operations/crud-soft-delete.decorator';
 import { CrudUpdate } from '../../infrastructure/decorators/operations/crud-update.decorator';
 import { CrudBody } from '../../infrastructure/decorators/params/crud-body.decorator';
-import { CrudContextInterface } from '../../infrastructure/interceptors/interfaces/crud-context.interface';
+import { WithCrudContextInterface } from '../../infrastructure/interceptors/interfaces/with-crud-context.interface';
 import { CrudAdapterResolver } from '../../infrastructure/resolvers/crud-adapter.resolver';
 import { CrudResolverInterface } from '../../infrastructure/resolvers/interfaces/crud-resolver.interface';
 import { ConfigurableCrudBuilder } from '../../infrastructure/utils/configurable-crud.builder';
@@ -40,77 +40,77 @@ export class PhotoCcbCustomControllerFixture {
   @CrudList()
   async list(
     @Ctx()
-    crudContext: CrudContextInterface<PhotoEntityInterfaceFixture>,
+    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
   ) {
-    return this.crudResolver.list(crudContext);
+    return this.crudResolver.list(ctx);
   }
 
   @CrudRead()
   async read(
     @Ctx()
-    crudContext: CrudContextInterface<PhotoEntityInterfaceFixture>,
+    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
   ) {
-    return this.crudResolver.read(crudContext);
+    return this.crudResolver.read(ctx);
   }
 
   @CrudCreateBatch()
   async createBatch(
     @Ctx()
-    crudContext: CrudContextInterface<PhotoEntityInterfaceFixture>,
+    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
     @CrudBody() dto: PhotoCreateBatchDtoFixture,
   ) {
-    return this.crudResolver.createBatch(crudContext, dto);
+    return this.crudResolver.createBatch(ctx, dto);
   }
 
   @CrudCreate({ request: { body: PhotoCreateDtoFixture } })
   async create(
     @Ctx()
-    crudContext: CrudContextInterface<PhotoEntityInterfaceFixture>,
+    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
     @CrudBody() dto: PhotoCreateDtoFixture,
   ) {
-    return this.crudResolver.create(crudContext, dto);
+    return this.crudResolver.create(ctx, dto);
   }
 
   @CrudUpdate({ request: { body: PhotoUpdateDtoFixture } })
   async update(
     @Ctx()
-    crudContext: CrudContextInterface<PhotoEntityInterfaceFixture>,
+    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
     @CrudBody() dto: PhotoUpdateDtoFixture,
   ) {
-    return this.crudResolver.update(crudContext, dto);
+    return this.crudResolver.update(ctx, dto);
   }
 
   @CrudReplace({ request: { body: PhotoUpdateDtoFixture } })
   async replace(
     @Ctx()
-    crudContext: CrudContextInterface<PhotoEntityInterfaceFixture>,
+    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
     @CrudBody() dto: PhotoUpdateDtoFixture,
   ) {
-    return this.crudResolver.replace(crudContext, dto);
+    return this.crudResolver.replace(ctx, dto);
   }
 
   @CrudDelete()
   async delete(
     @Ctx()
-    crudContext: CrudContextInterface<PhotoEntityInterfaceFixture>,
+    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
   ) {
-    return this.crudResolver.delete(crudContext);
+    return this.crudResolver.delete(ctx);
   }
 
   @CrudSoftDelete({ path: 'soft/:id' })
   async softDelete(
     @Ctx()
-    crudContext: CrudContextInterface<PhotoEntityInterfaceFixture>,
+    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
   ) {
-    return this.crudResolver.softDelete(crudContext);
+    return this.crudResolver.softDelete(ctx);
   }
 
   @CrudRestore({ path: 'restore/:id' })
   async restore(
     @Ctx()
-    crudContext: CrudContextInterface<PhotoEntityInterfaceFixture>,
+    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
   ) {
-    return this.crudResolver.restore(crudContext);
+    return this.crudResolver.restore(ctx);
   }
 }
 

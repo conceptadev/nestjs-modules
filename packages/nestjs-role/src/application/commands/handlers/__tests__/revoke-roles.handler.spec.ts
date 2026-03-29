@@ -49,7 +49,12 @@ describe(RevokeRolesHandler.name, () => {
     ]);
 
     await handler.execute(
-      new RevokeRolesCommand(ctx, DEFAULT_ROLE_NAMESPACE, ['role-1', 'role-2'], 'user-1'),
+      new RevokeRolesCommand(
+        ctx,
+        DEFAULT_ROLE_NAMESPACE,
+        ['role-1', 'role-2'],
+        'user-1',
+      ),
     );
 
     expect(mockRepo.findByRoleIdsAndAssignee).toHaveBeenCalledWith(
@@ -69,7 +74,12 @@ describe(RevokeRolesHandler.name, () => {
     mockRepo.findByRoleIdsAndAssignee.mockResolvedValue([assignment]);
 
     await handler.execute(
-      new RevokeRolesCommand(ctx, DEFAULT_ROLE_NAMESPACE, ['test-role-id'], 'test-assignee-id'),
+      new RevokeRolesCommand(
+        ctx,
+        DEFAULT_ROLE_NAMESPACE,
+        ['test-role-id'],
+        'test-assignee-id',
+      ),
     );
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
@@ -83,7 +93,12 @@ describe(RevokeRolesHandler.name, () => {
     mockRepo.findByRoleIdsAndAssignee.mockResolvedValue([assignment]);
 
     await handler.execute(
-      new RevokeRolesCommand(ctx, DEFAULT_ROLE_NAMESPACE, ['role-1', 'role-2'], 'user-1'),
+      new RevokeRolesCommand(
+        ctx,
+        DEFAULT_ROLE_NAMESPACE,
+        ['role-1', 'role-2'],
+        'user-1',
+      ),
     );
 
     expect(mockRepo.removeMany).toHaveBeenCalledTimes(1);

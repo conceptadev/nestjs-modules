@@ -60,7 +60,9 @@ describe(UpdateCacheHandler.name, () => {
       expiresIn: null,
     };
 
-    await handler.execute(new UpdateCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, 'test-id', dto));
+    await handler.execute(
+      new UpdateCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, 'test-id', dto),
+    );
 
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
   });

@@ -1,6 +1,6 @@
 import { ExecutionContext, PlainLiteralObject } from '@nestjs/common';
 
-import { CrudContextInterface } from './crud-context.interface';
+import { AppContextLike } from '@concepta/nestjs-common';
 
 /**
  * Interface for CrudLocal resolver instances (the instantiated object).
@@ -15,12 +15,14 @@ export interface CrudLocalInterface<
    * Called before the controller method executes.
    *
    * @param context - NestJS ExecutionContext (access to request, response, user, etc.)
-   * @param crudContext - The built CrudContext with parsed params and current locals
+   * @param ctx - The application context
+   * @param locals - The current resolved locals record
    * @returns The value to store in locals[KEY]
    */
-  resolve<Entity extends PlainLiteralObject = PlainLiteralObject>(
+  resolve(
     context: ExecutionContext,
-    crudContext: CrudContextInterface<Entity>,
+    ctx: AppContextLike,
+    locals: Readonly<Record<string, unknown>>,
   ): Promise<T>;
 
   /**
@@ -30,11 +32,13 @@ export interface CrudLocalInterface<
    * Implementations that do not need response-side behavior should no-op.
    *
    * @param context - NestJS ExecutionContext (access to request, response, user, etc.)
-   * @param crudContext - The CrudContext with fully resolved locals
+   * @param ctx - The application context
+   * @param locals - The fully resolved locals record
    */
-  transform<Entity extends PlainLiteralObject = PlainLiteralObject>(
+  transform(
     context: ExecutionContext,
-    crudContext: CrudContextInterface<Entity>,
+    ctx: AppContextLike,
+    locals: Readonly<Record<string, unknown>>,
   ): Promise<void>;
 }
 

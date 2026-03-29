@@ -14,10 +14,7 @@ export class RoleRepository implements RoleRepositoryInterface {
     private readonly mapper: RoleMapper,
   ) {}
 
-  async get(
-    ctx: PlainLiteralObject,
-    id: ReferenceId,
-  ): Promise<Role | null> {
+  async get(ctx: PlainLiteralObject, id: ReferenceId): Promise<Role | null> {
     const w = Where.for<RoleEntityInterface>();
 
     const entity = await this.repository.findOne({

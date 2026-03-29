@@ -2,12 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { AppContextHost } from '@concepta/nestjs-common';
 
-import { TransactionContextInterface } from '../context/interfaces/transaction-context.interface';
+import { TrxCtx } from '../context/interfaces/transaction-context.interface';
 import { TransactionRequiredException } from '../exceptions/transaction-required.exception';
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants';
 
 import { TransactionInterface } from './interfaces/transaction.interface';
+import { TransactionContextOverlay } from './transaction-context.overlay';
 import {
   TransactionFactoryRegistry,
   TRANSACTION_FACTORY_REGISTRY,
@@ -45,14 +46,14 @@ describe(TransactionScope.name, () => {
     };
   };
 
-  const createCtx = () =>
-    AppContextHost.merge<TransactionContextInterface>(() => ({}));
+  const createCtx = () => new AppContextHost();
 
   beforeEach(async () => {
     mockRegistry = new TransactionFactoryRegistry();
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
+        TransactionContextOverlay,
         TransactionScope,
         {
           provide: TRANSACTION_FACTORY_REGISTRY,
@@ -76,8 +77,13 @@ describe(TransactionScope.name, () => {
       const result = await transaction.run(ctx, operation);
 
       expect(result).toBe('result');
-      expect(ctx.has('trx')).toBe(true);
-      expect(operation).toHaveBeenCalledWith(transaction);
+      expect(ctx.supports(TrxCtx)).toBe(true);
+      expect(operation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          onCommit: expect.any(Function),
+          onRollback: expect.any(Function),
+        }),
+      );
     });
 
     it('should create manager when ctx is undefined', async () => {
@@ -86,7 +92,12 @@ describe(TransactionScope.name, () => {
       const result = await transaction.run({}, operation);
 
       expect(result).toBe('result');
-      expect(operation).toHaveBeenCalledWith(transaction);
+      expect(operation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          onCommit: expect.any(Function),
+          onRollback: expect.any(Function),
+        }),
+      );
     });
 
     it('should join existing transaction without creating new manager', async () => {
@@ -115,7 +126,7 @@ describe(TransactionScope.name, () => {
       });
     });
 
-    it('should run without transaction if none exists', async () => {
+    it('should run without transaction if none is active', async () => {
       const ctx = createCtx();
       const operation = jest.fn().mockResolvedValue('result');
 
@@ -124,8 +135,14 @@ describe(TransactionScope.name, () => {
       });
 
       expect(result).toBe('result');
-      expect(ctx.has('trx')).toBe(false);
-      expect(operation).toHaveBeenCalledWith(transaction);
+      expect(ctx.supports(TrxCtx)).toBe(true);
+      expect(ctx.with(TrxCtx).trx.isActive).toBe(false);
+      expect(operation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          onCommit: expect.any(Function),
+          onRollback: expect.any(Function),
+        }),
+      );
     });
 
     it('should run without transaction when ctx is undefined', async () => {
@@ -136,7 +153,12 @@ describe(TransactionScope.name, () => {
       });
 
       expect(result).toBe('result');
-      expect(operation).toHaveBeenCalledWith(transaction);
+      expect(operation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          onCommit: expect.any(Function),
+          onRollback: expect.any(Function),
+        }),
+      );
     });
   });
 
@@ -184,8 +206,8 @@ describe(TransactionScope.name, () => {
 
       await transaction.run(ctx, async () => {
         // Simulate repo accessing the transaction lazily
-        const trxManager = ctx.trx!;
-        const tx = await trxManager.getOrStart('typeorm:default');
+        const { trx } = ctx.with(TrxCtx);
+        const tx = await trx!.getOrStart('typeorm:default');
         tx?.markDirty();
         return 'result';
       });
@@ -202,8 +224,8 @@ describe(TransactionScope.name, () => {
       const ctx = createCtx();
 
       await transaction.run(ctx, async () => {
-        const trxManager = ctx.trx!;
-        await trxManager.getOrStart('typeorm:default');
+        const { trx } = ctx.with(TrxCtx);
+        await trx!.getOrStart('typeorm:default');
         return 'result';
       });
 
@@ -220,8 +242,8 @@ describe(TransactionScope.name, () => {
 
       await expect(
         transaction.run(ctx, async () => {
-          const trxManager = ctx.trx!;
-          await trxManager.getOrStart('typeorm:default');
+          const { trx } = ctx.with(TrxCtx);
+          await trx!.getOrStart('typeorm:default');
           throw error;
         }),
       ).rejects.toThrow(error);
@@ -240,8 +262,8 @@ describe(TransactionScope.name, () => {
       await transaction.run(
         ctx,
         async () => {
-          const trxManager = ctx.trx!;
-          const tx = await trxManager.getOrStart('typeorm:default');
+          const { trx } = ctx.with(TrxCtx);
+          const tx = await trx!.getOrStart('typeorm:default');
           tx?.markDirty();
           return 'result';
         },
@@ -259,8 +281,8 @@ describe(TransactionScope.name, () => {
       const ctx = createCtx();
 
       await transaction.runReadOnly(ctx, async () => {
-        const trxManager = ctx.trx!;
-        await trxManager.getOrStart('typeorm:default');
+        const { trx } = ctx.with(TrxCtx);
+        await trx!.getOrStart('typeorm:default');
         return 'result';
       });
 
@@ -290,7 +312,7 @@ describe(TransactionScope.name, () => {
       const callback = jest.fn();
 
       await transaction.run(ctx, async (trx) => {
-        trx.onCommit(ctx, callback);
+        trx.onCommit(callback);
         return 'result';
       });
 
@@ -303,7 +325,7 @@ describe(TransactionScope.name, () => {
 
       await expect(
         transaction.run(ctx, async (trx) => {
-          trx.onRollback(ctx, callback);
+          trx.onRollback(callback);
           throw new Error('fail');
         }),
       ).rejects.toThrow('fail');
@@ -317,7 +339,7 @@ describe(TransactionScope.name, () => {
 
       await expect(
         transaction.run(ctx, async (trx) => {
-          trx.onCommit(ctx, commitCb);
+          trx.onCommit(commitCb);
           throw new Error('fail');
         }),
       ).rejects.toThrow('fail');
@@ -330,7 +352,7 @@ describe(TransactionScope.name, () => {
       const rollbackCb = jest.fn();
 
       await transaction.run(ctx, async (trx) => {
-        trx.onRollback(ctx, rollbackCb);
+        trx.onRollback(rollbackCb);
         return 'result';
       });
 
@@ -342,18 +364,18 @@ describe(TransactionScope.name, () => {
       const order: number[] = [];
 
       await transaction.run(ctx, async (trx) => {
-        trx.onCommit(ctx, () => {
+        trx.onCommit(() => {
           order.push(1);
         });
 
         await transaction.run(ctx, async (innerTrx) => {
-          innerTrx.onCommit(ctx, () => {
+          innerTrx.onCommit(() => {
             order.push(2);
           });
           return 'inner';
         });
 
-        trx.onCommit(ctx, () => {
+        trx.onCommit(() => {
           order.push(3);
         });
         return 'outer';
@@ -371,8 +393,8 @@ describe(TransactionScope.name, () => {
       const ctx = createCtx();
 
       await transaction.run(ctx, async () => {
-        const trxManager = ctx.trx!;
-        const tx = await trxManager.getOrStart('typeorm:default');
+        const { trx } = ctx.with(TrxCtx);
+        const tx = await trx!.getOrStart('typeorm:default');
         tx?.markDirty();
 
         // Nested run — should just execute, no lifecycle ownership
@@ -394,8 +416,8 @@ describe(TransactionScope.name, () => {
 
       await expect(
         transaction.run(ctx, async () => {
-          const trxManager = ctx.trx!;
-          await trxManager.getOrStart('typeorm:default');
+          const { trx } = ctx.with(TrxCtx);
+          await trx!.getOrStart('typeorm:default');
 
           await transaction.run(ctx, async () => {
             throw error;

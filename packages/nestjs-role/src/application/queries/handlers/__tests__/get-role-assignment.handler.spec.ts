@@ -28,7 +28,11 @@ describe(GetRoleAssignmentHandler.name, () => {
     mockRepo.get.mockResolvedValue(existing);
 
     const result = await handler.execute(
-      new GetRoleAssignmentQuery(ctx, DEFAULT_ROLE_NAMESPACE, 'test-assignment-id'),
+      new GetRoleAssignmentQuery(
+        ctx,
+        DEFAULT_ROLE_NAMESPACE,
+        'test-assignment-id',
+      ),
     );
 
     expect(result).toBeInstanceOf(RoleAssignment);
@@ -47,7 +51,9 @@ describe(GetRoleAssignmentHandler.name, () => {
     mockRepo.get.mockResolvedValue(null);
 
     await expect(
-      handler.execute(new GetRoleAssignmentQuery(ctx, DEFAULT_ROLE_NAMESPACE, 'missing-id')),
+      handler.execute(
+        new GetRoleAssignmentQuery(ctx, DEFAULT_ROLE_NAMESPACE, 'missing-id'),
+      ),
     ).rejects.toThrow(RoleAssignmentNotFoundException);
   });
 });

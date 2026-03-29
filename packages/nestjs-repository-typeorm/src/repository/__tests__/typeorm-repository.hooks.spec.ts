@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppContextHost, DeepPartial } from '@concepta/nestjs-common';
-import { HookModule } from '@concepta/nestjs-hook';
+import { HookModule, HooksCtx } from '@concepta/nestjs-hook';
 import {
   RepositoryModule,
   RepoHook,
@@ -78,7 +78,6 @@ import {
   BeforeDestroyMethod,
   AfterDestroyMethod,
   // Repository types (moved from nestjs-common)
-  RepositoryContextInterface,
   RepositoryFindOptions,
   RepositoryFindOneOptions,
   Where,
@@ -371,10 +370,11 @@ class AllHooks implements AllHooksInterface {
  * Adds the RepoHook.KEY type to each hook config (normally done by HookInterceptor).
  */
 function createHookContext(...hookClasses: Type[]) {
-  const ctx = AppContextHost.merge<RepositoryContextInterface>(() => ({
+  const ctx = new AppContextHost();
+  ctx.define(HooksCtx, {
     hooks: hookClasses.map((hook) => ({ hook, type: RepoHook.KEY })),
-  }));
-  return switchToRepo(ctx as unknown as RepositoryContextInterface, '');
+  });
+  return switchToRepo(ctx.optional().withHooks(), '');
 }
 
 // =============================================================================

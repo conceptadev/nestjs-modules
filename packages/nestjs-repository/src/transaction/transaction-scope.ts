@@ -1,24 +1,16 @@
-import {
-  Injectable,
-  Inject,
-  Optional,
-  PlainLiteralObject,
-} from '@nestjs/common';
+import { Injectable, Inject, Optional } from '@nestjs/common';
 
-import { AppContextHost } from '@concepta/nestjs-common';
+import { AppContextHost, AppContextLike } from '@concepta/nestjs-common';
 
-import { TransactionContextInterface } from '../context/interfaces/transaction-context.interface';
+import { TrxCtx } from '../context/interfaces/transaction-context.interface';
 import { TransactionRequiredException } from '../exceptions/transaction-required.exception';
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception';
 import { RepositoryModuleOptionsInterface } from '../interfaces/repository-module-options.interface';
 import { PropagationBehavior } from '../interfaces/transactional-options.interface';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants';
 
-import {
-  TransactionFactoryRegistry,
-  TRANSACTION_FACTORY_REGISTRY,
-} from './transaction-factory-registry';
-import { TransactionManager } from './transaction-manager';
+import { TransactionHandleInterface } from './interfaces/transaction-handle.interface';
+import { TransactionContextOverlay } from './transaction-context.overlay';
 
 const DEFAULT_TIMEOUT = 30000;
 
@@ -31,11 +23,14 @@ export interface TransactionRunOptions {
 /**
  * Orchestrates transaction lifecycle.
  *
- * Every unit of work calls `run()`. The first (outermost) call creates the
- * `TransactionManager` and registers it on the context. Nested `run()` calls
- * see the existing manager and simply execute the operation (join).
+ * Every unit of work calls `run()`. The first (outermost) call becomes
+ * the lifecycle owner — it commits/rolls back and flushes callbacks.
+ * Nested `run()` calls join the existing transaction.
  *
- * Only the outermost `run()` commits/rolls back and flushes callbacks.
+ * The `withTrx` overlay is defined eagerly by
+ * {@link TransactionContextOverlay} when an interceptor is present.
+ * For direct calls (command handlers, CLI), the scope defines it
+ * on first access via the overlay's `resolve()`.
  *
  * @example
  * ```typescript
@@ -44,7 +39,7 @@ export interface TransactionRunOptions {
  *   return this.txScope.run(context, async (trx) => {
  *     const cache = Cache.create(dto, this.settings);
  *     await cacheRepo.save({ dto: cache.toPlain(), ctx: context });
- *     trx.onCommit(context, () => cache.commit());
+ *     trx.onCommit(() => cache.commit());
  *     return cache.toPlain();
  *   });
  * }
@@ -55,8 +50,7 @@ export class TransactionScope {
   private readonly defaultTimeout: number;
 
   constructor(
-    @Inject(TRANSACTION_FACTORY_REGISTRY)
-    private readonly registry: TransactionFactoryRegistry,
+    private readonly overlay: TransactionContextOverlay,
     @Optional()
     @Inject(REPOSITORY_MODULE_OPTIONS)
     options?: RepositoryModuleOptionsInterface,
@@ -67,66 +61,64 @@ export class TransactionScope {
   /**
    * Execute an operation within a transaction scope.
    *
-   * Uses `merge()` to ensure a context exists and set up the transaction
-   * manager if one doesn't already exist. Nested calls join the existing
-   * transaction. Only the outermost call owns the lifecycle.
+   * Ensures the `withTrx` overlay is defined, then checks the
+   * transaction manager's active state. The first `run()` call owns
+   * the lifecycle; nested calls join the existing transaction.
    */
   async run<T>(
-    ctx: PlainLiteralObject,
-    operation: (trx: TransactionScope) => Promise<T>,
+    ctx: AppContextLike,
+    operation: (trx: TransactionHandleInterface) => Promise<T>,
     options?: TransactionRunOptions,
   ): Promise<T> {
     const propagation = options?.propagation ?? 'REQUIRED';
     const readOnly = options?.readOnly ?? false;
     const timeout = options?.timeout ?? this.defaultTimeout;
 
-    let manager: TransactionManager | undefined;
+    const context = AppContextHost.from(ctx);
 
-    const context = AppContextHost.merge<TransactionContextInterface>((has) => {
-      // MANDATORY: require existing transaction
-      if (propagation === 'MANDATORY' && !has('trx')) {
-        throw new TransactionRequiredException();
-      }
+    // Ensure withTrx overlay exists (no-op if already defined by interceptor)
+    context.define(TrxCtx, this.overlay.resolve());
 
-      // SUPPORTS without existing transaction: skip creating manager
-      if (propagation === 'SUPPORTS' && !has('trx')) {
-        return {};
-      }
+    const { trx } = context.with(TrxCtx);
 
-      // No existing transaction — I'm the outermost, create manager
-      if (!has('trx')) {
-        manager = new TransactionManager(this.registry);
-        return { trx: manager };
-      }
-
-      return {};
-    }, ctx);
-
-    // SUPPORTS without transaction: run without transaction
-    if (propagation === 'SUPPORTS' && !context.has('trx')) {
-      return operation(this);
+    // MANDATORY: require an already-active transaction
+    if (propagation === 'MANDATORY' && !trx.isActive) {
+      throw new TransactionRequiredException();
     }
 
-    // Join existing or just run (manager is only set for outermost)
-    if (!manager) {
-      return operation(this);
+    // SUPPORTS without active transaction: run without transaction
+    if (propagation === 'SUPPORTS' && !trx.isActive) {
+      return operation({ onCommit: () => {}, onRollback: () => {} });
     }
 
-    // I'm the outermost — own the lifecycle
+    // Scoped handle
+    const handle: TransactionHandleInterface = {
+      onCommit: (fn) => trx.onCommit(fn),
+      onRollback: (fn) => trx.onRollback(fn),
+    };
+
+    // Join existing transaction (nested call)
+    if (trx.isActive) {
+      return operation(handle);
+    }
+
+    // I'm the outermost — claim the manager and own the lifecycle
+    trx.claim();
+
     try {
-      const result = await this.withTimeout(operation(this), timeout);
+      const result = await this.withTimeout(operation(handle), timeout);
 
       if (readOnly) {
-        await manager.rollbackAll();
+        await trx.rollbackAll();
       } else {
-        await manager.commitAll();
-        await manager.flushOnCommitCallbacks();
+        await trx.commitAll();
+        await trx.flushOnCommitCallbacks();
       }
 
       return result;
     } catch (error) {
-      await manager.rollbackAll();
-      await manager.flushOnRollbackCallbacks();
+      await trx.rollbackAll();
+      await trx.flushOnRollbackCallbacks();
       throw error;
     }
   }
@@ -136,30 +128,10 @@ export class TransactionScope {
    * Shorthand for `run(ctx, operation, { readOnly: true })`.
    */
   async runReadOnly<T>(
-    ctx: PlainLiteralObject,
-    operation: (trx: TransactionScope) => Promise<T>,
+    ctx: AppContextLike,
+    operation: (trx: TransactionHandleInterface) => Promise<T>,
   ): Promise<T> {
     return this.run(ctx, operation, { readOnly: true });
-  }
-
-  /**
-   * Register a callback to run after the transaction commits.
-   */
-  onCommit(
-    ctx: TransactionContextInterface,
-    fn: () => void | Promise<void>,
-  ): void {
-    ctx.trx?.onCommit(fn);
-  }
-
-  /**
-   * Register a callback to run after the transaction rolls back.
-   */
-  onRollback(
-    ctx: TransactionContextInterface,
-    fn: () => void | Promise<void>,
-  ): void {
-    ctx.trx?.onRollback(fn);
   }
 
   private withTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {

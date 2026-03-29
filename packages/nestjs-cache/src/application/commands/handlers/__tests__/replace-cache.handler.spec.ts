@@ -63,7 +63,9 @@ describe(ReplaceCacheHandler.name, () => {
   it('should save in both paths', async () => {
     mockRepo.get.mockResolvedValue(null);
 
-    await handler.execute(new ReplaceCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, 'new-id', dto));
+    await handler.execute(
+      new ReplaceCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, 'new-id', dto),
+    );
 
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
   });

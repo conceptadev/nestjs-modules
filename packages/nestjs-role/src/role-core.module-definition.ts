@@ -3,11 +3,13 @@ import {
   DynamicModule,
   Provider,
 } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { createSettingsProvider } from '@concepta/nestjs-common';
+import {
+  createContextInterceptorProvider,
+  createSettingsProvider,
+} from '@concepta/nestjs-common';
 
 import { AssignRoleHandler } from './application/commands/handlers/assign-role.handler';
 import { AssignRolesHandler } from './application/commands/handlers/assign-roles.handler';
@@ -22,12 +24,11 @@ import { GetRoleAssignmentHandler } from './application/queries/handlers/get-rol
 import { GetRoleHandler } from './application/queries/handlers/get-role.handler';
 import { IsAssignedRoleHandler } from './application/queries/handlers/is-assigned-role.handler';
 import { IsAssignedRolesHandler } from './application/queries/handlers/is-assigned-roles.handler';
+import { RoleContextOverlay } from './gateways/role-context.overlay';
 import { RoleExtrasInterface } from './infrastructure/config/interfaces/role-extras.interface';
 import { RoleOptionsInterface } from './infrastructure/config/interfaces/role-options.interface';
 import { RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface';
 import { roleDefaultConfig } from './infrastructure/config/role-default.config';
-import { RoleContextInterceptor } from './gateways/role-context.interceptor';
-import { RoleContextOverlay } from './gateways/role-context.overlay';
 import { RoleAssignmentRepositoryResolver } from './infrastructure/persistence/role-assignment-repository.resolver';
 import { RoleAssignmentMapper } from './infrastructure/persistence/role-assignment.mapper';
 import { RoleRepositoryResolver } from './infrastructure/persistence/role-repository.resolver';
@@ -125,10 +126,7 @@ export function createRoleProviders(options: {
     IsAssignedRoleHandler,
     IsAssignedRolesHandler,
     RoleContextOverlay,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: RoleContextInterceptor,
-    },
+    createContextInterceptorProvider(RoleContextOverlay),
     ...(options.providers ?? []),
   ];
 }

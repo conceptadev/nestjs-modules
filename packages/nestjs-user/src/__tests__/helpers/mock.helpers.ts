@@ -15,14 +15,17 @@ import { UserCredentialsMapper } from '../../infrastructure/persistence/user-cre
 import { UserMapper } from '../../infrastructure/persistence/user.mapper';
 
 export function createMockTxScope(): jest.Mocked<TransactionScope> {
-  const mock = {
-    run: jest.fn(),
+  const handle = {
     onCommit: jest.fn(),
     onRollback: jest.fn(),
+  };
+
+  const mock = {
+    run: jest.fn(),
     runReadOnly: jest.fn(),
   } as unknown as jest.Mocked<TransactionScope>;
 
-  mock.run.mockImplementation((_ctx, fn) => fn(mock));
+  mock.run.mockImplementation((_ctx, fn) => fn(handle));
 
   return mock;
 }

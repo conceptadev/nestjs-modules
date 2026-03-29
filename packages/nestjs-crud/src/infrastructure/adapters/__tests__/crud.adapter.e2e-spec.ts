@@ -8,7 +8,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ActionEnum, Operation } from '@concepta/nestjs-common';
+import { ActionEnum, AppContextHost, Operation } from '@concepta/nestjs-common';
 import {
   getDynamicRepositoryToken,
   RepositoryModule,
@@ -24,6 +24,7 @@ import { mockCrudParsedQuery } from '../../../__fixtures__/crud/mocks/crud-parse
 import { CompanyEntity } from '../../../__fixtures__/typeorm/company/company.entity';
 import { ProjectEntity } from '../../../__fixtures__/typeorm/project/project.entity';
 import { UserEntity } from '../../../__fixtures__/typeorm/users/user.entity';
+import { CrudCtx } from '../../interceptors/crud-context.overlay';
 import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface';
 import { CrudAdapter } from '../crud.adapter';
 
@@ -44,21 +45,18 @@ const ENTITY_TOKEN = 'test-adapter-entity';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-function ctx(
-  overrides?: Partial<CrudContextInterface<TestEntityFixture>>,
-): CrudContextInterface<TestEntityFixture> {
-  const base = {
+function ctx(overrides?: Partial<CrudContextInterface<TestEntityFixture>>) {
+  const host = new AppContextHost();
+  host.define(CrudCtx, {
     entity: 'TestEntityFixture',
     params: {},
-    query: mockCrudParsedQuery(),
+    query: mockCrudParsedQuery<TestEntityFixture>(),
     options: {},
     operation: Operation.List,
     action: ActionEnum.READ,
-    locals: {},
     ...overrides,
-  } as CrudContextInterface<TestEntityFixture>;
-
-  return base;
+  });
+  return host.with(CrudCtx);
 }
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
@@ -1078,21 +1076,18 @@ describe('CrudAdapter relations (e2e)', () => {
   let projectRepo: TypeOrmRepository<ProjectEntity>;
   let adapter: CrudAdapter<CompanyEntity>;
 
-  function relCtx(
-    overrides?: Partial<CrudContextInterface<CompanyEntity>>,
-  ): CrudContextInterface<CompanyEntity> {
-    const base = {
+  function relCtx(overrides?: Partial<CrudContextInterface<CompanyEntity>>) {
+    const host = new AppContextHost();
+    host.define(CrudCtx, {
       entity: 'CompanyEntity',
       params: {},
-      query: mockCrudParsedQuery(),
+      query: mockCrudParsedQuery<CompanyEntity>(),
       options: {},
       operation: Operation.List,
       action: ActionEnum.READ,
-      locals: {},
       ...overrides,
-    } as CrudContextInterface<CompanyEntity>;
-
-    return base;
+    });
+    return host.with(CrudCtx);
   }
 
   beforeEach(async () => {

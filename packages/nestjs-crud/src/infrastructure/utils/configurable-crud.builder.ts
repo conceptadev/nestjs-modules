@@ -29,7 +29,7 @@ import { CrudBody } from '../decorators/params/crud-body.decorator';
 import { CrudCommandHandler } from '../decorators/routes/crud-command-handler.decorator';
 import { CrudQueryHandler } from '../decorators/routes/crud-query-handler.decorator';
 import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
-import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
+import { WithCrudContextInterface } from '../interceptors/interfaces/with-crud-context.interface';
 import {
   CrudControllerClassOptionsInterface,
   CrudControllerOptionsInterface,
@@ -481,21 +481,21 @@ export class ConfigurableCrudBuilder<
       case Operation.List:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: CrudContextInterface<Entity>,
+          crudContext: WithCrudContextInterface<Entity>,
         ) {
           return this.crudResolver.list(crudContext);
         };
       case Operation.Read:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: CrudContextInterface<Entity>,
+          crudContext: WithCrudContextInterface<Entity>,
         ) {
           return this.crudResolver.read(crudContext);
         };
       case Operation.Create:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: CrudContextInterface<Entity>,
+          crudContext: WithCrudContextInterface<Entity>,
           dto: DeepPartial<Entity>,
         ) {
           return this.crudResolver.create(crudContext, dto);
@@ -503,7 +503,7 @@ export class ConfigurableCrudBuilder<
       case Operation.CreateBatch:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: CrudContextInterface<Entity>,
+          crudContext: WithCrudContextInterface<Entity>,
           dto: CrudCreateBatchInterface<DeepPartial<Entity>>,
         ) {
           return this.crudResolver.createBatch(crudContext, dto);
@@ -511,7 +511,7 @@ export class ConfigurableCrudBuilder<
       case Operation.Update:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: CrudContextInterface<Entity>,
+          crudContext: WithCrudContextInterface<Entity>,
           dto: DeepPartial<Entity>,
         ) {
           return this.crudResolver.update(crudContext, dto);
@@ -519,7 +519,7 @@ export class ConfigurableCrudBuilder<
       case Operation.Replace:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: CrudContextInterface<Entity>,
+          crudContext: WithCrudContextInterface<Entity>,
           dto: DeepPartial<Entity>,
         ) {
           return this.crudResolver.replace(crudContext, dto);
@@ -527,21 +527,21 @@ export class ConfigurableCrudBuilder<
       case Operation.Delete:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: CrudContextInterface<Entity>,
+          crudContext: WithCrudContextInterface<Entity>,
         ) {
           return this.crudResolver.delete(crudContext);
         };
       case Operation.SoftDelete:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: CrudContextInterface<Entity>,
+          crudContext: WithCrudContextInterface<Entity>,
         ) {
           return this.crudResolver.softDelete(crudContext);
         };
       case Operation.Restore:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: CrudContextInterface<Entity>,
+          crudContext: WithCrudContextInterface<Entity>,
         ) {
           return this.crudResolver.restore(crudContext);
         };

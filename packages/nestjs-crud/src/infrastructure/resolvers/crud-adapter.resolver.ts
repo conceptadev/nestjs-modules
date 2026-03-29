@@ -7,6 +7,7 @@ import { CrudAdapter } from '../adapters/crud.adapter';
 import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
 import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';
 import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
+import { WithCrudContextInterface } from '../interceptors/interfaces/with-crud-context.interface';
 import { getDynamicAdapterToken } from '../utils/crud-infra.utils';
 
 import { CrudResolverInterface } from './interfaces/crud-resolver.interface';
@@ -17,14 +18,6 @@ import { CrudResolverInterface } from './interfaces/crud-resolver.interface';
  * This is the simplest resolver. It bypasses query/command handlers entirely
  * and calls the adapter methods directly. Use this when you don't need
  * custom handler logic.
- *
- * @example
- * ```typescript
- * @Module({
- *   imports: [CrudModule.forRoot()], // Uses CrudAdapterResolver by default
- * })
- * export class AppModule {}
- * ```
  */
 @Injectable()
 export class CrudAdapterResolver implements CrudResolverInterface {
@@ -48,61 +41,70 @@ export class CrudAdapterResolver implements CrudResolverInterface {
   }
 
   async list<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
   ): Promise<CrudResponsePaginatedInterface<Entity>> {
-    return this.resolveAdapter(context).list(context);
+    const crudCtx = context.withCrud();
+    return this.resolveAdapter(crudCtx).list(crudCtx);
   }
 
   async read<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
   ): Promise<Entity> {
-    return this.resolveAdapter(context).read(context);
+    const crudCtx = context.withCrud();
+    return this.resolveAdapter(crudCtx).read(crudCtx);
   }
 
   async create<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
     dto: DeepPartial<Entity>,
   ): Promise<Entity> {
-    return this.resolveAdapter(context).create(context, dto);
+    const crudCtx = context.withCrud();
+    return this.resolveAdapter(crudCtx).create(crudCtx, dto);
   }
 
   async createBatch<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
     dto: CrudCreateBatchInterface<DeepPartial<Entity>>,
   ): Promise<Entity[]> {
-    return this.resolveAdapter(context).createBatch(context, dto);
+    const crudCtx = context.withCrud();
+    return this.resolveAdapter(crudCtx).createBatch(crudCtx, dto);
   }
 
   async update<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
     dto: DeepPartial<Entity>,
   ): Promise<Entity> {
-    return this.resolveAdapter(context).update(context, dto);
+    const crudCtx = context.withCrud();
+    return this.resolveAdapter(crudCtx).update(crudCtx, dto);
   }
 
   async replace<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
     dto: DeepPartial<Entity>,
   ): Promise<Entity> {
-    return this.resolveAdapter(context).replace(context, dto);
+    const crudCtx = context.withCrud();
+    return this.resolveAdapter(crudCtx).replace(crudCtx, dto);
   }
 
   async delete<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
   ): Promise<Entity | null> {
-    return this.resolveAdapter(context).delete(context);
+    const crudCtx = context.withCrud();
+    return this.resolveAdapter(crudCtx).delete(crudCtx);
   }
 
   async softDelete<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
   ): Promise<Entity | null> {
-    return this.resolveAdapter(context).softDelete(context);
+    const crudCtx = context.withCrud();
+    return this.resolveAdapter(crudCtx).softDelete(crudCtx);
   }
 
   async restore<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    context: WithCrudContextInterface<Entity>,
   ): Promise<Entity | null> {
-    return this.resolveAdapter(context).restore(context);
+    const crudCtx = context.withCrud();
+    return this.resolveAdapter(crudCtx).restore(crudCtx);
   }
 
   protected resolveAdapter<Entity extends PlainLiteralObject>(

@@ -1,8 +1,8 @@
 # @concepta/nestjs-common
 
 Core dependency for all Rockets modules. Provides the DDD aggregate
-infrastructure, audit system, domain interfaces, context management,
-and shared DTOs.
+infrastructure, audit system, domain interfaces, context overlay system,
+exception handling, and shared DTOs.
 
 ## Project
 
@@ -21,8 +21,14 @@ and shared DTOs.
 - [Domain Factory](#domain-factory)
 - [Audit System](#audit-system)
 - [Reference Interfaces](#reference-interfaces)
-- [Context Management](#context-management)
+- [Context Overlay System](#context-overlay-system)
+- [Event Context](#event-context)
+- [Exceptions](#exceptions)
+- [Hooks](#hooks)
+- [Utilities](#utilities)
+- [Module Configuration](#module-configuration)
 - [DTOs](#dtos)
+- [Model Exceptions and Interfaces](#model-exceptions-and-interfaces)
 - [Domain Interfaces](#domain-interfaces)
 
 ## Installation
@@ -175,18 +181,310 @@ Small, composable interfaces for common entity fields:
 | `ReferenceRoleInterface` | `role: string` |
 | `ReferenceRolesInterface` | `roles: string[]` |
 
-## Context Management
+## Context Overlay System
+
+`AppContextHost` is a per-request container that carries feature-specific
+context through the NestJS request pipeline. Interceptors define **overlays**
+early in the pipeline (e.g. namespace, transaction, hooks), and downstream
+handlers consume them via typed `with*()` methods. A `Proxy` guard throws
+`OverlayNotDefinedException` if you call an undefined `with*` method,
+catching misconfiguration at runtime.
+
+### Defining an Overlay
+
+This walkthrough creates a `withFoo` overlay end-to-end.
+
+#### Step 1: Define the context interface and OverlayRef
+
+`OverlayRef` is a typed token that carries the method name and its resolved
+type. It serves as the single source of truth for one overlay.
+
+```ts
+// foo-context.interface.ts
+import { PlainLiteralObject } from '@nestjs/common';
+
+export interface FooContextInterface extends PlainLiteralObject {
+  namespace: string;
+}
+```
+
+```ts
+// foo-context.overlay.ts (partial -- ref only)
+import { OverlayRef } from '@concepta/nestjs-common';
+import { FooContextInterface } from './foo-context.interface';
+
+export const FooCtx = new OverlayRef<'withFoo', FooContextInterface>('withFoo');
+```
+
+#### Step 2: Implement ContextOverlayInterface
+
+The overlay has three members:
+
+- **`ref`** -- the `OverlayRef` token
+- **`resolve(context?)`** -- called once at definition time, returns the cached
+  props. Use the NestJS `ExecutionContext` to read metadata from decorators,
+  headers, or the request.
+- **`attach(context)`** -- called by the interceptor pipeline. Responsible for
+  getting the `AppContextHost` and calling `defineOverlay`.
+
+```ts
+// foo-context.overlay.ts
+import { ExecutionContext, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import {
+  ContextOverlayInterface,
+  getAppContext,
+} from '@concepta/nestjs-common';
+import { FooContextInterface } from './foo-context.interface';
+import { FooCtx } from './foo-context.overlay';
+
+@Injectable()
+export class FooContextOverlay
+  implements ContextOverlayInterface<'withFoo', FooContextInterface>
+{
+  readonly ref = FooCtx;
+
+  constructor(private readonly reflector: Reflector) {}
+
+  resolve(context: ExecutionContext): FooContextInterface {
+    const meta = this.reflector.getAllAndOverride<{ name: string }>(
+      'FOO_NAMESPACE',
+      [context.getHandler(), context.getClass()],
+    );
+    return { namespace: meta?.name ?? 'default' };
+  }
+
+  attach(context: ExecutionContext): void {
+    const request = context.switchToHttp().getRequest();
+    const ctx = getAppContext(request);
+    ctx.defineOverlay(this, context);
+  }
+}
+```
+
+#### Step 3: Register as a global interceptor
+
+Use `createContextInterceptorProvider` in your module's providers array.
+This wraps the overlay in a `ContextOverlayInterceptor` and registers it
+as `APP_INTERCEPTOR`.
+
+```ts
+import { createContextInterceptorProvider } from '@concepta/nestjs-common';
+import { FooContextOverlay } from './foo-context.overlay';
+
+@Module({
+  providers: [
+    FooContextOverlay,
+    createContextInterceptorProvider(FooContextOverlay),
+  ],
+})
+export class FooModule {}
+```
+
+#### Step 4: Consume in a handler
+
+Access the overlay from an `AppContextHost` instance. The `@Ctx()`
+decorator extracts the per-request context from the HTTP request.
+
+```ts
+import { Controller, Get } from '@nestjs/common';
+import { Ctx, AppContextHost } from '@concepta/nestjs-common';
+import { FooCtx } from './foo-context.overlay';
+
+@Controller('foo')
+export class FooController {
+  @Get()
+  handle(@Ctx() ctx: AppContextHost) {
+    // Option A: direct lookup by ref (throws if not defined)
+    const { namespace } = ctx.with(FooCtx);
+
+    // Option B: type-narrowing with require()
+    const typed = ctx.require(FooCtx);
+    const { namespace } = typed.withFoo();
+
+    // Option C: optional (returns ctx unchanged if not defined)
+    const { namespace } = ctx.optional().withFoo();
+  }
+}
+```
+
+#### Step 5: Testing with define()
+
+The `define()` shorthand skips the full `ContextOverlayInterface` and
+directly sets overlay values. Use this in tests.
+
+```ts
+import { AppContextHost } from '@concepta/nestjs-common';
+import { FooCtx } from './foo-context.overlay';
+
+const ctx = new AppContextHost();
+ctx.define(FooCtx, { namespace: 'test-ns' });
+
+expect(ctx.with(FooCtx).namespace).toBe('test-ns');
+expect(ctx.supports(FooCtx)).toBe(true);
+```
+
+### AppContextHost API
+
+| Method | Description |
+| --- | --- |
+| `defineOverlay(overlay, context?)` | Register an overlay. Calls `resolve()` eagerly and caches the result. Idempotent -- subsequent calls with the same name are no-ops. |
+| `define(ref, values)` | Shorthand for testing -- directly sets overlay values without a full `ContextOverlayInterface`. |
+| `require(...refs)` | Type-level narrowing. Returns `this` cast to include the typed `with*()` methods for the given refs. No runtime validation. |
+| `with(ref)` | Direct lookup by ref. Returns the resolved overlay props, or throws `OverlayNotDefinedException`. |
+| `supports(ref)` | Returns `true` if the overlay is defined on this context. |
+| `optional()` | Returns a proxy where any `with*()` call returns the resolved overlay if defined, or `this` unchanged if not. |
+| `static from(value?)` | Normalizes an `AppContextLike` value to a guaranteed `AppContextHost`. Passes through existing instances; creates a new one for `undefined`, `null`, or `{}`. |
+
+### Proxy Guard
+
+`AppContextHost` wraps itself in a `Proxy` at construction time. Any
+property access starting with `with` that is not defined throws
+`OverlayNotDefinedException`, immediately surfacing misconfigured pipelines
+rather than returning `undefined`.
+
+### Supporting Utilities
 
 | Export | Description |
 | --- | --- |
-| `AppContextHost` | Per-request context container with `register()` for read-only properties and `defineOverlay()` for lazy overlay methods |
-| `getAppContext()` | Retrieves the current app context from a request |
-| `@Ctx()` | Parameter decorator for injecting context |
-| `ContextOverlayInterface` | Interface for defining lazy context overlays (e.g. `withCache`, `withRole`) |
-| `EventContextHost` | Creates event context with entity headers |
-| `AppContextInterface` | App context shape |
-| `HookContextInterface` | Hook context shape |
-| `EventContextInterface` | Event context shape |
+| `getAppContext(request)` | Get or create the `AppContextHost` stored on a request object (keyed by a private `Symbol`). |
+| `@Ctx()` | Parameter decorator that extracts the `AppContextHost` from the current HTTP request. |
+| `ContextOverlayInterceptor` | Generic NestJS interceptor that calls `overlay.attach(context)`. |
+| `createContextInterceptorProvider(OverlayClass)` | Factory that registers an overlay class as an `APP_INTERCEPTOR` provider. |
+| `OverlayRef` | Typed token class carrying the overlay name and resolved props type. |
+| `AppContextInterface` | Interface matching the full `AppContextHost` public API. |
+| `AppContextLike` | Union type: `AppContextInterface \| PlainLiteralObject \| null \| undefined`. |
+| `RefsToMethods<R>` | Mapped type that converts `OverlayRef` tokens to their `with*()` method signatures. |
+
+## Event Context
+
+`EventContextHost` is an immutable container for event headers and metadata,
+used when domain aggregates apply events.
+
+```ts
+import { EventContextHost } from '@concepta/nestjs-common';
+
+const eventContext = new EventContextHost(
+  { entityId: '123', operation: 'create' }, // headers
+  { source: 'api' },                        // metadata
+);
+
+eventContext.getHeader('entityId'); // '123'
+eventContext.getMeta('source');     // 'api'
+```
+
+| Export | Description |
+| --- | --- |
+| `EventContextHost<H, M>` | Immutable (frozen) event context. Constructor spreads and freezes headers/metadata. |
+| `EventContextInterface<H, M>` | Interface with `headers`, `metadata`, `getHeader(key)`, and `getMeta(key)`. |
+
+## Exceptions
+
+### RuntimeException
+
+Base exception class for all Rockets modules. Extends `Error` with
+structured error codes, HTTP status hints, and user-safe messages.
+
+```ts
+import { HttpStatus } from '@nestjs/common';
+import { RuntimeException } from '@concepta/nestjs-common';
+
+throw new RuntimeException({
+  message: 'Internal: record %s not found',
+  messageParams: ['abc-123'],
+  safeMessage: 'The requested resource was not found',
+  httpStatus: HttpStatus.NOT_FOUND,
+});
+```
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `errorCode` | `'RUNTIME_EXCEPTION'` | Machine-readable error code. Subclasses override this. |
+| `httpStatus` | `500` | HTTP status hint for the exception filter. |
+| `message` | `'Runtime Exception'` | Internal message (may contain sensitive details). Supports `util.format` via `messageParams`. |
+| `safeMessage` | -- | User-facing message. Returned by the filter for 4xx errors and as a fallback for 5xx. |
+| `context.originalError` | -- | Wrapped original error, if any. |
+
+### ExceptionsFilter
+
+A global `@Catch()` filter that normalizes all exceptions into a consistent
+JSON response:
+
+```json
+{
+  "statusCode": 404,
+  "errorCode": "MODEL_QUERY_ERROR",
+  "message": "The requested resource was not found",
+  "timestamp": "2025-01-15T12:00:00.000Z"
+}
+```
+
+Behavior:
+
+- **HttpException** -- uses NestJS status and message
+- **RuntimeException** -- uses `errorCode` and `httpStatus`; for 5xx errors,
+  hides the internal `message` and returns `safeMessage` or a generic fallback
+- **All other exceptions** -- 500 with a generic fallback message
+
+### Exception Exports
+
+| Export | Description |
+| --- | --- |
+| `RuntimeException` | Base exception with error codes and safe messages |
+| `RuntimeExceptionOptions` | Constructor options interface |
+| `RuntimeExceptionInterface` | Interface: `httpStatus`, `safeMessage`, `context` |
+| `RuntimeExceptionContext` | Type for the `context` property |
+| `ExceptionInterface` | Minimal interface: `Error` + `errorCode` + `context` |
+| `ExceptionsFilter` | Global catch-all filter |
+| `NotAnErrorException` | Wraps non-Error throws |
+| `mapNonErrorToException(error)` | Returns `error` if `Error`, else wraps in `NotAnErrorException` |
+| `mapHttpStatus(statusCode)` | Maps an HTTP status code to a string error code |
+
+## Hooks
+
+The hook system supports conditional execution of hook providers
+via the specification pattern.
+
+```ts
+import { SpecificationInterface, HookOption, HookWithSpec } from '@concepta/nestjs-common';
+```
+
+| Export | Description |
+| --- | --- |
+| `SpecificationInterface<Ctx>` | Contract with `isSatisfiedBy(context): boolean`. Used to guard hook execution. |
+| `HookOption` | Union: a bare NestJS injectable class, or a `HookWithSpec` configuration. |
+| `HookWithSpec` | Object with `hook` (class), optional `type` (string), and optional `spec` (specification guard). |
+| `HookContextInterface` | Context interface carrying the resolved `hooks: HookWithSpec[]` array. Propagated through the request context overlay system. |
+
+## Utilities
+
+| Export | Description |
+| --- | --- |
+| `toMilliseconds(value, fallback?)` | Converts time strings (`'1h'`, `'30m'`) to milliseconds via the `ms` library. Throws `RuntimeException` if unparseable. |
+| `mapHttpStatus(statusCode)` | Maps an HTTP status code to a string error code (e.g. `404` -> `'NOT_FOUND'`). |
+| `mapNonErrorToException(error)` | Wraps non-`Error` values in `NotAnErrorException`. Returns `Error` instances as-is. |
+| `DeepPartial<T>` | Recursive `Partial` utility type. |
+| `LiteralObject` | Alias for `Record<string, any>`. |
+
+## Module Configuration
+
+Rockets modules share a common settings/options pattern:
+
+| Export | Description |
+| --- | --- |
+| `createSettingsProvider(options)` | Factory that creates a NestJS provider for module settings. Injects default settings and module options, applies `settings` overrides, and runs `settingsTransform` if provided. |
+| `ModuleOptionsSettingsInterface<T>` | Interface for module options with optional `settings` override and `settingsTransform` function. |
+| `ModuleOptionsControllerInterface` | Interface with `controller?: false \| Type \| Type[]` for enabling or disabling default module controllers. |
+
+```ts
+import { createSettingsProvider } from '@concepta/nestjs-common';
+
+createSettingsProvider<MySettings, MyOptions>({
+  settingsToken: MY_SETTINGS_TOKEN,
+  optionsToken: RAW_OPTIONS_TOKEN,
+  settingsKey: myDefaultConfig.KEY,
+});
+```
 
 ## DTOs
 
@@ -200,6 +498,35 @@ Small, composable interfaces for common entity fields:
 `DomainAggregateDto` is the standard base for API response DTOs when using
 domain aggregates.
 
+## Model Exceptions and Interfaces
+
+### Model Exceptions
+
+| Exception | Error Code | Description |
+| --- | --- | --- |
+| `ModelQueryException` | `MODEL_QUERY_ERROR` | Error querying a model |
+| `ModelMutateException` | `MODEL_MUTATE_ERROR` | Error mutating a model |
+| `ModelValidationException` | `MODEL_VALIDATION_ERROR` | Model validation failure |
+| `ModelIdNoMatchException` | `MODEL_ID_NO_MATCH_ERROR` | ID mismatch on update/replace |
+
+### Query Interfaces
+
+| Interface | Method |
+| --- | --- |
+| `ByIdInterface` | `byId(id)` |
+| `ByEmailInterface` | `byEmail(email)` |
+| `BySubjectInterface` | `bySubject(subject)` |
+| `ByUsernameInterface` | `byUsername(username)` |
+
+### Mutation Interfaces
+
+| Interface | Method |
+| --- | --- |
+| `CreateOneInterface` | `createOne(...)` |
+| `UpdateOneInterface` | `updateOne(...)` |
+| `ReplaceOneInterface` | `replaceOne(...)` |
+| `RemoveOneInterface` | `removeOne(...)` |
+
 ## Domain Interfaces
 
 The module exports domain interfaces for all Rockets feature modules. These
@@ -208,11 +535,18 @@ implement.
 
 | Domain | Key Interfaces |
 | --- | --- |
-| User | `UserInterface`, `UserCreatableInterface`, `UserEntityInterface` |
-| User Credentials | `UserCredentialInterface`, `UserCredentialEntityInterface` |
-| Role | `RoleInterface`, `RoleCreatableInterface`, `RoleEntityInterface` |
-| Role Assignment | `RoleAssignmentInterface`, `RoleAssignmentEntityInterface` |
-| Cache | `CacheInterface`, `CacheCreatableInterface`, `CacheEntityInterface` |
-| OTP | `OtpInterface`, `OtpCreatableInterface`, `OtpEntityInterface` |
-| Invitation | `InvitationUserInterface` |
-| Auth | `AuthenticationAccessInterface`, `AuthorizationPayloadInterface` |
+| Auth | `AuthenticatedUserInterface`, `AuthenticationAccessInterface`, `AuthenticationLoginInterface`, `AuthenticationRefreshInterface`, `AuthenticationResponseInterface`, `AuthenticationCodeInterface`, `AuthorizationPayloadInterface` |
+| Password | `PasswordStorageInterface`, `PasswordPlainInterface`, `PasswordPlainCurrentInterface`, `PasswordUpdateInterface`, `isPasswordStorage` |
+| User | `UserInterface`, `UserCreatableInterface`, `UserUpdatableInterface`, `UserEntityInterface`, `UserOwnableInterface`, `UserRelationInterface` |
+| User Credentials | `UserCredentialInterface`, `UserCredentialCreatableInterface`, `UserCredentialEntityInterface` |
+| Role | `RoleInterface`, `RoleCreatableInterface`, `RoleUpdatableInterface`, `RoleEntityInterface`, `RoleRelationInterface`, `RoleAssigneesInterface` |
+| Role Assignment | `RoleAssignmentInterface`, `RoleAssignmentCreatableInterface`, `RoleAssignmentEntityInterface` |
+| Cache | `CacheInterface`, `CacheCreatableInterface`, `CacheUpdatableInterface`, `CacheCreateInterface`, `CacheGetOneInterface`, `CacheUpdateInterface`, `CacheDeleteInterface`, `CacheClearInterface` |
+| OTP | `OtpInterface`, `OtpCreatableInterface`, `OtpCreateInterface`, `OtpDeleteInterface`, `OtpValidateInterface`, `OtpClearInterface`, `OtpParamsInterface`, `OtpCreateParamsInterface`, `OtpValidateLimitParamsInterface` |
+| Org | `OrgInterface`, `OrgCreatableInterface`, `OrgUpdatableInterface`, `OrgReplaceableInterface`, `OrgEntityInterface`, `OrgOwnableInterface`, `OrgMemberInterface`, `OrgOwnerInterface`, `OrgMemberEntityInterface` |
+| Org Profile | `OrgProfileInterface`, `OrgProfileCreatableInterface`, `OrgProfileEntityInterface` |
+| Federated | `FederatedInterface`, `FederatedCreatableInterface`, `FederatedUpdatableInterface`, `FederatedEntityInterface` |
+| File | `FileInterface`, `FileCreatableInterface`, `FileUpdatableInterface`, `FileOwnableInterface`, `FileEntityInterface` |
+| Report | `ReportInterface`, `ReportCreatableInterface`, `ReportUpdatableInterface`, `ReportEntityInterface`, `ReportStatusEnum` |
+| Email | `EmailSendInterface`, `EmailSendOptionsInterface` |
+| Assignee | `AssigneeRelationInterface` |

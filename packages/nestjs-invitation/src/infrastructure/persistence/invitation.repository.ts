@@ -1,10 +1,7 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
 import { ReferenceId } from '@concepta/nestjs-common';
-import {
-  RepositoryInterface,
-  Where,
-} from '@concepta/nestjs-repository';
+import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
 import { Invitation } from '../../domain/aggregates/invitation';
 import { InvitationRepositoryInterface } from '../../domain/repositories/invitation-repository.interface';
@@ -61,20 +58,14 @@ export class InvitationRepository implements InvitationRepositoryInterface {
     return entities.map((e) => this.mapper.toDomain(e));
   }
 
-  async save(
-    ctx: PlainLiteralObject,
-    invitation: Invitation,
-  ): Promise<void> {
+  async save(ctx: PlainLiteralObject, invitation: Invitation): Promise<void> {
     invitation.stampUpdated();
     await this.repository.upsert(this.mapper.toPersistence(invitation), {
       ctx,
     });
   }
 
-  async remove(
-    ctx: PlainLiteralObject,
-    invitation: Invitation,
-  ): Promise<void> {
+  async remove(ctx: PlainLiteralObject, invitation: Invitation): Promise<void> {
     await this.repository.delete(this.mapper.toPersistence(invitation), {
       ctx,
     });

@@ -94,7 +94,9 @@ describe(ReplaceRoleHandler.name, () => {
     mockRepo.get.mockResolvedValue(existing);
 
     const dto = { name: 'Replaced', description: 'Replaced' };
-    await handler.execute(new ReplaceRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id', dto));
+    await handler.execute(
+      new ReplaceRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id', dto),
+    );
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
     expect(trxHandle.onRollback).toHaveBeenCalledTimes(1);

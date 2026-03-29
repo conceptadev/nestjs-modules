@@ -2,21 +2,24 @@ import { PlainLiteralObject } from '@nestjs/common';
 
 import { ActionEnum, AppContextHost, Operation } from '@concepta/nestjs-common';
 
+import { CrudCtx } from '../../../infrastructure/interceptors/crud-context.overlay';
 import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
 
 import { mockCrudParsedQuery } from './crud-parsed-query.mock';
 
 export function mockCrudContext<T extends PlainLiteralObject>(
   overrides: Partial<CrudContextInterface<T>> = {},
-): CrudContextInterface<T> {
-  return AppContextHost.merge<CrudContextInterface<T>>(() => ({
+) {
+  const ctx = new AppContextHost();
+
+  ctx.define(CrudCtx, {
     entity: overrides.entity ?? 'TestEntity',
     params: overrides.params ?? {},
     query: overrides.query ?? mockCrudParsedQuery(),
     options: overrides.options ?? {},
     operation: overrides.operation ?? Operation.Read,
     action: overrides.action ?? ActionEnum.READ,
-    locals: overrides.locals ?? {},
-    hooks: overrides.hooks ?? [],
-  }));
+  });
+
+  return ctx.with(CrudCtx);
 }

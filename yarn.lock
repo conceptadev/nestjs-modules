@@ -1526,6 +1526,7 @@ __metadata:
     "@nestjs/cqrs": ^11.0.0
     class-transformer: "*"
     class-validator: "*"
+    rxjs: ^7.0.0
   peerDependenciesMeta:
     "@nestjs/cqrs":
       optional: true

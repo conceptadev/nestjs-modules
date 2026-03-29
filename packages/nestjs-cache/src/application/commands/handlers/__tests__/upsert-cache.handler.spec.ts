@@ -41,7 +41,9 @@ describe(UpsertCacheHandler.name, () => {
   it('should update existing cache when found', async () => {
     mockRepo.findOne.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
-    const result = await handler.execute(new UpsertCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto));
+    const result = await handler.execute(
+      new UpsertCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto),
+    );
 
     expect(result).toBeInstanceOf(Cache);
     expect(result.data).toBe('upsert-data');
@@ -50,7 +52,9 @@ describe(UpsertCacheHandler.name, () => {
   it('should create a new cache when not found', async () => {
     mockRepo.findOne.mockResolvedValue(null);
 
-    const result = await handler.execute(new UpsertCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto));
+    const result = await handler.execute(
+      new UpsertCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto),
+    );
 
     expect(result).toBeInstanceOf(Cache);
     expect(result.key).toBe('test-key');
@@ -59,7 +63,9 @@ describe(UpsertCacheHandler.name, () => {
   it('should save in both paths', async () => {
     mockRepo.findOne.mockResolvedValue(null);
 
-    await handler.execute(new UpsertCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto));
+    await handler.execute(
+      new UpsertCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, dto),
+    );
 
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
   });

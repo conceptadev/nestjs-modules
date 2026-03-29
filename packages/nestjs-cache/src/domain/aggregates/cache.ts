@@ -11,11 +11,11 @@ import {
   DomainAggregate,
 } from '@concepta/nestjs-common/aggregate';
 
-import { CacheEventHeaderInterface } from '../events/interfaces/cache-event-header.interface';
 import { CacheCreatedEvent } from '../events/cache-created.event';
 import { CacheExtendedEvent } from '../events/cache-extended.event';
 import { CacheReplacedEvent } from '../events/cache-replaced.event';
 import { CacheUpdatedEvent } from '../events/cache-updated.event';
+import { CacheEventHeaderInterface } from '../events/interfaces/cache-event-header.interface';
 
 export class Cache extends DomainAggregate<CacheInterface> {
   constructor(

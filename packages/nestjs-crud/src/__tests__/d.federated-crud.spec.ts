@@ -19,7 +19,7 @@ import { CrudList } from '../infrastructure/decorators/operations/crud-list.deco
 import { CrudJoin } from '../infrastructure/decorators/routes/crud-join.decorator';
 import { CrudLimit } from '../infrastructure/decorators/routes/crud-limit.decorator';
 import { CrudSort } from '../infrastructure/decorators/routes/crud-sort.decorator';
-import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/crud-context.interface';
+import { WithCrudContextInterface } from '../infrastructure/interceptors/interfaces/with-crud-context.interface';
 import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver';
 import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface';
 import { createCrudAdapterProvider } from '../infrastructure/utils/create-crud-adapter-provider';
@@ -81,7 +81,7 @@ describe('#federated-crud', () => {
     ) {}
 
     @CrudList({ query: CompanyOps.CrudListQuery })
-    list(@Ctx() context: CrudContextInterface<CompanyEntity>) {
+    list(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
       return this.crudResolver.list(context);
     }
   }

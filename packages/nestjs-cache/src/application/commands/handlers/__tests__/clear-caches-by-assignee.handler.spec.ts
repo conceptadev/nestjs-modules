@@ -24,7 +24,11 @@ describe(ClearCachesByAssigneeHandler.name, () => {
 
   it('should call removeAllByAssignee with the assignee id', async () => {
     await handler.execute(
-      new ClearCachesByAssigneeCommand(ctx, DEFAULT_CACHE_NAMESPACE, 'test-assignee'),
+      new ClearCachesByAssigneeCommand(
+        ctx,
+        DEFAULT_CACHE_NAMESPACE,
+        'test-assignee',
+      ),
     );
 
     expect(mockRepo.removeAllByAssignee).toHaveBeenCalledWith(

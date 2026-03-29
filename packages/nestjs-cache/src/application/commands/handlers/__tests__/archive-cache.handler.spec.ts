@@ -39,7 +39,9 @@ describe(ArchiveCacheHandler.name, () => {
   it('should call softRemove on the repository', async () => {
     mockRepo.get.mockResolvedValue(toCacheDomain(createMockCacheEntity()));
 
-    await handler.execute(new ArchiveCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, 'test-id'));
+    await handler.execute(
+      new ArchiveCacheCommand(ctx, DEFAULT_CACHE_NAMESPACE, 'test-id'),
+    );
 
     expect(mockRepo.softRemove).toHaveBeenCalledTimes(1);
   });

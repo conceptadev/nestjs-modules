@@ -1,15 +1,16 @@
 import { of, throwError } from 'rxjs';
 
+import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AppContextHost } from '@concepta/nestjs-common';
 
-import { TransactionContextInterface } from '../context/interfaces/transaction-context.interface';
 import { TransactionFactoryInterface } from '../interfaces/transaction-factory.interface';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants';
 
 import { TransactionInterface } from './interfaces/transaction.interface';
+import { TransactionContextOverlay } from './transaction-context.overlay';
 import {
   TransactionFactoryRegistry,
   TRANSACTION_FACTORY_REGISTRY,
@@ -46,7 +47,26 @@ describe(TransactionalRunner.name, () => {
     };
   };
 
-  const createCtx = () => new AppContextHost<TransactionContextInterface>();
+  function createMockExecutionContext(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    handler: Function,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    controller: Function,
+  ): ExecutionContext {
+    const ctx = new AppContextHost();
+    return {
+      getHandler: () => handler,
+      getClass: () => controller,
+      switchToHttp: () => ({
+        getRequest: () => ({ [Symbol.for('APP_CONTEXT_KEY')]: ctx }),
+      }),
+      getArgs: jest.fn(),
+      getArgByIndex: jest.fn(),
+      switchToRpc: jest.fn(),
+      switchToWs: jest.fn(),
+      getType: jest.fn(),
+    } as unknown as ExecutionContext;
+  }
 
   beforeEach(async () => {
     mockTransaction = createMockTransaction();
@@ -61,6 +81,7 @@ describe(TransactionalRunner.name, () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
         TransactionalRunner,
+        TransactionContextOverlay,
         TransactionScope,
         Reflector,
         {
@@ -85,18 +106,18 @@ describe(TransactionalRunner.name, () => {
         return 'result';
       }
 
-      const ctx = createCtx();
+      const context = createMockExecutionContext(
+        handlerWithoutDecorator,
+        PlainController,
+      );
       const operation = jest.fn().mockReturnValue(of('result'));
 
-      runner
-        .run(handlerWithoutDecorator, PlainController, ctx, operation)
-        .subscribe({
-          next: (result) => {
-            expect(result).toBe('result');
-            expect(ctx.has('trx')).toBe(false);
-          },
-          complete: done,
-        });
+      runner.run(context, operation).subscribe({
+        next: (result) => {
+          expect(result).toBe('result');
+        },
+        complete: done,
+      });
     });
 
     it('should wrap operation in transaction when @Transactional present', (done) => {
@@ -108,13 +129,12 @@ describe(TransactionalRunner.name, () => {
       }
 
       const handler = new TestHandler();
-      const ctx = createCtx();
+      const context = createMockExecutionContext(handler.handle, TestHandler);
       const operation = jest.fn().mockReturnValue(of('result'));
 
-      runner.run(handler.handle, TestHandler, ctx, operation).subscribe({
+      runner.run(context, operation).subscribe({
         next: (result) => {
           expect(result).toBe('result');
-          expect(ctx.has('trx')).toBe(true);
         },
         complete: done,
       });
@@ -129,11 +149,11 @@ describe(TransactionalRunner.name, () => {
       }
 
       const handler = new TestHandler();
-      const ctx = createCtx();
+      const context = createMockExecutionContext(handler.handle, TestHandler);
       const error = new Error('Operation failed');
       const operation = jest.fn().mockReturnValue(throwError(() => error));
 
-      runner.run(handler.handle, TestHandler, ctx, operation).subscribe({
+      runner.run(context, operation).subscribe({
         error: (err) => {
           expect(err).toBe(error);
           done();
@@ -150,18 +170,18 @@ describe(TransactionalRunner.name, () => {
       }
 
       const ctrl = new TransactionalController();
-      const ctx = createCtx();
+      const context = createMockExecutionContext(
+        ctrl.handle,
+        TransactionalController,
+      );
       const operation = jest.fn().mockReturnValue(of('result'));
 
-      runner
-        .run(ctrl.handle, TransactionalController, ctx, operation)
-        .subscribe({
-          next: (result) => {
-            expect(result).toBe('result');
-            expect(ctx.has('trx')).toBe(true);
-          },
-          complete: done,
-        });
+      runner.run(context, operation).subscribe({
+        next: (result) => {
+          expect(result).toBe('result');
+        },
+        complete: done,
+      });
     });
 
     it('should respect @Transactional(false) override on method when class has @Transactional', (done) => {
@@ -174,18 +194,18 @@ describe(TransactionalRunner.name, () => {
       }
 
       const ctrl = new TransactionalController();
-      const ctx = createCtx();
+      const context = createMockExecutionContext(
+        ctrl.handle,
+        TransactionalController,
+      );
       const operation = jest.fn().mockReturnValue(of('result'));
 
-      runner
-        .run(ctrl.handle, TransactionalController, ctx, operation)
-        .subscribe({
-          next: (result) => {
-            expect(result).toBe('result');
-            expect(ctx.has('trx')).toBe(false);
-          },
-          complete: done,
-        });
+      runner.run(context, operation).subscribe({
+        next: (result) => {
+          expect(result).toBe('result');
+        },
+        complete: done,
+      });
     });
 
     it('should use readOnly option from decorator', (done) => {
@@ -197,12 +217,13 @@ describe(TransactionalRunner.name, () => {
       }
 
       const handler = new TestHandler();
-      const ctx = createCtx();
+      const context = createMockExecutionContext(handler.handle, TestHandler);
       const operation = jest.fn().mockReturnValue(of('result'));
 
-      runner.run(handler.handle, TestHandler, ctx, operation).subscribe({
+      runner.run(context, operation).subscribe({
         next: () => {
-          expect(ctx.has('trx')).toBe(true);
+          // readOnly transactions rollback instead of commit
+          expect(mockTransaction.rollback).toHaveBeenCalled();
         },
         complete: done,
       });

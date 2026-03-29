@@ -19,13 +19,7 @@ describe('switchToRepo', () => {
       expect(result.entity).toBe('UserEntity');
     });
 
-    it('should initialize hooks to empty array if absent', () => {
-      const ctx = {} as RepositoryContextInterface;
-      const result = switchToRepo(ctx, 'UserEntity');
-      expect(result.hooks).toEqual([]);
-    });
-
-    it('should not overwrite existing hooks', () => {
+    it('should preserve existing hooks', () => {
       const hooks = [{ type: 'repo', hook: class {} }];
       const ctx = createCtx({
         hooks,

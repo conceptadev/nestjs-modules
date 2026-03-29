@@ -23,7 +23,12 @@ describe(IsAssignedRolesHandler.name, () => {
     mockRepo.countByRoleIdsAndAssignee.mockResolvedValue(2);
 
     const result = await handler.execute(
-      new IsAssignedRolesQuery(ctx, DEFAULT_ROLE_NAMESPACE, ['role-1', 'role-2'], 'user-1'),
+      new IsAssignedRolesQuery(
+        ctx,
+        DEFAULT_ROLE_NAMESPACE,
+        ['role-1', 'role-2'],
+        'user-1',
+      ),
     );
 
     expect(mockRepo.countByRoleIdsAndAssignee).toHaveBeenCalledWith(
@@ -38,7 +43,12 @@ describe(IsAssignedRolesHandler.name, () => {
     mockRepo.countByRoleIdsAndAssignee.mockResolvedValue(1);
 
     const result = await handler.execute(
-      new IsAssignedRolesQuery(ctx, DEFAULT_ROLE_NAMESPACE, ['role-1', 'role-2'], 'user-1'),
+      new IsAssignedRolesQuery(
+        ctx,
+        DEFAULT_ROLE_NAMESPACE,
+        ['role-1', 'role-2'],
+        'user-1',
+      ),
     );
 
     expect(result).toBe(false);

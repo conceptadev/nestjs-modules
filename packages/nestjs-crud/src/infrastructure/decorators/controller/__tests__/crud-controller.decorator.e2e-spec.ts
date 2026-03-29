@@ -20,7 +20,7 @@ import { CrudListHandler } from '../../../../application/queries/handlers/crud-l
 import { CrudReadHandler } from '../../../../application/queries/handlers/crud-read.handler';
 import { CrudModule } from '../../../../crud.module';
 import { CrudCreateBatchInterface } from '../../../dtos/interfaces/crud-create-batch.interface';
-import { CrudContextInterface } from '../../../interceptors/interfaces/crud-context.interface';
+import { WithCrudContextInterface } from '../../../interceptors/interfaces/with-crud-context.interface';
 import { CrudQueryBuilder } from '../../../request/crud-query.builder';
 import { CrudAdapterResolver } from '../../../resolvers/crud-adapter.resolver';
 import { CrudResolverInterface } from '../../../resolvers/interfaces/crud-resolver.interface';
@@ -80,18 +80,18 @@ describe('#crud', () => {
       ) {}
 
       @CrudList({ queryHandler: CrudListHandler })
-      async list(@Ctx() context: CrudContextInterface<TestModelDto>) {
+      async list(@Ctx() context: WithCrudContextInterface<TestModelDto>) {
         return this.crudResolver.list(context);
       }
 
       @CrudRead({ queryHandler: CrudReadHandler })
-      async read(@Ctx() context: CrudContextInterface<TestModelDto>) {
+      async read(@Ctx() context: WithCrudContextInterface<TestModelDto>) {
         return this.crudResolver.read(context);
       }
 
       @CrudCreate({ commandHandler: CrudCreateHandler })
       async create(
-        @Ctx() context: CrudContextInterface<TestModelDto>,
+        @Ctx() context: WithCrudContextInterface<TestModelDto>,
         @CrudBody() dto: TestModelCreateDto,
       ) {
         return this.crudResolver.create(context, dto);
@@ -99,7 +99,7 @@ describe('#crud', () => {
 
       @CrudReplace({ commandHandler: CrudReplaceHandler })
       async replace(
-        @Ctx() context: CrudContextInterface<TestModelDto>,
+        @Ctx() context: WithCrudContextInterface<TestModelDto>,
         @CrudBody() dto: TestModelCreateDto,
       ) {
         return this.crudResolver.replace(context, dto);
@@ -107,7 +107,7 @@ describe('#crud', () => {
 
       @CrudUpdate({ commandHandler: CrudUpdateHandler })
       async update(
-        @Ctx() context: CrudContextInterface<TestModelDto>,
+        @Ctx() context: WithCrudContextInterface<TestModelDto>,
         @CrudBody() dto: TestModelUpdateDto,
       ) {
         return this.crudResolver.update(context, dto);
@@ -115,14 +115,14 @@ describe('#crud', () => {
 
       @CrudCreateBatch({ commandHandler: CrudCreateBatchHandler })
       async createBatch(
-        @Ctx() context: CrudContextInterface<TestModelDto>,
+        @Ctx() context: WithCrudContextInterface<TestModelDto>,
         @CrudBody() dto: TestModelCreateBatchDto,
       ) {
         return this.crudResolver.createBatch(context, dto);
       }
 
       @CrudDelete({ commandHandler: CrudDeleteHandler })
-      async delete(@Ctx() context: CrudContextInterface<TestModelDto>) {
+      async delete(@Ctx() context: WithCrudContextInterface<TestModelDto>) {
         return this.crudResolver.delete(context);
       }
     }

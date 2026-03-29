@@ -26,5 +26,8 @@ export { Hook } from './decorators/hook.decorator';
 export { Specification } from './decorators/specification.decorator';
 export { createHookMethodDecorator } from './decorators/hook-method.decorator';
 
-// Interceptors
-export { HookInterceptor } from './hook.interceptor';
+// Context overlay
+export { HookContextOverlay, HooksCtx } from './hook-context.overlay';
+
+// Interfaces
+export { WithHooksContextInterface } from './interfaces/with-hooks-context.interface';

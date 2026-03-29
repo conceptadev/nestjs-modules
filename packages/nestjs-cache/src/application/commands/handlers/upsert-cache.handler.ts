@@ -52,8 +52,8 @@ export class UpsertCacheHandler implements ICommandHandler<UpsertCacheCommand> {
 
       await cacheRepo.save(ctx, cache);
 
-      trx.onCommit(ctx, () => cache.commit());
-      trx.onRollback(ctx, () => cache.uncommit());
+      trx.onCommit(() => cache.commit());
+      trx.onRollback(() => cache.uncommit());
 
       return cache;
     });

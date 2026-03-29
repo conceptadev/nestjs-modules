@@ -1,9 +1,9 @@
+import { PlainLiteralObject } from '@nestjs/common';
+
 import {
   ReferenceId,
   UserCredentialEntityInterface,
 } from '@concepta/nestjs-common';
-import { PlainLiteralObject } from '@nestjs/common';
-
 import {
   OrderBy,
   RepositoryInterface,
@@ -59,10 +59,7 @@ export class UserCredentialsRepository
     return entities.map((e) => this.mapper.toDomain(e));
   }
 
-  async save(
-    ctx: PlainLiteralObject,
-    entry: UserCredentials,
-  ): Promise<void> {
+  async save(ctx: PlainLiteralObject, entry: UserCredentials): Promise<void> {
     entry.stampUpdated();
     await this.repository.upsert(this.mapper.toPersistence(entry), { ctx });
   }

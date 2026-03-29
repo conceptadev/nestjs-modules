@@ -28,7 +28,11 @@ describe(FindCachesByAssigneeHandler.name, () => {
     ]);
 
     const result = await handler.execute(
-      new FindCachesByAssigneeQuery(ctx, DEFAULT_CACHE_NAMESPACE, 'test-assignee'),
+      new FindCachesByAssigneeQuery(
+        ctx,
+        DEFAULT_CACHE_NAMESPACE,
+        'test-assignee',
+      ),
     );
 
     expect(result).toHaveLength(2);

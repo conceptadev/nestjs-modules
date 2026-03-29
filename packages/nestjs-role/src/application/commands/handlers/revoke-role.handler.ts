@@ -36,8 +36,8 @@ export class RevokeRoleHandler implements ICommandHandler<RevokeRoleCommand> {
 
       await assignmentRepo.remove(ctx, roleAsmntMerged);
 
-      trx.onCommit(ctx, () => roleAsmntMerged.commit());
-      trx.onRollback(ctx, () => roleAsmntMerged.uncommit());
+      trx.onCommit(() => roleAsmntMerged.commit());
+      trx.onRollback(() => roleAsmntMerged.uncommit());
     });
   }
 }

@@ -29,7 +29,9 @@ describe(RemoveRoleHandler.name, () => {
     const existing = toRoleDomain(createMockRoleEntity());
     mockRepo.get.mockResolvedValue(existing);
 
-    await handler.execute(new RemoveRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id'));
+    await handler.execute(
+      new RemoveRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'test-role-id'),
+    );
 
     expect(mockRepo.remove).toHaveBeenCalledTimes(1);
     expect(mockRepo.remove).toHaveBeenCalledWith(ctx, existing);
@@ -39,7 +41,9 @@ describe(RemoveRoleHandler.name, () => {
     mockRepo.get.mockResolvedValue(null);
 
     await expect(
-      handler.execute(new RemoveRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'missing-id')),
+      handler.execute(
+        new RemoveRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'missing-id'),
+      ),
     ).rejects.toThrow(RoleNotFoundException);
   });
 });

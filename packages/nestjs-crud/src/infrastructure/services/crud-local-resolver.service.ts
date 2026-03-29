@@ -1,12 +1,9 @@
-import {
-  ExecutionContext,
-  Injectable,
-  PlainLiteralObject,
-} from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
+import { AppContextLike } from '@concepta/nestjs-common';
+
 import { CrudContextException } from '../exceptions/crud-context.exception';
-import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
 import { CrudLocal } from '../interceptors/interfaces/crud-local.interface';
 
 /**
@@ -21,21 +18,22 @@ export class CrudLocalResolverService {
   constructor(private moduleRef: ModuleRef) {}
 
   /**
-   * Resolve CrudLocal providers sequentially, populating crudContext.locals.
+   * Resolve CrudLocal providers sequentially, populating the locals target.
    *
    * - Validates KEY uniqueness before execution
    * - Each resolver runs once per request (duplicates skipped)
    * - Values are frozen after being set (immutable)
-   * - Each resolver can access results from prior resolvers via crudContext.locals
    *
    * @param context - NestJS ExecutionContext
-   * @param crudContext - The CrudContext being built (locals will be mutated)
+   * @param ctx - The AppContext (passed to each resolver)
    * @param localClasses - Array of CrudLocal class references
+   * @param locals - Target object for resolved values
    */
-  async resolve<T extends PlainLiteralObject>(
+  async resolve(
     context: ExecutionContext,
-    crudContext: CrudContextInterface<T>,
+    ctx: AppContextLike,
     localClasses: CrudLocal[] | undefined,
+    locals: Record<string, unknown> = {},
   ): Promise<void> {
     if (!localClasses || localClasses.length === 0) {
       return;
@@ -55,10 +53,10 @@ export class CrudLocalResolverService {
       }
 
       const resolver = this.moduleRef.get(LocalClass, { strict: false });
-      const result = await resolver.resolve(context, crudContext);
+      const result = await resolver.resolve(context, ctx, locals);
 
       // Freeze the value and make property non-configurable
-      Object.defineProperty(crudContext.locals, LocalClass.KEY, {
+      Object.defineProperty(locals, LocalClass.KEY, {
         value: Object.freeze(result),
         writable: false,
         enumerable: true,
@@ -76,13 +74,14 @@ export class CrudLocalResolverService {
    * Runs in the same order as resolve.
    *
    * @param context - NestJS ExecutionContext
-   * @param crudContext - The CrudContext with fully resolved locals
+   * @param ctx - The AppContext with fully resolved locals
    * @param localClasses - Array of CrudLocal class references
    */
-  async transform<T extends PlainLiteralObject>(
+  async transform(
     context: ExecutionContext,
-    crudContext: CrudContextInterface<T>,
+    ctx: AppContextLike,
     localClasses: CrudLocal[] | undefined,
+    locals: Readonly<Record<string, unknown>>,
   ): Promise<void> {
     if (!localClasses || localClasses.length === 0) {
       return;
@@ -90,7 +89,7 @@ export class CrudLocalResolverService {
 
     for (const LocalClass of localClasses) {
       const resolver = this.moduleRef.get(LocalClass, { strict: false });
-      await resolver.transform(context, crudContext);
+      await resolver.transform(context, ctx, locals);
     }
   }
 

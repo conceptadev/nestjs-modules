@@ -45,8 +45,8 @@ export class AssignRolesHandler implements ICommandHandler<AssignRolesCommand> {
 
       await assignmentRepo.saveMany(ctx, roleAssignments);
 
-      trx.onCommit(ctx, () => roleAssignments.forEach((ra) => ra.commit()));
-      trx.onRollback(ctx, () => roleAssignments.forEach((ra) => ra.uncommit()));
+      trx.onCommit(() => roleAssignments.forEach((ra) => ra.commit()));
+      trx.onRollback(() => roleAssignments.forEach((ra) => ra.uncommit()));
 
       return roleAssignments;
     });

@@ -1,9 +1,10 @@
 import { Observable, from, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { Injectable, PlainLiteralObject } from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
+import { TransactionContextOverlay } from './transaction-context.overlay';
 import { TransactionScope } from './transaction-scope';
 import {
   TRANSACTIONAL_KEY,
@@ -21,13 +22,7 @@ import {
  * ```typescript
  * // In an interceptor
  * intercept(context: ExecutionContext, next: CallHandler) {
- *   const ctx = getAppContext<TransactionContextInterface>(req);
- *   return this.txRunner.run(
- *     context.getHandler(),
- *     context.getClass(),
- *     ctx,
- *     () => next.handle(),
- *   );
+ *   return this.txRunner.run(context, () => next.handle());
  * }
  * ```
  */
@@ -35,6 +30,7 @@ import {
 export class TransactionalRunner {
   constructor(
     private readonly reflector: Reflector,
+    private readonly overlay: TransactionContextOverlay,
     private readonly txScope: TransactionScope,
   ) {}
 
@@ -44,27 +40,23 @@ export class TransactionalRunner {
    * Checks method-level metadata first, then class-level.
    * `@Transactional(false)` on a method disables the class-level transaction.
    *
-   * @param handler - The method handler to check for `@Transactional()` metadata
-   * @param controller - The controller class to check for class-level `@Transactional()` metadata
-   * @param ctx - The context for this request
+   * @param context - The NestJS execution context
    * @param operation - The operation to run
    * @returns An Observable of the result
    */
   run<T>(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    handler: Function,
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    controller: Function,
-    ctx: PlainLiteralObject,
+    context: ExecutionContext,
     operation: () => Observable<T>,
   ): Observable<T> {
     const options = this.reflector.getAllAndOverride<
       TransactionalOptions | false
-    >(TRANSACTIONAL_KEY, [handler, controller]);
+    >(TRANSACTIONAL_KEY, [context.getHandler(), context.getClass()]);
 
     if (!options) {
       return operation();
     }
+
+    const ctx = this.overlay.attach(context);
 
     return from(
       this.txScope.run(ctx, () => this.toPromise(operation()), {

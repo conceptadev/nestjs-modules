@@ -3,11 +3,13 @@ import {
   DynamicModule,
   Provider,
 } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { createSettingsProvider } from '@concepta/nestjs-common';
+import {
+  createContextInterceptorProvider,
+  createSettingsProvider,
+} from '@concepta/nestjs-common';
 
 import { ClearOtpHistoryHandler } from './application/commands/handlers/clear-otp-history.handler';
 import { ClearOtpsHandler } from './application/commands/handlers/clear-otps.handler';
@@ -21,7 +23,6 @@ import { FindAssignedOtpsHandler } from './application/queries/handlers/find-ass
 import { GetOtpHandler } from './application/queries/handlers/get-otp.handler';
 import { ValidateOtpHandler } from './application/queries/handlers/validate-otp.handler';
 import { OtpHistoryCleanupService } from './domain/services/otp-history-cleanup.service';
-import { OtpContextInterceptor } from './gateways/otp-context.interceptor';
 import { OtpContextOverlay } from './gateways/otp-context.overlay';
 import { OtpExtrasInterface } from './infrastructure/config/interfaces/otp-extras.interface';
 import { OtpOptionsInterface } from './infrastructure/config/interfaces/otp-options.interface';
@@ -113,10 +114,7 @@ export function createOtpProviders(options: {
     ValidateOtpHandler,
     // Gateway overlays
     OtpContextOverlay,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: OtpContextInterceptor,
-    },
+    createContextInterceptorProvider(OtpContextOverlay),
     ...(options.providers ?? []),
   ];
 }

@@ -1,27 +1,24 @@
-import { PlainLiteralObject } from '@nestjs/common';
-
 import { AppContextHost, APP_CONTEXT_KEY } from './app-context.host';
-import { AppContextInterface } from './interfaces/app-context.interface';
 
 /**
  * Get or create the application context for a request.
  *
  * Creates a new context on first access; subsequent calls return the same instance.
- * Typically used by interceptors to register context data.
+ * Typically used by interceptors to define overlays on the context.
  *
  * @example
  * ```typescript
  * // In an interceptor
- * const ctx = getAppContext<MyContext>(request);
- * ctx.register('auth', { userId: 'user-456', tenantId: 'tenant-123' });
+ * const ctx = getAppContext(request);
+ * ctx.defineOverlay(this.overlay, executionContext);
  * ```
  */
-export function getAppContext<T extends PlainLiteralObject>(
+export function getAppContext(
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   request: any,
-): AppContextInterface<T> & T {
+): AppContextHost {
   if (!request[APP_CONTEXT_KEY]) {
-    request[APP_CONTEXT_KEY] = new AppContextHost<T>();
+    request[APP_CONTEXT_KEY] = new AppContextHost();
   }
   return request[APP_CONTEXT_KEY];
 }

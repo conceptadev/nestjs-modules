@@ -3,11 +3,13 @@ import {
   DynamicModule,
   Provider,
 } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { createSettingsProvider } from '@concepta/nestjs-common';
+import {
+  createContextInterceptorProvider,
+  createSettingsProvider,
+} from '@concepta/nestjs-common';
 
 import { ArchiveCacheHandler } from './application/commands/handlers/archive-cache.handler';
 import { ClearCachesByAssigneeHandler } from './application/commands/handlers/clear-caches-by-assignee.handler';
@@ -25,13 +27,12 @@ import {
   CACHE_REPOSITORY_RESOLVER_TOKEN,
 } from './cache.constants';
 import { CacheExpirationPolicy } from './domain/policies/cache-expiration.policy';
+import { CacheContextOverlay } from './gateways/cache-context.overlay';
 import { cacheDefaultConfig } from './infrastructure/config/cache-default.config';
 import { CacheExtrasInterface } from './infrastructure/config/interfaces/cache-extras.interface';
 import { CacheOptionsInterface } from './infrastructure/config/interfaces/cache-options.interface';
 import { CacheSettingsInterface } from './infrastructure/config/interfaces/cache-settings.interface';
 import { CacheRepositoryResolver } from './infrastructure/persistence/cache-repository.resolver';
-import { CacheContextInterceptor } from './gateways/cache-context.interceptor';
-import { CacheContextOverlay } from './gateways/cache-context.overlay';
 import { CacheMapper } from './infrastructure/persistence/cache.mapper';
 import { createCacheExpirationPolicyProvider } from './infrastructure/utils/create-cache-expiration-policy-provider';
 
@@ -107,10 +108,7 @@ export function createCacheProviders(options: {
     FindOneCacheHandler,
     FindCachesByAssigneeHandler,
     CacheContextOverlay,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CacheContextInterceptor,
-    },
+    createContextInterceptorProvider(CacheContextOverlay),
     ...(options.providers ?? []),
   ];
 }

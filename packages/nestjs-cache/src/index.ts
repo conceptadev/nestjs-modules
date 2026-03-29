@@ -56,6 +56,12 @@ export { GetCacheHandler } from './application/queries/handlers/get-cache.handle
 export { FindOneCacheHandler } from './application/queries/handlers/find-one-cache.handler';
 export { FindCachesByAssigneeHandler } from './application/queries/handlers/find-caches-by-assignee.handler';
 
+// context overlay
+export {
+  CacheContextOverlay,
+  CacheCtx,
+} from './gateways/cache-context.overlay';
+
 // exceptions
 export { CacheException } from './domain/exceptions/cache.exception';
 export { CacheEntityNotFoundException } from './infrastructure/exceptions/cache-entity-not-found.exception';

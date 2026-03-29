@@ -36,10 +36,4 @@ export interface CrudContextInterface<
    * The action category (CREATE, READ, UPDATE, DELETE).
    */
   action: ActionEnum;
-  /**
-   * Data populated by CrudLocal resolvers before controller method execution.
-   * Keys are the static KEY values from CrudLocal classes.
-   * Values are the resolved data from each resolver.
-   */
-  locals: Record<string, unknown>;
 }
