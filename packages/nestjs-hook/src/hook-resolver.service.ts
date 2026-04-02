@@ -1,11 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, PlainLiteralObject } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
 
-import {
-  HookContextInterface,
-  HookWithSpec,
-  SpecificationInterface,
-} from '@concepta/nestjs-common';
+import { HookWithSpec, SpecificationInterface } from '@concepta/nestjs-common';
 
 import { HookMethodKeyType } from './decorators/hook-method.decorator';
 import { HOOK_METHODS_CACHE_KEY } from './hook.constants';
@@ -47,7 +43,7 @@ export class HookResolverService {
     hookType: { readonly KEY: string },
     methodKey: HookMethodKeyType,
     payload: T,
-    ctx: HookContextInterface | undefined,
+    ctx: PlainLiteralObject | undefined,
   ): Promise<T> {
     if (!ctx?.hooks?.length) {
       return payload;
@@ -55,7 +51,7 @@ export class HookResolverService {
 
     // Filter hooks by type
     const typeHooks = ctx.hooks.filter(
-      (config) => config.type === hookType.KEY,
+      (config: HookWithSpec) => config.type === hookType.KEY,
     );
 
     if (!typeHooks.length) {

@@ -18,17 +18,16 @@ export class RemoveRoleHandler implements ICommandHandler<RemoveRoleCommand> {
 
   async execute(command: RemoveRoleCommand): Promise<void> {
     const { ctx, namespace, id } = command;
-
     const roleRepo = this.repositoryResolver.resolve(namespace);
 
-    return this.txScope.run(ctx, async () => {
-      const role = await roleRepo.get(ctx, id);
+    return this.txScope.run(ctx, async (txCtx) => {
+      const role = await roleRepo.get(txCtx, id);
 
       if (!role) {
         throw new RoleNotFoundException({ id: String(id) });
       }
 
-      await roleRepo.remove(ctx, role);
+      await roleRepo.remove(txCtx, role);
     });
   }
 }

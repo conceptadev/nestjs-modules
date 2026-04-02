@@ -21,6 +21,4 @@ export interface InvitationRepositoryInterface {
   save(ctx: PlainLiteralObject, invitation: Invitation): Promise<void>;
 
   remove(ctx: PlainLiteralObject, invitation: Invitation): Promise<void>;
-
-  removeAll(ctx: PlainLiteralObject, invitations: Invitation[]): Promise<void>;
 }

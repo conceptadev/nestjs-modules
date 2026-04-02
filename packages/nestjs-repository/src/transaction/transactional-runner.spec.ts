@@ -10,7 +10,6 @@ import { TransactionFactoryInterface } from '../interfaces/transaction-factory.i
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants';
 
 import { TransactionInterface } from './interfaces/transaction.interface';
-import { TransactionContextOverlay } from './transaction-context.overlay';
 import {
   TransactionFactoryRegistry,
   TRANSACTION_FACTORY_REGISTRY,
@@ -81,7 +80,6 @@ describe(TransactionalRunner.name, () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
         TransactionalRunner,
-        TransactionContextOverlay,
         TransactionScope,
         Reflector,
         {

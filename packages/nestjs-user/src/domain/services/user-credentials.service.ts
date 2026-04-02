@@ -43,9 +43,9 @@ export class UserCredentialsService {
     userId: ReferenceId,
     password: string,
   ): Promise<UserCredentials> {
-    return this.txScope.run(ctx, async () => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const existing = await this.userCredentialsRepository.findActiveByUserId(
-        ctx,
+        txCtx,
         userId,
       );
 
@@ -54,7 +54,12 @@ export class UserCredentialsService {
       }
 
       const passwordStorage = await this.passwordStorageService.hash(password);
-      return this.createCredentials(ctx, eventContext, userId, passwordStorage);
+      return this.createCredentials(
+        txCtx,
+        eventContext,
+        userId,
+        passwordStorage,
+      );
     });
   }
 
@@ -65,10 +70,10 @@ export class UserCredentialsService {
     password: string,
     passwordCurrent?: string,
   ): Promise<void> {
-    await this.txScope.run(ctx, async () => {
+    await this.txScope.run(ctx, async (txCtx) => {
       // fetch active credentials
       const activeCredentials =
-        await this.userCredentialsRepository.findActiveByUserId(ctx, userId);
+        await this.userCredentialsRepository.findActiveByUserId(txCtx, userId);
 
       // validate current password if required by policy
       if (this.passwordPolicy.requireCurrent) {
@@ -80,16 +85,25 @@ export class UserCredentialsService {
       }
 
       // validate against history
-      await this.validateHistory(ctx, userId, password);
+      await this.validateHistory(txCtx, userId, password);
 
       // hash
       const passwordStorage = await this.passwordStorageService.hash(password);
 
       if (activeCredentials) {
-        await this.deactivateCredentials(ctx, eventContext, activeCredentials);
+        await this.deactivateCredentials(
+          txCtx,
+          eventContext,
+          activeCredentials,
+        );
       }
 
-      await this.createCredentials(ctx, eventContext, userId, passwordStorage);
+      await this.createCredentials(
+        txCtx,
+        eventContext,
+        userId,
+        passwordStorage,
+      );
     });
   }
 
@@ -99,7 +113,7 @@ export class UserCredentialsService {
     userId: ReferenceId,
     passwordStorage: PasswordStorageInterface,
   ): Promise<UserCredentials> {
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const credentials = UserCredentials.create(eventContext, {
         userId,
         passwordHash: passwordStorage.passwordHash,
@@ -107,9 +121,9 @@ export class UserCredentialsService {
       });
 
       const merged = this.eventPublisher.mergeObjectContext(credentials);
-      await this.userCredentialsRepository.save(ctx, merged);
-      trx.onCommit(() => merged.commit());
-      trx.onRollback(() => merged.uncommit());
+      await this.userCredentialsRepository.save(txCtx, merged);
+      txCtx.trx.onCommit(() => merged.commit());
+      txCtx.trx.onRollback(() => merged.uncommit());
 
       return merged;
     });
@@ -120,12 +134,12 @@ export class UserCredentialsService {
     eventContext: EventContextHost,
     credentials: UserCredentials,
   ): Promise<void> {
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const merged = this.eventPublisher.mergeObjectContext(credentials);
       merged.deactivate(eventContext);
-      await this.userCredentialsRepository.save(ctx, merged);
-      trx.onCommit(() => merged.commit());
-      trx.onRollback(() => merged.uncommit());
+      await this.userCredentialsRepository.save(txCtx, merged);
+      txCtx.trx.onCommit(() => merged.commit());
+      txCtx.trx.onRollback(() => merged.uncommit());
     });
   }
 

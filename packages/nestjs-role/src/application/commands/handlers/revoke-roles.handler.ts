@@ -19,14 +19,13 @@ export class RevokeRolesHandler implements ICommandHandler<RevokeRolesCommand> {
 
   async execute(command: RevokeRolesCommand): Promise<void> {
     const { ctx, namespace, roleIds, assigneeId } = command;
-
     const assignmentRepo = this.repositoryResolver.resolve(namespace);
 
     const eventContext = new EventContextHost({ namespace }, {});
 
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const roleAssignments = await assignmentRepo.findByRoleIdsAndAssignee(
-        ctx,
+        txCtx,
         roleIds,
         assigneeId,
       );
@@ -37,10 +36,12 @@ export class RevokeRolesHandler implements ICommandHandler<RevokeRolesCommand> {
         return mergedAssignment;
       });
 
-      await assignmentRepo.removeMany(ctx, mergedAssignments);
+      await assignmentRepo.removeMany(txCtx, mergedAssignments);
 
-      trx.onCommit(() => mergedAssignments.forEach((ra) => ra.commit()));
-      trx.onRollback(() => mergedAssignments.forEach((ra) => ra.uncommit()));
+      txCtx.trx.onCommit(() => mergedAssignments.forEach((ra) => ra.commit()));
+      txCtx.trx.onRollback(() =>
+        mergedAssignments.forEach((ra) => ra.uncommit()),
+      );
     });
   }
 }

@@ -20,14 +20,14 @@ export class ClearOtpsHandler implements ICommandHandler<ClearOtpsCommand> {
 
     const otpRepo = this.repositoryResolver.resolve(namespace);
 
-    return this.txScope.run(ctx, async () => {
-      const otps = await otpRepo.findAllByAssigneeAndCategory(ctx, {
+    return this.txScope.run(ctx, async (txCtx) => {
+      const otps = await otpRepo.findAllByAssigneeAndCategory(txCtx, {
         assigneeId: otp.assigneeId,
         category: otp.category,
       });
 
       if (otps.length > 0) {
-        await otpRepo.removeAll(ctx, otps);
+        await otpRepo.removeAll(txCtx, otps);
       }
     });
   }

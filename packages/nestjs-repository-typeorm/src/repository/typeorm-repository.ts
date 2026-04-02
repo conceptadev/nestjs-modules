@@ -32,6 +32,7 @@ import {
   isWhereCondition,
   JoinClause,
   RelationActionConfig,
+  TrxCtx,
   RepositoryAdapter,
   RepositoryCreateOptions,
   RepositoryDeleteOptions,
@@ -44,7 +45,6 @@ import {
   WhereClause,
   WhereCondition,
   WhereOperator,
-  TrxCtx,
 } from '@concepta/nestjs-repository';
 
 import { TypeOrmEntityNameException } from '../exceptions/typeorm-entity-name.exception';
@@ -110,8 +110,12 @@ export class TypeOrmRepository<
       const context = AppContextHost.from(ctx);
       if (context.supports(TrxCtx)) {
         const { trx } = context.with(TrxCtx);
-        const tx = await trx.getOrStart(this.options.transactionKey);
-        return tx.getClient<EntityManager>().getRepository(this.metadata.type);
+        if (trx?.isSupported) {
+          const tx = await trx.getOrStart(this.options.transactionKey);
+          return tx
+            .getClient<EntityManager>()
+            .getRepository(this.metadata.type);
+        }
       }
     }
     return this.repo;
@@ -127,6 +131,8 @@ export class TypeOrmRepository<
     if (!context.supports(TrxCtx)) return;
 
     const { trx } = context.with(TrxCtx);
+    if (!trx?.isSupported) return;
+
     const tx = trx.get(this.options.transactionKey);
     tx?.markDirty();
   }

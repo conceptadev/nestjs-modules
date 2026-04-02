@@ -33,19 +33,19 @@ export class InvitationService {
     ctx: PlainLiteralObject,
     dto: InvitationCreatableInterface,
   ): Promise<Invitation> {
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const eventContext = new EventContextHost({}, {});
 
       const invitation = this.eventPublisher.mergeObjectContext(
         Invitation.create(eventContext, dto),
       );
 
-      await this.invitationRepo.save(ctx, invitation);
+      await this.invitationRepo.save(txCtx, invitation);
 
-      await this.send(ctx, invitation);
+      await this.send(txCtx, invitation);
 
-      trx.onCommit(() => invitation.commit());
-      trx.onRollback(() => invitation.uncommit());
+      txCtx.trx.onCommit(() => invitation.commit());
+      txCtx.trx.onRollback(() => invitation.uncommit());
 
       return invitation;
     });
@@ -55,16 +55,16 @@ export class InvitationService {
     ctx: PlainLiteralObject,
     dto: InvitationCreatableByEmailInterface,
   ): Promise<Invitation> {
-    return this.txScope.run(ctx, async () => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const { email, category, constraints } = dto;
 
-      const user = await this.userPort.getByEmail(ctx, email);
+      const user = await this.userPort.getByEmail(txCtx, email);
 
       if (!user) {
         throw new InvitationUserUndefinedException();
       }
 
-      return this.create(ctx, {
+      return this.create(txCtx, {
         userId: user.id,
         code: randomUUID(),
         category,
@@ -74,16 +74,16 @@ export class InvitationService {
   }
 
   async send(ctx: PlainLiteralObject, invitation: Invitation): Promise<void> {
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const { category, userId } = invitation;
 
-      const user = await this.userPort.getById(ctx, userId);
+      const user = await this.userPort.getById(txCtx, userId);
 
       if (!user) {
         throw new InvitationUserUndefinedException();
       }
 
-      const otp = await this.otpPort.create(ctx, category, userId);
+      const otp = await this.otpPort.create(txCtx, category, userId);
 
       const eventContext = new EventContextHost<
         PlainLiteralObject,
@@ -99,8 +99,8 @@ export class InvitationService {
       const merged = this.eventPublisher.mergeObjectContext(invitation);
       merged.dispatch(eventContext);
 
-      trx.onCommit(() => merged.commit());
-      trx.onRollback(() => merged.uncommit());
+      txCtx.trx.onCommit(() => merged.commit());
+      txCtx.trx.onRollback(() => merged.uncommit());
     });
   }
 
@@ -123,11 +123,11 @@ export class InvitationService {
     passcode: string,
     payload?: PlainLiteralObject,
   ): Promise<Invitation | null> {
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       let invitation;
 
       try {
-        invitation = await this.invitationRepo.findOneByCode(ctx, code);
+        invitation = await this.invitationRepo.findOneByCode(txCtx, code);
       } catch (e: unknown) {
         throw new InvitationException({ originalError: e });
       }
@@ -141,7 +141,7 @@ export class InvitationService {
 
       const { category } = invitation;
 
-      const otp = await this.otpPort.consume(ctx, category, passcode);
+      const otp = await this.otpPort.consume(txCtx, category, passcode);
 
       if (!otp) {
         return null;
@@ -152,21 +152,21 @@ export class InvitationService {
       const merged = this.eventPublisher.mergeObjectContext(invitation);
       merged.accept(eventContext, payload);
 
-      await this.invitationRepo.save(ctx, merged);
+      await this.invitationRepo.save(txCtx, merged);
 
       // revoke all other active invitations for this user+category
-      await this.revokeByUserId(ctx, invitation.userId, category);
+      await this.revokeByUserId(txCtx, invitation.userId, category);
 
-      trx.onCommit(() => merged.commit());
-      trx.onRollback(() => merged.uncommit());
+      txCtx.trx.onCommit(() => merged.commit());
+      txCtx.trx.onRollback(() => merged.uncommit());
 
       return merged;
     });
   }
 
   async remove(ctx: PlainLiteralObject, id: ReferenceId): Promise<Invitation> {
-    return this.txScope.run(ctx, async (trx) => {
-      const invitation = await this.invitationRepo.get(ctx, id);
+    return this.txScope.run(ctx, async (txCtx) => {
+      const invitation = await this.invitationRepo.get(txCtx, id);
 
       if (!invitation) {
         throw new InvitationNotFoundException(String(id));
@@ -177,10 +177,10 @@ export class InvitationService {
       const merged = this.eventPublisher.mergeObjectContext(invitation);
       merged.remove(eventContext);
 
-      await this.invitationRepo.remove(ctx, merged);
+      await this.invitationRepo.remove(txCtx, merged);
 
-      trx.onCommit(() => merged.commit());
-      trx.onRollback(() => merged.uncommit());
+      txCtx.trx.onCommit(() => merged.commit());
+      txCtx.trx.onRollback(() => merged.uncommit());
 
       return merged;
     });
@@ -227,13 +227,13 @@ export class InvitationService {
     eventContext: EventContextHost,
     invitations: Invitation[],
   ): Promise<void> {
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       for (const invitation of invitations) {
         const merged = this.eventPublisher.mergeObjectContext(invitation);
         merged.revoke(eventContext);
-        await this.invitationRepo.save(ctx, merged);
-        trx.onCommit(() => merged.commit());
-        trx.onRollback(() => merged.uncommit());
+        await this.invitationRepo.save(txCtx, merged);
+        txCtx.trx.onCommit(() => merged.commit());
+        txCtx.trx.onRollback(() => merged.uncommit());
       }
     });
   }

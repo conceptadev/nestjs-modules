@@ -17,12 +17,11 @@ export class UpdateUserCredentialHandler
 
   async execute(command: UpdateUserCredentialCommand): Promise<void> {
     const { ctx, userId, passwordDto } = command;
-
-    return this.txScope.run(ctx, async () => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const eventContext = new EventContextHost({}, {});
 
       await this.userCredentialsService.updatePassword(
-        ctx,
+        txCtx,
         eventContext,
         userId,
         passwordDto.password,

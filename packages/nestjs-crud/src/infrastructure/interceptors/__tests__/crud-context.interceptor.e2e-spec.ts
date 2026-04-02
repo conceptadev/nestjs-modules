@@ -18,7 +18,8 @@ import { CrudController } from '../../decorators/controller/crud-controller.deco
 import { CrudList } from '../../decorators/operations/crud-list.decorator';
 import { CrudRead } from '../../decorators/operations/crud-read.decorator';
 import { CrudQueryBuilder } from '../../request/crud-query.builder';
-import { WithCrudContextInterface } from '../interfaces/with-crud-context.interface';
+import { CrudCtx } from '../crud-context.overlay';
+import { CrudContextInterface } from '../interfaces/crud-context.interface';
 
 // tslint:disable:max-classes-per-file
 describe('#crud', () => {
@@ -47,7 +48,7 @@ describe('#crud', () => {
   })
   class TestController {
     @CrudList({ path: '/query' })
-    async query(@Ctx() ctx: WithCrudContextInterface<TestModelDto>) {
+    async query(@Ctx(CrudCtx) ctx: CrudContextInterface<TestModelDto>) {
       return { query: ctx.withCrud().query };
     }
 
@@ -88,7 +89,7 @@ describe('#crud', () => {
   })
   class Test2Controller {
     @CrudRead({ path: 'normal/:id' })
-    async normal(@Ctx() ctx: WithCrudContextInterface<TestModelDto>) {
+    async normal(@Ctx(CrudCtx) ctx: CrudContextInterface<TestModelDto>) {
       return { params: ctx.withCrud().params };
     }
 
@@ -101,7 +102,7 @@ describe('#crud', () => {
       path: 'other2/:id/twoParams/:someParam',
     })
     async twoParams(
-      @Ctx() ctx: WithCrudContextInterface<TestModelDto>,
+      @Ctx(CrudCtx) ctx: CrudContextInterface<TestModelDto>,
       @Param('someParam', ParseIntPipe) _p: number,
     ) {
       return { params: ctx.withCrud().params };

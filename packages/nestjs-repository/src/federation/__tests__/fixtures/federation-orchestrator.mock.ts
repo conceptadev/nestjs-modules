@@ -1,7 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
-import { RepositoryContextInterface } from '../../../context/interfaces/repository-context.interface';
 import { RepositoryRelationMetadataInterface } from '../../../repository/interfaces/repository-relation-metadata.interface';
 import { RepositoryInterface } from '../../../repository/interfaces/repository.interface';
 import { RepositoryRegistryService } from '../../../services/repository-registry.service';
@@ -120,17 +119,16 @@ export function mockOrchestrator(peerRepos: Record<string, MockRepo<any>>): {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Create a minimal RepositoryContextInterface for testing.
+ * Create a minimal context for testing.
  */
 export function mockContext(
-  overrides: Partial<RepositoryContextInterface> = {},
-): RepositoryContextInterface {
+  overrides: PlainLiteralObject = {},
+): PlainLiteralObject {
   return {
-    trx: {} as unknown as RepositoryContextInterface['trx'],
     hooks: [],
     entity: 'TestEntity',
     ...overrides,
-  } as RepositoryContextInterface;
+  };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

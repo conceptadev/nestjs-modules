@@ -1,12 +1,15 @@
 import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { OtpContextOverlay } from '../otp-context.overlay';
+import { getAppContext } from '@concepta/nestjs-common';
+
+import { OtpCtx, OtpContextOverlay } from '../otp-context.overlay';
 
 describe('OtpContextOverlay', () => {
   let reflector: jest.Mocked<Reflector>;
   let overlay: OtpContextOverlay;
   let mockContext: ExecutionContext;
+  let mockRequest: Record<string | symbol, unknown>;
 
   beforeEach(() => {
     reflector = {
@@ -15,11 +18,15 @@ describe('OtpContextOverlay', () => {
 
     overlay = new OtpContextOverlay(reflector);
 
+    mockRequest = {};
     const handler = jest.fn();
     const target = class TestController {};
     mockContext = {
       getHandler: () => handler,
       getClass: () => target,
+      switchToHttp: () => ({
+        getRequest: () => mockRequest,
+      }),
     } as unknown as ExecutionContext;
   });
 
@@ -27,10 +34,13 @@ describe('OtpContextOverlay', () => {
     expect(overlay.ref.name).toBe('withOtp');
   });
 
-  it('should resolve namespace from decorator metadata', () => {
+  it('should resolve namespace from decorator metadata via attach', () => {
     reflector.getAllAndOverride.mockReturnValue({ name: 'userOtp' });
 
-    const result = overlay.resolve(mockContext);
+    overlay.attach(mockContext);
+
+    const ctx = getAppContext(mockRequest);
+    const result = ctx.with(OtpCtx);
 
     expect(result).toEqual({ namespace: 'userOtp' });
     expect(reflector.getAllAndOverride).toHaveBeenCalledWith('OTP_NAMESPACE', [
@@ -42,7 +52,10 @@ describe('OtpContextOverlay', () => {
   it('should return empty namespace when no decorator metadata', () => {
     reflector.getAllAndOverride.mockReturnValue(undefined);
 
-    const result = overlay.resolve(mockContext);
+    overlay.attach(mockContext);
+
+    const ctx = getAppContext(mockRequest);
+    const result = ctx.with(OtpCtx);
 
     expect(result).toEqual({ namespace: '' });
   });

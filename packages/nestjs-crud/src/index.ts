@@ -3,7 +3,6 @@ export { CrudModule } from './crud.module';
 
 // interfaces
 export { CrudContextInterface } from './infrastructure/interceptors/interfaces/crud-context.interface';
-export { WithCrudContextInterface } from './infrastructure/interceptors/interfaces/with-crud-context.interface';
 export { WithLocalContextInterface } from './infrastructure/interceptors/interfaces/with-local-context.interface';
 export { CrudParsedQueryInterface } from './infrastructure/request/interfaces/crud-parsed-query.interface';
 export { CrudResponsePaginatedInterface } from './infrastructure/dtos/interfaces/crud-response-paginated.interface';

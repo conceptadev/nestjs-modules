@@ -1,16 +1,27 @@
-import { Injectable, Inject, Optional } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  Optional,
+  PlainLiteralObject,
+} from '@nestjs/common';
 
-import { AppContextHost, AppContextLike } from '@concepta/nestjs-common';
+import { AppContextHost } from '@concepta/nestjs-common';
 
-import { TrxCtx } from '../context/interfaces/transaction-context.interface';
 import { TransactionRequiredException } from '../exceptions/transaction-required.exception';
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception';
 import { RepositoryModuleOptionsInterface } from '../interfaces/repository-module-options.interface';
 import { PropagationBehavior } from '../interfaces/transactional-options.interface';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants';
 
-import { TransactionHandleInterface } from './interfaces/transaction-handle.interface';
-import { TransactionContextOverlay } from './transaction-context.overlay';
+import {
+  TransactionContextInterface,
+  TrxCtx,
+} from './interfaces/transaction-context.interface';
+import {
+  TransactionFactoryRegistry,
+  TRANSACTION_FACTORY_REGISTRY,
+} from './transaction-factory-registry';
+import { TransactionManager } from './transaction-manager';
 
 const DEFAULT_TIMEOUT = 30000;
 
@@ -23,24 +34,19 @@ export interface TransactionRunOptions {
 /**
  * Orchestrates transaction lifecycle.
  *
- * Every unit of work calls `run()`. The first (outermost) call becomes
- * the lifecycle owner — it commits/rolls back and flushes callbacks.
- * Nested `run()` calls join the existing transaction.
- *
- * The `withTrx` overlay is defined eagerly by
- * {@link TransactionContextOverlay} when an interceptor is present.
- * For direct calls (command handlers, CLI), the scope defines it
- * on first access via the overlay's `resolve()`.
+ * Every unit of work calls `run()`. The first (outermost) call defines
+ * `TrxCtx` on the context and owns the lifecycle — it commits/rolls
+ * back and flushes callbacks. Nested `run()` calls detect `TrxCtx`
+ * is already defined and simply join.
  *
  * @example
  * ```typescript
- * async execute(command: CreateCacheCommand): Promise<CacheInterface> {
- *   const { context, dto } = command;
- *   return this.txScope.run(context, async (trx) => {
- *     const cache = Cache.create(dto, this.settings);
- *     await cacheRepo.save({ dto: cache.toPlain(), ctx: context });
- *     trx.onCommit(() => cache.commit());
- *     return cache.toPlain();
+ * async execute(command: CreateCacheCommand): Promise<Cache> {
+ *   return this.txScope.run(command.ctx, async (txCtx) => {
+ *     const cache = Cache.create(eventContext, dto, expirationDate);
+ *     await cacheRepo.save(txCtx, cache);
+ *     txCtx.trx.onCommit(() => cache.commit());
+ *     return cache;
  *   });
  * }
  * ```
@@ -50,7 +56,8 @@ export class TransactionScope {
   private readonly defaultTimeout: number;
 
   constructor(
-    private readonly overlay: TransactionContextOverlay,
+    @Inject(TRANSACTION_FACTORY_REGISTRY)
+    private readonly registry: TransactionFactoryRegistry,
     @Optional()
     @Inject(REPOSITORY_MODULE_OPTIONS)
     options?: RepositoryModuleOptionsInterface,
@@ -61,52 +68,44 @@ export class TransactionScope {
   /**
    * Execute an operation within a transaction scope.
    *
-   * Ensures the `withTrx` overlay is defined, then checks the
-   * transaction manager's active state. The first `run()` call owns
-   * the lifecycle; nested calls join the existing transaction.
+   * Defines `TrxCtx` on the context if not already present, then
+   * runs the full lifecycle ceremony. Nesting is detected via
+   * `ctx.supports(TrxCtx)`.
    */
   async run<T>(
-    ctx: AppContextLike,
-    operation: (trx: TransactionHandleInterface) => Promise<T>,
+    ctx: PlainLiteralObject,
+    operation: (txCtx: TransactionContextInterface) => Promise<T>,
     options?: TransactionRunOptions,
   ): Promise<T> {
-    const propagation = options?.propagation ?? 'REQUIRED';
+    const appCtx = AppContextHost.from(ctx);
+    const propagation = options?.propagation ?? 'SUPPORTS';
     const readOnly = options?.readOnly ?? false;
     const timeout = options?.timeout ?? this.defaultTimeout;
 
-    const context = AppContextHost.from(ctx);
+    const isNested = appCtx.supports(TrxCtx);
 
-    // Ensure withTrx overlay exists (no-op if already defined by interceptor)
-    context.define(TrxCtx, this.overlay.resolve());
+    if (!isNested) {
+      appCtx.defineOverlay(TrxCtx, {
+        trx: new TransactionManager(this.registry),
+      });
+    }
 
-    const { trx } = context.with(TrxCtx);
+    const txCtx = appCtx.with(TrxCtx);
+    const { trx } = txCtx;
 
-    // MANDATORY: require an already-active transaction
-    if (propagation === 'MANDATORY' && !trx.isActive) {
+    // MANDATORY: require real transaction support
+    if (propagation === 'MANDATORY' && !trx.isSupported) {
       throw new TransactionRequiredException();
     }
 
-    // SUPPORTS without active transaction: run without transaction
-    if (propagation === 'SUPPORTS' && !trx.isActive) {
-      return operation({ onCommit: () => {}, onRollback: () => {} });
+    // Nested call — just run, outermost owns lifecycle
+    if (isNested) {
+      return operation(txCtx);
     }
 
-    // Scoped handle
-    const handle: TransactionHandleInterface = {
-      onCommit: (fn) => trx.onCommit(fn),
-      onRollback: (fn) => trx.onRollback(fn),
-    };
-
-    // Join existing transaction (nested call)
-    if (trx.isActive) {
-      return operation(handle);
-    }
-
-    // I'm the outermost — claim the manager and own the lifecycle
-    trx.claim();
-
+    // Outermost — own lifecycle
     try {
-      const result = await this.withTimeout(operation(handle), timeout);
+      const result = await this.withTimeout(operation(txCtx), timeout);
 
       if (readOnly) {
         await trx.rollbackAll();
@@ -128,8 +127,8 @@ export class TransactionScope {
    * Shorthand for `run(ctx, operation, { readOnly: true })`.
    */
   async runReadOnly<T>(
-    ctx: AppContextLike,
-    operation: (trx: TransactionHandleInterface) => Promise<T>,
+    ctx: PlainLiteralObject,
+    operation: (txCtx: TransactionContextInterface) => Promise<T>,
   ): Promise<T> {
     return this.run(ctx, operation, { readOnly: true });
   }

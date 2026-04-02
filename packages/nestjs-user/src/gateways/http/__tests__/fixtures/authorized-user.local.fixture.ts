@@ -5,10 +5,7 @@ import {
 } from '@nestjs/common';
 
 import { UserEntityInterface } from '@concepta/nestjs-common';
-import {
-  WithCrudContextInterface,
-  CrudLocalInterface,
-} from '@concepta/nestjs-crud';
+import { CrudLocalInterface } from '@concepta/nestjs-crud';
 
 @Injectable()
 export class AuthorizedUserLocalFixture
@@ -16,9 +13,9 @@ export class AuthorizedUserLocalFixture
 {
   static readonly KEY = 'authorizedUser';
 
-  async resolve<Entity extends PlainLiteralObject>(
+  async resolve(
     context: ExecutionContext,
-    _ctx: WithCrudContextInterface<Entity>,
+    _ctx: PlainLiteralObject,
     _locals: Readonly<Record<string, unknown>>,
   ): Promise<UserEntityInterface> {
     const request = context.switchToHttp().getRequest();

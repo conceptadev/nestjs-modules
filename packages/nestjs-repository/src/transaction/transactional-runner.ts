@@ -4,7 +4,8 @@ import { catchError } from 'rxjs/operators';
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { TransactionContextOverlay } from './transaction-context.overlay';
+import { getAppContext } from '@concepta/nestjs-common';
+
 import { TransactionScope } from './transaction-scope';
 import {
   TRANSACTIONAL_KEY,
@@ -30,7 +31,6 @@ import {
 export class TransactionalRunner {
   constructor(
     private readonly reflector: Reflector,
-    private readonly overlay: TransactionContextOverlay,
     private readonly txScope: TransactionScope,
   ) {}
 
@@ -56,7 +56,8 @@ export class TransactionalRunner {
       return operation();
     }
 
-    const ctx = this.overlay.attach(context);
+    const request = context.switchToHttp().getRequest();
+    const ctx = getAppContext(request);
 
     return from(
       this.txScope.run(ctx, () => this.toPromise(operation()), {

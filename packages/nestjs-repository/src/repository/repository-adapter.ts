@@ -5,15 +5,12 @@ import { isObject } from '@nestjs/common/utils/shared.utils';
 
 import {
   AppContextHost,
-  AppContextLike,
   DeepPartial,
-  HookContextInterface,
   RuntimeException,
 } from '@concepta/nestjs-common';
 import { HookMethodKeyType, HookResolverService } from '@concepta/nestjs-hook';
 
-import { RepositoryContextInterface } from '../context/interfaces/repository-context.interface';
-import { switchToRepo } from '../context/switch-to-repo';
+import { RepoCtx } from '../context/interfaces/repository-context.interface';
 import { FederationOrchestrator } from '../federation/federation-orchestrator.service';
 import { RepoPermeatorFactory } from '../hooks/repo-permeator-factory';
 import { RepoHook } from '../hooks/repository-hook.decorators';
@@ -92,19 +89,24 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
   }
 
   /**
-   * Switch the context's entity to this repository's entity key.
+   * Build the ambient context for hook execution.
    *
-   * Resolves the hooks overlay if available so that hooks are
-   * accessible to the repository permeator.
+   * Chains overlays via prototype inheritance so that hook methods
+   * can access locals, hooks, entity, and trx through the chain.
    */
   protected entityCtx(
-    ctx?: AppContextLike,
-  ): RepositoryContextInterface | undefined {
+    ctx?: PlainLiteralObject,
+  ): PlainLiteralObject | undefined {
     if (!ctx) return undefined;
-    return switchToRepo(
-      AppContextHost.from(ctx).optional().withHooks(),
-      this.entityKey,
-    );
+    const appCtx = AppContextHost.from(ctx);
+    appCtx.defineOverlay(RepoCtx, { entity: this.entityKey });
+    return appCtx
+      .require(RepoCtx)
+      .withRepo()
+      .optional()
+      .withHooks()
+      .optional()
+      .withTrx();
   }
 
   // Query operations
@@ -480,7 +482,7 @@ export abstract class RepositoryAdapter<Entity extends PlainLiteralObject>
   protected async runHooks<T>(
     methodKey: HookMethodKeyType,
     payload: T,
-    ctx: HookContextInterface | undefined,
+    ctx: PlainLiteralObject | undefined,
   ): Promise<T> {
     if (!this.hookResolver) {
       return payload;

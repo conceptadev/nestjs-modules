@@ -1,8 +1,11 @@
-import { Inject, PlainLiteralObject } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
 import { EventContextHost } from '@concepta/nestjs-common';
-import { TransactionScope } from '@concepta/nestjs-repository';
+import {
+  TransactionContextInterface,
+  TransactionScope,
+} from '@concepta/nestjs-repository';
 
 import { Otp } from '../../../domain/aggregates/otp';
 import { OtpLimitReachedException } from '../../../domain/exceptions/otp-limit-reached.exception';
@@ -38,7 +41,6 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
       rateSeconds,
       rateThreshold,
     } = command;
-
     if (!this.settings.types[dto.type]) {
       throw new OtpTypeNotDefinedException(dto.type);
     }
@@ -52,11 +54,11 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
 
     const eventContext = new EventContextHost({ namespace }, {});
 
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       await this.validateRateLimit({
         otpRepo,
         dto: validatedDto,
-        ctx,
+        ctx: txCtx,
         rateSeconds,
         rateThreshold,
       });
@@ -65,7 +67,7 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
         duplicateStrategy ?? this.settings.duplicateStrategy;
 
       if (resolvedDuplicateStrategy === 'DEACTIVATE') {
-        const activeOtp = await otpRepo.findActiveByAssignee(ctx, {
+        const activeOtp = await otpRepo.findActiveByAssignee(txCtx, {
           assigneeId,
           category,
         });
@@ -73,10 +75,10 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
           const mergedActiveOtp =
             this.eventPublisher.mergeObjectContext(activeOtp);
           mergedActiveOtp.deactivate(eventContext);
-          await otpRepo.save(ctx, mergedActiveOtp);
+          await otpRepo.save(txCtx, mergedActiveOtp);
 
-          trx.onCommit(() => mergedActiveOtp.commit());
-          trx.onRollback(() => mergedActiveOtp.uncommit());
+          txCtx.trx.onCommit(() => mergedActiveOtp.commit());
+          txCtx.trx.onRollback(() => mergedActiveOtp.uncommit());
         }
       }
 
@@ -90,10 +92,10 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
         }),
       );
 
-      await otpRepo.save(ctx, otp);
+      await otpRepo.save(txCtx, otp);
 
-      trx.onCommit(() => otp.commit());
-      trx.onRollback(() => otp.uncommit());
+      txCtx.trx.onCommit(() => otp.commit());
+      txCtx.trx.onRollback(() => otp.uncommit());
 
       return otp;
     });
@@ -102,7 +104,7 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
   protected async validateRateLimit(params: {
     otpRepo: OtpRepositoryInterface;
     dto: OtpCreateDto;
-    ctx: PlainLiteralObject;
+    ctx: TransactionContextInterface;
     rateSeconds?: number;
     rateThreshold?: number;
   }): Promise<void> {

@@ -82,7 +82,8 @@ import {
   RepositoryFindOneOptions,
   Where,
   getDynamicRepositoryToken,
-  switchToRepo,
+  TrxCtx,
+  TransactionContextInterface,
 } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
@@ -371,10 +372,13 @@ class AllHooks implements AllHooksInterface {
  */
 function createHookContext(...hookClasses: Type[]) {
   const ctx = new AppContextHost();
-  ctx.define(HooksCtx, {
+  ctx.defineOverlay(HooksCtx, {
     hooks: hookClasses.map((hook) => ({ hook, type: RepoHook.KEY })),
   });
-  return switchToRepo(ctx.optional().withHooks(), '');
+  ctx.defineOverlay(TrxCtx, {
+    trx: { onCommit() {}, onRollback() {} },
+  } as unknown as TransactionContextInterface);
+  return ctx;
 }
 
 // =============================================================================

@@ -75,7 +75,7 @@ export function createMockCacheContext(
 ) {
   const ctx = new AppContextHost();
 
-  ctx.define(CrudCtx, {
+  ctx.defineOverlay(CrudCtx, {
     entity: crudOverrides.entity ?? 'UserCache',
     params: crudOverrides.params ?? {},
     query: crudOverrides.query ?? {},
@@ -84,7 +84,7 @@ export function createMockCacheContext(
     action: crudOverrides.action ?? ActionEnum.READ,
   });
 
-  ctx.define(CacheCtx, { namespace });
+  ctx.defineOverlay(CacheCtx, { namespace });
 
   // Return the resolved CRUD child — has CRUD props (own)
   // and withCache() inherited via prototype chain.

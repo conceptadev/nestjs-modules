@@ -9,5 +9,4 @@ export const relationOrmConfig: DataSourceOptions = {
   database: ':memory:',
   synchronize: true,
   entities: [AuthorEntityFixture, PostEntityFixture, TagEntityFixture],
-  logging: 'all',
 };

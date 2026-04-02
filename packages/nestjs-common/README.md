@@ -218,14 +218,12 @@ export const FooCtx = new OverlayRef<'withFoo', FooContextInterface>('withFoo');
 
 #### Step 2: Implement ContextOverlayInterface
 
-The overlay has three members:
+The interface has two members:
 
 - **`ref`** -- the `OverlayRef` token
-- **`resolve(context?)`** -- called once at definition time, returns the cached
-  props. Use the NestJS `ExecutionContext` to read metadata from decorators,
-  headers, or the request.
 - **`attach(context)`** -- called by the interceptor pipeline. Responsible for
-  getting the `AppContextHost` and calling `defineOverlay`.
+  resolving overlay values, getting the `AppContextHost`, and calling
+  `defineOverlay(ref, values)`.
 
 ```ts
 // foo-context.overlay.ts
@@ -246,18 +244,19 @@ export class FooContextOverlay
 
   constructor(private readonly reflector: Reflector) {}
 
-  resolve(context: ExecutionContext): FooContextInterface {
+  attach(context: ExecutionContext): void {
+    const request = context.switchToHttp().getRequest();
+    const ctx = getAppContext(request);
+    const resolved = this.resolve(context);
+    ctx.defineOverlay(FooCtx, resolved);
+  }
+
+  private resolve(context: ExecutionContext): FooContextInterface {
     const meta = this.reflector.getAllAndOverride<{ name: string }>(
       'FOO_NAMESPACE',
       [context.getHandler(), context.getClass()],
     );
     return { namespace: meta?.name ?? 'default' };
-  }
-
-  attach(context: ExecutionContext): void {
-    const request = context.switchToHttp().getRequest();
-    const ctx = getAppContext(request);
-    ctx.defineOverlay(this, context);
   }
 }
 ```
@@ -283,42 +282,52 @@ export class FooModule {}
 
 #### Step 4: Consume in a handler
 
-Access the overlay from an `AppContextHost` instance. The `@Ctx()`
-decorator extracts the per-request context from the HTTP request.
+The `@Ctx()` decorator extracts the per-request `AppContextHost` from the
+HTTP request. Pass an `OverlayRef` to unwrap the overlay directly.
 
 ```ts
 import { Controller, Get } from '@nestjs/common';
-import { Ctx, AppContextHost } from '@concepta/nestjs-common';
+import { Ctx } from '@concepta/nestjs-common';
 import { FooCtx } from './foo-context.overlay';
+import { FooContextInterface } from './foo-context.interface';
 
 @Controller('foo')
 export class FooController {
   @Get()
-  handle(@Ctx() ctx: AppContextHost) {
-    // Option A: direct lookup by ref (throws if not defined)
-    const { namespace } = ctx.with(FooCtx);
-
-    // Option B: type-narrowing with require()
-    const typed = ctx.require(FooCtx);
-    const { namespace } = typed.withFoo();
-
-    // Option C: optional (returns ctx unchanged if not defined)
-    const { namespace } = ctx.optional().withFoo();
+  handle(@Ctx(FooCtx) ctx: FooContextInterface) {
+    // ctx is the resolved overlay props -- use directly
+    const { namespace } = ctx;
   }
 }
 ```
 
-#### Step 5: Testing with define()
+When you need the full `AppContextHost` (e.g. to check multiple overlays),
+omit the ref:
 
-The `define()` shorthand skips the full `ContextOverlayInterface` and
-directly sets overlay values. Use this in tests.
+```ts
+import { Ctx, AppContextHost } from '@concepta/nestjs-common';
+
+@Get()
+handle(@Ctx() ctx: AppContextHost) {
+  // direct lookup by ref (throws if not defined)
+  const { namespace } = ctx.with(FooCtx);
+
+  // optional (returns ctx unchanged if not defined)
+  const { namespace } = ctx.optional().withFoo();
+}
+```
+
+#### Step 5: Testing with defineOverlay()
+
+Use `defineOverlay(ref, values)` to set overlay values directly in tests,
+bypassing the full `ContextOverlayInterface` and interceptor pipeline.
 
 ```ts
 import { AppContextHost } from '@concepta/nestjs-common';
 import { FooCtx } from './foo-context.overlay';
 
 const ctx = new AppContextHost();
-ctx.define(FooCtx, { namespace: 'test-ns' });
+ctx.defineOverlay(FooCtx, { namespace: 'test-ns' });
 
 expect(ctx.with(FooCtx).namespace).toBe('test-ns');
 expect(ctx.supports(FooCtx)).toBe(true);
@@ -328,8 +337,7 @@ expect(ctx.supports(FooCtx)).toBe(true);
 
 | Method | Description |
 | --- | --- |
-| `defineOverlay(overlay, context?)` | Register an overlay. Calls `resolve()` eagerly and caches the result. Idempotent -- subsequent calls with the same name are no-ops. |
-| `define(ref, values)` | Shorthand for testing -- directly sets overlay values without a full `ContextOverlayInterface`. |
+| `defineOverlay(ref, values)` | Register an overlay by `OverlayRef` and pre-resolved values. Installs a `with*()` method. Idempotent -- subsequent calls with the same name are no-ops. |
 | `require(...refs)` | Type-level narrowing. Returns `this` cast to include the typed `with*()` methods for the given refs. No runtime validation. |
 | `with(ref)` | Direct lookup by ref. Returns the resolved overlay props, or throws `OverlayNotDefinedException`. |
 | `supports(ref)` | Returns `true` if the overlay is defined on this context. |
@@ -348,7 +356,7 @@ rather than returning `undefined`.
 | Export | Description |
 | --- | --- |
 | `getAppContext(request)` | Get or create the `AppContextHost` stored on a request object (keyed by a private `Symbol`). |
-| `@Ctx()` | Parameter decorator that extracts the `AppContextHost` from the current HTTP request. |
+| `@Ctx(ref?)` | Parameter decorator. Without a ref, returns the `AppContextHost`. With an `OverlayRef`, calls `appCtx.with(ref)` and returns the unwrapped overlay props. |
 | `ContextOverlayInterceptor` | Generic NestJS interceptor that calls `overlay.attach(context)`. |
 | `createContextInterceptorProvider(OverlayClass)` | Factory that registers an overlay class as an `APP_INTERCEPTOR` provider. |
 | `OverlayRef` | Typed token class carrying the overlay name and resolved props type. |

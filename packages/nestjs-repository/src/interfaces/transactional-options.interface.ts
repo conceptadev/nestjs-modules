@@ -2,9 +2,8 @@
  * Transaction propagation behaviors
  */
 export type PropagationBehavior =
-  | 'REQUIRED' // Join existing or create new (default)
-  | 'SUPPORTS' // Use existing if available, else non-transactional
-  | 'MANDATORY'; // Must have existing, throw if not
+  | 'SUPPORTS' // Run full lifecycle; commitAll/rollbackAll are no-ops when unsupported (default)
+  | 'MANDATORY'; // Require real transaction support, throw if not
 
 /**
  * Options for the `@Transactional` decorator

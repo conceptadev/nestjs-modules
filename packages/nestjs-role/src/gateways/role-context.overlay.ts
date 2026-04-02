@@ -25,17 +25,18 @@ export class RoleContextOverlay
 
   constructor(private readonly reflector: Reflector) {}
 
-  resolve(context: ExecutionContext): RoleContextInterface {
+  attach(context: ExecutionContext): void {
+    const request = context.switchToHttp().getRequest();
+    const ctx = getAppContext(request);
+    const resolved = this.resolve(context);
+    ctx.defineOverlay(RoleCtx, resolved);
+  }
+
+  private resolve(context: ExecutionContext): RoleContextInterface {
     const options = this.reflector.getAllAndOverride<RoleNamespaceOptions>(
       ROLE_NAMESPACE_KEY,
       [context.getHandler(), context.getClass()],
     );
     return { namespace: options?.name ?? '' };
-  }
-
-  attach(context: ExecutionContext): void {
-    const request = context.switchToHttp().getRequest();
-    const ctx = getAppContext(request);
-    ctx.defineOverlay(this, context);
   }
 }

@@ -10,7 +10,7 @@ import { DeepPartial } from '@concepta/nestjs-common';
 
 import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
 import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';
-import { WithCrudContextInterface } from '../interceptors/interfaces/with-crud-context.interface';
+import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
 
 import { CrudResolverInterface } from './interfaces/crud-resolver.interface';
 
@@ -57,105 +57,96 @@ export class CrudCqrsResolver implements CrudResolverInterface {
   }
 
   async list<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
   ): Promise<CrudResponsePaginatedInterface<Entity>> {
-    const crudCtx = context.withCrud();
-    const QueryClass = crudCtx.options.route?.query;
+    const QueryClass = ctx.options.route?.query;
     if (!QueryClass) {
       throw new Error('No query configured for list operation');
     }
-    return this.queryBus.execute(new QueryClass(crudCtx));
+    return this.queryBus.execute(new QueryClass(ctx));
   }
 
   async read<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
   ): Promise<Entity> {
-    const crudCtx = context.withCrud();
-    const QueryClass = crudCtx.options.route?.query;
+    const QueryClass = ctx.options.route?.query;
     if (!QueryClass) {
       throw new Error('No query configured for read operation');
     }
-    return this.queryBus.execute(new QueryClass(crudCtx));
+    return this.queryBus.execute(new QueryClass(ctx));
   }
 
   async create<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
     dto: DeepPartial<Entity>,
   ): Promise<Entity> {
-    const crudCtx = context.withCrud();
-    const CommandClass = crudCtx.options.route?.command;
+    const CommandClass = ctx.options.route?.command;
     if (!CommandClass) {
       throw new Error('No command configured for create operation');
     }
-    return this.commandBus.execute(new CommandClass(crudCtx, dto));
+    return this.commandBus.execute(new CommandClass(ctx, dto));
   }
 
   async createBatch<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
     dto: CrudCreateBatchInterface<DeepPartial<Entity>>,
   ): Promise<Entity[]> {
-    const crudCtx = context.withCrud();
-    const CommandClass = crudCtx.options.route?.command;
+    const CommandClass = ctx.options.route?.command;
     if (!CommandClass) {
       throw new Error('No command configured for createBatch operation');
     }
-    return this.commandBus.execute(new CommandClass(crudCtx, dto));
+    return this.commandBus.execute(new CommandClass(ctx, dto));
   }
 
   async update<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
     dto: DeepPartial<Entity>,
   ): Promise<Entity> {
-    const crudCtx = context.withCrud();
-    const CommandClass = crudCtx.options.route?.command;
+    const CommandClass = ctx.options.route?.command;
     if (!CommandClass) {
       throw new Error('No command configured for update operation');
     }
-    return this.commandBus.execute(new CommandClass(crudCtx, dto));
+    return this.commandBus.execute(new CommandClass(ctx, dto));
   }
 
   async replace<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
     dto: DeepPartial<Entity>,
   ): Promise<Entity> {
-    const crudCtx = context.withCrud();
-    const CommandClass = crudCtx.options.route?.command;
+    const CommandClass = ctx.options.route?.command;
     if (!CommandClass) {
       throw new Error('No command configured for replace operation');
     }
-    return this.commandBus.execute(new CommandClass(crudCtx, dto));
+    return this.commandBus.execute(new CommandClass(ctx, dto));
   }
 
   async delete<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
   ): Promise<Entity | null> {
-    const crudCtx = context.withCrud();
-    const CommandClass = crudCtx.options.route?.command;
+    const CommandClass = ctx.options.route?.command;
     if (!CommandClass) {
       throw new Error('No command configured for delete operation');
     }
-    return this.commandBus.execute(new CommandClass(crudCtx));
+    return this.commandBus.execute(new CommandClass(ctx));
   }
 
   async softDelete<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
   ): Promise<Entity | null> {
-    const crudCtx = context.withCrud();
-    const CommandClass = crudCtx.options.route?.command;
+    const CommandClass = ctx.options.route?.command;
     if (!CommandClass) {
       throw new Error('No command configured for soft delete operation');
     }
-    return this.commandBus.execute(new CommandClass(crudCtx));
+    return this.commandBus.execute(new CommandClass(ctx));
   }
 
   async restore<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
   ): Promise<Entity | null> {
-    const crudCtx = context.withCrud();
-    const CommandClass = crudCtx.options.route?.command;
+    const CommandClass = ctx.options.route?.command;
     if (!CommandClass) {
       throw new Error('No command configured for restore operation');
     }
-    return this.commandBus.execute(new CommandClass(crudCtx));
+    return this.commandBus.execute(new CommandClass(ctx));
   }
 }

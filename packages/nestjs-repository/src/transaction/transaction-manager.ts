@@ -16,23 +16,10 @@ export class TransactionManager implements TransactionManagerInterface {
   private readonly commitCallbacks: (() => void | Promise<void>)[] = [];
   private readonly rollbackCallbacks: (() => void | Promise<void>)[] = [];
 
-  private _active = false;
-
   constructor(private readonly registry: TransactionFactoryRegistry) {}
 
-  get isActive(): boolean {
-    return this._active;
-  }
-
-  /**
-   * Claim ownership of this manager's lifecycle.
-   * Only the outermost {@link TransactionScope} should call this.
-   */
-  claim(): void {
-    if (this._active) {
-      throw new Error('TransactionManager already claimed');
-    }
-    this._active = true;
+  get isSupported(): boolean {
+    return this.registry.count > 0;
   }
 
   get(key: string): TransactionInterface | null {

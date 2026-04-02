@@ -25,23 +25,22 @@ export class HookContextOverlay
 
   constructor(private readonly reflector: Reflector) {}
 
-  resolve(context: ExecutionContext): HookContextInterface {
+  attach(context: ExecutionContext): void {
+    const request = context.switchToHttp().getRequest();
+    const ctx = getAppContext(request);
+    const resolved = this.resolve(context);
+    ctx.defineOverlay(HooksCtx, resolved);
+  }
+
+  private resolve(context: ExecutionContext): HookContextInterface {
     const decoratorHooks = this.reflector.getAllAndMerge<HookOption[]>(
       HOOKS_METADATA_KEY,
       [context.getHandler(), context.getClass()],
     );
-
-    const hooks: HookWithSpec[] = decoratorHooks.map((option) =>
+    const hooks = (decoratorHooks ?? []).map((option) =>
       this.normalizeOption(option),
     );
-
     return { hooks };
-  }
-
-  attach(context: ExecutionContext): void {
-    const request = context.switchToHttp().getRequest();
-    const ctx = getAppContext(request);
-    ctx.defineOverlay(this, context);
   }
 
   private normalizeOption(option: HookOption): HookWithSpec {

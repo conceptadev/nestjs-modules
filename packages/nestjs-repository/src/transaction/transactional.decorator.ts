@@ -45,7 +45,7 @@ export function Transactional(options?: TransactionalOptions | false) {
   }
 
   const resolvedOptions: TransactionalOptions = {
-    propagation: options?.propagation ?? 'REQUIRED',
+    propagation: options?.propagation ?? 'SUPPORTS',
     readOnly: options?.readOnly ?? false,
     noRollbackFor: options?.noRollbackFor ?? [],
     timeout: options?.timeout, // Let Transaction apply module default

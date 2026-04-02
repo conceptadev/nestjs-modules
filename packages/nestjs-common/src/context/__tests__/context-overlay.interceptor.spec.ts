@@ -17,7 +17,6 @@ describe('ContextOverlayInterceptor', () => {
   beforeEach(() => {
     overlay = {
       ref: TestRef,
-      resolve: jest.fn().mockReturnValue({ value: 'resolved' }),
       attach: jest.fn(),
     };
 

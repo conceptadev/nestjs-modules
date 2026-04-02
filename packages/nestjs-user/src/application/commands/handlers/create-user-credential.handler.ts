@@ -20,12 +20,11 @@ export class CreateUserCredentialHandler
     command: CreateUserCredentialCommand,
   ): Promise<UserCredentials> {
     const { ctx, userId, password } = command;
-
-    return this.txScope.run(ctx, async () => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const eventContext = new EventContextHost({}, {});
 
       return this.userCredentialsService.setPassword(
-        ctx,
+        txCtx,
         eventContext,
         userId,
         password,

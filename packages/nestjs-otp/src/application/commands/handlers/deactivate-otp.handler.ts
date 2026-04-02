@@ -24,8 +24,8 @@ export class DeactivateOtpHandler
 
     const otpRepo = this.repositoryResolver.resolve(namespace);
 
-    return this.txScope.run(ctx, async (trx) => {
-      const activeOtp = await otpRepo.findActiveByAssignee(ctx, {
+    return this.txScope.run(ctx, async (txCtx) => {
+      const activeOtp = await otpRepo.findActiveByAssignee(txCtx, {
         assigneeId: otp.assigneeId,
         category: otp.category,
       });
@@ -35,10 +35,10 @@ export class DeactivateOtpHandler
 
         const aggregate = this.eventPublisher.mergeObjectContext(activeOtp);
         aggregate.deactivate(eventContext);
-        await otpRepo.save(ctx, aggregate);
+        await otpRepo.save(txCtx, aggregate);
 
-        trx.onCommit(() => aggregate.commit());
-        trx.onRollback(() => aggregate.uncommit());
+        txCtx.trx.onCommit(() => aggregate.commit());
+        txCtx.trx.onRollback(() => aggregate.uncommit());
       }
     });
   }

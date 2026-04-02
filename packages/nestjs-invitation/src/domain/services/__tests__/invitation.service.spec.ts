@@ -1,3 +1,5 @@
+import { AppContextHost } from '@concepta/nestjs-common';
+
 import {
   createMockInvitationRepository,
   createMockInvitationEntity,
@@ -100,12 +102,16 @@ describe(InvitationService.name, () => {
 
       await service.send(ctx, invitation);
 
-      expect(mockOtpPort.create).toHaveBeenCalledWith(
-        ctx,
-        'user',
-        'test-user-id',
-      );
-      expect(mockUserPort.getById).toHaveBeenCalledWith(ctx, 'test-user-id');
+      expect(mockOtpPort.create).toHaveBeenCalledTimes(1);
+      const [otpCtx, otpCategory, otpUserId] = mockOtpPort.create.mock.calls[0];
+      expect(otpCtx).toBeInstanceOf(AppContextHost);
+      expect(otpCategory).toBe('user');
+      expect(otpUserId).toBe('test-user-id');
+
+      expect(mockUserPort.getById).toHaveBeenCalledTimes(1);
+      const [userCtx, userId] = mockUserPort.getById.mock.calls[0];
+      expect(userCtx).toBeInstanceOf(AppContextHost);
+      expect(userId).toBe('test-user-id');
       expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
       expect(trxHandle.onRollback).toHaveBeenCalledTimes(1);
     });
@@ -161,7 +167,12 @@ describe(InvitationService.name, () => {
       const result = await service.accept(ctx, 'test-code', 'abc123');
 
       expect(result).toBeInstanceOf(Invitation);
-      expect(mockOtpPort.consume).toHaveBeenCalledWith(ctx, 'user', 'abc123');
+      expect(mockOtpPort.consume).toHaveBeenCalledTimes(1);
+      const [consumeCtx, consumeCategory, consumePasscode] =
+        mockOtpPort.consume.mock.calls[0];
+      expect(consumeCtx).toBeInstanceOf(AppContextHost);
+      expect(consumeCategory).toBe('user');
+      expect(consumePasscode).toBe('abc123');
       expect(mockRepo.save).toHaveBeenCalledTimes(1);
     });
 

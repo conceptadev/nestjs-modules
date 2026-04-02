@@ -5,7 +5,10 @@ import {
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { createSettingsProvider } from '@concepta/nestjs-common';
+import {
+  createContextInterceptorProvider,
+  createSettingsProvider,
+} from '@concepta/nestjs-common';
 
 import {
   CRUD_DEFAULT_RESOLVER_TOKEN,
@@ -110,6 +113,7 @@ export function createCrudProviders(options: {
       useExisting: resolverClass,
     },
     createCrudSettingsProvider(),
+    createContextInterceptorProvider(CrudContextOverlay),
   ];
 }
 

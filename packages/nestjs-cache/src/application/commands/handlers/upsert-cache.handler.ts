@@ -23,15 +23,18 @@ export class UpsertCacheHandler implements ICommandHandler<UpsertCacheCommand> {
   async execute(command: UpsertCacheCommand): Promise<Cache> {
     const { ctx, namespace, dto } = command;
     const { key, type, data, assigneeId, expiresIn } = dto;
-
     const cacheRepo = this.repositoryResolver.resolve(namespace);
 
     const eventContext = new EventContextHost({ namespace }, {});
 
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       let cache: Cache;
 
-      const existing = await cacheRepo.findOne(ctx, { key, type, assigneeId });
+      const existing = await cacheRepo.findOne(txCtx, {
+        key,
+        type,
+        assigneeId,
+      });
 
       if (existing) {
         cache = this.eventPublisher.mergeObjectContext(existing);
@@ -50,10 +53,10 @@ export class UpsertCacheHandler implements ICommandHandler<UpsertCacheCommand> {
         );
       }
 
-      await cacheRepo.save(ctx, cache);
+      await cacheRepo.save(txCtx, cache);
 
-      trx.onCommit(() => cache.commit());
-      trx.onRollback(() => cache.uncommit());
+      txCtx.trx.onCommit(() => cache.commit());
+      txCtx.trx.onRollback(() => cache.uncommit());
 
       return cache;
     });

@@ -1,3 +1,5 @@
+import { AppContextHost } from '@concepta/nestjs-common';
+
 import {
   createMockRoleAssignmentRepository,
   createMockAssignmentRepositoryResolver,
@@ -57,16 +59,17 @@ describe(RevokeRolesHandler.name, () => {
       ),
     );
 
-    expect(mockRepo.findByRoleIdsAndAssignee).toHaveBeenCalledWith(
-      ctx,
-      ['role-1', 'role-2'],
-      'user-1',
-    );
+    expect(mockRepo.findByRoleIdsAndAssignee).toHaveBeenCalledTimes(1);
+    const [findCtx, findRoleIds, findAssigneeId] =
+      mockRepo.findByRoleIdsAndAssignee.mock.calls[0];
+    expect(findCtx).toBeInstanceOf(AppContextHost);
+    expect(findRoleIds).toEqual(['role-1', 'role-2']);
+    expect(findAssigneeId).toBe('user-1');
+
     expect(mockRepo.removeMany).toHaveBeenCalledTimes(1);
-    expect(mockRepo.removeMany).toHaveBeenCalledWith(ctx, [
-      assignment1,
-      assignment2,
-    ]);
+    const [removeCtx, removeEntities] = mockRepo.removeMany.mock.calls[0];
+    expect(removeCtx).toBeInstanceOf(AppContextHost);
+    expect(removeEntities).toEqual([assignment1, assignment2]);
   });
 
   it('should register onCommit and onRollback', async () => {
@@ -102,6 +105,8 @@ describe(RevokeRolesHandler.name, () => {
     );
 
     expect(mockRepo.removeMany).toHaveBeenCalledTimes(1);
-    expect(mockRepo.removeMany).toHaveBeenCalledWith(ctx, [assignment]);
+    const [removeCtx2, removeEntities2] = mockRepo.removeMany.mock.calls[0];
+    expect(removeCtx2).toBeInstanceOf(AppContextHost);
+    expect(removeEntities2).toEqual([assignment]);
   });
 });

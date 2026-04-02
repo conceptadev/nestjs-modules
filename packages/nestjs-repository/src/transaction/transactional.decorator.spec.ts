@@ -17,7 +17,7 @@ describe('Transactional decorator', () => {
     );
 
     expect(metadata).toBeDefined();
-    expect(metadata.propagation).toBe('REQUIRED');
+    expect(metadata.propagation).toBe('SUPPORTS');
     expect(metadata.readOnly).toBe(false);
     expect(metadata.noRollbackFor).toEqual([]);
     expect(metadata.timeout).toBeUndefined();

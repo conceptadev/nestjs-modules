@@ -38,7 +38,8 @@ import { CrudSoftDelete } from '../infrastructure/decorators/operations/crud-sof
 import { CrudUpdate } from '../infrastructure/decorators/operations/crud-update.decorator';
 import { CrudBody } from '../infrastructure/decorators/params/crud-body.decorator';
 import { CrudLimit } from '../infrastructure/decorators/routes/crud-limit.decorator';
-import { WithCrudContextInterface } from '../infrastructure/interceptors/interfaces/with-crud-context.interface';
+import { CrudCtx } from '../infrastructure/interceptors/crud-context.overlay';
+import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/crud-context.interface';
 import { CrudQueryBuilder } from '../infrastructure/request/crud-query.builder';
 import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver';
 import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface';
@@ -147,7 +148,7 @@ describe('#crud-typeorm', () => {
       ) {}
 
       @CrudList({ query: CompanyOps.CrudListQuery })
-      list(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      list(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.list(context);
       }
     }
@@ -225,7 +226,7 @@ describe('#crud-typeorm', () => {
       ) {}
 
       @CrudList({ query: CompanyOps.CrudListQuery })
-      list(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      list(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.list(context);
       }
     }
@@ -351,18 +352,18 @@ describe('#crud-typeorm', () => {
       ) {}
 
       @CrudList({ query: CompanyOps.CrudListQuery })
-      list(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      list(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.list(context);
       }
 
       @CrudRead({ query: CompanyOps.CrudReadQuery })
-      read(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      read(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.read(context);
       }
 
       @CrudCreate({ command: CompanyOps.CrudCreateCommand })
       create(
-        @Ctx() context: WithCrudContextInterface<CompanyEntity>,
+        @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
         @CrudBody() dto: CompanyCreateDto,
       ) {
         return this.crudResolver.create(context, dto);
@@ -373,7 +374,7 @@ describe('#crud-typeorm', () => {
         command: CompanyOps.CrudCreateBatchCommand,
       })
       createBatch(
-        @Ctx() context: WithCrudContextInterface<CompanyEntity>,
+        @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
         @CrudBody() dto: CompanyCreateBatchDto,
       ) {
         return this.crudResolver.createBatch(context, dto);
@@ -381,7 +382,7 @@ describe('#crud-typeorm', () => {
 
       @CrudUpdate({ command: CompanyOps.CrudUpdateCommand })
       update(
-        @Ctx() context: WithCrudContextInterface<CompanyEntity>,
+        @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
         @CrudBody() dto: CompanyUpdateDto,
       ) {
         return this.crudResolver.update(context, dto);
@@ -389,7 +390,7 @@ describe('#crud-typeorm', () => {
 
       @CrudReplace({ command: CompanyOps.CrudReplaceCommand })
       replace(
-        @Ctx() context: WithCrudContextInterface<CompanyEntity>,
+        @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
         @CrudBody() dto: CompanyCreateDto,
       ) {
         return this.crudResolver.replace(context, dto);
@@ -399,7 +400,7 @@ describe('#crud-typeorm', () => {
         response: { returnDeleted: true },
         command: CompanyOps.CrudDeleteCommand,
       })
-      delete(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      delete(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.delete(context);
       }
 
@@ -408,7 +409,7 @@ describe('#crud-typeorm', () => {
         response: { returnDeleted: true },
         command: CompanyOps.CrudSoftDeleteCommand,
       })
-      softDelete(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      softDelete(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.softDelete(context);
       }
 
@@ -416,7 +417,7 @@ describe('#crud-typeorm', () => {
         path: ':id/restore',
         command: CompanyOps.CrudRestoreCommand,
       })
-      restore(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      restore(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.restore(context);
       }
 
@@ -425,7 +426,9 @@ describe('#crud-typeorm', () => {
         response: { returnRestored: true },
         command: CompanyOps.CrudRestoreCommand,
       })
-      restoreWithBody(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      restoreWithBody(
+        @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
+      ) {
         return this.crudResolver.restore(context);
       }
 
@@ -433,7 +436,7 @@ describe('#crud-typeorm', () => {
         path: ':id/silent',
         command: CompanyOps.CrudDeleteCommand,
       })
-      deleteSilent(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      deleteSilent(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.delete(context);
       }
     }
@@ -464,7 +467,7 @@ describe('#crud-typeorm', () => {
         command: DeviceOps.CrudCreateCommand,
       })
       create(
-        @Ctx() context: WithCrudContextInterface<DeviceEntity>,
+        @Ctx(CrudCtx) context: CrudContextInterface<DeviceEntity>,
         @CrudBody() dto: DeviceCreateDto,
       ) {
         return this.crudResolver.create(context, dto);
@@ -905,7 +908,7 @@ describe('#crud-typeorm', () => {
       @CrudCreate({ command: CompanyOps.CrudCreateCommand })
       @Transactional()
       async create(
-        @Ctx() context: WithCrudContextInterface<CompanyEntity>,
+        @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
         @CrudBody() dto: CompanyCreateDto,
       ) {
         // Record whether trx was set by the interceptor
@@ -919,7 +922,7 @@ describe('#crud-typeorm', () => {
       })
       @Transactional()
       async createWithError(
-        @Ctx() context: WithCrudContextInterface<CompanyEntity>,
+        @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
         @CrudBody() dto: CompanyCreateDto,
       ) {
         await this.crudResolver.create(context, dto);
@@ -933,7 +936,7 @@ describe('#crud-typeorm', () => {
       })
       @Transactional()
       async createMultipleWithError(
-        @Ctx() context: WithCrudContextInterface<CompanyEntity>,
+        @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
         @CrudBody() dto: CompanyCreateDto,
       ) {
         // Create first entity - get back the created entity with ID

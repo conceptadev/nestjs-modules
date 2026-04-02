@@ -1,3 +1,5 @@
+import { AppContextHost } from '@concepta/nestjs-common';
+
 import {
   createMockRoleAssignmentRepository,
   createMockAssignmentRepositoryResolver,
@@ -41,9 +43,17 @@ describe(RevokeRoleHandler.name, () => {
       new RevokeRoleCommand(ctx, DEFAULT_ROLE_NAMESPACE, 'role-1', 'user-1'),
     );
 
-    expect(mockRepo.findOne).toHaveBeenCalledWith(ctx, 'role-1', 'user-1');
+    expect(mockRepo.findOne).toHaveBeenCalledTimes(1);
+    const [findCtx, findRoleId, findAssigneeId] =
+      mockRepo.findOne.mock.calls[0];
+    expect(findCtx).toBeInstanceOf(AppContextHost);
+    expect(findRoleId).toBe('role-1');
+    expect(findAssigneeId).toBe('user-1');
+
     expect(mockRepo.remove).toHaveBeenCalledTimes(1);
-    expect(mockRepo.remove).toHaveBeenCalledWith(ctx, existing);
+    const [removeCtx, removeEntity] = mockRepo.remove.mock.calls[0];
+    expect(removeCtx).toBeInstanceOf(AppContextHost);
+    expect(removeEntity).toBe(existing);
   });
 
   it('should register onCommit and onRollback', async () => {

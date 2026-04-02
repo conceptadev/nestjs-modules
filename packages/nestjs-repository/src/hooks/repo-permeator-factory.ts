@@ -8,11 +8,7 @@ import {
 
 import { PlainLiteralObject } from '@nestjs/common';
 
-import {
-  DeepPartial,
-  ModelQueryException,
-  HookContextInterface,
-} from '@concepta/nestjs-common';
+import { DeepPartial, ModelQueryException } from '@concepta/nestjs-common';
 import { HookMethodKeyType } from '@concepta/nestjs-hook';
 
 import {
@@ -25,10 +21,10 @@ import { RepoHookMethodKey as K } from './repository-hook.decorators';
 type RunHooksFn = <T>(
   methodKey: HookMethodKeyType,
   payload: T,
-  ctx: HookContextInterface | undefined,
+  ctx: PlainLiteralObject | undefined,
 ) => Promise<T>;
 
-type Ctx = HookContextInterface;
+type Ctx = PlainLiteralObject;
 type HookCb = PermeateCallback<unknown, Ctx>;
 
 type RepoPermeator<TIn, TOut, TResult = TOut> = IPermeator<

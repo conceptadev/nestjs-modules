@@ -1,3 +1,5 @@
+import { AppContextHost } from '@concepta/nestjs-common';
+
 import {
   createMockTxScope,
   createMockUserCredentialsService,
@@ -25,11 +27,11 @@ describe(CreateUserCredentialHandler.name, () => {
     );
 
     expect(result).toBe(mockCredentials);
-    expect(userCredentialsService.setPassword).toHaveBeenCalledWith(
-      {},
-      expect.anything(),
-      'user-1',
-      'secret',
-    );
+    expect(userCredentialsService.setPassword).toHaveBeenCalledTimes(1);
+    const [ctx, , userId, password] =
+      userCredentialsService.setPassword.mock.calls[0];
+    expect(ctx).toBeInstanceOf(AppContextHost);
+    expect(userId).toBe('user-1');
+    expect(password).toBe('secret');
   });
 });

@@ -40,7 +40,15 @@ export class CrudContextOverlay<
     private reflectionService: CrudMetaview<T>,
   ) {}
 
-  resolve(context: ExecutionContext): CrudContextInterface<T> {
+  private resolve(
+    context: ExecutionContext | undefined,
+  ): CrudContextInterface<T> {
+    if (!context) {
+      throw new CrudContextException({
+        message: 'CrudContextOverlay requires an ExecutionContext',
+      });
+    }
+
     try {
       const req = context.switchToHttp().getRequest();
       const target = context.getClass();
@@ -76,7 +84,7 @@ export class CrudContextOverlay<
 
       const route = this.getRouteOptions(target, handler, operation);
 
-      return {
+      const result: CrudContextInterface<T> = {
         entity,
         operation,
         action: operationToAction(operation),
@@ -87,7 +95,9 @@ export class CrudContextOverlay<
           params: ctxOptions.params,
           route,
         },
-      } as CrudContextInterface<T>;
+      };
+
+      return result;
     } catch (error) {
       throw new CrudContextException({
         httpStatus:
@@ -102,7 +112,8 @@ export class CrudContextOverlay<
   attach(context: ExecutionContext): void {
     const request = context.switchToHttp().getRequest();
     const ctx = getAppContext(request);
-    ctx.defineOverlay(this, context);
+    const resolved = this.resolve(context);
+    ctx.defineOverlay(CrudCtx, resolved);
   }
 
   private getRouteOptions(

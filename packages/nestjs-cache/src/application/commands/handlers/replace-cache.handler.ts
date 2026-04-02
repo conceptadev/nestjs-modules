@@ -24,19 +24,18 @@ export class ReplaceCacheHandler
 
   async execute(command: ReplaceCacheCommand): Promise<Cache> {
     const { ctx, namespace, id, dto } = command;
-
     const cacheRepo = this.repositoryResolver.resolve(namespace);
 
     const eventContext = new EventContextHost({ namespace }, {});
 
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const expirationDate = this.expirationPolicy.resolveExpirationDate(
         dto.expiresIn,
       );
 
       let cache: Cache;
 
-      const existing = await cacheRepo.get(ctx, id);
+      const existing = await cacheRepo.get(txCtx, id);
 
       if (existing) {
         cache = this.eventPublisher.mergeObjectContext(existing);
@@ -47,10 +46,10 @@ export class ReplaceCacheHandler
         );
       }
 
-      await cacheRepo.save(ctx, cache);
+      await cacheRepo.save(txCtx, cache);
 
-      trx.onCommit(() => cache.commit());
-      trx.onRollback(() => cache.uncommit());
+      txCtx.trx.onCommit(() => cache.commit());
+      txCtx.trx.onRollback(() => cache.uncommit());
 
       return cache;
     });

@@ -1,9 +1,8 @@
-import { ExecutionContext, PlainLiteralObject } from '@nestjs/common';
+import { PlainLiteralObject } from '@nestjs/common';
 
 import { AppContextLike } from './app-context-like.type';
 import { OverlayNotDefinedException } from './exceptions/overlay-not-defined.exception';
 import { AppContextInterface } from './interfaces/app-context.interface';
-import { ContextOverlayInterface } from './interfaces/context-overlay.interface';
 import { OverlayRef } from './overlay-ref';
 import { RefsToMethods } from './refs-to-methods.type';
 
@@ -32,16 +31,15 @@ const proxyHandler: ProxyHandler<AppContextHost> = {
 /**
  * Per-request context container backed by typed overlays.
  *
- * Overlays are defined eagerly via {@link defineOverlay} and accessed
- * through typed `with*()` methods. The proxy constructor intercepts
- * calls to undefined `with*` methods and throws
- * {@link OverlayNotDefinedException}.
+ * Overlays are defined via {@link defineOverlay} and accessed through
+ * typed `with*()` methods. The proxy constructor intercepts calls to
+ * undefined `with*` methods and throws {@link OverlayNotDefinedException}.
  *
  * @example
  * ```typescript
- * // In an interceptor:
+ * // In an overlay's attach():
  * const ctx = getAppContext(request);
- * ctx.defineOverlay(this.featureOverlay, context);
+ * ctx.defineOverlay(this.ref, resolvedValues);
  *
  * // In a handler:
  * const typed = ctx.require(WithFeature);
@@ -54,23 +52,20 @@ export class AppContextHost implements AppContextInterface {
   }
 
   /**
-   * Define an overlay method on this context instance.
+   * Define an overlay on this context instance by ref and pre-resolved values.
    *
-   * The overlay's `resolve()` is called immediately and the result is cached.
-   * Subsequent calls to `ctx.<name>()` return a prototype-chain child
-   * with the cached values merged in (preserving `instanceof AppContextHost`).
+   * Installs a `with*()` method that returns the provided values wrapped
+   * in a prototype-chain child of this context.
    *
    * Idempotent — if the overlay name already exists on `this`, this is a no-op.
    */
   defineOverlay<Name extends string, Props extends PlainLiteralObject>(
-    contextOverlay: ContextOverlayInterface<Name, Props>,
-    context?: ExecutionContext,
+    ref: OverlayRef<Name, Props, unknown[]>,
+    values: Props,
   ): void {
-    const name = contextOverlay.ref.name;
+    const name = ref.name;
 
     if (Object.prototype.hasOwnProperty.call(this, name)) return;
-
-    const values = contextOverlay.resolve(context);
 
     Object.defineProperty(this, name, {
       value: function (this: AppContextHost) {
@@ -83,25 +78,12 @@ export class AppContextHost implements AppContextInterface {
   }
 
   /**
-   * Define an overlay by ref and pre-resolved values.
-   *
-   * Convenience shorthand for CLI and testing — skips the
-   * `ContextOverlayInterface` ceremony.
-   */
-  define<Name extends string, Props extends PlainLiteralObject>(
-    ref: OverlayRef<Name, Props>,
-    values: Props,
-  ): void {
-    this.defineOverlay({ ref, resolve: () => values, attach: () => {} });
-  }
-
-  /**
    * Type-level narrowing gate.
    *
    * Returns `this` cast to include the typed `with*()` methods for the
    * given refs. No runtime validation — the proxy handles undefined overlays.
    */
-  require<R extends OverlayRef<string, PlainLiteralObject>[]>(
+  require<R extends OverlayRef<string, PlainLiteralObject, unknown[]>[]>(
     ..._refs: R
   ): this & RefsToMethods<R[number]> {
     return this as this & RefsToMethods<R[number]>;
@@ -110,22 +92,24 @@ export class AppContextHost implements AppContextInterface {
   /**
    * Direct lookup by ref. Returns the resolved overlay props.
    */
-  with<Name extends string, Props extends PlainLiteralObject>(
-    ref: OverlayRef<Name, Props>,
-  ): Props {
+  with<
+    Name extends string,
+    Props extends PlainLiteralObject,
+    Args extends unknown[],
+  >(ref: OverlayRef<Name, Props, Args>, ...args: Args): Props {
     const fn = (this as Record<string, unknown>)[ref.name];
 
     if (typeof fn !== 'function') {
       throw new OverlayNotDefinedException(ref.name);
     }
 
-    return fn.call(this) as Props;
+    return fn.call(this, ...args) as Props;
   }
 
   /**
    * Check if an overlay is defined on this context.
    */
-  supports(ref: OverlayRef<string, PlainLiteralObject>): boolean {
+  supports(ref: OverlayRef<string, PlainLiteralObject, unknown[]>): boolean {
     return ref.name in this;
   }
 
@@ -140,11 +124,11 @@ export class AppContextHost implements AppContextInterface {
       {},
       {
         get(_target, prop: string) {
-          return () => {
+          return (...args: unknown[]) => {
             try {
               const fn = (self as unknown as Record<string, unknown>)[prop];
               if (typeof fn === 'function') {
-                return (fn as () => unknown).call(self);
+                return (fn as (...a: unknown[]) => unknown).apply(self, args);
               }
             } catch {
               // proxy guard threw — overlay not defined, fall through

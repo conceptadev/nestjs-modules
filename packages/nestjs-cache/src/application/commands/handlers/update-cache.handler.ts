@@ -24,13 +24,12 @@ export class UpdateCacheHandler implements ICommandHandler<UpdateCacheCommand> {
   async execute(command: UpdateCacheCommand): Promise<Cache> {
     const { ctx, namespace, id, dto } = command;
     const { data, expiresIn } = dto;
-
     const cacheRepo = this.repositoryResolver.resolve(namespace);
 
     const eventContext = new EventContextHost({ namespace }, {});
 
-    return this.txScope.run(ctx, async (trx) => {
-      const existing = await cacheRepo.get(ctx, id);
+    return this.txScope.run(ctx, async (txCtx) => {
+      const existing = await cacheRepo.get(txCtx, id);
 
       if (!existing) {
         throw new CacheNotFoundException(id);
@@ -46,10 +45,10 @@ export class UpdateCacheHandler implements ICommandHandler<UpdateCacheCommand> {
         cache.extend(eventContext, expirationDate);
       }
 
-      await cacheRepo.save(ctx, cache);
+      await cacheRepo.save(txCtx, cache);
 
-      trx.onCommit(() => cache.commit());
-      trx.onRollback(() => cache.uncommit());
+      txCtx.trx.onCommit(() => cache.commit());
+      txCtx.trx.onRollback(() => cache.uncommit());
 
       return cache;
     });

@@ -25,9 +25,6 @@ export const {
   .setExtras<{ global?: boolean }>({ global: true }, definitionTransform)
   .build();
 
-export type HookOptions = Omit<typeof HOOK_OPTIONS_TYPE, 'global'>;
-export type HookAsyncOptions = Omit<typeof HOOK_ASYNC_OPTIONS_TYPE, 'global'>;
-
 function definitionTransform(
   definition: DynamicModule,
   extras: { global?: boolean },

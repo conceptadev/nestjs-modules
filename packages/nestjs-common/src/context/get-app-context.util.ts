@@ -8,9 +8,9 @@ import { AppContextHost, APP_CONTEXT_KEY } from './app-context.host';
  *
  * @example
  * ```typescript
- * // In an interceptor
+ * // In an overlay's attach() method
  * const ctx = getAppContext(request);
- * ctx.defineOverlay(this.overlay, executionContext);
+ * ctx.defineOverlay(this.ref, resolvedValues);
  * ```
  */
 export function getAppContext(

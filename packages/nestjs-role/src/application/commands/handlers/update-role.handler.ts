@@ -21,13 +21,12 @@ export class UpdateRoleHandler implements ICommandHandler<UpdateRoleCommand> {
 
   async execute(command: UpdateRoleCommand): Promise<Role> {
     const { ctx, namespace, id, dto } = command;
-
     const roleRepo = this.repositoryResolver.resolve(namespace);
 
     const eventContext = new EventContextHost({ namespace }, {});
 
-    return this.txScope.run(ctx, async (trx) => {
-      const existing = await roleRepo.get(ctx, id);
+    return this.txScope.run(ctx, async (txCtx) => {
+      const existing = await roleRepo.get(txCtx, id);
 
       if (!existing) {
         throw new RoleNotFoundException({ id: String(id) });
@@ -37,10 +36,10 @@ export class UpdateRoleHandler implements ICommandHandler<UpdateRoleCommand> {
 
       role.update(eventContext, dto);
 
-      await roleRepo.save(ctx, role);
+      await roleRepo.save(txCtx, role);
 
-      trx.onCommit(() => role.commit());
-      trx.onRollback(() => role.uncommit());
+      txCtx.trx.onCommit(() => role.commit());
+      txCtx.trx.onRollback(() => role.uncommit());
 
       return role;
     });

@@ -9,6 +9,7 @@ import {
   Inject,
   Injectable,
   INestApplication,
+  PlainLiteralObject,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
@@ -31,8 +32,9 @@ import { CrudList } from '../infrastructure/decorators/operations/crud-list.deco
 import { CrudRead } from '../infrastructure/decorators/operations/crud-read.decorator';
 import { CrudUpdate } from '../infrastructure/decorators/operations/crud-update.decorator';
 import { UseCrudLocals } from '../infrastructure/decorators/routes/crud-locals.decorator';
+import { CrudCtx } from '../infrastructure/interceptors/crud-context.overlay';
+import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/crud-context.interface';
 import { CrudLocalInterface } from '../infrastructure/interceptors/interfaces/crud-local.interface';
-import { WithCrudContextInterface } from '../infrastructure/interceptors/interfaces/with-crud-context.interface';
 import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver';
 import { CrudOperationResolver } from '../infrastructure/resolvers/crud-operation.resolver';
 import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface';
@@ -230,17 +232,17 @@ describe('CrudModule.forFeature', () => {
       ) {}
 
       @CrudList()
-      list(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      list(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.list(context);
       }
 
       @CrudRead()
-      read(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      read(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.read(context);
       }
 
       @CrudRead({ path: 'custom/:id' })
-      customRead(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      customRead(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.read(context);
       }
     }
@@ -388,20 +390,20 @@ describe('CrudModule.forFeature', () => {
 
       // Has @CrudList but NO @Ctx - forFeature will add parameter decorators
       @CrudList()
-      list(context: WithCrudContextInterface<CompanyEntity>) {
+      list(context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.list(context);
       }
 
       // Custom method name with operation decorator for read
       @CrudRead()
-      findById(context: WithCrudContextInterface<CompanyEntity>) {
+      findById(context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.read(context);
       }
 
       // Mutation method - has @CrudCreate but NO @Ctx/@CrudBody
       @CrudCreate()
       create(
-        context: WithCrudContextInterface<CompanyEntity>,
+        context: CrudContextInterface<CompanyEntity>,
         dto: Partial<CompanyEntity>,
       ) {
         return this.crudResolver.create(context, dto);
@@ -616,13 +618,13 @@ describe('CrudModule.forFeature', () => {
       ) {}
 
       @CrudList()
-      list(context: WithCrudContextInterface<CompanyEntity>) {
+      list(context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.list(context);
       }
 
       @CrudCreate()
       create(
-        context: WithCrudContextInterface<CompanyEntity>,
+        context: CrudContextInterface<CompanyEntity>,
         dto: Partial<CompanyEntity>,
       ) {
         return this.crudResolver.create(context, dto);
@@ -630,7 +632,7 @@ describe('CrudModule.forFeature', () => {
 
       @CrudUpdate()
       update(
-        context: WithCrudContextInterface<CompanyEntity>,
+        context: CrudContextInterface<CompanyEntity>,
         dto: Partial<CompanyEntity>,
       ) {
         return this.crudResolver.update(context, dto);
@@ -819,7 +821,7 @@ describe('CrudModule.forFeature', () => {
 
       async resolve(
         _context: ExecutionContext,
-        _ctx: WithCrudContextInterface,
+        _ctx: PlainLiteralObject,
         _locals: Readonly<Record<string, unknown>>,
       ): Promise<{ firstName: string; lastName: string }> {
         return { firstName: 'John', lastName: 'Doe' };
@@ -827,7 +829,7 @@ describe('CrudModule.forFeature', () => {
 
       async transform(
         context: ExecutionContext,
-        _ctx: WithCrudContextInterface,
+        _ctx: PlainLiteralObject,
         locals: Readonly<Record<string, unknown>>,
       ): Promise<void> {
         transformSpy(context, locals);
@@ -852,7 +854,7 @@ describe('CrudModule.forFeature', () => {
       ) {}
 
       @CrudRead()
-      async read(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      async read(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.read(context);
       }
     }

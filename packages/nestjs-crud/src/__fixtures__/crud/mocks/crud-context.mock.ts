@@ -12,7 +12,7 @@ export function mockCrudContext<T extends PlainLiteralObject>(
 ) {
   const ctx = new AppContextHost();
 
-  ctx.define(CrudCtx, {
+  ctx.defineOverlay(CrudCtx, {
     entity: overrides.entity ?? 'TestEntity',
     params: overrides.params ?? {},
     query: overrides.query ?? mockCrudParsedQuery(),

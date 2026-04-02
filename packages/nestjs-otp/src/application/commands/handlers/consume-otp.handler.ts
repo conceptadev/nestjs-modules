@@ -40,8 +40,8 @@ export class ConsumeOtpHandler
 
     let result: AssigneeRelationInterface | null = null;
 
-    await this.txScope.run(ctx, async (trx) => {
-      const activeOtp = await otpRepo.findActiveByPasscode(ctx, {
+    await this.txScope.run(ctx, async (txCtx) => {
+      const activeOtp = await otpRepo.findActiveByPasscode(txCtx, {
         category,
         passcode,
       });
@@ -67,10 +67,10 @@ export class ConsumeOtpHandler
 
       activeOtp.consume(eventContext);
 
-      await otpRepo.remove(ctx, activeOtp);
+      await otpRepo.remove(txCtx, activeOtp);
 
-      trx.onCommit(() => activeOtp.commit());
-      trx.onRollback(() => activeOtp.uncommit());
+      txCtx.trx.onCommit(() => activeOtp.commit());
+      txCtx.trx.onRollback(() => activeOtp.uncommit());
 
       result = { assigneeId: activeOtp.assigneeId };
     });

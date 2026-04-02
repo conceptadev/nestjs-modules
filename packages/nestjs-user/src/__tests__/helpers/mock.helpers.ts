@@ -1,10 +1,15 @@
 import { EventPublisher } from '@nestjs/cqrs';
 
 import {
+  AppContextHost,
   UserCredentialEntityInterface,
   UserEntityInterface,
 } from '@concepta/nestjs-common';
-import { TransactionScope } from '@concepta/nestjs-repository';
+import {
+  TrxCtx,
+  TransactionScope,
+  TransactionContextInterface,
+} from '@concepta/nestjs-repository';
 
 import { User } from '../../domain/aggregates/user';
 import { UserCredentials } from '../../domain/aggregates/user-credentials';
@@ -15,17 +20,23 @@ import { UserCredentialsMapper } from '../../infrastructure/persistence/user-cre
 import { UserMapper } from '../../infrastructure/persistence/user.mapper';
 
 export function createMockTxScope(): jest.Mocked<TransactionScope> {
-  const handle = {
+  const trxHandle = {
     onCommit: jest.fn(),
     onRollback: jest.fn(),
   };
+
+  const mockHost = new AppContextHost();
+  mockHost.defineOverlay(TrxCtx, {
+    trx: trxHandle,
+  } as unknown as TransactionContextInterface);
+  const mockTxCtx = mockHost.with(TrxCtx);
 
   const mock = {
     run: jest.fn(),
     runReadOnly: jest.fn(),
   } as unknown as jest.Mocked<TransactionScope>;
 
-  mock.run.mockImplementation((_ctx, fn) => fn(handle));
+  mock.run.mockImplementation((_ctx, fn) => fn(mockTxCtx));
 
   return mock;
 }

@@ -31,7 +31,8 @@ import { CrudFilter } from '../infrastructure/decorators/routes/crud-filter.deco
 import { CrudLimit } from '../infrastructure/decorators/routes/crud-limit.decorator';
 import { CrudMaxLimit } from '../infrastructure/decorators/routes/crud-max-limit.decorator';
 import { CrudSort } from '../infrastructure/decorators/routes/crud-sort.decorator';
-import { WithCrudContextInterface } from '../infrastructure/interceptors/interfaces/with-crud-context.interface';
+import { CrudCtx } from '../infrastructure/interceptors/crud-context.overlay';
+import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/crud-context.interface';
 import { CrudQueryBuilder } from '../infrastructure/request/crud-query.builder';
 import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver';
 import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface';
@@ -138,7 +139,7 @@ describe('#crud-typeorm', () => {
       ) {}
 
       @CrudList({ query: CompanyOps.CrudListQuery })
-      list(@Ctx() context: WithCrudContextInterface<CompanyEntity>) {
+      list(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
         return this.crudResolver.list(context);
       }
     }
@@ -170,18 +171,18 @@ describe('#crud-typeorm', () => {
       ) {}
 
       @CrudList({ query: ProjectOps.CrudListQuery })
-      list(@Ctx() context: WithCrudContextInterface<ProjectEntity>) {
+      list(@Ctx(CrudCtx) context: CrudContextInterface<ProjectEntity>) {
         return this.crudResolver.list(context);
       }
 
       @CrudRead({ query: ProjectOps.CrudReadQuery })
-      read(@Ctx() context: WithCrudContextInterface<ProjectEntity>) {
+      read(@Ctx(CrudCtx) context: CrudContextInterface<ProjectEntity>) {
         return this.crudResolver.read(context);
       }
 
       @CrudUpdate({ command: ProjectOps.CrudUpdateCommand })
       update(
-        @Ctx() context: WithCrudContextInterface<ProjectEntity>,
+        @Ctx(CrudCtx) context: CrudContextInterface<ProjectEntity>,
         @CrudBody() project: ProjectCreateDto,
       ) {
         return this.crudResolver.update(context, project);
@@ -206,7 +207,7 @@ describe('#crud-typeorm', () => {
       ) {}
 
       @CrudList({ query: ProjectOps.CrudListQuery })
-      list(@Ctx() context: WithCrudContextInterface<ProjectEntity>) {
+      list(@Ctx(CrudCtx) context: CrudContextInterface<ProjectEntity>) {
         return this.crudResolver.list(context);
       }
     }
@@ -230,7 +231,7 @@ describe('#crud-typeorm', () => {
       ) {}
 
       @CrudList({ query: ProjectOps.CrudListQuery })
-      list(@Ctx() context: WithCrudContextInterface<ProjectEntity>) {
+      list(@Ctx(CrudCtx) context: CrudContextInterface<ProjectEntity>) {
         return this.crudResolver.list(context);
       }
     }
@@ -254,7 +255,7 @@ describe('#crud-typeorm', () => {
       ) {}
 
       @CrudList({ query: ProjectOps.CrudListQuery })
-      list(@Ctx() context: WithCrudContextInterface<ProjectEntity>) {
+      list(@Ctx(CrudCtx) context: CrudContextInterface<ProjectEntity>) {
         return this.crudResolver.list(context);
       }
     }
@@ -277,7 +278,7 @@ describe('#crud-typeorm', () => {
       ) {}
 
       @CrudList({ query: UserOps.CrudListQuery })
-      list(@Ctx() context: WithCrudContextInterface<UserEntity>) {
+      list(@Ctx(CrudCtx) context: CrudContextInterface<UserEntity>) {
         return this.crudResolver.list(context);
       }
     }
@@ -300,7 +301,7 @@ describe('#crud-typeorm', () => {
       ) {}
 
       @CrudList({ query: NoteOps.CrudListQuery })
-      list(@Ctx() context: WithCrudContextInterface<NoteEntity>) {
+      list(@Ctx(CrudCtx) context: CrudContextInterface<NoteEntity>) {
         return this.crudResolver.list(context);
       }
     }

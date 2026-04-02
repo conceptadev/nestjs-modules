@@ -21,17 +21,16 @@ export class ArchiveCacheHandler
 
   async execute(command: ArchiveCacheCommand): Promise<Cache> {
     const { ctx, namespace, id } = command;
-
     const cacheRepo = this.repositoryResolver.resolve(namespace);
 
-    return this.txScope.run(ctx, async () => {
-      const cache = await cacheRepo.get(ctx, id);
+    return this.txScope.run(ctx, async (txCtx) => {
+      const cache = await cacheRepo.get(txCtx, id);
 
       if (!cache) {
         throw new CacheNotFoundException(id);
       }
 
-      await cacheRepo.softRemove(ctx, cache);
+      await cacheRepo.softRemove(txCtx, cache);
       return cache;
     });
   }

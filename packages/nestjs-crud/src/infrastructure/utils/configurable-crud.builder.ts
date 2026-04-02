@@ -29,7 +29,8 @@ import { CrudBody } from '../decorators/params/crud-body.decorator';
 import { CrudCommandHandler } from '../decorators/routes/crud-command-handler.decorator';
 import { CrudQueryHandler } from '../decorators/routes/crud-query-handler.decorator';
 import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
-import { WithCrudContextInterface } from '../interceptors/interfaces/with-crud-context.interface';
+import { CrudCtx } from '../interceptors/crud-context.overlay';
+import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
 import {
   CrudControllerClassOptionsInterface,
   CrudControllerOptionsInterface,
@@ -350,7 +351,7 @@ export class ConfigurableCrudBuilder<
     const descriptor = Object.getOwnPropertyDescriptor(proto, methodName);
 
     // Apply CrudContext to first parameter
-    Ctx()(proto, methodName, 0);
+    Ctx(CrudCtx)(proto, methodName, 0);
 
     // Apply CrudBody to second parameter if operation requires body
     if (isBodyOperation(operation)) {
@@ -481,69 +482,69 @@ export class ConfigurableCrudBuilder<
       case Operation.List:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: WithCrudContextInterface<Entity>,
+          ctx: CrudContextInterface<Entity>,
         ) {
-          return this.crudResolver.list(crudContext);
+          return this.crudResolver.list(ctx);
         };
       case Operation.Read:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: WithCrudContextInterface<Entity>,
+          ctx: CrudContextInterface<Entity>,
         ) {
-          return this.crudResolver.read(crudContext);
+          return this.crudResolver.read(ctx);
         };
       case Operation.Create:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: WithCrudContextInterface<Entity>,
+          ctx: CrudContextInterface<Entity>,
           dto: DeepPartial<Entity>,
         ) {
-          return this.crudResolver.create(crudContext, dto);
+          return this.crudResolver.create(ctx, dto);
         };
       case Operation.CreateBatch:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: WithCrudContextInterface<Entity>,
+          ctx: CrudContextInterface<Entity>,
           dto: CrudCreateBatchInterface<DeepPartial<Entity>>,
         ) {
-          return this.crudResolver.createBatch(crudContext, dto);
+          return this.crudResolver.createBatch(ctx, dto);
         };
       case Operation.Update:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: WithCrudContextInterface<Entity>,
+          ctx: CrudContextInterface<Entity>,
           dto: DeepPartial<Entity>,
         ) {
-          return this.crudResolver.update(crudContext, dto);
+          return this.crudResolver.update(ctx, dto);
         };
       case Operation.Replace:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: WithCrudContextInterface<Entity>,
+          ctx: CrudContextInterface<Entity>,
           dto: DeepPartial<Entity>,
         ) {
-          return this.crudResolver.replace(crudContext, dto);
+          return this.crudResolver.replace(ctx, dto);
         };
       case Operation.Delete:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: WithCrudContextInterface<Entity>,
+          ctx: CrudContextInterface<Entity>,
         ) {
-          return this.crudResolver.delete(crudContext);
+          return this.crudResolver.delete(ctx);
         };
       case Operation.SoftDelete:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: WithCrudContextInterface<Entity>,
+          ctx: CrudContextInterface<Entity>,
         ) {
-          return this.crudResolver.softDelete(crudContext);
+          return this.crudResolver.softDelete(ctx);
         };
       case Operation.Restore:
         return function (
           this: { crudResolver: CrudResolverInterface },
-          crudContext: WithCrudContextInterface<Entity>,
+          ctx: CrudContextInterface<Entity>,
         ) {
-          return this.crudResolver.restore(crudContext);
+          return this.crudResolver.restore(ctx);
         };
       default: {
         const _exhaustive: never = operation;

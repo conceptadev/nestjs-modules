@@ -1,3 +1,5 @@
+import { AppContextHost } from '@concepta/nestjs-common';
+
 import {
   createMockTxScope,
   createMockUserCredentialsService,
@@ -23,13 +25,13 @@ describe(UpdateUserCredentialHandler.name, () => {
       new UpdateUserCredentialCommand({}, 'user-1', passwordDto),
     );
 
-    expect(userCredentialsService.updatePassword).toHaveBeenCalledWith(
-      {},
-      expect.anything(),
-      'user-1',
-      'new-pass',
-      'old-pass',
-    );
+    expect(userCredentialsService.updatePassword).toHaveBeenCalledTimes(1);
+    const [ctx, , userId, password, passwordCurrent] =
+      userCredentialsService.updatePassword.mock.calls[0];
+    expect(ctx).toBeInstanceOf(AppContextHost);
+    expect(userId).toBe('user-1');
+    expect(password).toBe('new-pass');
+    expect(passwordCurrent).toBe('old-pass');
   });
 
   it('should work without passwordCurrent', async () => {
@@ -39,12 +41,12 @@ describe(UpdateUserCredentialHandler.name, () => {
       new UpdateUserCredentialCommand({}, 'user-1', passwordDto),
     );
 
-    expect(userCredentialsService.updatePassword).toHaveBeenCalledWith(
-      {},
-      expect.anything(),
-      'user-1',
-      'new-pass',
-      undefined,
-    );
+    expect(userCredentialsService.updatePassword).toHaveBeenCalledTimes(1);
+    const [ctx, , userId, password, passwordCurrent] =
+      userCredentialsService.updatePassword.mock.calls[0];
+    expect(ctx).toBeInstanceOf(AppContextHost);
+    expect(userId).toBe('user-1');
+    expect(password).toBe('new-pass');
+    expect(passwordCurrent).toBeUndefined();
   });
 });

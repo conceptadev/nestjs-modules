@@ -7,7 +7,6 @@ import { CrudAdapter } from '../adapters/crud.adapter';
 import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
 import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';
 import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
-import { WithCrudContextInterface } from '../interceptors/interfaces/with-crud-context.interface';
 import { getDynamicAdapterToken } from '../utils/crud-infra.utils';
 
 import { CrudResolverInterface } from './interfaces/crud-resolver.interface';
@@ -41,76 +40,67 @@ export class CrudAdapterResolver implements CrudResolverInterface {
   }
 
   async list<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
   ): Promise<CrudResponsePaginatedInterface<Entity>> {
-    const crudCtx = context.withCrud();
-    return this.resolveAdapter(crudCtx).list(crudCtx);
+    return this.resolveAdapter(ctx).list(ctx);
   }
 
   async read<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
   ): Promise<Entity> {
-    const crudCtx = context.withCrud();
-    return this.resolveAdapter(crudCtx).read(crudCtx);
+    return this.resolveAdapter(ctx).read(ctx);
   }
 
   async create<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
     dto: DeepPartial<Entity>,
   ): Promise<Entity> {
-    const crudCtx = context.withCrud();
-    return this.resolveAdapter(crudCtx).create(crudCtx, dto);
+    return this.resolveAdapter(ctx).create(ctx, dto);
   }
 
   async createBatch<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
     dto: CrudCreateBatchInterface<DeepPartial<Entity>>,
   ): Promise<Entity[]> {
-    const crudCtx = context.withCrud();
-    return this.resolveAdapter(crudCtx).createBatch(crudCtx, dto);
+    return this.resolveAdapter(ctx).createBatch(ctx, dto);
   }
 
   async update<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
     dto: DeepPartial<Entity>,
   ): Promise<Entity> {
-    const crudCtx = context.withCrud();
-    return this.resolveAdapter(crudCtx).update(crudCtx, dto);
+    return this.resolveAdapter(ctx).update(ctx, dto);
   }
 
   async replace<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
     dto: DeepPartial<Entity>,
   ): Promise<Entity> {
-    const crudCtx = context.withCrud();
-    return this.resolveAdapter(crudCtx).replace(crudCtx, dto);
+    return this.resolveAdapter(ctx).replace(ctx, dto);
   }
 
   async delete<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
   ): Promise<Entity | null> {
-    const crudCtx = context.withCrud();
-    return this.resolveAdapter(crudCtx).delete(crudCtx);
+    return this.resolveAdapter(ctx).delete(ctx);
   }
 
   async softDelete<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
   ): Promise<Entity | null> {
-    const crudCtx = context.withCrud();
-    return this.resolveAdapter(crudCtx).softDelete(crudCtx);
+    return this.resolveAdapter(ctx).softDelete(ctx);
   }
 
   async restore<Entity extends PlainLiteralObject>(
-    context: WithCrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
   ): Promise<Entity | null> {
-    const crudCtx = context.withCrud();
-    return this.resolveAdapter(crudCtx).restore(crudCtx);
+    return this.resolveAdapter(ctx).restore(ctx);
   }
 
   protected resolveAdapter<Entity extends PlainLiteralObject>(
-    context: CrudContextInterface<Entity>,
+    ctx: CrudContextInterface<Entity>,
   ): CrudAdapter<Entity> {
-    const adapterToken = getDynamicAdapterToken(context.entity);
+    const adapterToken = getDynamicAdapterToken(ctx.entity);
     return this.moduleRef.get(adapterToken, { strict: false });
   }
 }

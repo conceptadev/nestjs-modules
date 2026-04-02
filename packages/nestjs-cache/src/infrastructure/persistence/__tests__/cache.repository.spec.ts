@@ -1,3 +1,4 @@
+import { AppContextHost } from '@concepta/nestjs-common';
 import { Where } from '@concepta/nestjs-repository';
 import { createMockRepository } from '@concepta/nestjs-repository/testing';
 
@@ -28,7 +29,7 @@ describe(CacheRepository.name, () => {
     typeof createMockRepository<CacheEntityInterface>
   >;
   const w = Where.for<CacheEntityInterface>();
-  const ctx = {};
+  const ctx = new AppContextHost();
 
   beforeEach(() => {
     mockRepoInterface = createMockRepository<CacheEntityInterface>();

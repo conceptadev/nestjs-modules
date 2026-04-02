@@ -20,20 +20,19 @@ export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand> {
 
   async execute(command: CreateRoleCommand): Promise<Role> {
     const { ctx, namespace, dto } = command;
-
     const roleRepo = this.repositoryResolver.resolve(namespace);
 
     const eventContext = new EventContextHost({ namespace }, {});
 
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const role = this.eventPublisher.mergeObjectContext(
         Role.create(eventContext, dto),
       );
 
-      await roleRepo.save(ctx, role);
+      await roleRepo.save(txCtx, role);
 
-      trx.onCommit(() => role.commit());
-      trx.onRollback(() => role.uncommit());
+      txCtx.trx.onCommit(() => role.commit());
+      txCtx.trx.onRollback(() => role.uncommit());
 
       return role;
     });

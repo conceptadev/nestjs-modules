@@ -57,7 +57,7 @@ export class InvitationOtpPort {
     category: string,
     assigneeId: ReferenceId,
   ): Promise<OtpInterface> {
-    return this.txScope.run(ctx, async () => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const { type, expiresIn, namespace, rateSeconds, rateThreshold } =
         this.policy;
 
@@ -69,11 +69,11 @@ export class InvitationOtpPort {
       };
 
       if (this.policy.clearOtpOnCreate) {
-        await this.clear(ctx, category, assigneeId);
+        await this.clear(txCtx, category, assigneeId);
       }
 
       return this.commandBus.execute(
-        new this.portSettings.createCommand(ctx, namespace, dto, {
+        new this.portSettings.createCommand(txCtx, namespace, dto, {
           rateSeconds,
           rateThreshold,
         }),

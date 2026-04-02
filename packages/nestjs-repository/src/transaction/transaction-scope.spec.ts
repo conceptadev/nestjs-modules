@@ -2,13 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { AppContextHost } from '@concepta/nestjs-common';
 
-import { TrxCtx } from '../context/interfaces/transaction-context.interface';
 import { TransactionRequiredException } from '../exceptions/transaction-required.exception';
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants';
 
+import { TransactionContextInterface } from './interfaces/transaction-context.interface';
 import { TransactionInterface } from './interfaces/transaction.interface';
-import { TransactionContextOverlay } from './transaction-context.overlay';
 import {
   TransactionFactoryRegistry,
   TRANSACTION_FACTORY_REGISTRY,
@@ -46,14 +45,12 @@ describe(TransactionScope.name, () => {
     };
   };
 
-  const createCtx = () => new AppContextHost();
-
   beforeEach(async () => {
     mockRegistry = new TransactionFactoryRegistry();
+    mockRegistry.register('default', { create: createMockTransaction });
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
-        TransactionContextOverlay,
         TransactionScope,
         {
           provide: TRANSACTION_FACTORY_REGISTRY,
@@ -69,128 +66,107 @@ describe(TransactionScope.name, () => {
     transaction = moduleRef.get<TransactionScope>(TransactionScope);
   });
 
-  describe('run with REQUIRED propagation (default)', () => {
-    it('should create manager and register on context when no existing trx', async () => {
-      const ctx = createCtx();
+  describe('run with SUPPORTS propagation (default)', () => {
+    it('should auto-define TrxCtx and run lifecycle', async () => {
+      const ctx = new AppContextHost();
       const operation = jest.fn().mockResolvedValue('result');
 
       const result = await transaction.run(ctx, operation);
 
       expect(result).toBe('result');
-      expect(ctx.supports(TrxCtx)).toBe(true);
       expect(operation).toHaveBeenCalledWith(
         expect.objectContaining({
-          onCommit: expect.any(Function),
-          onRollback: expect.any(Function),
+          trx: expect.objectContaining({
+            onCommit: expect.any(Function),
+            onRollback: expect.any(Function),
+          }),
         }),
       );
     });
 
-    it('should create manager when ctx is undefined', async () => {
+    it('should accept a plain object and coerce via AppContextHost.from()', async () => {
+      const ctx = {};
       const operation = jest.fn().mockResolvedValue('result');
 
-      const result = await transaction.run({}, operation);
+      const result = await transaction.run(ctx, operation);
 
       expect(result).toBe('result');
-      expect(operation).toHaveBeenCalledWith(
-        expect.objectContaining({
-          onCommit: expect.any(Function),
-          onRollback: expect.any(Function),
-        }),
-      );
+      expect(operation).toHaveBeenCalled();
     });
 
-    it('should join existing transaction without creating new manager', async () => {
-      const ctx = createCtx();
+    it('should detect nested call via supports(TrxCtx)', async () => {
+      const ctx = new AppContextHost();
 
-      // Simulate outermost run registering trx
       await transaction.run(ctx, async () => {
-        // Nested run should join
+        // TrxCtx is now defined — nested run should join
         const innerResult = await transaction.run(ctx, async () => 'inner');
         expect(innerResult).toBe('inner');
         return 'outer';
       });
     });
-  });
 
-  describe('run with SUPPORTS propagation', () => {
-    it('should use existing transaction if available', async () => {
-      const ctx = createCtx();
+    it('should run lifecycle even without factories registered', async () => {
+      const emptyRegistry = new TransactionFactoryRegistry();
+      const moduleRef = await Test.createTestingModule({
+        providers: [
+          TransactionScope,
+          {
+            provide: TRANSACTION_FACTORY_REGISTRY,
+            useValue: emptyRegistry,
+          },
+          {
+            provide: REPOSITORY_MODULE_OPTIONS,
+            useValue: { defaultTimeout: 30000 },
+          },
+        ],
+      }).compile();
 
-      await transaction.run(ctx, async () => {
-        const result = await transaction.run(ctx, async () => 'supported', {
-          propagation: 'SUPPORTS',
-        });
-        expect(result).toBe('supported');
-        return 'outer';
-      });
-    });
+      const txScope = moduleRef.get<TransactionScope>(TransactionScope);
+      const ctx = new AppContextHost();
 
-    it('should run without transaction if none is active', async () => {
-      const ctx = createCtx();
       const operation = jest.fn().mockResolvedValue('result');
-
-      const result = await transaction.run(ctx, operation, {
-        propagation: 'SUPPORTS',
-      });
+      const result = await txScope.run(ctx, operation);
 
       expect(result).toBe('result');
-      expect(ctx.supports(TrxCtx)).toBe(true);
-      expect(ctx.with(TrxCtx).trx.isActive).toBe(false);
-      expect(operation).toHaveBeenCalledWith(
-        expect.objectContaining({
-          onCommit: expect.any(Function),
-          onRollback: expect.any(Function),
-        }),
-      );
-    });
-
-    it('should run without transaction when ctx is undefined', async () => {
-      const operation = jest.fn().mockResolvedValue('result');
-
-      const result = await transaction.run({}, operation, {
-        propagation: 'SUPPORTS',
-      });
-
-      expect(result).toBe('result');
-      expect(operation).toHaveBeenCalledWith(
-        expect.objectContaining({
-          onCommit: expect.any(Function),
-          onRollback: expect.any(Function),
-        }),
-      );
+      expect(operation).toHaveBeenCalled();
     });
   });
 
   describe('run with MANDATORY propagation', () => {
-    it('should use existing transaction', async () => {
-      const ctx = createCtx();
+    it('should run when factories are registered', async () => {
+      const ctx = new AppContextHost();
+      const operation = jest.fn().mockResolvedValue('result');
 
-      await transaction.run(ctx, async () => {
-        const result = await transaction.run(ctx, async () => 'mandatory', {
-          propagation: 'MANDATORY',
-        });
-        expect(result).toBe('mandatory');
-        return 'outer';
+      const result = await transaction.run(ctx, operation, {
+        propagation: 'MANDATORY',
       });
+
+      expect(result).toBe('result');
     });
 
-    it('should throw if no existing transaction', async () => {
-      const ctx = createCtx();
+    it('should throw when no factories are registered', async () => {
+      const emptyRegistry = new TransactionFactoryRegistry();
+      const moduleRef = await Test.createTestingModule({
+        providers: [
+          TransactionScope,
+          {
+            provide: TRANSACTION_FACTORY_REGISTRY,
+            useValue: emptyRegistry,
+          },
+          {
+            provide: REPOSITORY_MODULE_OPTIONS,
+            useValue: { defaultTimeout: 30000 },
+          },
+        ],
+      }).compile();
+
+      const txScope = moduleRef.get<TransactionScope>(TransactionScope);
+      const ctx = new AppContextHost();
+
       const operation = jest.fn().mockResolvedValue('result');
 
       await expect(
-        transaction.run(ctx, operation, { propagation: 'MANDATORY' }),
-      ).rejects.toThrow(TransactionRequiredException);
-
-      expect(operation).not.toHaveBeenCalled();
-    });
-
-    it('should throw when ctx is undefined', async () => {
-      const operation = jest.fn().mockResolvedValue('result');
-
-      await expect(
-        transaction.run({}, operation, { propagation: 'MANDATORY' }),
+        txScope.run(ctx, operation, { propagation: 'MANDATORY' }),
       ).rejects.toThrow(TransactionRequiredException);
 
       expect(operation).not.toHaveBeenCalled();
@@ -202,12 +178,10 @@ describe(TransactionScope.name, () => {
       const mockTx = createMockTransaction();
       mockRegistry.register('typeorm:default', { create: () => mockTx });
 
-      const ctx = createCtx();
+      const ctx = new AppContextHost();
 
-      await transaction.run(ctx, async () => {
-        // Simulate repo accessing the transaction lazily
-        const { trx } = ctx.with(TrxCtx);
-        const tx = await trx!.getOrStart('typeorm:default');
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        const tx = await txCtx.trx.getOrStart('typeorm:default');
         tx?.markDirty();
         return 'result';
       });
@@ -221,11 +195,10 @@ describe(TransactionScope.name, () => {
       const mockTx = createMockTransaction();
       mockRegistry.register('typeorm:default', { create: () => mockTx });
 
-      const ctx = createCtx();
+      const ctx = new AppContextHost();
 
-      await transaction.run(ctx, async () => {
-        const { trx } = ctx.with(TrxCtx);
-        await trx!.getOrStart('typeorm:default');
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        await txCtx.trx.getOrStart('typeorm:default');
         return 'result';
       });
 
@@ -237,13 +210,12 @@ describe(TransactionScope.name, () => {
       const mockTx = createMockTransaction();
       mockRegistry.register('typeorm:default', { create: () => mockTx });
 
-      const ctx = createCtx();
+      const ctx = new AppContextHost();
       const error = new Error('Operation failed');
 
       await expect(
-        transaction.run(ctx, async () => {
-          const { trx } = ctx.with(TrxCtx);
-          await trx!.getOrStart('typeorm:default');
+        transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+          await txCtx.trx.getOrStart('typeorm:default');
           throw error;
         }),
       ).rejects.toThrow(error);
@@ -257,13 +229,12 @@ describe(TransactionScope.name, () => {
       const mockTx = createMockTransaction();
       mockRegistry.register('typeorm:default', { create: () => mockTx });
 
-      const ctx = createCtx();
+      const ctx = new AppContextHost();
 
       await transaction.run(
         ctx,
-        async () => {
-          const { trx } = ctx.with(TrxCtx);
-          const tx = await trx!.getOrStart('typeorm:default');
+        async (txCtx: TransactionContextInterface) => {
+          const tx = await txCtx.trx.getOrStart('typeorm:default');
           tx?.markDirty();
           return 'result';
         },
@@ -278,13 +249,15 @@ describe(TransactionScope.name, () => {
       const mockTx = createMockTransaction();
       mockRegistry.register('typeorm:default', { create: () => mockTx });
 
-      const ctx = createCtx();
+      const ctx = new AppContextHost();
 
-      await transaction.runReadOnly(ctx, async () => {
-        const { trx } = ctx.with(TrxCtx);
-        await trx!.getOrStart('typeorm:default');
-        return 'result';
-      });
+      await transaction.runReadOnly(
+        ctx,
+        async (txCtx: TransactionContextInterface) => {
+          await txCtx.trx.getOrStart('typeorm:default');
+          return 'result';
+        },
+      );
 
       expect(mockTx.rollback).toHaveBeenCalledTimes(1);
       expect(mockTx.commit).not.toHaveBeenCalled();
@@ -293,7 +266,7 @@ describe(TransactionScope.name, () => {
 
   describe('timeout handling', () => {
     it('should throw TransactionTimeoutException on timeout', async () => {
-      const ctx = createCtx();
+      const ctx = new AppContextHost();
       const operation = jest
         .fn()
         .mockImplementation(
@@ -308,11 +281,11 @@ describe(TransactionScope.name, () => {
 
   describe('onCommit / onRollback callbacks', () => {
     it('should flush onCommit callbacks after successful commit', async () => {
-      const ctx = createCtx();
+      const ctx = new AppContextHost();
       const callback = jest.fn();
 
-      await transaction.run(ctx, async (trx) => {
-        trx.onCommit(callback);
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        txCtx.trx.onCommit(callback);
         return 'result';
       });
 
@@ -320,12 +293,12 @@ describe(TransactionScope.name, () => {
     });
 
     it('should flush onRollback callbacks after error rollback', async () => {
-      const ctx = createCtx();
+      const ctx = new AppContextHost();
       const callback = jest.fn();
 
       await expect(
-        transaction.run(ctx, async (trx) => {
-          trx.onRollback(callback);
+        transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+          txCtx.trx.onRollback(callback);
           throw new Error('fail');
         }),
       ).rejects.toThrow('fail');
@@ -334,12 +307,12 @@ describe(TransactionScope.name, () => {
     });
 
     it('should not flush onCommit callbacks on rollback', async () => {
-      const ctx = createCtx();
+      const ctx = new AppContextHost();
       const commitCb = jest.fn();
 
       await expect(
-        transaction.run(ctx, async (trx) => {
-          trx.onCommit(commitCb);
+        transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+          txCtx.trx.onCommit(commitCb);
           throw new Error('fail');
         }),
       ).rejects.toThrow('fail');
@@ -348,11 +321,11 @@ describe(TransactionScope.name, () => {
     });
 
     it('should not flush onRollback callbacks on commit', async () => {
-      const ctx = createCtx();
+      const ctx = new AppContextHost();
       const rollbackCb = jest.fn();
 
-      await transaction.run(ctx, async (trx) => {
-        trx.onRollback(rollbackCb);
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        txCtx.trx.onRollback(rollbackCb);
         return 'result';
       });
 
@@ -360,22 +333,25 @@ describe(TransactionScope.name, () => {
     });
 
     it('should accumulate callbacks from nested runs and flush at outermost', async () => {
-      const ctx = createCtx();
+      const ctx = new AppContextHost();
       const order: number[] = [];
 
-      await transaction.run(ctx, async (trx) => {
-        trx.onCommit(() => {
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        txCtx.trx.onCommit(() => {
           order.push(1);
         });
 
-        await transaction.run(ctx, async (innerTrx) => {
-          innerTrx.onCommit(() => {
-            order.push(2);
-          });
-          return 'inner';
-        });
+        await transaction.run(
+          ctx,
+          async (innerTxCtx: TransactionContextInterface) => {
+            innerTxCtx.trx.onCommit(() => {
+              order.push(2);
+            });
+            return 'inner';
+          },
+        );
 
-        trx.onCommit(() => {
+        txCtx.trx.onCommit(() => {
           order.push(3);
         });
         return 'outer';
@@ -390,11 +366,10 @@ describe(TransactionScope.name, () => {
       const mockTx = createMockTransaction();
       mockRegistry.register('typeorm:default', { create: () => mockTx });
 
-      const ctx = createCtx();
+      const ctx = new AppContextHost();
 
-      await transaction.run(ctx, async () => {
-        const { trx } = ctx.with(TrxCtx);
-        const tx = await trx!.getOrStart('typeorm:default');
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        const tx = await txCtx.trx.getOrStart('typeorm:default');
         tx?.markDirty();
 
         // Nested run — should just execute, no lifecycle ownership
@@ -411,13 +386,12 @@ describe(TransactionScope.name, () => {
       const mockTx = createMockTransaction();
       mockRegistry.register('typeorm:default', { create: () => mockTx });
 
-      const ctx = createCtx();
+      const ctx = new AppContextHost();
       const error = new Error('inner failure');
 
       await expect(
-        transaction.run(ctx, async () => {
-          const { trx } = ctx.with(TrxCtx);
-          await trx!.getOrStart('typeorm:default');
+        transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+          await txCtx.trx.getOrStart('typeorm:default');
 
           await transaction.run(ctx, async () => {
             throw error;

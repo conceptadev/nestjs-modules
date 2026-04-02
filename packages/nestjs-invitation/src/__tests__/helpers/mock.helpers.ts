@@ -37,7 +37,6 @@ export function createMockInvitationRepository(): jest.Mocked<InvitationReposito
     findAllByUserAndCategory: jest.fn(),
     save: jest.fn(),
     remove: jest.fn(),
-    removeAll: jest.fn(),
   } as unknown as jest.Mocked<InvitationRepository>;
 }
 

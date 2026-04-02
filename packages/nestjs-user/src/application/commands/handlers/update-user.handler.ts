@@ -21,11 +21,10 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand> {
 
   async execute(command: UpdateUserCommand): Promise<User> {
     const { ctx, id, dto } = command;
-
     const eventContext = new EventContextHost({}, {});
 
-    return this.txScope.run(ctx, async (trx) => {
-      const existing = await this.userRepository.get(ctx, id);
+    return this.txScope.run(ctx, async (txCtx) => {
+      const existing = await this.userRepository.get(txCtx, id);
 
       if (!existing) {
         throw new UserNotFoundException({ id });
@@ -35,10 +34,10 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand> {
 
       user.update(eventContext, dto);
 
-      await this.userRepository.save(ctx, user);
+      await this.userRepository.save(txCtx, user);
 
-      trx.onCommit(() => user.commit());
-      trx.onRollback(() => user.uncommit());
+      txCtx.trx.onCommit(() => user.commit());
+      txCtx.trx.onRollback(() => user.uncommit());
 
       return user;
     });

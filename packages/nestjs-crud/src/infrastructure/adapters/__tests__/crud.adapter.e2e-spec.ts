@@ -11,8 +11,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ActionEnum, AppContextHost, Operation } from '@concepta/nestjs-common';
 import {
   getDynamicRepositoryToken,
+  RepoCtx,
+  TrxCtx,
   RepositoryModule,
   Where,
+  TransactionContextInterface,
 } from '@concepta/nestjs-repository';
 import {
   CommonSqliteEntity,
@@ -47,7 +50,11 @@ const ENTITY_TOKEN = 'test-adapter-entity';
 
 function ctx(overrides?: Partial<CrudContextInterface<TestEntityFixture>>) {
   const host = new AppContextHost();
-  host.define(CrudCtx, {
+  host.defineOverlay(RepoCtx, { entity: ENTITY_TOKEN });
+  host.defineOverlay(TrxCtx, {
+    trx: { onCommit() {}, onRollback() {} },
+  } as unknown as TransactionContextInterface);
+  host.defineOverlay(CrudCtx, {
     entity: 'TestEntityFixture',
     params: {},
     query: mockCrudParsedQuery<TestEntityFixture>(),
@@ -1078,7 +1085,7 @@ describe('CrudAdapter relations (e2e)', () => {
 
   function relCtx(overrides?: Partial<CrudContextInterface<CompanyEntity>>) {
     const host = new AppContextHost();
-    host.define(CrudCtx, {
+    host.defineOverlay(CrudCtx, {
       entity: 'CompanyEntity',
       params: {},
       query: mockCrudParsedQuery<CompanyEntity>(),

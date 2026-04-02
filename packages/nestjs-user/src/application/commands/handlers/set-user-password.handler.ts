@@ -23,17 +23,16 @@ export class SetUserPasswordHandler
 
   async execute(command: SetUserPasswordCommand): Promise<UserCredentials> {
     const { ctx, userId, password } = command;
-
-    return this.txScope.run(ctx, async () => {
+    return this.txScope.run(ctx, async (txCtx) => {
       // verify user exists
-      const user = await this.userRepository.get(ctx, userId);
+      const user = await this.userRepository.get(txCtx, userId);
 
       if (!user) {
         throw new UserNotFoundException({ id: userId });
       }
 
       return this.commandBus.execute(
-        new CreateUserCredentialCommand(ctx, userId, password),
+        new CreateUserCredentialCommand(txCtx, userId, password),
       );
     });
   }

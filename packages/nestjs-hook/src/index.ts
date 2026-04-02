@@ -28,6 +28,3 @@ export { createHookMethodDecorator } from './decorators/hook-method.decorator';
 
 // Context overlay
 export { HookContextOverlay, HooksCtx } from './hook-context.overlay';
-
-// Interfaces
-export { WithHooksContextInterface } from './interfaces/with-hooks-context.interface';

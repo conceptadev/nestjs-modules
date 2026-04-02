@@ -22,12 +22,11 @@ export class CreateCacheHandler implements ICommandHandler<CreateCacheCommand> {
 
   async execute(command: CreateCacheCommand): Promise<Cache> {
     const { ctx, namespace, dto } = command;
-
     const cacheRepo = this.repositoryResolver.resolve(namespace);
 
     const eventContext = new EventContextHost({ namespace }, {});
 
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const expirationDate = this.expirationPolicy.resolveExpirationDate(
         dto.expiresIn,
       );
@@ -36,10 +35,10 @@ export class CreateCacheHandler implements ICommandHandler<CreateCacheCommand> {
         Cache.create(eventContext, dto, expirationDate),
       );
 
-      await cacheRepo.save(ctx, cache);
+      await cacheRepo.save(txCtx, cache);
 
-      trx.onCommit(() => cache.commit());
-      trx.onRollback(() => cache.uncommit());
+      txCtx.trx.onCommit(() => cache.commit());
+      txCtx.trx.onRollback(() => cache.uncommit());
 
       return cache;
     });

@@ -21,14 +21,13 @@ export class AssignRolesHandler implements ICommandHandler<AssignRolesCommand> {
 
   async execute(command: AssignRolesCommand): Promise<RoleAssignment[]> {
     const { ctx, namespace, roleIds, assigneeId } = command;
-
     const assignmentRepo = this.repositoryResolver.resolve(namespace);
 
     const eventContext = new EventContextHost({ namespace }, {});
 
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const existingCount = await assignmentRepo.countByRoleIdsAndAssignee(
-        ctx,
+        txCtx,
         roleIds,
         assigneeId,
       );
@@ -43,10 +42,12 @@ export class AssignRolesHandler implements ICommandHandler<AssignRolesCommand> {
         ),
       );
 
-      await assignmentRepo.saveMany(ctx, roleAssignments);
+      await assignmentRepo.saveMany(txCtx, roleAssignments);
 
-      trx.onCommit(() => roleAssignments.forEach((ra) => ra.commit()));
-      trx.onRollback(() => roleAssignments.forEach((ra) => ra.uncommit()));
+      txCtx.trx.onCommit(() => roleAssignments.forEach((ra) => ra.commit()));
+      txCtx.trx.onRollback(() =>
+        roleAssignments.forEach((ra) => ra.uncommit()),
+      );
 
       return roleAssignments;
     });

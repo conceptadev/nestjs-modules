@@ -6,9 +6,9 @@ import { TransactionInterface } from './transaction.interface';
  */
 export interface TransactionManagerInterface {
   /**
-   * Whether a transaction scope has claimed ownership of this manager.
+   * Whether real transaction support is available (factories registered).
    */
-  readonly isActive: boolean;
+  readonly isSupported: boolean;
 
   /**
    * Get the current (top of stack) transaction for the given key.

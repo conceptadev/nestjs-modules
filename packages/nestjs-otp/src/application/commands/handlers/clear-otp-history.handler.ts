@@ -30,8 +30,8 @@ export class ClearOtpHistoryHandler
 
     if (keepHistoryDays === undefined) return;
 
-    return this.txScope.run(ctx, async () => {
-      await this.historyCleanup.cleanup(ctx, {
+    return this.txScope.run(ctx, async (txCtx) => {
+      await this.historyCleanup.cleanup(txCtx, {
         namespace,
         assigneeId,
         category,

@@ -84,7 +84,6 @@ export { InvitationAlreadyAcceptedException } from './domain/exceptions/invitati
 export { InvitationRevokedException } from './domain/exceptions/invitation-revoked.exception';
 export { InvitationUserUndefinedException } from './application/exceptions/invitation-user-undefined.exception';
 export { InvitationNotAcceptedException } from './gateways/exceptions/invitation-not-accepted.exception';
-export { InvitationSendMailException } from './application/exceptions/invitation-send-mail.exception';
 export { InvitationNotFoundException } from './application/exceptions/invitation-not-found.exception';
 
 // gateway commands

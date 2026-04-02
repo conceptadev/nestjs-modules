@@ -1,3 +1,5 @@
+import { AppContextHost } from '@concepta/nestjs-common';
+
 import {
   createMockRoleRepository,
   createMockRoleRepositoryResolver,
@@ -34,7 +36,10 @@ describe(RemoveRoleHandler.name, () => {
     );
 
     expect(mockRepo.remove).toHaveBeenCalledTimes(1);
-    expect(mockRepo.remove).toHaveBeenCalledWith(ctx, existing);
+    expect(mockRepo.remove).toHaveBeenCalledWith(
+      expect.any(AppContextHost),
+      existing,
+    );
   });
 
   it('should throw RoleNotFoundException when role does not exist', async () => {

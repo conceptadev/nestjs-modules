@@ -27,25 +27,24 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
 
   async execute(command: CreateUserCommand): Promise<User> {
     const { ctx, dto } = command;
-
     const userEventContext = new EventContextHost({}, {});
 
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const user = this.eventPublisher.mergeObjectContext(
         User.create(userEventContext, dto),
       );
 
-      await this.userRepository.save(ctx, user);
+      await this.userRepository.save(txCtx, user);
 
       // create initial credentials if password provided
       if (dto.password) {
         await this.commandBus.execute(
-          new CreateUserCredentialCommand(ctx, user.id, dto.password),
+          new CreateUserCredentialCommand(txCtx, user.id, dto.password),
         );
       }
 
-      trx.onCommit(() => user.commit());
-      trx.onRollback(() => user.uncommit());
+      txCtx.trx.onCommit(() => user.commit());
+      txCtx.trx.onRollback(() => user.uncommit());
 
       return user;
     });

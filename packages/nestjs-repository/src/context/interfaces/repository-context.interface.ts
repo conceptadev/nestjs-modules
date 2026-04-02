@@ -1,15 +1,17 @@
-import { HookContextInterface } from '@concepta/nestjs-common';
+import { PlainLiteralObject } from '@nestjs/common';
 
-import { TransactionContextInterface } from './transaction-context.interface';
+import { OverlayRef } from '@concepta/nestjs-common';
 
 /**
- * Context interface for repository operations.
+ * Context interface for the entity routing overlay.
  *
- * Extends TransactionContextInterface for transaction support
- * and HookContextInterface for hook access.
+ * Returned by the `withRepo()` overlay method. Identifies which
+ * entity key is in scope for hooks and repository operations.
  */
-export interface RepositoryContextInterface
-  extends TransactionContextInterface,
-    HookContextInterface {
+export interface RepositoryContextInterface extends PlainLiteralObject {
   entity: string;
 }
+
+export const RepoCtx = new OverlayRef<'withRepo', RepositoryContextInterface>(
+  'withRepo',
+);

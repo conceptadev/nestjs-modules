@@ -9,7 +9,8 @@ import { CrudCreate } from '../../decorators/operations/crud-create.decorator';
 import { CrudList } from '../../decorators/operations/crud-list.decorator';
 import { CrudRead } from '../../decorators/operations/crud-read.decorator';
 import { CrudBody } from '../../decorators/params/crud-body.decorator';
-import { WithCrudContextInterface } from '../../interceptors/interfaces/with-crud-context.interface';
+import { CrudCtx } from '../../interceptors/crud-context.overlay';
+import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface';
 import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver';
 import { CrudResolverInterface } from '../../resolvers/interfaces/crud-resolver.interface';
 import { ConfigurableCrudBuilder } from '../configurable-crud.builder';
@@ -33,18 +34,18 @@ describe('ConfigurableCrudBuilder', () => {
         ) {}
 
         @CrudList()
-        async list(@Ctx() ctx: WithCrudContextInterface<TestEntity>) {
+        async list(@Ctx(CrudCtx) ctx: CrudContextInterface<TestEntity>) {
           return this.crudResolver.list(ctx);
         }
 
         @CrudRead()
-        async read(@Ctx() ctx: WithCrudContextInterface<TestEntity>) {
+        async read(@Ctx(CrudCtx) ctx: CrudContextInterface<TestEntity>) {
           return this.crudResolver.read(ctx);
         }
 
         @CrudCreate()
         async create(
-          @Ctx() ctx: WithCrudContextInterface<TestEntity>,
+          @Ctx(CrudCtx) ctx: CrudContextInterface<TestEntity>,
           @CrudBody() dto: TestEntity,
         ) {
           return this.crudResolver.create(ctx, dto);
@@ -356,7 +357,7 @@ describe('ConfigurableCrudBuilder', () => {
         ) {}
 
         @CrudList()
-        async list(@Ctx() ctx: WithCrudContextInterface<TestEntity>) {
+        async list(@Ctx(CrudCtx) ctx: CrudContextInterface<TestEntity>) {
           return this.crudResolver.list(ctx);
         }
       }
@@ -390,7 +391,7 @@ describe('ConfigurableCrudBuilder', () => {
         ) {}
 
         @CrudList()
-        async list(@Ctx() ctx: WithCrudContextInterface<TestEntity>) {
+        async list(@Ctx(CrudCtx) ctx: CrudContextInterface<TestEntity>) {
           return this.crudResolver.list(ctx);
         }
       }
@@ -566,7 +567,7 @@ describe('ConfigurableCrudBuilder', () => {
       const ControllerClass = result.controllers['TestEntityController'];
       const proto = ControllerClass.prototype;
 
-      const mockContext = {} as WithCrudContextInterface<TestEntity>;
+      const mockContext = {} as CrudContextInterface<TestEntity>;
       const mockDto = { id: '1', name: 'test' };
       const mockBatchDto = { bulk: [mockDto] };
 

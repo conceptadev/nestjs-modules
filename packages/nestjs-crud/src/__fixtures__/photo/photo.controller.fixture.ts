@@ -23,7 +23,8 @@ import { CrudRestore } from '../../infrastructure/decorators/operations/crud-res
 import { CrudSoftDelete } from '../../infrastructure/decorators/operations/crud-soft-delete.decorator';
 import { CrudUpdate } from '../../infrastructure/decorators/operations/crud-update.decorator';
 import { CrudBody } from '../../infrastructure/decorators/params/crud-body.decorator';
-import { WithCrudContextInterface } from '../../infrastructure/interceptors/interfaces/with-crud-context.interface';
+import { CrudCtx } from '../../infrastructure/interceptors/crud-context.overlay';
+import { CrudContextInterface } from '../../infrastructure/interceptors/interfaces/crud-context.interface';
 import { CrudAdapterResolver } from '../../infrastructure/resolvers/crud-adapter.resolver';
 import { CrudResolverInterface } from '../../infrastructure/resolvers/interfaces/crud-resolver.interface';
 
@@ -52,24 +53,24 @@ export class PhotoControllerFixture {
 
   @CrudList({ query: CrudListQuery })
   async list(
-    @Ctx()
-    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
+    @Ctx(CrudCtx)
+    ctx: CrudContextInterface<PhotoEntityInterfaceFixture>,
   ) {
     return this.crudResolver.list(ctx);
   }
 
   @CrudRead({ query: CrudReadQuery })
   async read(
-    @Ctx()
-    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
+    @Ctx(CrudCtx)
+    ctx: CrudContextInterface<PhotoEntityInterfaceFixture>,
   ) {
     return this.crudResolver.read(ctx);
   }
 
   @CrudCreateBatch({ command: CrudCreateBatchCommand })
   async createBatch(
-    @Ctx()
-    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
+    @Ctx(CrudCtx)
+    ctx: CrudContextInterface<PhotoEntityInterfaceFixture>,
     @CrudBody() photoCreateBatchDto: PhotoCreateBatchDtoFixture,
   ) {
     return this.crudResolver.createBatch(ctx, photoCreateBatchDto);
@@ -77,8 +78,8 @@ export class PhotoControllerFixture {
 
   @CrudCreate({ command: CrudCreateCommand })
   async create(
-    @Ctx()
-    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
+    @Ctx(CrudCtx)
+    ctx: CrudContextInterface<PhotoEntityInterfaceFixture>,
     @CrudBody() photoCreateDto: PhotoCreateDtoFixture,
   ) {
     return this.crudResolver.create(ctx, photoCreateDto);
@@ -86,8 +87,8 @@ export class PhotoControllerFixture {
 
   @CrudUpdate({ command: CrudUpdateCommand })
   async update(
-    @Ctx()
-    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
+    @Ctx(CrudCtx)
+    ctx: CrudContextInterface<PhotoEntityInterfaceFixture>,
     @CrudBody() photoUpdateDto: PhotoUpdateDtoFixture,
   ) {
     return this.crudResolver.update(ctx, photoUpdateDto);
@@ -95,8 +96,8 @@ export class PhotoControllerFixture {
 
   @CrudReplace({ command: CrudReplaceCommand })
   async replace(
-    @Ctx()
-    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
+    @Ctx(CrudCtx)
+    ctx: CrudContextInterface<PhotoEntityInterfaceFixture>,
     @CrudBody() photoCreateDto: PhotoCreateDtoFixture,
   ) {
     return this.crudResolver.replace(ctx, photoCreateDto);
@@ -104,24 +105,24 @@ export class PhotoControllerFixture {
 
   @CrudDelete({ command: CrudDeleteCommand })
   async delete(
-    @Ctx()
-    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
+    @Ctx(CrudCtx)
+    ctx: CrudContextInterface<PhotoEntityInterfaceFixture>,
   ) {
     return this.crudResolver.delete(ctx);
   }
 
   @CrudSoftDelete({ path: 'soft/:id', command: CrudSoftDeleteCommand })
   async softDelete(
-    @Ctx()
-    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
+    @Ctx(CrudCtx)
+    ctx: CrudContextInterface<PhotoEntityInterfaceFixture>,
   ) {
     return this.crudResolver.softDelete(ctx);
   }
 
   @CrudRestore({ command: CrudRestoreCommand })
   async restore(
-    @Ctx()
-    ctx: WithCrudContextInterface<PhotoEntityInterfaceFixture>,
+    @Ctx(CrudCtx)
+    ctx: CrudContextInterface<PhotoEntityInterfaceFixture>,
   ) {
     return this.crudResolver.restore(ctx);
   }

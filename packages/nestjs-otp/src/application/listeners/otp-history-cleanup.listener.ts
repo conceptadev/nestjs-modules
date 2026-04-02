@@ -1,6 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 
+import { AppContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { OtpCreatedEvent } from '../../domain/events/otp-created.event';
@@ -29,10 +30,10 @@ export class OtpHistoryCleanupListener
 
     if (keepHistoryDays === undefined) return;
 
-    const ctx = {};
+    const appCtx = new AppContextHost();
 
-    await this.txScope.run(ctx, async () => {
-      await this.historyCleanup.cleanup(ctx, {
+    await this.txScope.run(appCtx, async (txCtx) => {
+      await this.historyCleanup.cleanup(txCtx, {
         namespace,
         assigneeId,
         category,

@@ -20,14 +20,14 @@ export class RemoveOtpHandler implements ICommandHandler<RemoveOtpCommand> {
 
     const otpRepo = this.repositoryResolver.resolve(namespace);
 
-    return this.txScope.run(ctx, async () => {
-      const found = await otpRepo.findByPasscode(ctx, {
+    return this.txScope.run(ctx, async (txCtx) => {
+      const found = await otpRepo.findByPasscode(txCtx, {
         category: otp.category,
         passcode: otp.passcode,
       });
 
       if (found) {
-        await otpRepo.remove(ctx, found);
+        await otpRepo.remove(txCtx, found);
       }
     });
   }

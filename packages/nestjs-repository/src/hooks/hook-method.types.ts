@@ -2,7 +2,6 @@ import { PlainLiteralObject } from '@nestjs/common';
 
 import { DeepPartial } from '@concepta/nestjs-common';
 
-import { RepositoryContextInterface } from '../context/interfaces/repository-context.interface';
 import {
   RepositoryFindOptions,
   RepositoryFindOneOptions,
@@ -17,7 +16,7 @@ import {
  */
 export type BeforeFindMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (
   options: RepositoryFindOptions<Entity>,
   ctx?: Ctx,
@@ -28,7 +27,7 @@ export type BeforeFindMethod<
  */
 export type AfterFindMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity[], ctx?: Ctx) => Promise<Entity[]>;
 
 /**
@@ -36,7 +35,7 @@ export type AfterFindMethod<
  */
 export type BeforeFindOneMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (
   options: RepositoryFindOneOptions<Entity>,
   ctx?: Ctx,
@@ -47,7 +46,7 @@ export type BeforeFindOneMethod<
  */
 export type AfterFindOneMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity | null, ctx?: Ctx) => Promise<Entity | null>;
 
 /**
@@ -55,7 +54,7 @@ export type AfterFindOneMethod<
  */
 export type BeforeCountMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (
   options: RepositoryFindOptions<Entity>,
   ctx?: Ctx,
@@ -65,7 +64,7 @@ export type BeforeCountMethod<
  * After count - receives count, returns count.
  */
 export type AfterCountMethod<
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: number, ctx?: Ctx) => Promise<number>;
 
 /**
@@ -73,7 +72,7 @@ export type AfterCountMethod<
  */
 export type BeforeFindAndCountMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (
   options: RepositoryFindOptions<Entity>,
   ctx?: Ctx,
@@ -84,7 +83,7 @@ export type BeforeFindAndCountMethod<
  */
 export type AfterFindAndCountMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: [Entity[], number], ctx?: Ctx) => Promise<[Entity[], number]>;
 
 // =============================================================================
@@ -96,7 +95,7 @@ export type AfterFindAndCountMethod<
  */
 export type BeforeCreateMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (data: DeepPartial<Entity>, ctx?: Ctx) => Promise<DeepPartial<Entity>>;
 
 /**
@@ -104,7 +103,7 @@ export type BeforeCreateMethod<
  */
 export type AfterCreateMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity, ctx?: Ctx) => Promise<Entity>;
 
 /**
@@ -112,7 +111,7 @@ export type AfterCreateMethod<
  */
 export type BeforeCreateManyMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (data: DeepPartial<Entity>[], ctx?: Ctx) => Promise<DeepPartial<Entity>[]>;
 
 /**
@@ -120,7 +119,7 @@ export type BeforeCreateManyMethod<
  */
 export type AfterCreateManyMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity[], ctx?: Ctx) => Promise<Entity[]>;
 
 // =============================================================================
@@ -132,7 +131,7 @@ export type AfterCreateManyMethod<
  */
 export type BeforeUpdateMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (
   entity: Entity,
   data: DeepPartial<Entity>,
@@ -144,7 +143,7 @@ export type BeforeUpdateMethod<
  */
 export type AfterUpdateMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity, ctx?: Ctx) => Promise<Entity>;
 
 /**
@@ -152,7 +151,7 @@ export type AfterUpdateMethod<
  */
 export type BeforeUpsertMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (data: DeepPartial<Entity>, ctx?: Ctx) => Promise<DeepPartial<Entity>>;
 
 /**
@@ -160,7 +159,7 @@ export type BeforeUpsertMethod<
  */
 export type AfterUpsertMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity, ctx?: Ctx) => Promise<Entity>;
 
 /**
@@ -168,7 +167,7 @@ export type AfterUpsertMethod<
  */
 export type BeforeReplaceMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (
   entity: Entity,
   data: DeepPartial<Entity>,
@@ -180,7 +179,7 @@ export type BeforeReplaceMethod<
  */
 export type AfterReplaceMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity, ctx?: Ctx) => Promise<Entity>;
 
 // =============================================================================
@@ -192,7 +191,7 @@ export type AfterReplaceMethod<
  */
 export type BeforeDeleteMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (entity: Entity, ctx?: Ctx) => Promise<Entity>;
 
 /**
@@ -200,7 +199,7 @@ export type BeforeDeleteMethod<
  */
 export type AfterDeleteMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity, ctx?: Ctx) => Promise<Entity>;
 
 // =============================================================================
@@ -212,7 +211,7 @@ export type AfterDeleteMethod<
  */
 export type BeforeSoftDeleteMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (entity: Entity, ctx?: Ctx) => Promise<Entity>;
 
 /**
@@ -220,7 +219,7 @@ export type BeforeSoftDeleteMethod<
  */
 export type AfterSoftDeleteMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity, ctx?: Ctx) => Promise<Entity>;
 
 /**
@@ -228,7 +227,7 @@ export type AfterSoftDeleteMethod<
  */
 export type BeforeRestoreMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (entity: Entity, ctx?: Ctx) => Promise<Entity>;
 
 /**
@@ -236,7 +235,7 @@ export type BeforeRestoreMethod<
  */
 export type AfterRestoreMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity, ctx?: Ctx) => Promise<Entity>;
 
 // =============================================================================
@@ -249,7 +248,7 @@ export type AfterRestoreMethod<
  */
 export type BeforeReadMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (
   options: RepositoryFindOptions<Entity>,
   ctx?: Ctx,
@@ -260,7 +259,7 @@ export type BeforeReadMethod<
  */
 export type AfterReadMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (
   result: Entity | Entity[] | null | number | [Entity[], number],
   ctx?: Ctx,
@@ -271,7 +270,7 @@ export type AfterReadMethod<
  */
 export type BeforeWriteMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (
   data: DeepPartial<Entity> | DeepPartial<Entity>[],
   ctx?: Ctx,
@@ -282,7 +281,7 @@ export type BeforeWriteMethod<
  */
 export type AfterWriteMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity | Entity[], ctx?: Ctx) => Promise<Entity | Entity[]>;
 
 /**
@@ -290,7 +289,7 @@ export type AfterWriteMethod<
  */
 export type BeforeTransitionMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (entity: Entity, ctx?: Ctx) => Promise<Entity>;
 
 /**
@@ -298,7 +297,7 @@ export type BeforeTransitionMethod<
  */
 export type AfterTransitionMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity, ctx?: Ctx) => Promise<Entity>;
 
 /**
@@ -306,7 +305,7 @@ export type AfterTransitionMethod<
  */
 export type BeforeDestroyMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (entity: Entity, ctx?: Ctx) => Promise<Entity>;
 
 /**
@@ -314,5 +313,5 @@ export type BeforeDestroyMethod<
  */
 export type AfterDestroyMethod<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  Ctx extends RepositoryContextInterface = RepositoryContextInterface,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity, ctx?: Ctx) => Promise<Entity>;

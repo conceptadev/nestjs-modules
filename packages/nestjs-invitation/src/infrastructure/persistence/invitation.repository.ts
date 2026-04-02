@@ -70,14 +70,4 @@ export class InvitationRepository implements InvitationRepositoryInterface {
       ctx,
     });
   }
-
-  async removeAll(
-    ctx: PlainLiteralObject,
-    invitations: Invitation[],
-  ): Promise<void> {
-    await this.repository.deleteMany(
-      invitations.map((inv) => this.mapper.toPersistence(inv)),
-      { ctx },
-    );
-  }
 }

@@ -12,7 +12,12 @@ import { PlainLiteralObject } from '@nestjs/common';
  * export const WithFeature = new OverlayRef<'withFeature', FeatureContextInterface>('withFeature');
  * ```
  */
-export class OverlayRef<Name extends string, Props extends PlainLiteralObject> {
+export class OverlayRef<
+  Name extends string,
+  Props extends PlainLiteralObject,
+  Args extends unknown[] = [],
+> {
   declare readonly _props: Props;
+  declare readonly _args: Args;
   constructor(readonly name: Name) {}
 }

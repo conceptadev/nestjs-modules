@@ -19,17 +19,16 @@ export class RemoveCacheHandler implements ICommandHandler<RemoveCacheCommand> {
 
   async execute(command: RemoveCacheCommand): Promise<Cache> {
     const { ctx, namespace, id } = command;
-
     const cacheRepo = this.repositoryResolver.resolve(namespace);
 
-    return this.txScope.run(ctx, async () => {
-      const cache = await cacheRepo.get(ctx, id);
+    return this.txScope.run(ctx, async (txCtx) => {
+      const cache = await cacheRepo.get(txCtx, id);
 
       if (!cache) {
         throw new CacheNotFoundException(id);
       }
 
-      await cacheRepo.remove(ctx, cache);
+      await cacheRepo.remove(txCtx, cache);
       return cache;
     });
   }

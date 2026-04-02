@@ -20,13 +20,12 @@ export class ReplaceRoleHandler implements ICommandHandler<ReplaceRoleCommand> {
 
   async execute(command: ReplaceRoleCommand): Promise<Role> {
     const { ctx, namespace, id, dto } = command;
-
     const roleRepo = this.repositoryResolver.resolve(namespace);
 
     const eventContext = new EventContextHost({ namespace }, {});
 
-    return this.txScope.run(ctx, async (trx) => {
-      const existing = await roleRepo.get(ctx, id);
+    return this.txScope.run(ctx, async (txCtx) => {
+      const existing = await roleRepo.get(txCtx, id);
       let role: Role;
 
       if (existing) {
@@ -38,10 +37,10 @@ export class ReplaceRoleHandler implements ICommandHandler<ReplaceRoleCommand> {
         );
       }
 
-      await roleRepo.save(ctx, role);
+      await roleRepo.save(txCtx, role);
 
-      trx.onCommit(() => role.commit());
-      trx.onRollback(() => role.uncommit());
+      txCtx.trx.onCommit(() => role.commit());
+      txCtx.trx.onRollback(() => role.uncommit());
 
       return role;
     });
