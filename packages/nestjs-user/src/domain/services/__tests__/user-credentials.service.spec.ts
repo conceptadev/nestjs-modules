@@ -1,8 +1,5 @@
 import { EventContextHost } from '@concepta/nestjs-common';
-import {
-  PasswordCreationServiceInterface,
-  PasswordStorageServiceInterface,
-} from '@concepta/nestjs-password';
+import { PasswordCreationServiceInterface } from '@concepta/nestjs-password';
 
 import {
   createMockEventPublisher,
@@ -29,22 +26,13 @@ describe(UserCredentialsService.name, () => {
     } as unknown as jest.Mocked<PasswordCreationServiceInterface>;
   }
 
-  function createMockPasswordStorageService() {
-    return {
-      generateSalt: jest.fn(),
-      hash: jest.fn(),
-      hashObject: jest.fn(),
-    } as unknown as jest.Mocked<PasswordStorageServiceInterface>;
-  }
-
   function setup(policy?: UserPasswordPolicy) {
     const userCredentialsRepository = createMockUserCredentialsRepository();
     const txScope = createMockTxScope();
     const eventPublisher = createMockEventPublisher();
     const passwordCreationService = createMockPasswordCreationService();
-    const passwordStorageService = createMockPasswordStorageService();
 
-    passwordStorageService.hash.mockResolvedValue({
+    passwordCreationService.create.mockResolvedValue({
       passwordHash: 'new-hash',
       passwordSalt: 'new-salt',
     });
@@ -54,7 +42,6 @@ describe(UserCredentialsService.name, () => {
       txScope,
       eventPublisher,
       passwordCreationService,
-      passwordStorageService,
       policy ?? new UserPasswordPolicy(),
     );
 
@@ -62,7 +49,6 @@ describe(UserCredentialsService.name, () => {
       service,
       userCredentialsRepository,
       passwordCreationService,
-      passwordStorageService,
     };
   }
 
@@ -100,7 +86,7 @@ describe(UserCredentialsService.name, () => {
   describe('updatePassword', () => {
     describe('default policy', () => {
       it('should create new credentials when none exist', async () => {
-        const { service, userCredentialsRepository, passwordStorageService } =
+        const { service, userCredentialsRepository, passwordCreationService } =
           setup();
         userCredentialsRepository.findActiveByUserId.mockResolvedValue(null);
 
@@ -108,7 +94,7 @@ describe(UserCredentialsService.name, () => {
           service.updatePassword({}, eventContext, 'user-1', 'new-pass'),
         ).resolves.toBeUndefined();
 
-        expect(passwordStorageService.hash).toHaveBeenCalledWith('new-pass');
+        expect(passwordCreationService.create).toHaveBeenCalledWith('new-pass');
         expect(userCredentialsRepository.save).toHaveBeenCalled();
       });
 

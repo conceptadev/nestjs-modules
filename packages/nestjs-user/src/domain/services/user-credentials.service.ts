@@ -10,8 +10,6 @@ import {
 import {
   PasswordCreationService,
   PasswordCreationServiceInterface,
-  PasswordStorageService,
-  PasswordStorageServiceInterface,
 } from '@concepta/nestjs-password';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
@@ -32,8 +30,6 @@ export class UserCredentialsService {
     private readonly eventPublisher: EventPublisher,
     @Inject(PasswordCreationService)
     private readonly passwordCreationService: PasswordCreationServiceInterface,
-    @Inject(PasswordStorageService)
-    private readonly passwordStorageService: PasswordStorageServiceInterface,
     private readonly passwordPolicy: UserPasswordPolicy,
   ) {}
 
@@ -53,7 +49,8 @@ export class UserCredentialsService {
         throw new UserCredentialsAlreadyExistException();
       }
 
-      const passwordStorage = await this.passwordStorageService.hash(password);
+      const passwordStorage =
+        await this.passwordCreationService.create(password);
       return this.createCredentials(
         txCtx,
         eventContext,
@@ -88,7 +85,8 @@ export class UserCredentialsService {
       await this.validateHistory(txCtx, userId, password);
 
       // hash
-      const passwordStorage = await this.passwordStorageService.hash(password);
+      const passwordStorage =
+        await this.passwordCreationService.create(password);
 
       if (activeCredentials) {
         await this.deactivateCredentials(
