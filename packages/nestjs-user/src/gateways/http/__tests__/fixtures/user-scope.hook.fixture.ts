@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 import {
+  AppContextInterface,
   UserCredentialEntityInterface,
   UserEntityInterface,
 } from '@concepta/nestjs-common';
-import { WithLocalContextInterface } from '@concepta/nestjs-crud';
 import {
   BeforeFindOne,
   RepoHook,
@@ -13,7 +13,7 @@ import {
   Where,
 } from '@concepta/nestjs-repository';
 
-import { AuthorizedUserLocalFixture } from './authorized-user.local.fixture';
+import { AuthorizedUserRef } from './authorized-user.local.fixture';
 
 @RepoHook()
 @Injectable()
@@ -21,9 +21,11 @@ export class UserScopeHookFixture {
   @BeforeFindOne(RepoSpec.isEntity('user'))
   async scopeUserLookup(
     options: RepositoryFindOneOptions<UserEntityInterface>,
-    ctx?: WithLocalContextInterface,
+    ctx?: AppContextInterface,
   ): Promise<RepositoryFindOneOptions<UserEntityInterface>> {
-    const authorizedUser = ctx?.withLocal(AuthorizedUserLocalFixture);
+    const authorizedUser = ctx?.supports(AuthorizedUserRef)
+      ? ctx.with(AuthorizedUserRef)
+      : undefined;
 
     if (!authorizedUser?.id) {
       return options;
@@ -40,9 +42,11 @@ export class UserScopeHookFixture {
   @BeforeFindOne(RepoSpec.isEntity('user-credentials'))
   async scopeCredentialsLookup(
     options: RepositoryFindOneOptions<UserCredentialEntityInterface>,
-    ctx?: WithLocalContextInterface,
+    ctx?: AppContextInterface,
   ): Promise<RepositoryFindOneOptions<UserCredentialEntityInterface>> {
-    const authorizedUser = ctx?.withLocal(AuthorizedUserLocalFixture);
+    const authorizedUser = ctx?.supports(AuthorizedUserRef)
+      ? ctx.with(AuthorizedUserRef)
+      : undefined;
 
     if (!authorizedUser?.id) {
       return options;

@@ -5,17 +5,21 @@ import {
   ExecutionContext,
   Injectable,
   NestInterceptor,
+  PlainLiteralObject,
 } from '@nestjs/common';
 
-import { ContextOverlayInterface } from './interfaces/context-overlay.interface';
+import { OverlayRef } from './overlay-ref';
 
 @Injectable()
-export class ContextOverlayInterceptor implements NestInterceptor {
-  constructor(private readonly overlay: ContextOverlayInterface) {}
+export abstract class ContextOverlayInterceptor implements NestInterceptor {
+  abstract readonly ref: OverlayRef<string, PlainLiteralObject, unknown[]>;
+  abstract attach(context: ExecutionContext): void | Promise<void>;
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-    this.overlay.attach(context);
-
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<unknown>> {
+    await this.attach(context);
     return next.handle();
   }
 }

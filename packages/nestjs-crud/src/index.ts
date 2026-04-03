@@ -3,16 +3,11 @@ export { CrudModule } from './crud.module';
 
 // interfaces
 export { CrudContextInterface } from './infrastructure/interceptors/interfaces/crud-context.interface';
-export { WithLocalContextInterface } from './infrastructure/interceptors/interfaces/with-local-context.interface';
 export { CrudParsedQueryInterface } from './infrastructure/request/interfaces/crud-parsed-query.interface';
 export { CrudResponsePaginatedInterface } from './infrastructure/dtos/interfaces/crud-response-paginated.interface';
 export { CrudResponseMetrics } from './infrastructure/dtos/interfaces/crud-response-metrics.interface';
 export { CrudCreateBatchInterface } from './infrastructure/dtos/interfaces/crud-create-batch.interface';
 export { CrudModuleForFeatureOptionsInterface } from './infrastructure/config/interfaces/crud-module-for-feature-options.interface';
-export {
-  CrudLocal,
-  CrudLocalInterface,
-} from './infrastructure/interceptors/interfaces/crud-local.interface';
 export {
   CrudControllerClassOptionsInterface,
   CrudControllerOptionsInterface,
@@ -65,14 +60,11 @@ export { CrudReturnRestored } from './infrastructure/decorators/routes/crud-retu
 export { CrudSerialize } from './infrastructure/decorators/routes/crud-serialize.decorator';
 export { CrudSort } from './infrastructure/decorators/routes/crud-sort.decorator';
 export { CrudValidate } from './infrastructure/decorators/routes/crud-validate.decorator';
-export { UseCrudLocals } from './infrastructure/decorators/routes/crud-locals.decorator';
-
 // interceptors
 export {
   CrudContextOverlay,
   CrudCtx,
 } from './infrastructure/interceptors/crud-context.overlay';
-export { CrudLocalsInterceptor } from './infrastructure/interceptors/crud-locals.interceptor';
 
 // param decorators
 export { CrudBody } from './infrastructure/decorators/params/crud-body.decorator';

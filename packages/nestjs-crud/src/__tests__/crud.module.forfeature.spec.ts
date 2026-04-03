@@ -3,14 +3,7 @@ import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 import request from 'supertest';
 import { DataSource } from 'typeorm';
 
-import {
-  ExecutionContext,
-  Get,
-  Inject,
-  Injectable,
-  INestApplication,
-  PlainLiteralObject,
-} from '@nestjs/common';
+import { Get, Inject, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 
@@ -31,10 +24,8 @@ import { CrudCreate } from '../infrastructure/decorators/operations/crud-create.
 import { CrudList } from '../infrastructure/decorators/operations/crud-list.decorator';
 import { CrudRead } from '../infrastructure/decorators/operations/crud-read.decorator';
 import { CrudUpdate } from '../infrastructure/decorators/operations/crud-update.decorator';
-import { UseCrudLocals } from '../infrastructure/decorators/routes/crud-locals.decorator';
 import { CrudCtx } from '../infrastructure/interceptors/crud-context.overlay';
 import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/crud-context.interface';
-import { CrudLocalInterface } from '../infrastructure/interceptors/interfaces/crud-local.interface';
 import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver';
 import { CrudOperationResolver } from '../infrastructure/resolvers/crud-operation.resolver';
 import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface';
@@ -799,140 +790,6 @@ describe('CrudModule.forFeature', () => {
       // Custom handler appends " (filtered)" to each name
       res.body.data.forEach((company: CompanyEntity) => {
         expect(company.name).toMatch(/(FILTERED)$/);
-      });
-    });
-  });
-
-  /**
-   * Test 5: CrudLocal Resolver Integration
-   *
-   * This test verifies that CrudLocal resolvers are executed before the
-   * controller method and their resolved values are accessible via
-   * crudContext.locals. Demonstrates the request context enrichment pattern.
-   */
-  describe('CrudLocal resolver integration', () => {
-    const transformSpy = jest.fn();
-
-    @Injectable()
-    class CurrentUserLocal
-      implements CrudLocalInterface<{ firstName: string; lastName: string }>
-    {
-      static readonly KEY = 'currentUser';
-
-      async resolve(
-        _context: ExecutionContext,
-        _ctx: PlainLiteralObject,
-        _locals: Readonly<Record<string, unknown>>,
-      ): Promise<{ firstName: string; lastName: string }> {
-        return { firstName: 'John', lastName: 'Doe' };
-      }
-
-      async transform(
-        context: ExecutionContext,
-        _ctx: PlainLiteralObject,
-        locals: Readonly<Record<string, unknown>>,
-      ): Promise<void> {
-        transformSpy(context, locals);
-      }
-    }
-
-    @CrudController({
-      path: 'company-e',
-      entity: CRUD_TEST_COMPANY_ENTITY_NAME,
-      adapter: CrudAdapter,
-      request: {
-        body: CompanyDto,
-        params: { id: { field: 'id', type: 'number', primary: true } },
-      },
-      response: { resource: CompanyDto, paginated: CompanyPaginatedDto },
-    })
-    @UseCrudLocals(CurrentUserLocal)
-    class CompanyControllerE {
-      constructor(
-        @Inject(CrudAdapterResolver)
-        private readonly crudResolver: CrudResolverInterface,
-      ) {}
-
-      @CrudRead()
-      async read(@Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>) {
-        return this.crudResolver.read(context);
-      }
-    }
-
-    let testModule: TestingModule;
-    let app: INestApplication;
-    let crudResolverReadSpy: jest.SpyInstance;
-
-    beforeAll(async () => {
-      testModule = await Test.createTestingModule({
-        imports: [
-          TypeOrmModule.forRoot(ormSqliteConfig),
-          RepositoryModule.forRoot({}),
-          RepositoryModule.forFeature({
-            module: TypeOrmRepositoryModule,
-            entities: [
-              {
-                key: CRUD_TEST_COMPANY_ENTITY_NAME,
-                entity: CompanyEntity,
-              },
-            ],
-          }),
-          CrudModule.forRoot({}),
-          CrudModule.forFeature<CompanyEntity>({
-            crud: {
-              controller: { class: CompanyControllerE },
-              operations: [{ operation: Operation.Read }],
-            },
-          }),
-        ],
-        providers: [CurrentUserLocal],
-      }).compile();
-
-      app = testModule.createNestApplication();
-      await app.init();
-
-      const datasource = testModule.get<DataSource>(getDataSourceToken());
-      const seeds = new Seeds();
-      await seeds.up(datasource.createQueryRunner());
-
-      const crudResolver = testModule.get(CrudAdapterResolver);
-      crudResolverReadSpy = jest.spyOn(crudResolver, 'read');
-    });
-
-    afterAll(async () => {
-      crudResolverReadSpy.mockRestore();
-      await app?.close();
-    });
-
-    it('should register the CrudLocal provider', () => {
-      const local = testModule.get(CurrentUserLocal);
-      expect(local).toBeDefined();
-      expect(local).toBeInstanceOf(CurrentUserLocal);
-    });
-
-    it('should resolve CrudLocal and make accessible via withLocal', async () => {
-      const server = app.getHttpServer();
-      const res = await request(server).get('/company-e/1');
-
-      expect(res.status).toBe(200);
-      expect(crudResolverReadSpy).toHaveBeenCalledTimes(1);
-      const ctx = crudResolverReadSpy.mock.calls[0][0];
-      expect(ctx.withLocal(CurrentUserLocal)).toEqual({
-        firstName: 'John',
-        lastName: 'Doe',
-      });
-    });
-
-    it('should call transform after the controller response', async () => {
-      transformSpy.mockClear();
-      const server = app.getHttpServer();
-      const res = await request(server).get('/company-e/1');
-
-      expect(res.status).toBe(200);
-      expect(transformSpy).toHaveBeenCalledTimes(1);
-      expect(transformSpy.mock.calls[0][0]).toBeDefined(); // ExecutionContext
-      expect(transformSpy.mock.calls[0][1]).toEqual({
-        currentUser: { firstName: 'John', lastName: 'Doe' },
       });
     });
   });

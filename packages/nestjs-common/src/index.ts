@@ -131,11 +131,9 @@ export { OverlayNotDefinedException } from './context/exceptions/overlay-not-def
 
 // Context overlay utilities
 export { ContextOverlayInterceptor } from './context/context-overlay.interceptor';
-export { createContextInterceptorProvider } from './context/create-context-interceptor-provider';
 
 // Context interfaces
 export { AppContextInterface } from './context/interfaces/app-context.interface';
-export { ContextOverlayInterface } from './context/interfaces/context-overlay.interface';
 export { HookContextInterface } from './context/interfaces/hook-context.interface';
 // Event context
 export { EventContextHost } from './events/event-context.host';

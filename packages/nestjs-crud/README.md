@@ -24,7 +24,6 @@ build modes: fully generated, pre-decorated, and hybrid.
 - [Query String Parameters](#query-string-parameters)
 - [Paginated Response](#paginated-response)
 - [Serialization and Validation](#serialization-and-validation)
-- [CrudLocal Resolvers](#crudlocal-resolvers)
 - [Resolvers](#resolvers)
 - [CQRS Integration](#cqrs-integration)
 - [Specifications and Hooks](#specifications-and-hooks)
@@ -251,8 +250,8 @@ HTTP Request
 Controller (generated or hand-written)
   |  @CrudController + @CrudList / @CrudCreate / ...
   |
-CrudContextInterceptor
-  |  Parses params, query string, resolves CrudLocals
+CrudContextOverlay
+  |  Parses params, query string into CrudContextInterface
   |
 CrudResolver (dispatches operation)
   |
@@ -270,9 +269,9 @@ Database Driver (TypeORM, etc.)
 
 - **Controller** — Decorated class with operation methods. Can be fully
   generated, hand-written, or a hybrid of both.
-- **CrudContextInterceptor** — Parses the HTTP request into a
-  `CrudContextInterface` (entity name, route params, query string, options),
-  resolves CrudLocal providers, and runs response transforms after the controller.
+- **CrudContextOverlay** — Parses the HTTP request into a
+  `CrudContextInterface` (entity name, route params, query string, options)
+  and defines it as an overlay on the request context.
 - **Resolver** — Dispatches the operation to the adapter directly, through
   a handler, or through the CQRS bus.
 - **CrudAdapter** — Wraps a `RepositoryInterface` and adds pagination,
@@ -696,76 +695,6 @@ Or with the route decorator:
 ```ts
 @CrudValidate({ whitelist: true, forbidNonWhitelisted: true })
 ```
-
-## CrudLocal Resolvers
-
-CrudLocal resolvers run before the controller method, adding data to
-`crudContext.locals`. After the response, transform hooks run in the same order.
-
-### Interface
-
-```ts
-interface CrudLocal<T> {
-  readonly KEY: string;
-  new (...args: unknown[]): CrudLocalInterface<T>;
-}
-
-interface CrudLocalInterface<T> {
-  resolve(
-    context: ExecutionContext,
-    crudContext: CrudContextInterface,
-  ): Promise<T>;
-
-  transform(
-    context: ExecutionContext,
-    crudContext: CrudContextInterface,
-  ): Promise<void>;
-}
-```
-
-### Example
-
-```ts
-import { Injectable, ExecutionContext } from '@nestjs/common';
-import { CrudLocalInterface, CrudContextInterface } from '@concepta/nestjs-crud';
-
-@Injectable()
-export class TenantLocal implements CrudLocalInterface<string> {
-  static readonly KEY = 'tenantId';
-
-  async resolve(context: ExecutionContext): Promise<string> {
-    const req = context.switchToHttp().getRequest();
-    return req.headers['x-tenant-id'];
-  }
-
-  async transform(): Promise<void> {
-    // no-op
-  }
-}
-```
-
-### Usage
-
-Apply `@UseCrudLocals()` at controller or method level:
-
-```ts
-@CrudController({ ... })
-@UseCrudLocals(TenantLocal)
-export class PhotoController {
-  @CrudList()
-  async list(@Ctx() ctx: CrudContextInterface<PhotoEntity>) {
-    // ctx.locals.tenantId is available
-    return this.resolver.list(ctx);
-  }
-}
-```
-
-### Behavior
-
-- Controller-level and method-level resolvers accumulate (controller first)
-- Each resolver's result is frozen into `locals[KEY]`
-- Keys must be unique across all resolvers for a given route
-- Transform hooks run after the response is produced, in the same order
 
 ## Resolvers
 

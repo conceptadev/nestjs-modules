@@ -33,7 +33,6 @@ import { CrudExclude } from '../decorators/routes/crud-exclude.decorator';
 import { CrudFilter } from '../decorators/routes/crud-filter.decorator';
 import { CrudJoin } from '../decorators/routes/crud-join.decorator';
 import { CrudLimit } from '../decorators/routes/crud-limit.decorator';
-import { UseCrudLocals } from '../decorators/routes/crud-locals.decorator';
 import { CrudMaxLimit } from '../decorators/routes/crud-max-limit.decorator';
 import { CrudName } from '../decorators/routes/crud-name.decorator';
 import { CrudOperation } from '../decorators/routes/crud-operation.decorator';
@@ -57,7 +56,6 @@ import { CrudReturnRestored } from '../decorators/routes/crud-return-restored.de
 import { CrudSerialize } from '../decorators/routes/crud-serialize.decorator';
 import { CrudSort } from '../decorators/routes/crud-sort.decorator';
 import { CrudValidate } from '../decorators/routes/crud-validate.decorator';
-import { CrudLocal } from '../interceptors/interfaces/crud-local.interface';
 import { CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
 import { CrudSerializationOptionsInterface } from '../interfaces/crud-serialization-options.interface';
 import { CrudOptionsInterface } from '../request/interfaces/crud-options.interface';
@@ -231,19 +229,6 @@ export class CrudMetaview<
     handler: MethodHandler,
   ): Type | undefined {
     return CrudMetadata.getHierarchy(CrudResponsePaginated, handler, target);
-  }
-
-  /**
-   * Get CrudLocal resolver classes for a route.
-   *
-   * Returns the accumulated list of CrudLocal classes from both
-   * class-level and method-level CrudLocals decorators.
-   */
-  public getLocals(
-    target: ControllerTarget,
-    handler: MethodHandler,
-  ): CrudLocal[] | undefined {
-    return CrudMetadata.getHierarchyArray(UseCrudLocals, handler, target);
   }
 
   /**

@@ -2,7 +2,7 @@ import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import {
-  ContextOverlayInterface,
+  ContextOverlayInterceptor,
   getAppContext,
   OverlayRef,
 } from '@concepta/nestjs-common';
@@ -18,12 +18,12 @@ export const RoleCtx = new OverlayRef<'withRole', RoleContextInterface>(
 );
 
 @Injectable()
-export class RoleContextOverlay
-  implements ContextOverlayInterface<'withRole', RoleContextInterface>
-{
+export class RoleContextOverlay extends ContextOverlayInterceptor {
   readonly ref = RoleCtx;
 
-  constructor(private readonly reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) {
+    super();
+  }
 
   attach(context: ExecutionContext): void {
     const request = context.switchToHttp().getRequest();

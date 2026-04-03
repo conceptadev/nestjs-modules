@@ -4,12 +4,10 @@ import {
   Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import {
-  createContextInterceptorProvider,
-  createSettingsProvider,
-} from '@concepta/nestjs-common';
+import { createSettingsProvider } from '@concepta/nestjs-common';
 
 import { AssignRoleHandler } from './application/commands/handlers/assign-role.handler';
 import { AssignRolesHandler } from './application/commands/handlers/assign-roles.handler';
@@ -125,8 +123,7 @@ export function createRoleProviders(options: {
     GetAssignedRolesHandler,
     IsAssignedRoleHandler,
     IsAssignedRolesHandler,
-    RoleContextOverlay,
-    createContextInterceptorProvider(RoleContextOverlay),
+    { provide: APP_INTERCEPTOR, useClass: RoleContextOverlay },
     ...(options.providers ?? []),
   ];
 }

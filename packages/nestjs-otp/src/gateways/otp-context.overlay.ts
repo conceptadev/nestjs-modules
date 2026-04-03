@@ -2,7 +2,7 @@ import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import {
-  ContextOverlayInterface,
+  ContextOverlayInterceptor,
   getAppContext,
   OverlayRef,
 } from '@concepta/nestjs-common';
@@ -16,12 +16,12 @@ import { OtpContextInterface } from './interfaces/otp-context.interface';
 export const OtpCtx = new OverlayRef<'withOtp', OtpContextInterface>('withOtp');
 
 @Injectable()
-export class OtpContextOverlay
-  implements ContextOverlayInterface<'withOtp', OtpContextInterface>
-{
+export class OtpContextOverlay extends ContextOverlayInterceptor {
   readonly ref = OtpCtx;
 
-  constructor(private readonly reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) {
+    super();
+  }
 
   attach(context: ExecutionContext): void {
     const request = context.switchToHttp().getRequest();

@@ -4,12 +4,10 @@ import {
   Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import {
-  createContextInterceptorProvider,
-  createSettingsProvider,
-} from '@concepta/nestjs-common';
+import { createSettingsProvider } from '@concepta/nestjs-common';
 
 import { ClearOtpHistoryHandler } from './application/commands/handlers/clear-otp-history.handler';
 import { ClearOtpsHandler } from './application/commands/handlers/clear-otps.handler';
@@ -112,9 +110,8 @@ export function createOtpProviders(options: {
     FindAssignedOtpsHandler,
     GetOtpHandler,
     ValidateOtpHandler,
-    // Gateway overlays
-    OtpContextOverlay,
-    createContextInterceptorProvider(OtpContextOverlay),
+    // Context overlays
+    { provide: APP_INTERCEPTOR, useClass: OtpContextOverlay },
     ...(options.providers ?? []),
   ];
 }

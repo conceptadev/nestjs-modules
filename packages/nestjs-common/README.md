@@ -216,33 +216,35 @@ import { FooContextInterface } from './foo-context.interface';
 export const FooCtx = new OverlayRef<'withFoo', FooContextInterface>('withFoo');
 ```
 
-#### Step 2: Implement ContextOverlayInterface
+#### Step 2: Extend ContextOverlayInterceptor
 
-The interface has two members:
+`ContextOverlayInterceptor` is an abstract base class. Subclasses provide:
 
 - **`ref`** -- the `OverlayRef` token
-- **`attach(context)`** -- called by the interceptor pipeline. Responsible for
-  resolving overlay values, getting the `AppContextHost`, and calling
-  `defineOverlay(ref, values)`.
+- **`attach(context)`** -- resolves overlay values, gets `AppContextHost`,
+  and calls `defineOverlay(ref, values)`.
+
+Since the overlay IS an interceptor, it can be registered directly as
+`APP_INTERCEPTOR` or applied per-route via `@UseInterceptors()`.
 
 ```ts
 // foo-context.overlay.ts
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import {
-  ContextOverlayInterface,
+  ContextOverlayInterceptor,
   getAppContext,
 } from '@concepta/nestjs-common';
 import { FooContextInterface } from './foo-context.interface';
 import { FooCtx } from './foo-context.overlay';
 
 @Injectable()
-export class FooContextOverlay
-  implements ContextOverlayInterface<'withFoo', FooContextInterface>
-{
+export class FooContextOverlay extends ContextOverlayInterceptor {
   readonly ref = FooCtx;
 
-  constructor(private readonly reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) {
+    super();
+  }
 
   attach(context: ExecutionContext): void {
     const request = context.switchToHttp().getRequest();
@@ -263,21 +265,30 @@ export class FooContextOverlay
 
 #### Step 3: Register as a global interceptor
 
-Use `createContextInterceptorProvider` in your module's providers array.
-This wraps the overlay in a `ContextOverlayInterceptor` and registers it
-as `APP_INTERCEPTOR`.
+Since the overlay extends `ContextOverlayInterceptor` (which implements
+`NestInterceptor`), register it directly as `APP_INTERCEPTOR`:
 
 ```ts
-import { createContextInterceptorProvider } from '@concepta/nestjs-common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { FooContextOverlay } from './foo-context.overlay';
 
 @Module({
   providers: [
-    FooContextOverlay,
-    createContextInterceptorProvider(FooContextOverlay),
+    { provide: APP_INTERCEPTOR, useClass: FooContextOverlay },
   ],
 })
 export class FooModule {}
+```
+
+For per-route overlays, use `@UseInterceptors()`:
+
+```ts
+import { UseInterceptors } from '@nestjs/common';
+import { FooContextOverlay } from './foo-context.overlay';
+
+@Controller('foo')
+@UseInterceptors(FooContextOverlay)
+export class FooController { ... }
 ```
 
 #### Step 4: Consume in a handler
@@ -357,8 +368,7 @@ rather than returning `undefined`.
 | --- | --- |
 | `getAppContext(request)` | Get or create the `AppContextHost` stored on a request object (keyed by a private `Symbol`). |
 | `@Ctx(ref?)` | Parameter decorator. Without a ref, returns the `AppContextHost`. With an `OverlayRef`, calls `appCtx.with(ref)` and returns the unwrapped overlay props. |
-| `ContextOverlayInterceptor` | Generic NestJS interceptor that calls `overlay.attach(context)`. |
-| `createContextInterceptorProvider(OverlayClass)` | Factory that registers an overlay class as an `APP_INTERCEPTOR` provider. |
+| `ContextOverlayInterceptor` | Abstract base class for overlays. Subclass with `ref` and `attach()` to create a self-intercepting overlay. |
 | `OverlayRef` | Typed token class carrying the overlay name and resolved props type. |
 | `AppContextInterface` | Interface matching the full `AppContextHost` public API. |
 | `AppContextLike` | Union type: `AppContextInterface \| PlainLiteralObject \| null \| undefined`. |

@@ -9,11 +9,7 @@ import {
   PasswordUpdateInterface,
   UserInterface,
 } from '@concepta/nestjs-common';
-import {
-  CrudCqrsResolver,
-  CrudModule,
-  UseCrudLocals,
-} from '@concepta/nestjs-crud';
+import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import { HookModule, UseHooks } from '@concepta/nestjs-hook';
 import { PasswordModule } from '@concepta/nestjs-password';
 import { RepositoryModule } from '@concepta/nestjs-repository';
@@ -41,7 +37,7 @@ import { ReadUserRequestHandler } from '../../queries/handlers/read-user-request
 import { ListUsersRequest } from '../../queries/impl/list-users.request';
 import { ReadUserRequest } from '../../queries/impl/read-user.request';
 
-import { AuthorizedUserLocalFixture } from './authorized-user.local.fixture';
+import { AuthorizedUserOverlayFixture } from './authorized-user.local.fixture';
 import { FakeAuthInterceptorFixture } from './fake-auth.interceptor.fixture';
 import { UserScopeHookFixture } from './user-scope.hook.fixture';
 
@@ -127,10 +123,7 @@ const USER_CREDENTIALS_ENTITY_KEY_FIXTURE = 'user-credentials';
           transactional: true,
           request: { body: UserPasswordUpdateDto },
           response: { resource: UserDto },
-          extraDecorators: [
-            UseCrudLocals(AuthorizedUserLocalFixture),
-            UseHooks(UserScopeHookFixture),
-          ],
+          extraDecorators: [UseHooks(UserScopeHookFixture)],
         },
         operations: [
           {
@@ -148,12 +141,15 @@ const USER_CREDENTIALS_ENTITY_KEY_FIXTURE = 'user-credentials';
       provide: APP_FILTER,
       useClass: ExceptionsFilter,
     },
-    AuthorizedUserLocalFixture,
     UserScopeHookFixture,
     FakeAuthInterceptorFixture,
     {
       provide: APP_INTERCEPTOR,
       useExisting: FakeAuthInterceptorFixture,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuthorizedUserOverlayFixture,
     },
   ],
 })

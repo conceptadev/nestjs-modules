@@ -214,8 +214,8 @@ CrudModule.forFeature<CacheInterface>({
 ### How It Works
 
 1. `CacheContextOverlay` reads `@CacheNamespace` metadata via `Reflector`
-2. `CacheContextOverlay` is registered as a global `APP_INTERCEPTOR` via
-   `createContextInterceptorProvider()`. Its `attach()` method resolves
+2. `CacheContextOverlay` extends `ContextOverlayInterceptor` and is registered
+   as a global `APP_INTERCEPTOR`. Its `attach()` method resolves
    the namespace and calls `ctx.defineOverlay(CacheCtx, resolved)`
 3. Gateway request handlers use `@Ctx(CacheCtx)` (or `ctx.with(CacheCtx)`)
    to get `{ namespace }`, used as the entity key for repository resolution

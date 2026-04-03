@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 
 import {
-  ContextOverlayInterface,
+  ContextOverlayInterceptor,
   getAppContext,
   Operation,
   OverlayRef,
@@ -31,14 +31,15 @@ export const CrudCtx = new OverlayRef<'withCrud', CrudContextInterface>(
 @Injectable()
 export class CrudContextOverlay<
   T extends PlainLiteralObject = PlainLiteralObject,
-> implements ContextOverlayInterface<'withCrud', CrudContextInterface<T>>
-{
+> extends ContextOverlayInterceptor {
   readonly ref = CrudCtx;
 
   constructor(
     @Inject(forwardRef(() => CrudMetaview))
     private reflectionService: CrudMetaview<T>,
-  ) {}
+  ) {
+    super();
+  }
 
   private resolve(
     context: ExecutionContext | undefined,

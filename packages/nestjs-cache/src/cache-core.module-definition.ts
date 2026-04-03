@@ -4,12 +4,10 @@ import {
   Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import {
-  createContextInterceptorProvider,
-  createSettingsProvider,
-} from '@concepta/nestjs-common';
+import { createSettingsProvider } from '@concepta/nestjs-common';
 
 import { ArchiveCacheHandler } from './application/commands/handlers/archive-cache.handler';
 import { ClearCachesByAssigneeHandler } from './application/commands/handlers/clear-caches-by-assignee.handler';
@@ -107,8 +105,7 @@ export function createCacheProviders(options: {
     GetCacheHandler,
     FindOneCacheHandler,
     FindCachesByAssigneeHandler,
-    CacheContextOverlay,
-    createContextInterceptorProvider(CacheContextOverlay),
+    { provide: APP_INTERCEPTOR, useClass: CacheContextOverlay },
     ...(options.providers ?? []),
   ];
 }

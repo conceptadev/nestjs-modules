@@ -4,11 +4,9 @@ import {
   Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
-import {
-  createContextInterceptorProvider,
-  createSettingsProvider,
-} from '@concepta/nestjs-common';
+import { createSettingsProvider } from '@concepta/nestjs-common';
 
 import {
   CRUD_DEFAULT_RESOLVER_TOKEN,
@@ -21,7 +19,6 @@ import { CrudModuleSettingsInterface } from './infrastructure/config/interfaces/
 import { CrudContextOverlay } from './infrastructure/interceptors/crud-context.overlay';
 import { CrudAdapterResolver } from './infrastructure/resolvers/crud-adapter.resolver';
 import { CrudOperationResolver } from './infrastructure/resolvers/crud-operation.resolver';
-import { CrudLocalResolverService } from './infrastructure/services/crud-local-resolver.service';
 import { CrudMetaview } from './infrastructure/services/crud-metaview.service';
 
 const RAW_OPTIONS_TOKEN = Symbol('__CRUD_MODULE_RAW_OPTIONS_TOKEN__');
@@ -87,7 +84,6 @@ export function createCrudExports(options?: {
     CrudAdapterResolver,
     CrudOperationResolver,
     CRUD_DEFAULT_RESOLVER_TOKEN,
-    CrudLocalResolverService,
     resolverClass,
   ];
 }
@@ -106,14 +102,13 @@ export function createCrudProviders(options: {
     CrudMetaview,
     CrudAdapterResolver,
     CrudOperationResolver,
-    CrudLocalResolverService,
     resolverClass,
     {
       provide: CRUD_DEFAULT_RESOLVER_TOKEN,
       useExisting: resolverClass,
     },
     createCrudSettingsProvider(),
-    createContextInterceptorProvider(CrudContextOverlay),
+    { provide: APP_INTERCEPTOR, useClass: CrudContextOverlay },
   ];
 }
 

@@ -1,26 +1,23 @@
-import {
-  ExecutionContext,
-  Injectable,
-  PlainLiteralObject,
-} from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 
-import { UserEntityInterface } from '@concepta/nestjs-common';
-import { CrudLocalInterface } from '@concepta/nestjs-crud';
+import {
+  ContextOverlayInterceptor,
+  getAppContext,
+  OverlayRef,
+  UserEntityInterface,
+} from '@concepta/nestjs-common';
+
+export const AuthorizedUserRef = new OverlayRef<
+  'withAuthorizedUser',
+  UserEntityInterface
+>('withAuthorizedUser');
 
 @Injectable()
-export class AuthorizedUserLocalFixture
-  implements CrudLocalInterface<UserEntityInterface>
-{
-  static readonly KEY = 'authorizedUser';
+export class AuthorizedUserOverlayFixture extends ContextOverlayInterceptor {
+  readonly ref = AuthorizedUserRef;
 
-  async resolve(
-    context: ExecutionContext,
-    _ctx: PlainLiteralObject,
-    _locals: Readonly<Record<string, unknown>>,
-  ): Promise<UserEntityInterface> {
-    const request = context.switchToHttp().getRequest();
-    return request.user;
+  async attach(context: ExecutionContext): Promise<void> {
+    const req = context.switchToHttp().getRequest();
+    getAppContext(req).defineOverlay(this.ref, req.user);
   }
-
-  async transform(): Promise<void> {}
 }

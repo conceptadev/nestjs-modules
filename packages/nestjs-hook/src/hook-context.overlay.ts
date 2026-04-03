@@ -2,7 +2,7 @@ import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import {
-  ContextOverlayInterface,
+  ContextOverlayInterceptor,
   getAppContext,
   HookContextInterface,
   HookOption,
@@ -18,12 +18,12 @@ export const HooksCtx = new OverlayRef<'withHooks', HookContextInterface>(
 );
 
 @Injectable()
-export class HookContextOverlay
-  implements ContextOverlayInterface<'withHooks', HookContextInterface>
-{
+export class HookContextOverlay extends ContextOverlayInterceptor {
   readonly ref = HooksCtx;
 
-  constructor(private readonly reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) {
+    super();
+  }
 
   attach(context: ExecutionContext): void {
     const request = context.switchToHttp().getRequest();

@@ -1,26 +1,25 @@
 import { of } from 'rxjs';
 
-import { CallHandler, ExecutionContext } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable } from '@nestjs/common';
 
 import { ContextOverlayInterceptor } from '../context-overlay.interceptor';
-import { ContextOverlayInterface } from '../interfaces/context-overlay.interface';
 import { OverlayRef } from '../overlay-ref';
 
-describe('ContextOverlayInterceptor', () => {
-  const TestRef = new OverlayRef<'withTest', { value: string }>('withTest');
+const TestRef = new OverlayRef<'withTest', { value: string }>('withTest');
 
-  let overlay: ContextOverlayInterface<'withTest', { value: string }>;
-  let interceptor: ContextOverlayInterceptor;
+@Injectable()
+class TestOverlay extends ContextOverlayInterceptor {
+  readonly ref = TestRef;
+  attach = jest.fn();
+}
+
+describe('ContextOverlayInterceptor', () => {
+  let overlay: TestOverlay;
   let mockContext: ExecutionContext;
   let mockNext: CallHandler;
 
   beforeEach(() => {
-    overlay = {
-      ref: TestRef,
-      attach: jest.fn(),
-    };
-
-    interceptor = new ContextOverlayInterceptor(overlay);
+    overlay = new TestOverlay();
 
     mockContext = {
       switchToHttp: () => ({
@@ -33,21 +32,21 @@ describe('ContextOverlayInterceptor', () => {
     mockNext = { handle: jest.fn().mockReturnValue(of({})) };
   });
 
-  it('should call overlay.attach with the execution context', () => {
-    interceptor.intercept(mockContext, mockNext);
+  it('should call attach with the execution context', async () => {
+    await overlay.intercept(mockContext, mockNext);
     expect(overlay.attach).toHaveBeenCalledWith(mockContext);
   });
 
-  it('should call next.handle()', () => {
-    interceptor.intercept(mockContext, mockNext);
+  it('should call next.handle()', async () => {
+    await overlay.intercept(mockContext, mockNext);
     expect(mockNext.handle).toHaveBeenCalled();
   });
 
-  it('should return the observable from next.handle()', () => {
+  it('should return the observable from next.handle()', async () => {
     const observable = of({ result: true });
     mockNext.handle = jest.fn().mockReturnValue(observable);
 
-    const result = interceptor.intercept(mockContext, mockNext);
+    const result = await overlay.intercept(mockContext, mockNext);
     expect(result).toBe(observable);
   });
 });

@@ -334,8 +334,8 @@ CrudModule.forFeature<RoleInterface>({
 ### How It Works
 
 1. `RoleContextOverlay` reads `@RoleNamespace` metadata via `Reflector`
-2. `RoleContextOverlay` is registered as a global `APP_INTERCEPTOR` via
-   `createContextInterceptorProvider()`. Its `attach()` method resolves
+2. `RoleContextOverlay` extends `ContextOverlayInterceptor` and is registered
+   as a global `APP_INTERCEPTOR`. Its `attach()` method resolves
    the namespace and calls `ctx.defineOverlay(RoleCtx, resolved)`
 3. Gateway request handlers use `@Ctx(RoleCtx)` (or `ctx.with(RoleCtx)`)
    to get `{ namespace }`, used as the entity key for repository resolution
