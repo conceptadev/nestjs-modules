@@ -467,7 +467,6 @@ Register the listener as a provider in your module to start receiving events.
 | `InvitationRevokedException` | -- | `INVITATION_REVOKED_ERROR` |
 | `InvitationNotFoundException` | 404 | `INVITATION_NOT_FOUND_ERROR` |
 | `InvitationUserUndefinedException` | -- | `INVITATION_USER_UNDEFINED_ERROR` |
-| `InvitationSendMailException` | -- | `INVITATION_SEND_MAIL_ERROR` |
 | `InvitationNotAcceptedException` | 400 | `INVITATION_NOT_ACCEPTED_ERROR` |
 
 ## HTTP Gateway
