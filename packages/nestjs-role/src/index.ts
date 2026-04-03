@@ -72,9 +72,6 @@ export { RoleOptionsInterface } from './infrastructure/config/interfaces/role-op
 export { RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface';
 export { RoleExtrasInterface } from './infrastructure/config/interfaces/role-extras.interface';
 
-// types
-export { RoleResource, RoleAssignmentResource } from './role.types';
-
 // exceptions
 export { RoleException } from './application/exceptions/role.exception';
 // context overlay
