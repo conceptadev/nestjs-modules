@@ -4,35 +4,24 @@ import {
 } from '@concepta/nestjs-common';
 
 import { PasswordHashObjectOptionsInterface } from './password-hash-object-options.interface';
-import { PasswordHashOptionsInterface } from './password-hash-options.interface';
 
 /**
  * Password Storage Service Interface
  */
 export interface PasswordStorageServiceInterface {
   /**
-   * Generate salt to be used to hash a password.
-   */
-  generateSalt(): Promise<string>;
-
-  /**
-   * Hash a password using a salt, if no
-   * was passed, then generate one automatically.
+   * Hash a password using bcrypt.
    *
    * @param password - Password to be hashed
-   * @param options - Hash options
    */
-  hash(
-    password: string,
-    options?: PasswordHashOptionsInterface,
-  ): Promise<PasswordStorageInterface>;
+  hash(password: string): Promise<PasswordStorageInterface>;
 
   /**
    * Hash password for an object.
    *
    * @param object - An object containing the new password to hash.
    * @param options - Hash object options
-   * @returns A new object with the password hashed, with salt added.
+   * @returns A new object with the password hashed.
    */
   hashObject<T extends PasswordPlainInterface>(
     object: T,

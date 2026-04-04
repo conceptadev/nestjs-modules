@@ -7,10 +7,6 @@ import {
   ReferenceId,
   ReferenceIdInterface,
 } from '@concepta/nestjs-common';
-import {
-  PasswordCreationService,
-  PasswordCreationServiceInterface,
-} from '@concepta/nestjs-password';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { USER_CREDENTIALS_REPOSITORY_TOKEN } from '../../user.constants';
@@ -19,6 +15,7 @@ import { UserCredentialsCollection } from '../collections/user-credentials.colle
 import { UserCredentialsAlreadyExistException } from '../exceptions/user-credentials-already-exist.exception';
 import { UserPasswordCurrentInvalidException } from '../exceptions/user-password-current-invalid.exception';
 import { UserPasswordPolicy } from '../policies/user-password.policy';
+import { UserPasswordPort } from '../ports/user-password.port';
 import { UserCredentialsRepositoryInterface } from '../repositories/user-credentials-repository.interface';
 
 @Injectable()
@@ -28,8 +25,7 @@ export class UserCredentialsService {
     private readonly userCredentialsRepository: UserCredentialsRepositoryInterface,
     private readonly txScope: TransactionScope,
     private readonly eventPublisher: EventPublisher,
-    @Inject(PasswordCreationService)
-    private readonly passwordCreationService: PasswordCreationServiceInterface,
+    private readonly passwordPort: UserPasswordPort,
     private readonly passwordPolicy: UserPasswordPolicy,
   ) {}
 
@@ -49,8 +45,7 @@ export class UserCredentialsService {
         throw new UserCredentialsAlreadyExistException();
       }
 
-      const passwordStorage =
-        await this.passwordCreationService.create(password);
+      const passwordStorage = await this.passwordPort.create(password);
       return this.createCredentials(
         txCtx,
         eventContext,
@@ -85,8 +80,7 @@ export class UserCredentialsService {
       await this.validateHistory(txCtx, userId, password);
 
       // hash
-      const passwordStorage =
-        await this.passwordCreationService.create(password);
+      const passwordStorage = await this.passwordPort.create(password);
 
       if (activeCredentials) {
         await this.deactivateCredentials(
@@ -115,7 +109,6 @@ export class UserCredentialsService {
       const credentials = UserCredentials.create(eventContext, {
         userId,
         passwordHash: passwordStorage.passwordHash,
-        passwordSalt: passwordStorage.passwordSalt,
       });
 
       const merged = this.eventPublisher.mergeObjectContext(credentials);
@@ -145,10 +138,10 @@ export class UserCredentialsService {
     target: ReferenceIdInterface & PasswordStorageInterface,
     passwordCurrent: string,
   ): Promise<void> {
-    const currentIsValid = await this.passwordCreationService.validateCurrent({
-      password: passwordCurrent,
+    const currentIsValid = await this.passwordPort.validateCurrent(
+      passwordCurrent,
       target,
-    });
+    );
 
     if (!currentIsValid) {
       throw new UserPasswordCurrentInvalidException();
@@ -170,7 +163,7 @@ export class UserCredentialsService {
 
     const collection = new UserCredentialsCollection(
       history,
-      this.passwordCreationService,
+      this.passwordPort,
     );
 
     await collection.notReused(password);

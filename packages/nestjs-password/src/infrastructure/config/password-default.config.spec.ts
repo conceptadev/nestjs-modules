@@ -1,8 +1,7 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { PasswordOptionsInterface } from '../interfaces/password-options.interface';
-
+import { PasswordOptionsInterface } from './interfaces/password-options.interface';
 import { passwordDefaultConfig } from './password-default.config';
 
 describe('password configuration', () => {
@@ -29,22 +28,20 @@ describe('password configuration', () => {
       const config: PasswordOptionsInterface =
         moduleRef.get<PasswordOptionsInterface>(passwordDefaultConfig.KEY);
 
-      expect(config).toMatchObject({
-        maxPasswordAttempts: 3,
+      expect(config).toEqual({
         minPasswordStrength: 0,
+        requireCurrentToUpdate: false,
       });
     });
 
     describe('passwordConfig', () => {
-      it('config', async () => {
+      it('should return defaults when called directly', async () => {
         const config = await passwordDefaultConfig();
 
-        expect(config.maxPasswordAttempts).toBe(3);
         expect(config.minPasswordStrength).toBe(0);
       });
 
-      it('configProcessNotNull', async () => {
-        process.env.PASSWORD_MAX_PASSWORD_ATTEMPTS = '1';
+      it('should parse env vars as integers', async () => {
         process.env.PASSWORD_MIN_PASSWORD_STRENGTH = '2';
 
         moduleRef = await Test.createTestingModule({
@@ -55,14 +52,13 @@ describe('password configuration', () => {
         const config: PasswordOptionsInterface =
           moduleRef.get<PasswordOptionsInterface>(passwordDefaultConfig.KEY);
 
-        expect(config).toMatchObject({
-          maxPasswordAttempts: 1,
+        expect(config).toEqual({
           minPasswordStrength: 2,
+          requireCurrentToUpdate: false,
         });
       });
 
-      it('configProcessNull', async () => {
-        process.env.PASSWORD_MAX_PASSWORD_ATTEMPTS = 'test';
+      it('should fall back to defaults for non-numeric env vars', async () => {
         process.env.PASSWORD_MIN_PASSWORD_STRENGTH = 'test';
 
         moduleRef = await Test.createTestingModule({
@@ -73,14 +69,13 @@ describe('password configuration', () => {
         const config: PasswordOptionsInterface =
           moduleRef.get<PasswordOptionsInterface>(passwordDefaultConfig.KEY);
 
-        expect(config).toMatchObject({
-          maxPasswordAttempts: NaN,
-          minPasswordStrength: NaN,
+        expect(config).toEqual({
+          minPasswordStrength: 0,
+          requireCurrentToUpdate: false,
         });
       });
 
-      it('configProcessNull', async () => {
-        delete process.env.PASSWORD_MAX_PASSWORD_ATTEMPTS;
+      it('should use defaults when env vars are deleted', async () => {
         delete process.env.PASSWORD_MIN_PASSWORD_STRENGTH;
 
         moduleRef = await Test.createTestingModule({
@@ -91,9 +86,9 @@ describe('password configuration', () => {
         const config: PasswordOptionsInterface =
           moduleRef.get<PasswordOptionsInterface>(passwordDefaultConfig.KEY);
 
-        expect(config).toMatchObject({
-          maxPasswordAttempts: 3,
+        expect(config).toEqual({
           minPasswordStrength: 0,
+          requireCurrentToUpdate: false,
         });
       });
     });

@@ -29,7 +29,6 @@ export class UserCredentialFactory extends Factory<UserCredentialEntityInterface
 
     // TypeORM requires entity class instances (not plain objects)
     userCredentials.passwordHash = passwordStore.passwordHash;
-    userCredentials.passwordSalt = passwordStore.passwordSalt;
 
     return userCredentials;
   }

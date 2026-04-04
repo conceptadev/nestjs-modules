@@ -1,8 +1,9 @@
 import { PasswordStorageInterface } from '@concepta/nestjs-common';
 
-import { PasswordStrengthEnum } from '../enum/password-strength.enum';
-import { PasswordNotStrongException } from '../exceptions/password-not-strong.exception';
-import { PasswordSettingsInterface } from '../interfaces/password-settings.interface';
+import { PasswordNotStrongException } from '../../application/exceptions/password-not-strong.exception';
+import { PasswordUsedRecentlyException } from '../../application/exceptions/password-used-recently.exception';
+import { PasswordStrengthEnum } from '../../enum/password-strength.enum';
+import { PasswordPolicy, PasswordPolicySettings } from '../policies/password.policy';
 
 import { PasswordCreationService } from './password-creation.service';
 import { PasswordStorageService } from './password-storage.service';
@@ -10,7 +11,8 @@ import { PasswordStrengthService } from './password-strength.service';
 import { PasswordValidationService } from './password-validation.service';
 
 describe(PasswordCreationService, () => {
-  let config: PasswordSettingsInterface;
+  let policySettings: PasswordPolicySettings;
+  let policy: PasswordPolicy;
   let passwordCreationService: PasswordCreationService;
   let passwordStorageService: PasswordStorageService;
   let passwordValidationService: PasswordValidationService;
@@ -20,18 +22,18 @@ describe(PasswordCreationService, () => {
   const PASSWORD_MEDIUM = 'F*h#1d*fQ@XB';
 
   beforeEach(async () => {
-    config = {
-      maxPasswordAttempts: 5,
+    policySettings = {
       minPasswordStrength: PasswordStrengthEnum.Medium,
       requireCurrentToUpdate: false,
     };
+    policy = new PasswordPolicy(policySettings);
 
     passwordStorageService = new PasswordStorageService();
     passwordValidationService = new PasswordValidationService();
-    passwordStrengthService = new PasswordStrengthService(config);
+    passwordStrengthService = new PasswordStrengthService(policy);
 
     passwordCreationService = new PasswordCreationService(
-      config,
+      policy,
       passwordStorageService,
       passwordValidationService,
       passwordStrengthService,
@@ -49,7 +51,6 @@ describe(PasswordCreationService, () => {
         await passwordCreationService.create(PASSWORD_MEDIUM);
 
       expect(typeof passwordStorageObject.passwordHash).toEqual('string');
-      expect(typeof passwordStorageObject.passwordSalt).toEqual('string');
     });
 
     it('should NOT create a password on object WITH a WEAK password', async () => {
@@ -100,14 +101,53 @@ describe(PasswordCreationService, () => {
     });
 
     it('should throw an error due to required current password setting', async () => {
-      passwordCreationService['settings'].requireCurrentToUpdate = true;
+      const strictPolicy = new PasswordPolicy({ ...policySettings, requireCurrentToUpdate: true });
+      const strictService = new PasswordCreationService(
+        strictPolicy,
+        passwordStorageService,
+        passwordValidationService,
+        passwordStrengthService,
+      );
 
       const t = async () => {
-        await passwordCreationService.validateCurrent({});
+        await strictService.validateCurrent({});
       };
 
       await expect(t).rejects.toThrow(Error);
       await expect(t).rejects.toThrow('Current password is required');
+    });
+  });
+
+  describe(PasswordCreationService.prototype.validateHistory, () => {
+    it('should return true when no targets match', async () => {
+      const stored = await passwordStorageService.hash('old-password');
+
+      const isValid = await passwordCreationService.validateHistory({
+        password: 'different-password',
+        targets: [stored],
+      });
+
+      expect(isValid).toEqual(true);
+    });
+
+    it('should throw when password matches a target', async () => {
+      const stored = await passwordStorageService.hash(PASSWORD_MEDIUM);
+
+      await expect(
+        passwordCreationService.validateHistory({
+          password: PASSWORD_MEDIUM,
+          targets: [stored],
+        }),
+      ).rejects.toThrow(PasswordUsedRecentlyException);
+    });
+
+    it('should return true when targets array is empty', async () => {
+      const isValid = await passwordCreationService.validateHistory({
+        password: PASSWORD_MEDIUM,
+        targets: [],
+      });
+
+      expect(isValid).toEqual(true);
     });
   });
 });

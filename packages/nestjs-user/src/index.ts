@@ -60,6 +60,15 @@ export { GetUserByUsernameHandler } from './application/queries/handlers/get-use
 // domain services
 export { UserCredentialsService } from './domain/services/user-credentials.service';
 
+// ports
+export {
+  UserPasswordPort,
+  UserPasswordPortSettings,
+  CreatePasswordCommandInterface,
+  ValidateCurrentPasswordCommandInterface,
+  ValidatePasswordHistoryCommandInterface,
+} from './domain/ports/user-password.port';
+
 // interfaces
 export { UserOptionsInterface } from './infrastructure/config/interfaces/user-options.interface';
 export { UserExtrasInterface } from './infrastructure/config/interfaces/user-extras.interface';

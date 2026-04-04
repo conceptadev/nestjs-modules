@@ -58,7 +58,6 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
       const creds = UserCredentials.create(eventContext, {
         userId: testUser.id,
         passwordHash: 'hash1',
-        passwordSalt: 'salt1',
       });
       await credentialsRepository.save({}, creds);
 
@@ -85,7 +84,6 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
       const creds = UserCredentials.create(eventContext, {
         userId: testUser.id,
         passwordHash: 'hash1',
-        passwordSalt: 'salt1',
       });
       creds.deactivate(eventContext);
       await credentialsRepository.save({}, creds);
@@ -104,7 +102,6 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
       const creds1 = UserCredentials.create(eventContext, {
         userId: testUser.id,
         passwordHash: 'hash1',
-        passwordSalt: 'salt1',
       });
       await credentialsRepository.save({}, creds1);
 
@@ -114,7 +111,6 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
       const creds2 = UserCredentials.create(eventContext, {
         userId: testUser.id,
         passwordHash: 'hash2',
-        passwordSalt: 'salt2',
       });
       await credentialsRepository.save({}, creds2);
 
@@ -137,7 +133,6 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
         id: randomUUID(),
         userId: testUser.id,
         passwordHash: 'old-hash',
-        passwordSalt: 'old-salt',
         active: false,
         validFrom: sixtyDaysAgo,
         validTo: new Date(sixtyDaysAgo.getTime() + 86400000),
@@ -152,7 +147,6 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
       const recentCreds = UserCredentials.create(eventContext, {
         userId: testUser.id,
         passwordHash: 'recent-hash',
-        passwordSalt: 'recent-salt',
       });
       await credentialsRepository.save({}, recentCreds);
 
@@ -177,7 +171,6 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
         id: randomUUID(),
         userId: testUser.id,
         passwordHash: 'older-hash',
-        passwordSalt: 'older-salt',
         active: false,
         validFrom: thirtyDaysAgo,
         validTo: null,
@@ -192,7 +185,6 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
       const newerCreds = UserCredentials.create(eventContext, {
         userId: testUser.id,
         passwordHash: 'newer-hash',
-        passwordSalt: 'newer-salt',
       });
       await credentialsRepository.save({}, newerCreds);
 
@@ -209,7 +201,6 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
       const creds = UserCredentials.create(eventContext, {
         userId: testUser.id,
         passwordHash: 'hash1',
-        passwordSalt: 'salt1',
       });
 
       await credentialsRepository.save({}, creds);
@@ -226,7 +217,6 @@ describe(UserCredentialsRepository.name + ' (e2e)', () => {
       const creds = UserCredentials.create(eventContext, {
         userId: testUser.id,
         passwordHash: 'hash1',
-        passwordSalt: 'salt1',
       });
       await credentialsRepository.save({}, creds);
 

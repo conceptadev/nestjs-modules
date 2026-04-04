@@ -11,7 +11,12 @@ import {
 } from '@concepta/nestjs-common';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import { HookModule, UseHooks } from '@concepta/nestjs-hook';
-import { PasswordModule } from '@concepta/nestjs-password';
+import {
+  CreatePasswordCommand,
+  PasswordModule,
+  ValidateCurrentPasswordCommand,
+  ValidatePasswordHistoryCommand,
+} from '@concepta/nestjs-password';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
@@ -68,6 +73,13 @@ const USER_CREDENTIALS_ENTITY_KEY_FIXTURE = 'user-credentials';
       entities: {
         user: USER_ENTITY_KEY_FIXTURE,
         credentials: USER_CREDENTIALS_ENTITY_KEY_FIXTURE,
+      },
+      ports: {
+        password: {
+          createCommand: CreatePasswordCommand,
+          validateCurrentCommand: ValidateCurrentPasswordCommand,
+          validateHistoryCommand: ValidatePasswordHistoryCommand,
+        },
       },
     }),
     CrudModule.forFeature<UserInterface>({

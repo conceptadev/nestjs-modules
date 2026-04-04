@@ -1,7 +1,6 @@
 import { PasswordStorageInterface } from '@concepta/nestjs-common';
 
 import { PasswordCurrentPasswordInterface } from './password-current-password.interface';
-import { PasswordHashOptionsInterface } from './password-hash-options.interface';
 import { PasswordHistoryPasswordInterface } from './password-history-password.interface';
 
 /**
@@ -9,16 +8,11 @@ import { PasswordHistoryPasswordInterface } from './password-history-password.in
  */
 export interface PasswordCreationServiceInterface {
   /**
-   * Create a password using a salt, if no
-   * was passed, then generate one automatically.
+   * Create a hashed password.
    *
    * @param password - Password to be hashed
-   * @param options - Hash options
    */
-  create(
-    password: string,
-    options?: PasswordHashOptionsInterface,
-  ): Promise<PasswordStorageInterface>;
+  create(password: string): Promise<PasswordStorageInterface>;
 
   /**
    * Validate the current password for the targeted object.
@@ -34,7 +28,7 @@ export interface PasswordCreationServiceInterface {
    * Validate the array of password stores to check for previous usage.
    *
    * @param options - Validate history options.
-   * @returns boolean Returns true if password has NOT been used withing configured range.
+   * @returns boolean Returns true if password has NOT been used within configured range.
    */
   validateHistory: (
     options: PasswordHistoryPasswordInterface,

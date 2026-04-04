@@ -1,8 +1,8 @@
 import { EventContextHost } from '@concepta/nestjs-common';
-import { PasswordCreationServiceInterface } from '@concepta/nestjs-password';
 
 import {
   createMockEventPublisher,
+  createMockPasswordPort,
   createMockTxScope,
   createMockUserCredentialEntity,
   createMockUserCredentialsRepository,
@@ -18,37 +18,28 @@ describe(UserCredentialsService.name, () => {
   const eventContext = new EventContextHost({}, {});
   const mockCredentialEntity = createMockUserCredentialEntity();
 
-  function createMockPasswordCreationService() {
-    return {
-      create: jest.fn(),
-      validateCurrent: jest.fn(),
-      validateHistory: jest.fn(),
-    } as unknown as jest.Mocked<PasswordCreationServiceInterface>;
-  }
-
   function setup(policy?: UserPasswordPolicy) {
     const userCredentialsRepository = createMockUserCredentialsRepository();
     const txScope = createMockTxScope();
     const eventPublisher = createMockEventPublisher();
-    const passwordCreationService = createMockPasswordCreationService();
+    const passwordPort = createMockPasswordPort();
 
-    passwordCreationService.create.mockResolvedValue({
+    passwordPort.create.mockResolvedValue({
       passwordHash: 'new-hash',
-      passwordSalt: 'new-salt',
     });
 
     const service = new UserCredentialsService(
       userCredentialsRepository,
       txScope,
       eventPublisher,
-      passwordCreationService,
+      passwordPort,
       policy ?? new UserPasswordPolicy(),
     );
 
     return {
       service,
       userCredentialsRepository,
-      passwordCreationService,
+      passwordPort,
     };
   }
 
@@ -66,7 +57,6 @@ describe(UserCredentialsService.name, () => {
 
       expect(result.userId).toBe('user-1');
       expect(result.passwordHash).toBe('new-hash');
-      expect(result.passwordSalt).toBe('new-salt');
       expect(result.active).toBe(true);
       expect(userCredentialsRepository.save).toHaveBeenCalled();
     });
@@ -86,15 +76,14 @@ describe(UserCredentialsService.name, () => {
   describe('updatePassword', () => {
     describe('default policy', () => {
       it('should create new credentials when none exist', async () => {
-        const { service, userCredentialsRepository, passwordCreationService } =
-          setup();
+        const { service, userCredentialsRepository, passwordPort } = setup();
         userCredentialsRepository.findActiveByUserId.mockResolvedValue(null);
 
         await expect(
           service.updatePassword({}, eventContext, 'user-1', 'new-pass'),
         ).resolves.toBeUndefined();
 
-        expect(passwordCreationService.create).toHaveBeenCalledWith('new-pass');
+        expect(passwordPort.create).toHaveBeenCalledWith('new-pass');
         expect(userCredentialsRepository.save).toHaveBeenCalled();
       });
 
@@ -142,12 +131,12 @@ describe(UserCredentialsService.name, () => {
       });
 
       it('should throw when current password is invalid', async () => {
-        const { service, userCredentialsRepository, passwordCreationService } =
+        const { service, userCredentialsRepository, passwordPort } =
           setup(policy);
         userCredentialsRepository.findActiveByUserId.mockResolvedValue(
           toUserCredentialsDomain(mockCredentialEntity),
         );
-        passwordCreationService.validateCurrent.mockResolvedValue(false);
+        passwordPort.validateCurrent.mockResolvedValue(false);
 
         await expect(
           service.updatePassword(
@@ -161,12 +150,12 @@ describe(UserCredentialsService.name, () => {
       });
 
       it('should proceed when current password is valid', async () => {
-        const { service, userCredentialsRepository, passwordCreationService } =
+        const { service, userCredentialsRepository, passwordPort } =
           setup(policy);
         userCredentialsRepository.findActiveByUserId.mockResolvedValue(
           toUserCredentialsDomain(mockCredentialEntity),
         );
-        passwordCreationService.validateCurrent.mockResolvedValue(true);
+        passwordPort.validateCurrent.mockResolvedValue(true);
 
         await expect(
           service.updatePassword(
@@ -184,13 +173,13 @@ describe(UserCredentialsService.name, () => {
       const policy = new UserPasswordPolicy({ reuseAfterDays: 30 });
 
       it('should throw when password was previously used', async () => {
-        const { service, userCredentialsRepository, passwordCreationService } =
+        const { service, userCredentialsRepository, passwordPort } =
           setup(policy);
         userCredentialsRepository.findActiveByUserId.mockResolvedValue(null);
         userCredentialsRepository.findByUserId.mockResolvedValue([
           toUserCredentialsDomain(mockCredentialEntity),
         ]);
-        passwordCreationService.validateHistory.mockResolvedValue(false);
+        passwordPort.validateHistory.mockResolvedValue(false);
 
         await expect(
           service.updatePassword({}, eventContext, 'user-1', 'old-pass'),
@@ -198,13 +187,13 @@ describe(UserCredentialsService.name, () => {
       });
 
       it('should proceed when password is not reused', async () => {
-        const { service, userCredentialsRepository, passwordCreationService } =
+        const { service, userCredentialsRepository, passwordPort } =
           setup(policy);
         userCredentialsRepository.findActiveByUserId.mockResolvedValue(null);
         userCredentialsRepository.findByUserId.mockResolvedValue([
           toUserCredentialsDomain(mockCredentialEntity),
         ]);
-        passwordCreationService.validateHistory.mockResolvedValue(true);
+        passwordPort.validateHistory.mockResolvedValue(true);
 
         await expect(
           service.updatePassword({}, eventContext, 'user-1', 'unique-pass'),

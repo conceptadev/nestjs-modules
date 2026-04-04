@@ -1713,7 +1713,7 @@ __metadata:
     "@concepta/nestjs-crud": "npm:8.0.0-alpha.3"
     "@concepta/nestjs-email": "npm:^7.0.0-alpha.10"
     "@concepta/nestjs-otp": "npm:8.0.0-alpha.3"
-    "@concepta/nestjs-password": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-password": "npm:8.0.0-alpha.3"
     "@concepta/nestjs-repository": "npm:8.0.0-alpha.3"
     "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.3"
     "@concepta/nestjs-user": "npm:8.0.0-alpha.3"
@@ -1892,14 +1892,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@concepta/nestjs-password@npm:^7.0.0-alpha.10, @concepta/nestjs-password@workspace:packages/nestjs-password":
+"@concepta/nestjs-password@npm:8.0.0-alpha.3, @concepta/nestjs-password@workspace:packages/nestjs-password":
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-password@workspace:packages/nestjs-password"
   dependencies:
-    "@concepta/nestjs-common": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-common": "npm:^8.0.0-alpha.3"
     "@nestjs/common": "npm:^11.1.9"
     "@nestjs/config": "npm:^4.0.2"
     "@nestjs/core": "npm:^11.1.9"
+    "@nestjs/cqrs": "npm:^11.0.0"
     "@nestjs/testing": "npm:^11.1.9"
     "@types/bcrypt": "npm:^5.0.2"
     "@types/zxcvbn": "npm:^4.4.4"
@@ -1907,6 +1908,21 @@ __metadata:
     zxcvbn: "npm:^4.4.2"
   languageName: unknown
   linkType: soft
+
+"@concepta/nestjs-password@npm:^7.0.0-alpha.10":
+  version: 7.0.0-alpha.10
+  resolution: "@concepta/nestjs-password@npm:7.0.0-alpha.10"
+  dependencies:
+    "@concepta/nestjs-common": "npm:^7.0.0-alpha.10"
+    "@nestjs/common": "npm:^11.1.9"
+    "@nestjs/config": "npm:^4.0.2"
+    "@nestjs/core": "npm:^11.1.9"
+    "@types/zxcvbn": "npm:^4.4.4"
+    bcrypt: "npm:^5.1.1"
+    zxcvbn: "npm:^4.4.2"
+  checksum: 10c0/fd3b981c24e288ecfb1411c5dcc54f01c1b666a3181f48ec532b3d9826e04c03b1788b89705cec53f0be05e5f80cc568a09a4392f3374ba74da2d6642f97cc6d
+  languageName: node
+  linkType: hard
 
 "@concepta/nestjs-report@workspace:packages/nestjs-report":
   version: 0.0.0-use.local
@@ -2076,7 +2092,7 @@ __metadata:
     "@concepta/nestjs-crud": "npm:8.0.0-alpha.3"
     "@concepta/nestjs-hook": "npm:8.0.0-alpha.3"
     "@concepta/nestjs-jwt": "npm:^7.0.0-alpha.10"
-    "@concepta/nestjs-password": "npm:^7.0.0-alpha.10"
+    "@concepta/nestjs-password": "npm:8.0.0-alpha.3"
     "@concepta/nestjs-repository": "npm:8.0.0-alpha.3"
     "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.3"
     "@concepta/typeorm-seeding": "npm:^4.0.0"

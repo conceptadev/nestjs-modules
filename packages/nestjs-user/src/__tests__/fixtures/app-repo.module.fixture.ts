@@ -1,7 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { PasswordModule } from '@concepta/nestjs-password';
+import {
+  CreatePasswordCommand,
+  PasswordModule,
+  ValidateCurrentPasswordCommand,
+  ValidatePasswordHistoryCommand,
+} from '@concepta/nestjs-password';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
@@ -33,6 +38,13 @@ const USER_CREDENTIALS_ENTITY_KEY = 'user-credentials';
       entities: {
         user: USER_ENTITY_KEY,
         credentials: USER_CREDENTIALS_ENTITY_KEY,
+      },
+      ports: {
+        password: {
+          createCommand: CreatePasswordCommand,
+          validateCurrentCommand: ValidateCurrentPasswordCommand,
+          validateHistoryCommand: ValidatePasswordHistoryCommand,
+        },
       },
     }),
   ],

@@ -36,7 +36,7 @@
     "@concepta/nestjs-crud": "8.0.0-alpha.3",
     "@concepta/nestjs-email": "^7.0.0-alpha.10",
     "@concepta/nestjs-otp": "8.0.0-alpha.3",
-    "@concepta/nestjs-password": "^7.0.0-alpha.10",
+    "@concepta/nestjs-password": "8.0.0-alpha.3",
     "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.3",
     "@concepta/nestjs-user": "8.0.0-alpha.3",
     "@concepta/typeorm-seeding": "^4.0.0",

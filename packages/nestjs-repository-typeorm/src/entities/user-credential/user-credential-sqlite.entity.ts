@@ -14,9 +14,6 @@ export abstract class UserCredentialSqliteEntity
   @Column({ type: 'text' })
   passwordHash!: string;
 
-  @Column({ type: 'text' })
-  passwordSalt!: string;
-
   @Column({ type: 'uuid' })
   userId!: ReferenceId;
 

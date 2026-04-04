@@ -1,16 +1,15 @@
-import { PasswordCreationServiceInterface } from '@concepta/nestjs-password';
-
 import { UserPasswordHistoryViolationException } from '../../exceptions/user-password-history-violation.exception';
+import { UserPasswordPort } from '../../ports/user-password.port';
 import { UserCredentialsCollection } from '../user-credentials.collection';
 
 describe(UserCredentialsCollection.name, () => {
   const entries = [
-    { id: 'cred-1', passwordHash: 'hash1', passwordSalt: 'salt1' },
-    { id: 'cred-2', passwordHash: 'hash2', passwordSalt: 'salt2' },
+    { id: 'cred-1', passwordHash: 'hash1' },
+    { id: 'cred-2', passwordHash: 'hash2' },
   ];
 
-  const mockPasswordCreationService: jest.Mocked<
-    Pick<PasswordCreationServiceInterface, 'validateHistory'>
+  const mockPasswordPort: jest.Mocked<
+    Pick<UserPasswordPort, 'validateHistory'>
   > = {
     validateHistory: jest.fn(),
   };
@@ -21,26 +20,26 @@ describe(UserCredentialsCollection.name, () => {
 
   describe('notReused', () => {
     it('should resolve when password is not reused', async () => {
-      mockPasswordCreationService.validateHistory.mockResolvedValue(true);
+      mockPasswordPort.validateHistory.mockResolvedValue(true);
 
       const collection = new UserCredentialsCollection(
         entries,
-        mockPasswordCreationService as unknown as PasswordCreationServiceInterface,
+        mockPasswordPort as unknown as UserPasswordPort,
       );
 
       await expect(collection.notReused('new-pass')).resolves.toBeUndefined();
-      expect(mockPasswordCreationService.validateHistory).toHaveBeenCalledWith({
-        password: 'new-pass',
-        targets: entries,
-      });
+      expect(mockPasswordPort.validateHistory).toHaveBeenCalledWith(
+        'new-pass',
+        entries,
+      );
     });
 
     it('should throw when password is reused', async () => {
-      mockPasswordCreationService.validateHistory.mockResolvedValue(false);
+      mockPasswordPort.validateHistory.mockResolvedValue(false);
 
       const collection = new UserCredentialsCollection(
         entries,
-        mockPasswordCreationService as unknown as PasswordCreationServiceInterface,
+        mockPasswordPort as unknown as UserPasswordPort,
       );
 
       await expect(collection.notReused('old-pass')).rejects.toThrow(

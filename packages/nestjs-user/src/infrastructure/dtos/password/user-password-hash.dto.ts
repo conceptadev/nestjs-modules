@@ -14,12 +14,4 @@ export class UserPasswordHashDto implements PasswordStorageInterface {
   })
   @IsString()
   passwordHash!: string;
-
-  @Expose({ toClassOnly: true })
-  @ApiProperty({
-    type: 'string',
-    description: 'Password salt',
-  })
-  @IsString()
-  passwordSalt!: string;
 }

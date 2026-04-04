@@ -1,7 +1,9 @@
 import { registerAs } from '@nestjs/config';
 
-import { PasswordSettingsInterface } from '../interfaces/password-settings.interface';
-import { PASSWORD_MODULE_DEFAULT_SETTINGS_TOKEN } from '../password.constants';
+import { PasswordStrengthEnum } from '../../enum/password-strength.enum';
+import { PASSWORD_MODULE_DEFAULT_SETTINGS_TOKEN } from '../../password.constants';
+
+import { PasswordSettingsInterface } from './interfaces/password-settings.interface';
 
 /**
  * Default password settings configuration.
@@ -9,15 +11,12 @@ import { PASSWORD_MODULE_DEFAULT_SETTINGS_TOKEN } from '../password.constants';
 export const passwordDefaultConfig = registerAs(
   PASSWORD_MODULE_DEFAULT_SETTINGS_TOKEN,
   (): PasswordSettingsInterface => ({
-    maxPasswordAttempts: process.env.PASSWORD_MAX_PASSWORD_ATTEMPTS
-      ? Number.parseInt(process.env.PASSWORD_MAX_PASSWORD_ATTEMPTS)
-      : 3,
-
     minPasswordStrength: process.env.PASSWORD_MIN_PASSWORD_STRENGTH
-      ? Number.parseInt(process.env.PASSWORD_MIN_PASSWORD_STRENGTH)
+      ? Number.parseInt(process.env.PASSWORD_MIN_PASSWORD_STRENGTH, 10) ||
+        PasswordStrengthEnum.None
       : process.env?.NODE_ENV === 'production'
-        ? 4
-        : 0,
+        ? PasswordStrengthEnum.VeryStrong
+        : PasswordStrengthEnum.None,
 
     requireCurrentToUpdate:
       process.env?.PASSWORD_REQUIRE_CURRENT_TO_UPDATE === 'true' ? true : false,

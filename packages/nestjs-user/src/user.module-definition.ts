@@ -5,7 +5,7 @@ import {
   Type,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { CqrsModule } from '@nestjs/cqrs';
+import { CommandBus, CqrsModule } from '@nestjs/cqrs';
 
 import { createSettingsProvider } from '@concepta/nestjs-common';
 
@@ -20,6 +20,7 @@ import { GetUserByEmailHandler } from './application/queries/handlers/get-user-b
 import { GetUserBySubjectHandler } from './application/queries/handlers/get-user-by-subject.handler';
 import { GetUserByUsernameHandler } from './application/queries/handlers/get-user-by-username.handler';
 import { GetUserHandler } from './application/queries/handlers/get-user.handler';
+import { UserPasswordPort } from './domain/ports/user-password.port';
 import { UserCredentialsRepositoryInterface } from './domain/repositories/user-credentials-repository.interface';
 import { UserCredentialsService } from './domain/services/user-credentials.service';
 import { UserExtrasInterface } from './infrastructure/config/interfaces/user-extras.interface';
@@ -132,6 +133,7 @@ function createUserCredentialProviders(
 
   return [
     createPasswordPolicyProvider(),
+    createUserPasswordPortProvider(),
     UserCredentialsMapper,
     ...createUserCredentialsRepositoryProvider(entityKey, customRepository),
     CreateUserCredentialHandler,
@@ -144,6 +146,21 @@ export function createUserExports(): Required<
   Pick<DynamicModule, 'exports'>
 >['exports'] {
   return [USER_MODULE_SETTINGS_TOKEN];
+}
+
+function createUserPasswordPortProvider(): Provider {
+  return {
+    provide: UserPasswordPort,
+    inject: [RAW_OPTIONS_TOKEN, CommandBus],
+    useFactory: (options: UserOptionsInterface, commandBus: CommandBus) => {
+      if (!options.ports?.password) {
+        throw new Error(
+          'UserModule: ports.password is required when credentials entity is configured',
+        );
+      }
+      return new UserPasswordPort(options.ports.password, commandBus);
+    },
+  };
 }
 
 export function createUserSettingsProvider(

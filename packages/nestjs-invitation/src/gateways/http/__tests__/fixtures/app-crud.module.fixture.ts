@@ -15,6 +15,10 @@ import { PasswordModule } from '@concepta/nestjs-password';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 import {
+  CreatePasswordCommand,
+  ValidateCurrentPasswordCommand,
+} from '@concepta/nestjs-password';
+import {
   GetUserQuery,
   GetUserByEmailQuery,
   UserModule,
@@ -94,6 +98,12 @@ const USER_OTP_ENTITY_KEY = 'user-otp';
       entities: {
         user: USER_ENTITY_KEY,
         credentials: USER_CREDENTIALS_ENTITY_KEY,
+      },
+      ports: {
+        password: {
+          createCommand: CreatePasswordCommand,
+          validateCurrentCommand: ValidateCurrentPasswordCommand,
+        },
       },
     }),
     InvitationModule.registerAsync({

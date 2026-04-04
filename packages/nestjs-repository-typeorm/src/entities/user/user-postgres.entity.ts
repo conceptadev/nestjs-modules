@@ -29,15 +29,4 @@ export abstract class UserPostgresEntity
   @Column({ default: true })
   active!: boolean;
 
-  /**
-   * Password hash
-   */
-  @Column({ type: 'text', nullable: true })
-  passwordHash!: string;
-
-  /**
-   * Password salt
-   */
-  @Column({ type: 'text', nullable: true })
-  passwordSalt!: string;
 }

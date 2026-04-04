@@ -13,7 +13,6 @@ const mockEntity: UserCredentialEntityInterface = {
   id: 'cred-1',
   userId: 'user-1',
   passwordHash: 'hash',
-  passwordSalt: 'salt',
   active: true,
   validFrom: new Date('2024-01-01'),
   validTo: null,
@@ -29,13 +28,11 @@ describe(UserCredentials.name, () => {
       const creds = UserCredentials.create(eventContext, {
         userId: 'user-1',
         passwordHash: 'hash',
-        passwordSalt: 'salt',
       });
 
       expect(creds.id).toBeDefined();
       expect(creds.userId).toBe('user-1');
       expect(creds.passwordHash).toBe('hash');
-      expect(creds.passwordSalt).toBe('salt');
       expect(creds.active).toBe(true);
       expect(creds.version).toBe(1);
       expect(creds.validFrom).toBeInstanceOf(Date);
@@ -51,7 +48,6 @@ describe(UserCredentials.name, () => {
       const creds = UserCredentials.createWithId(eventContext, 'custom-id', {
         userId: 'user-1',
         passwordHash: 'hash',
-        passwordSalt: 'salt',
       });
 
       expect(creds.id).toBe('custom-id');
@@ -65,7 +61,6 @@ describe(UserCredentials.name, () => {
       expect(creds.id).toBe('cred-1');
       expect(creds.userId).toBe('user-1');
       expect(creds.passwordHash).toBe('hash');
-      expect(creds.passwordSalt).toBe('salt');
       expect(creds.active).toBe(true);
       expect(creds.version).toBe(1);
     });

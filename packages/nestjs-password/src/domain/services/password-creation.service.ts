@@ -1,16 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { PasswordStorageInterface } from '@concepta/nestjs-common';
 
-import { PasswordCurrentRequiredException } from '../exceptions/password-current-required.exception';
-import { PasswordNotStrongException } from '../exceptions/password-not-strong.exception';
-import { PasswordUsedRecentlyException } from '../exceptions/password-used-recently.exception';
-import { PasswordCreationServiceInterface } from '../interfaces/password-creation-service.interface';
-import { PasswordCurrentPasswordInterface } from '../interfaces/password-current-password.interface';
-import { PasswordHashOptionsInterface } from '../interfaces/password-hash-options.interface';
-import { PasswordHistoryPasswordInterface } from '../interfaces/password-history-password.interface';
-import { PasswordSettingsInterface } from '../interfaces/password-settings.interface';
-import { PASSWORD_MODULE_SETTINGS_TOKEN } from '../password.constants';
+import { PasswordCurrentRequiredException } from '../../application/exceptions/password-current-required.exception';
+import { PasswordNotStrongException } from '../../application/exceptions/password-not-strong.exception';
+import { PasswordUsedRecentlyException } from '../../application/exceptions/password-used-recently.exception';
+import { PasswordCreationServiceInterface } from '../../interfaces/password-creation-service.interface';
+import { PasswordCurrentPasswordInterface } from '../../interfaces/password-current-password.interface';
+import { PasswordHistoryPasswordInterface } from '../../interfaces/password-history-password.interface';
+import { PasswordPolicy } from '../policies/password.policy';
 
 import { PasswordStorageService } from './password-storage.service';
 import { PasswordStrengthService } from './password-strength.service';
@@ -18,50 +16,35 @@ import { PasswordValidationService } from './password-validation.service';
 
 /**
  * Service with functions related to password creation
- * to check if password is strong, and the number of attempts user can do to update a password
  */
 @Injectable()
 export class PasswordCreationService
   implements PasswordCreationServiceInterface
 {
-  /**
-   * Constructor
-   */
   constructor(
-    @Inject(PASSWORD_MODULE_SETTINGS_TOKEN)
-    protected readonly settings: PasswordSettingsInterface,
+    private readonly policy: PasswordPolicy,
     protected readonly passwordStorageService: PasswordStorageService,
     protected readonly passwordValidationService: PasswordValidationService,
     protected readonly passwordStrengthService: PasswordStrengthService,
   ) {}
 
   /**
-   * Create a hashed password using a salt, if no
-   * was passed, then generate one automatically.
+   * Create a hashed password.
    *
    * @param password - Password to be hashed
-   * @param options - Hash options
    */
-  create(
-    password: string,
-    options?: PasswordHashOptionsInterface,
-  ): Promise<PasswordStorageInterface> {
-    // check strength
+  async create(password: string): Promise<PasswordStorageInterface> {
     if (!this.passwordStrengthService.isStrong(password)) {
       throw new PasswordNotStrongException();
     }
 
-    // hash it
-    return this.passwordStorageService.hash(password, options);
+    return this.passwordStorageService.hash(password);
   }
 
   public async validateCurrent(
     options: Partial<PasswordCurrentPasswordInterface>,
   ): Promise<boolean> {
-    const { password, target: object } = options || {
-      password: undefined,
-      target: undefined,
-    };
+    const { password, target: object } = options;
 
     // make sure the password is a string with some length
     if (typeof password === 'string' && password.length > 0 && object) {
@@ -69,7 +52,7 @@ export class PasswordCreationService
       return this.passwordValidationService.validate({ password, ...object });
     } else {
       // settings say that current password is required?
-      if (this.settings?.requireCurrentToUpdate === true) {
+      if (this.policy.requireCurrentToUpdate) {
         // reqs not met, throw exception
         throw new PasswordCurrentRequiredException();
       }
@@ -82,10 +65,7 @@ export class PasswordCreationService
   public async validateHistory(
     options: PasswordHistoryPasswordInterface,
   ): Promise<boolean> {
-    const { password, targets } = options || {
-      password: undefined,
-      targets: [],
-    };
+    const { password, targets } = options;
 
     // make sure the password is a string with some length
     if (
@@ -99,7 +79,6 @@ export class PasswordCreationService
         const isValid = await this.passwordValidationService.validate({
           password,
           passwordHash: target.passwordHash,
-          passwordSalt: target.passwordSalt,
         });
 
         // is valid?

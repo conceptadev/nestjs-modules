@@ -13,6 +13,7 @@ import {
 
 import { User } from '../../domain/aggregates/user';
 import { UserCredentials } from '../../domain/aggregates/user-credentials';
+import { UserPasswordPort } from '../../domain/ports/user-password.port';
 import { UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';
 import { UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
 import { UserCredentialsService } from '../../domain/services/user-credentials.service';
@@ -69,6 +70,14 @@ export function createMockUserCredentialsRepository(): jest.Mocked<UserCredentia
   };
 }
 
+export function createMockPasswordPort(): jest.Mocked<UserPasswordPort> {
+  return {
+    create: jest.fn(),
+    validateCurrent: jest.fn(),
+    validateHistory: jest.fn(),
+  } as unknown as jest.Mocked<UserPasswordPort>;
+}
+
 export function createMockUserCredentialsService(): jest.Mocked<UserCredentialsService> {
   return {
     setPassword: jest.fn(),
@@ -99,7 +108,6 @@ export function createMockUserCredentialEntity(
     id: 'cred-1',
     userId: 'user-1',
     passwordHash: 'old-hash',
-    passwordSalt: 'old-salt',
     active: true,
     validFrom: new Date('2026-01-01'),
     validTo: null,

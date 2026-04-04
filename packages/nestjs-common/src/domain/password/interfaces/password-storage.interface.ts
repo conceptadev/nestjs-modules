@@ -3,12 +3,7 @@
  */
 export interface PasswordStorageInterface {
   /**
-   * Hashed password
+   * Hashed password (bcrypt format, salt embedded)
    */
   passwordHash: string;
-
-  /**
-   * Salt used to hash password
-   */
-  passwordSalt: string;
 }

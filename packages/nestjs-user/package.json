@@ -29,7 +29,7 @@
   ],
   "dependencies": {
     "@concepta/nestjs-common": "8.0.0-alpha.3",
-    "@concepta/nestjs-password": "^7.0.0-alpha.10",
+    "@concepta/nestjs-password": "8.0.0-alpha.3",
     "@concepta/nestjs-repository": "8.0.0-alpha.3",
     "@nestjs/common": "^11.1.9",
     "@nestjs/config": "^4.0.2",

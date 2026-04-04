@@ -1,7 +1,4 @@
-import { PasswordSaltOptionInterface } from './password-salt-option.interface';
-
-export interface PasswordHashObjectOptionsInterface
-  extends PasswordSaltOptionInterface {
+export interface PasswordHashObjectOptionsInterface {
   /**
    * Set to true if password is required.
    */

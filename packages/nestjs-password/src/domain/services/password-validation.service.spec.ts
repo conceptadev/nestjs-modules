@@ -19,30 +19,34 @@ describe('PasswordValidationService', () => {
   });
 
   describe(PasswordValidationService.prototype.validate, () => {
-    it('should successfully validate a good hash/salt combination', async () => {
-      // Encrypt password
-      const passwordStorageObject: PasswordStorageInterface =
+    it('should successfully validate a correct password', async () => {
+      const stored: PasswordStorageInterface =
         await storageService.hash(PASSWORD_MEDIUM);
 
-      // check if password encrypt can be decrypted
       const isValid = await validationService.validate({
         password: PASSWORD_MEDIUM,
-        passwordHash: passwordStorageObject.passwordHash ?? '',
-        passwordSalt: passwordStorageObject.passwordSalt ?? '',
+        passwordHash: stored.passwordHash,
       });
 
       expect(isValid).toEqual(true);
     });
 
-    it('should NOT successfully validate a bad hash/salt combination', async () => {
-      // fake salt
-      const fakeSalt = await storageService.generateSalt();
+    it('should NOT validate an incorrect password', async () => {
+      const stored: PasswordStorageInterface =
+        await storageService.hash(PASSWORD_MEDIUM);
 
-      // check if password encrypt can be decrypted
+      const isValid = await validationService.validate({
+        password: 'wrong-password',
+        passwordHash: stored.passwordHash,
+      });
+
+      expect(isValid).toEqual(false);
+    });
+
+    it('should NOT validate against an invalid hash', async () => {
       const isValid = await validationService.validate({
         password: PASSWORD_MEDIUM,
-        passwordHash: 'foo',
-        passwordSalt: fakeSalt,
+        passwordHash: 'not-a-valid-bcrypt-hash',
       });
 
       expect(isValid).toEqual(false);

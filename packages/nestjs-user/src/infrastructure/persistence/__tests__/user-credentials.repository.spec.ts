@@ -11,7 +11,6 @@ const mockEntity: UserCredentialEntityInterface = {
   id: 'cred-1',
   userId: 'user-1',
   passwordHash: 'hash',
-  passwordSalt: 'salt',
   active: true,
   validFrom: new Date('2024-01-01'),
   validTo: null,

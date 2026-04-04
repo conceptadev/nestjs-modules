@@ -20,10 +20,6 @@ export class UserCredentials extends DomainAggregate<UserCredentialInterface> {
     return this.props.passwordHash;
   }
 
-  get passwordSalt() {
-    return this.props.passwordSalt;
-  }
-
   get active() {
     return this.props.active;
   }
@@ -37,7 +33,7 @@ export class UserCredentials extends DomainAggregate<UserCredentialInterface> {
   }
 
   private toEventPayload() {
-    const { passwordHash: _ph, passwordSalt: _ps, ...payload } = this.props;
+    const { passwordHash: _ph, ...payload } = this.props;
     return payload;
   }
 
@@ -58,7 +54,6 @@ export class UserCredentials extends DomainAggregate<UserCredentialInterface> {
     const credentials = new UserCredentials(id, {
       userId: props.userId,
       passwordHash: props.passwordHash,
-      passwordSalt: props.passwordSalt,
       active: true,
       validFrom: now,
       validTo: null,
