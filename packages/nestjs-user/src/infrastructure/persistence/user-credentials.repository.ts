@@ -1,9 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import {
-  ReferenceId,
-  UserCredentialEntityInterface,
-} from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/nestjs-common';
 import {
   OrderBy,
   RepositoryInterface,
@@ -11,6 +8,7 @@ import {
 } from '@concepta/nestjs-repository';
 
 import { UserCredentials } from '../../domain/aggregates/user-credentials';
+import { UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';
 import { UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';
 
 import { UserCredentialsMapper } from './user-credentials.mapper';

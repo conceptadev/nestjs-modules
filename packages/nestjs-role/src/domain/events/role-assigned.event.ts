@@ -1,9 +1,8 @@
 import { IEvent } from '@nestjs/cqrs';
 
-import {
-  EventContextHost,
-  RoleAssignmentInterface,
-} from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
+
+import { RoleAssignmentInterface } from '../interfaces/role-assignment.interface';
 
 import { RoleEventHeaderInterface } from './interfaces/role-event-header.interface';
 

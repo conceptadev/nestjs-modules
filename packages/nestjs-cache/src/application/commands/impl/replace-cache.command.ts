@@ -1,6 +1,8 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { CacheCreatableInterface, ReferenceId } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/nestjs-common';
+
+import { CacheCreatableInterface } from '../../../domain/interfaces/cache-creatable.interface';
 
 export class ReplaceCacheCommand {
   constructor(

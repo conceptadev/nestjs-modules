@@ -1,4 +1,3 @@
-import { UserCreatableInterface } from '@concepta/nestjs-common';
 import { createMockCommandBus } from '@concepta/nestjs-common/testing';
 
 import {
@@ -7,6 +6,7 @@ import {
   createMockUserRepository,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { User } from '../../../../domain/aggregates/user';
+import { UserCreatableInterface } from '../../../../domain/interfaces/user-creatable.interface';
 import { CreateUserCredentialCommand } from '../../impl/create-user-credential.command';
 import { CreateUserCommand } from '../../impl/create-user.command';
 import { CreateUserHandler } from '../create-user.handler';

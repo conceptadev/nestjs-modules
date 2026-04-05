@@ -1,15 +1,12 @@
 import { randomUUID } from 'crypto';
 
-import {
-  type DomainFactory,
-  EventContextHost,
-  RoleAssignmentInterface,
-} from '@concepta/nestjs-common';
+import { DomainFactory, EventContextHost } from '@concepta/nestjs-common';
 import { DomainAggregate } from '@concepta/nestjs-common/aggregate';
 
 import { RoleEventHeaderInterface } from '../events/interfaces/role-event-header.interface';
 import { RoleAssignedEvent } from '../events/role-assigned.event';
 import { RoleRevokedEvent } from '../events/role-revoked.event';
+import { RoleAssignmentInterface } from '../interfaces/role-assignment.interface';
 
 export interface RoleAssignmentCreateProps {
   roleId: string;

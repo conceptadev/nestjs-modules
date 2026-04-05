@@ -1,11 +1,11 @@
 import { Provider, Type } from '@nestjs/common';
 
-import { RoleAssignmentEntityInterface } from '@concepta/nestjs-common';
 import {
   getDynamicRepositoryToken,
   RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
+import { RoleAssignmentEntityInterface } from '../../domain/interfaces/role-assignment-entity.interface';
 import { RoleAssignmentRepositoryInterface } from '../../domain/repositories/role-assignment-repository.interface';
 import { ROLE_ASSIGNMENT_CUSTOM_REPOSITORY_TOKEN } from '../../role.constants';
 import { RoleAssignmentMapper } from '../persistence/role-assignment.mapper';

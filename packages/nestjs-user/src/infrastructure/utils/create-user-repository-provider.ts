@@ -1,11 +1,11 @@
 import { Provider, Type } from '@nestjs/common';
 
-import { UserEntityInterface } from '@concepta/nestjs-common';
 import {
   getDynamicRepositoryToken,
   RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
+import { UserEntityInterface } from '../../domain/interfaces/user-entity.interface';
 import { UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
 import { USER_REPOSITORY_TOKEN } from '../../user.constants';
 import { UserMapper } from '../persistence/user.mapper';

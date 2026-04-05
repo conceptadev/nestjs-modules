@@ -1,7 +1,8 @@
 import { faker } from '@faker-js/faker';
 
-import { RoleEntityInterface } from '@concepta/nestjs-common';
 import { Factory } from '@concepta/typeorm-seeding';
+
+import { RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
 
 /**
  * Role factory

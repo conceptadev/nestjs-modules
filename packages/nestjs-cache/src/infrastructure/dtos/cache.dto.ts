@@ -3,8 +3,9 @@ import { Allow, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { CacheInterface } from '@concepta/nestjs-common';
 import { DomainAggregateDto } from '@concepta/nestjs-common/aggregate';
+
+import { CacheInterface } from '../../domain/interfaces/cache.interface';
 
 @Exclude()
 export class CacheDto extends DomainAggregateDto implements CacheInterface {

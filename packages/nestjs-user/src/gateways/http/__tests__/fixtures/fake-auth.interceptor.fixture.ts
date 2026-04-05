@@ -7,7 +7,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 
-import { UserEntityInterface } from '@concepta/nestjs-common';
+import { UserEntityInterface } from '../../../../domain/interfaces/user-entity.interface';
 
 @Injectable()
 export class FakeAuthInterceptorFixture implements NestInterceptor {

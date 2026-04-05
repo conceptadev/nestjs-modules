@@ -1,7 +1,3 @@
-import {
-  CacheInterface,
-  CacheUpdatableInterface,
-} from '@concepta/nestjs-common';
 import { CrudUpdateCommand } from '@concepta/nestjs-crud';
 
 import {
@@ -10,6 +6,8 @@ import {
   createMockCacheEntity,
   toCacheDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
+import { CacheUpdatableInterface } from '../../../../../domain/interfaces/cache-updatable.interface';
+import { CacheInterface } from '../../../../../domain/interfaces/cache.interface';
 import { UpdateCacheRequestHandler } from '../update-cache-request.handler';
 
 describe(UpdateCacheRequestHandler.name, () => {

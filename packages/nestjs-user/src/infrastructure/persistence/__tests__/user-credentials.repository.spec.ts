@@ -1,7 +1,7 @@
-import { UserCredentialEntityInterface } from '@concepta/nestjs-common';
 import { RepositoryInterface } from '@concepta/nestjs-repository';
 
 import { UserCredentials } from '../../../domain/aggregates/user-credentials';
+import { UserCredentialEntityInterface } from '../../../domain/interfaces/user-credential-entity.interface';
 import { UserCredentialsMapper } from '../user-credentials.mapper';
 import { UserCredentialsRepository } from '../user-credentials.repository';
 

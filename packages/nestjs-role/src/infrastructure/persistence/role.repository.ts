@@ -1,9 +1,10 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceId, RoleEntityInterface } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/nestjs-common';
 import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
 import { Role } from '../../domain/aggregates/role';
+import { RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
 import { RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface';
 
 import { RoleMapper } from './role.mapper';

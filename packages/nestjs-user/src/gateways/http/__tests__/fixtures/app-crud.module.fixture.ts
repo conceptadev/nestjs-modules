@@ -7,7 +7,6 @@ import {
   ExceptionsFilter,
   Operation,
   PasswordUpdateInterface,
-  UserInterface,
 } from '@concepta/nestjs-common';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import { HookModule, UseHooks } from '@concepta/nestjs-hook';
@@ -23,6 +22,7 @@ import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 import { UserCredentialEntityFixture } from '../../../../__tests__/fixtures/entities/user-credential.entity.fixture';
 import { UserEntityFixture } from '../../../../__tests__/fixtures/entities/user.entity.fixture';
 import { ormConfig } from '../../../../__tests__/fixtures/ormconfig.fixture';
+import { UserInterface } from '../../../../domain/interfaces/user.interface';
 import { UserPasswordUpdateDto } from '../../../../infrastructure/dtos/password/user-password-update.dto';
 import { UserCreateDto } from '../../../../infrastructure/dtos/user-create.dto';
 import { UserPaginatedDto } from '../../../../infrastructure/dtos/user-paginated.dto';

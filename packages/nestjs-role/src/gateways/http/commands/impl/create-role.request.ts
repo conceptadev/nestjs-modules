@@ -1,5 +1,7 @@
-import { RoleCreatableInterface, RoleInterface } from '@concepta/nestjs-common';
 import { CrudCreateCommand } from '@concepta/nestjs-crud';
+
+import { RoleCreatableInterface } from '../../../../domain/interfaces/role-creatable.interface';
+import { RoleInterface } from '../../../../domain/interfaces/role.interface';
 
 export class CreateRoleRequest extends CrudCreateCommand<
   RoleInterface,

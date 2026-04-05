@@ -2,7 +2,7 @@ import { Exclude } from 'class-transformer';
 
 import { PickType } from '@nestjs/swagger';
 
-import { RoleCreatableInterface } from '@concepta/nestjs-common';
+import { RoleCreatableInterface } from '../../domain/interfaces/role-creatable.interface';
 
 import { RoleDto } from './role.dto';
 

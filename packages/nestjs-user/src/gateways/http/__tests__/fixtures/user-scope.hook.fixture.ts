@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import {
-  AppContextInterface,
-  UserCredentialEntityInterface,
-  UserEntityInterface,
-} from '@concepta/nestjs-common';
+import { AppContextInterface } from '@concepta/nestjs-common';
 import {
   BeforeFindOne,
   RepoHook,
@@ -12,6 +8,9 @@ import {
   RepoSpec,
   Where,
 } from '@concepta/nestjs-repository';
+
+import { UserCredentialEntityInterface } from '../../../../domain/interfaces/user-credential-entity.interface';
+import { UserEntityInterface } from '../../../../domain/interfaces/user-entity.interface';
 
 import { AuthorizedUserRef } from './authorized-user.local.fixture';
 

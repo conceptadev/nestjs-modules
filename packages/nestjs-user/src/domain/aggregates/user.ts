@@ -1,17 +1,14 @@
 import { randomUUID } from 'crypto';
 
-import {
-  type DomainFactory,
-  EventContextHost,
-  UserCreatableInterface,
-  UserInterface,
-  UserUpdatableInterface,
-} from '@concepta/nestjs-common';
+import { type DomainFactory, EventContextHost } from '@concepta/nestjs-common';
 import { DomainAggregate } from '@concepta/nestjs-common/aggregate';
 
 import { UserCreatedEvent } from '../events/user-created.event';
 import { UserRemovedEvent } from '../events/user-removed.event';
 import { UserUpdatedEvent } from '../events/user-updated.event';
+import { UserCreatableInterface } from '../interfaces/user-creatable.interface';
+import { UserUpdatableInterface } from '../interfaces/user-updatable.interface';
+import { UserInterface } from '../interfaces/user.interface';
 
 export class User extends DomainAggregate<UserInterface> {
   get email() {

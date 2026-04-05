@@ -69,7 +69,18 @@ export {
   ValidatePasswordHistoryCommandInterface,
 } from './domain/ports/user-password.port';
 
-// interfaces
+// domain interfaces
+export { UserInterface } from './domain/interfaces/user.interface';
+export { UserEntityInterface } from './domain/interfaces/user-entity.interface';
+export { UserCreatableInterface } from './domain/interfaces/user-creatable.interface';
+export { UserUpdatableInterface } from './domain/interfaces/user-updatable.interface';
+export { UserOwnableInterface } from './domain/interfaces/user-ownable.interface';
+export { UserRelationInterface } from './domain/interfaces/user-relation.interface';
+export { UserCredentialInterface } from './domain/interfaces/user-credential.interface';
+export { UserCredentialEntityInterface } from './domain/interfaces/user-credential-entity.interface';
+export { UserCredentialCreatableInterface } from './domain/interfaces/user-credential-creatable.interface';
+
+// config interfaces
 export { UserOptionsInterface } from './infrastructure/config/interfaces/user-options.interface';
 export { UserExtrasInterface } from './infrastructure/config/interfaces/user-extras.interface';
 export { UserSettingsInterface } from './infrastructure/config/interfaces/user-settings.interface';

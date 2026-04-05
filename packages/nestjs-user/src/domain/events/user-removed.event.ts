@@ -1,6 +1,8 @@
 import { IEvent } from '@nestjs/cqrs';
 
-import { EventContextHost, UserInterface } from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
+
+import { UserInterface } from '../interfaces/user.interface';
 
 export class UserRemovedEvent implements IEvent {
   constructor(

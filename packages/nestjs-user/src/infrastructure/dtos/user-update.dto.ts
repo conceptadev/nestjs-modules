@@ -2,7 +2,7 @@ import { Exclude } from 'class-transformer';
 
 import { IntersectionType, PartialType, PickType } from '@nestjs/swagger';
 
-import { UserUpdatableInterface } from '@concepta/nestjs-common';
+import { UserUpdatableInterface } from '../../domain/interfaces/user-updatable.interface';
 
 import { UserDto } from './user.dto';
 

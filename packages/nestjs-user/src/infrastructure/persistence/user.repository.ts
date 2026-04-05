@@ -4,11 +4,11 @@ import {
   ReferenceEmail,
   ReferenceId,
   ReferenceUsername,
-  UserEntityInterface,
 } from '@concepta/nestjs-common';
 import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
 import { User } from '../../domain/aggregates/user';
+import { UserEntityInterface } from '../../domain/interfaces/user-entity.interface';
 import { UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
 
 import { UserMapper } from './user.mapper';

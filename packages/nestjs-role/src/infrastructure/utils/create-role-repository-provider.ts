@@ -1,11 +1,11 @@
 import { Provider, Type } from '@nestjs/common';
 
-import { RoleEntityInterface } from '@concepta/nestjs-common';
 import {
   getDynamicRepositoryToken,
   RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
+import { RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
 import { RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface';
 import { ROLE_CUSTOM_REPOSITORY_TOKEN } from '../../role.constants';
 import { RoleMapper } from '../persistence/role.mapper';

@@ -4,8 +4,9 @@ import {
   ContextOverlayInterceptor,
   getAppContext,
   OverlayRef,
-  UserEntityInterface,
 } from '@concepta/nestjs-common';
+
+import { UserEntityInterface } from '../../../../domain/interfaces/user-entity.interface';
 
 export const AuthorizedUserRef = new OverlayRef<
   'withAuthorizedUser',

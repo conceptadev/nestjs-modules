@@ -3,11 +3,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import {
-  CacheInterface,
-  ExceptionsFilter,
-  Operation,
-} from '@concepta/nestjs-common';
+import { ExceptionsFilter, Operation } from '@concepta/nestjs-common';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import { HookModule } from '@concepta/nestjs-hook';
 import { RepositoryModule } from '@concepta/nestjs-repository';
@@ -17,6 +13,7 @@ import { UserCacheEntityFixture } from '../../../../__tests__/fixtures/entities/
 import { UserEntityFixture } from '../../../../__tests__/fixtures/entities/user-entity.fixture';
 import { CACHE_MODULE_CACHE_ENTITY_KEY } from '../../../../cache.constants';
 import { CacheModule } from '../../../../cache.module';
+import { CacheInterface } from '../../../../domain/interfaces/cache.interface';
 import { CacheNamespace } from '../../../../gateways/decorators/cache-namespace.decorator';
 import { CacheCreateDto } from '../../../../infrastructure/dtos/cache-create.dto';
 import { CachePaginatedDto } from '../../../../infrastructure/dtos/cache-paginated.dto';

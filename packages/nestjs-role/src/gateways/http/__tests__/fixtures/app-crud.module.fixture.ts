@@ -3,12 +3,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import {
-  ExceptionsFilter,
-  Operation,
-  RoleAssignmentEntityInterface,
-  RoleInterface,
-} from '@concepta/nestjs-common';
+import { ExceptionsFilter, Operation } from '@concepta/nestjs-common';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import { HookModule } from '@concepta/nestjs-hook';
 import { RepositoryModule } from '@concepta/nestjs-repository';
@@ -17,6 +12,8 @@ import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 import { RoleEntityFixture } from '../../../../__tests__/fixtures/entities/role-entity.fixture';
 import { UserEntityFixture } from '../../../../__tests__/fixtures/entities/user-entity.fixture';
 import { UserRoleEntityFixture } from '../../../../__tests__/fixtures/entities/user-role-entity.fixture';
+import { RoleAssignmentEntityInterface } from '../../../../domain/interfaces/role-assignment-entity.interface';
+import { RoleInterface } from '../../../../domain/interfaces/role.interface';
 import { RoleNamespace } from '../../../../gateways/decorators/role-namespace.decorator';
 import { RoleAssignmentCreateDto } from '../../../../infrastructure/dtos/role-assignment-create.dto';
 import { RoleAssignmentPaginatedDto } from '../../../../infrastructure/dtos/role-assignment-paginated.dto';

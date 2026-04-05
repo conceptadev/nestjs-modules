@@ -1,10 +1,9 @@
-import { CacheCreatableInterface } from '@concepta/nestjs-common';
-
 import {
   createMockEventContext,
   toCacheDomain,
 } from '../../../__tests__/helpers/mock.helpers';
 import { CacheEntityInterface } from '../../../infrastructure/persistence/interfaces/cache-entity.interface';
+import { CacheCreatableInterface } from '../../interfaces/cache-creatable.interface';
 import { CacheExpirationPolicy } from '../../policies/cache-expiration.policy';
 import { Cache } from '../cache';
 

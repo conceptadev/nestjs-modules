@@ -1,6 +1,8 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { CacheUpdatableInterface, ReferenceId } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/nestjs-common';
+
+import { CacheUpdatableInterface } from '../../../domain/interfaces/cache-updatable.interface';
 
 export class UpdateCacheCommand {
   constructor(

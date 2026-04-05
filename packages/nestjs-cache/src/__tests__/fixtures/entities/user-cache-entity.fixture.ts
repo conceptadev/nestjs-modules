@@ -1,6 +1,6 @@
 import { Entity, Unique } from 'typeorm';
 
-import { CacheSqliteEntity } from '@concepta/nestjs-repository-typeorm';
+import { CacheSqliteEntity } from '../../../infrastructure/persistence/typeorm/cache-sqlite.entity';
 
 /**
  * Cache Entity Fixture

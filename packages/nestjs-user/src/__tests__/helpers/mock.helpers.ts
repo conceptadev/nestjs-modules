@@ -1,10 +1,6 @@
 import { EventPublisher } from '@nestjs/cqrs';
 
-import {
-  AppContextHost,
-  UserCredentialEntityInterface,
-  UserEntityInterface,
-} from '@concepta/nestjs-common';
+import { AppContextHost } from '@concepta/nestjs-common';
 import {
   TrxCtx,
   TransactionScope,
@@ -13,6 +9,8 @@ import {
 
 import { User } from '../../domain/aggregates/user';
 import { UserCredentials } from '../../domain/aggregates/user-credentials';
+import { UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';
+import { UserEntityInterface } from '../../domain/interfaces/user-entity.interface';
 import { UserPasswordPort } from '../../domain/ports/user-password.port';
 import { UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';
 import { UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';

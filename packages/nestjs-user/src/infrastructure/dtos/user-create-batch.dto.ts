@@ -3,8 +3,9 @@ import { ArrayNotEmpty, IsArray } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { UserCreatableInterface } from '@concepta/nestjs-common';
 import { CrudCreateBatchDto } from '@concepta/nestjs-crud';
+
+import { UserCreatableInterface } from '../../domain/interfaces/user-creatable.interface';
 
 import { UserCreateDto } from './user-create.dto';
 

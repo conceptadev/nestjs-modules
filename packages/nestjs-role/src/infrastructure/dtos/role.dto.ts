@@ -3,8 +3,9 @@ import { IsOptional, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { RoleInterface } from '@concepta/nestjs-common';
 import { DomainAggregateDto } from '@concepta/nestjs-common/aggregate';
+
+import { RoleInterface } from '../../domain/interfaces/role.interface';
 
 @Exclude()
 export class RoleDto extends DomainAggregateDto implements RoleInterface {

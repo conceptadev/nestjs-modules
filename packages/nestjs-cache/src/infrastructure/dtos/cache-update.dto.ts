@@ -2,7 +2,7 @@ import { Exclude } from 'class-transformer';
 
 import { PickType } from '@nestjs/swagger';
 
-import { CacheUpdatableInterface } from '@concepta/nestjs-common';
+import { CacheUpdatableInterface } from '../../domain/interfaces/cache-updatable.interface';
 
 import { CacheDto } from './cache.dto';
 

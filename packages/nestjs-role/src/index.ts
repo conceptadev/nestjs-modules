@@ -67,7 +67,18 @@ export { RoleRepositoryResolverInterface } from './domain/repositories/role-repo
 export { RoleAssignmentRepositoryInterface } from './domain/repositories/role-assignment-repository.interface';
 export { RoleAssignmentRepositoryResolverInterface } from './domain/repositories/role-assignment-repository-resolver.interface';
 
-// interfaces
+// domain interfaces
+export { RoleInterface } from './domain/interfaces/role.interface';
+export { RoleCreatableInterface } from './domain/interfaces/role-creatable.interface';
+export { RoleUpdatableInterface } from './domain/interfaces/role-updatable.interface';
+export { RoleEntityInterface } from './domain/interfaces/role-entity.interface';
+export { RoleAssignmentInterface } from './domain/interfaces/role-assignment.interface';
+export { RoleAssignmentCreatableInterface } from './domain/interfaces/role-assignment-creatable.interface';
+export { RoleAssignmentEntityInterface } from './domain/interfaces/role-assignment-entity.interface';
+export { RoleAssigneesInterface } from './domain/interfaces/role-assignees.interface';
+export { RoleRelationInterface } from './domain/interfaces/role-relation.interface';
+
+// config interfaces
 export { RoleOptionsInterface } from './infrastructure/config/interfaces/role-options.interface';
 export { RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface';
 export { RoleExtrasInterface } from './infrastructure/config/interfaces/role-extras.interface';

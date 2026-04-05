@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { UserCreatableInterface } from '@concepta/nestjs-common';
+import { UserCreatableInterface } from '../../../domain/interfaces/user-creatable.interface';
 
 export class CreateUserCommand {
   constructor(

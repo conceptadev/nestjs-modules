@@ -1,6 +1,8 @@
 import { IEvent } from '@nestjs/cqrs';
 
-import { CacheInterface, EventContextHost } from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
+
+import { CacheInterface } from '../interfaces/cache.interface';
 
 import { CacheEventHeaderInterface } from './interfaces/cache-event-header.interface';
 

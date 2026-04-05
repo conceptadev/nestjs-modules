@@ -1,4 +1,5 @@
-import { RoleAssignmentEntityInterface } from '@concepta/nestjs-common';
 import { CrudReadQuery } from '@concepta/nestjs-crud';
+
+import { RoleAssignmentEntityInterface } from '../../../../domain/interfaces/role-assignment-entity.interface';
 
 export class ReadRoleAssignmentRequest extends CrudReadQuery<RoleAssignmentEntityInterface> {}

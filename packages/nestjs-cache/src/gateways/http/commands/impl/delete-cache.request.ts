@@ -1,4 +1,5 @@
-import { CacheInterface } from '@concepta/nestjs-common';
 import { CrudDeleteCommand } from '@concepta/nestjs-crud';
+
+import { CacheInterface } from '../../../../domain/interfaces/cache.interface';
 
 export class DeleteCacheRequest extends CrudDeleteCommand<CacheInterface> {}

@@ -1,7 +1,8 @@
-import { UserEntityInterface, UserInterface } from '@concepta/nestjs-common';
 import { DomainMapper } from '@concepta/nestjs-common/aggregate';
 
 import { User } from '../../domain/aggregates/user';
+import { UserEntityInterface } from '../../domain/interfaces/user-entity.interface';
+import { UserInterface } from '../../domain/interfaces/user.interface';
 
 export class UserMapper extends DomainMapper<
   UserEntityInterface,

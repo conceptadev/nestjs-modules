@@ -1,5 +1,10 @@
 export { CacheModule } from './cache.module';
 
+// domain interfaces
+export { CacheInterface } from './domain/interfaces/cache.interface';
+export { CacheCreatableInterface } from './domain/interfaces/cache-creatable.interface';
+export { CacheUpdatableInterface } from './domain/interfaces/cache-updatable.interface';
+
 // domain object
 export { Cache } from './domain/aggregates/cache';
 

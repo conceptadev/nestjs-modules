@@ -1,8 +1,4 @@
-import {
-  EventContextHost,
-  RoleAssignmentEntityInterface,
-  RoleEntityInterface,
-} from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/nestjs-common';
 import {
   createMockCommandBus,
   createMockEventPublisher,
@@ -10,6 +6,8 @@ import {
 } from '@concepta/nestjs-common/testing';
 import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
+import { RoleAssignmentEntityInterface } from '../../domain/interfaces/role-assignment-entity.interface';
+import { RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
 import { RoleAssignmentRepositoryResolver } from '../../infrastructure/persistence/role-assignment-repository.resolver';
 import { RoleAssignmentMapper } from '../../infrastructure/persistence/role-assignment.mapper';
 import { RoleAssignmentRepository } from '../../infrastructure/persistence/role-assignment.repository';

@@ -1,15 +1,12 @@
 import { randomUUID } from 'crypto';
 
-import {
-  type DomainFactory,
-  EventContextHost,
-  UserCredentialCreatableInterface,
-  UserCredentialInterface,
-} from '@concepta/nestjs-common';
+import { type DomainFactory, EventContextHost } from '@concepta/nestjs-common';
 import { DomainAggregate } from '@concepta/nestjs-common/aggregate';
 
 import { UserCredentialsCreatedEvent } from '../events/user-credentials-created.event';
 import { UserCredentialsDeactivatedEvent } from '../events/user-credentials-deactivated.event';
+import { UserCredentialCreatableInterface } from '../interfaces/user-credential-creatable.interface';
+import { UserCredentialInterface } from '../interfaces/user-credential.interface';
 
 export class UserCredentials extends DomainAggregate<UserCredentialInterface> {
   get userId() {

@@ -3,8 +3,9 @@ import { ArrayNotEmpty, IsArray } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { RoleCreatableInterface } from '@concepta/nestjs-common';
 import { CrudCreateBatchDto } from '@concepta/nestjs-crud';
+
+import { RoleCreatableInterface } from '../../domain/interfaces/role-creatable.interface';
 
 import { RoleCreateDto } from './role-create.dto';
 

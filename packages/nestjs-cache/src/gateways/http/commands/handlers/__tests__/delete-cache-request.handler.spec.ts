@@ -1,4 +1,4 @@
-import { CacheInterface, Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/nestjs-common';
 import { CrudDeleteCommand } from '@concepta/nestjs-crud';
 
 import {
@@ -7,6 +7,7 @@ import {
   createMockCacheEntity,
   toCacheDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
+import { CacheInterface } from '../../../../../domain/interfaces/cache.interface';
 import { DeleteCacheRequestHandler } from '../delete-cache-request.handler';
 
 describe(DeleteCacheRequestHandler.name, () => {

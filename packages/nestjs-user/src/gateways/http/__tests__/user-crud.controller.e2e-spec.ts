@@ -4,11 +4,11 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken } from '@nestjs/typeorm';
 
-import { UserEntityInterface } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
 import { UserEntityFixture } from '../../../__tests__/fixtures/entities/user.entity.fixture';
+import { UserEntityInterface } from '../../../domain/interfaces/user-entity.interface';
 import { UserFactory } from '../../../infrastructure/seeding/user.factory';
 import { UserSeeder } from '../../../infrastructure/seeding/user.seeder';
 

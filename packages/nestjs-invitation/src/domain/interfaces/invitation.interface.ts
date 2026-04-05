@@ -1,6 +1,12 @@
-import { LiteralObject, UserRelationInterface } from '@concepta/nestjs-common';
+import { LiteralObject, ReferenceId } from '@concepta/nestjs-common';
 
-export interface InvitationInterface extends UserRelationInterface {
+export interface InvitationUserRelationInterface<
+  T extends ReferenceId = ReferenceId,
+> {
+  userId: T;
+}
+
+export interface InvitationInterface extends InvitationUserRelationInterface {
   code: string;
   category: string;
   constraints: LiteralObject | undefined;

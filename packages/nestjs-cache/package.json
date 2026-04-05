@@ -16,6 +16,10 @@
     "./optional/seeding": {
       "types": "./dist/optional-seeding.d.ts",
       "default": "./dist/optional-seeding.js"
+    },
+    "./optional/typeorm": {
+      "types": "./dist/optional-typeorm.d.ts",
+      "default": "./dist/optional-typeorm.js"
     }
   },
   "license": "BSD-3-Clause",

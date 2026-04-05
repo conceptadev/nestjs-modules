@@ -1,12 +1,10 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import {
-  ReferenceId,
-  RoleAssignmentEntityInterface,
-} from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/nestjs-common';
 import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
 import { RoleAssignment } from '../../domain/aggregates/role-assignment';
+import { RoleAssignmentEntityInterface } from '../../domain/interfaces/role-assignment-entity.interface';
 import { RoleAssignmentRepositoryInterface } from '../../domain/repositories/role-assignment-repository.interface';
 
 import { RoleAssignmentMapper } from './role-assignment.mapper';

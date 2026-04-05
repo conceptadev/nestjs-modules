@@ -7,7 +7,6 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken } from '@nestjs/typeorm';
 
-import { CacheCreatableInterface } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
@@ -16,6 +15,7 @@ import { UserCacheEntityFixture } from '../../../__tests__/fixtures/entities/use
 import { UserEntityFixture } from '../../../__tests__/fixtures/entities/user-entity.fixture';
 import { UserCacheFactoryFixture } from '../../../__tests__/fixtures/factories/user-cache.factory.fixture';
 import { UserFactoryFixture } from '../../../__tests__/fixtures/factories/user.factory.fixture';
+import { CacheCreatableInterface } from '../../../domain/interfaces/cache-creatable.interface';
 import { CacheFactory } from '../../../infrastructure/persistence/cache.factory';
 
 import { AppCrudModuleFixture } from './fixtures/app-crud.module.fixture';
