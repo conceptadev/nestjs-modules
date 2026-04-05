@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
 
-import { PasswordStrengthEnum } from '../../enum/password-strength.enum';
+import { PasswordStrengthEnum } from '../../domain/enum/password-strength.enum';
 import { PASSWORD_MODULE_DEFAULT_SETTINGS_TOKEN } from '../../password.constants';
 
 import { PasswordSettingsInterface } from './interfaces/password-settings.interface';

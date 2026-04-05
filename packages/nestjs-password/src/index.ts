@@ -2,7 +2,7 @@
 export { PasswordModule } from './password.module';
 
 // enum
-export { PasswordStrengthEnum } from './enum/password-strength.enum';
+export { PasswordStrengthEnum } from './domain/enum/password-strength.enum';
 
 // domain policies
 export {
@@ -16,15 +16,15 @@ export { PasswordStorageService } from './domain/services/password-storage.servi
 export { PasswordValidationService } from './domain/services/password-validation.service';
 export { PasswordStrengthService } from './domain/services/password-strength.service';
 
-// public interfaces
-export { PasswordCreationServiceInterface } from './interfaces/password-creation-service.interface';
-export { PasswordStorageServiceInterface } from './interfaces/password-storage-service.interface';
-export { PasswordValidationServiceInterface } from './interfaces/password-validation-service.interface';
-export { PasswordStrengthServiceInterface } from './interfaces/password-strength-service.interface';
-export { PasswordHashObjectOptionsInterface } from './interfaces/password-hash-object-options.interface';
-export { PasswordValidateOptionsInterface } from './interfaces/password-validate-options.interface';
-export { PasswordCurrentPasswordInterface } from './interfaces/password-current-password.interface';
-export { PasswordHistoryPasswordInterface } from './interfaces/password-history-password.interface';
+// domain interfaces
+export { PasswordCreationServiceInterface } from './domain/interfaces/password-creation-service.interface';
+export { PasswordStorageServiceInterface } from './domain/interfaces/password-storage-service.interface';
+export { PasswordValidationServiceInterface } from './domain/interfaces/password-validation-service.interface';
+export { PasswordStrengthServiceInterface } from './domain/interfaces/password-strength-service.interface';
+export { PasswordHashObjectOptionsInterface } from './domain/interfaces/password-hash-object-options.interface';
+export { PasswordValidateOptionsInterface } from './domain/interfaces/password-validate-options.interface';
+export { PasswordCurrentPasswordInterface } from './domain/interfaces/password-current-password.interface';
+export { PasswordHistoryPasswordInterface } from './domain/interfaces/password-history-password.interface';
 
 // config interfaces
 export { PasswordOptionsInterface } from './infrastructure/config/interfaces/password-options.interface';
@@ -42,9 +42,9 @@ export { ValidatePasswordHandler } from './application/commands/handlers/validat
 export { ValidateCurrentPasswordHandler } from './application/commands/handlers/validate-current-password.handler';
 export { ValidatePasswordHistoryHandler } from './application/commands/handlers/validate-password-history.handler';
 
-// exceptions
-export { PasswordException } from './application/exceptions/password.exception';
-export { PasswordCurrentRequiredException } from './application/exceptions/password-current-required.exception';
-export { PasswordNotStrongException } from './application/exceptions/password-not-strong.exception';
-export { PasswordRequiredException } from './application/exceptions/password-required.exception';
-export { PasswordUsedRecentlyException } from './application/exceptions/password-used-recently.exception';
+// domain exceptions
+export { PasswordException } from './domain/exceptions/password.exception';
+export { PasswordCurrentRequiredException } from './domain/exceptions/password-current-required.exception';
+export { PasswordNotStrongException } from './domain/exceptions/password-not-strong.exception';
+export { PasswordRequiredException } from './domain/exceptions/password-required.exception';
+export { PasswordUsedRecentlyException } from './domain/exceptions/password-used-recently.exception';

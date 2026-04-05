@@ -5,9 +5,9 @@ import {
   PasswordStorageInterface,
 } from '@concepta/nestjs-common';
 
-import { PasswordRequiredException } from '../../application/exceptions/password-required.exception';
-import { PasswordHashObjectOptionsInterface } from '../../interfaces/password-hash-object-options.interface';
-import { PasswordStorageServiceInterface } from '../../interfaces/password-storage-service.interface';
+import { PasswordRequiredException } from '../exceptions/password-required.exception';
+import { PasswordHashObjectOptionsInterface } from '../interfaces/password-hash-object-options.interface';
+import { PasswordStorageServiceInterface } from '../interfaces/password-storage-service.interface';
 import { CryptUtil } from '../utils/crypt.util';
 
 /**

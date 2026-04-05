@@ -2,7 +2,7 @@ import zxcvbn from 'zxcvbn';
 
 import { Injectable } from '@nestjs/common';
 
-import { PasswordStrengthServiceInterface } from '../../interfaces/password-strength-service.interface';
+import { PasswordStrengthServiceInterface } from '../interfaces/password-strength-service.interface';
 import { PasswordPolicy } from '../policies/password.policy';
 
 /**
