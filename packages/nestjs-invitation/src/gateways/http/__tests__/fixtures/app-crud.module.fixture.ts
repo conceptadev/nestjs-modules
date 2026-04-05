@@ -11,13 +11,13 @@ import {
   ValidateOtpQuery,
   OtpModule,
 } from '@concepta/nestjs-otp';
-import { PasswordModule } from '@concepta/nestjs-password';
-import { RepositoryModule } from '@concepta/nestjs-repository';
-import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 import {
+  PasswordModule,
   CreatePasswordCommand,
   ValidateCurrentPasswordCommand,
 } from '@concepta/nestjs-password';
+import { RepositoryModule } from '@concepta/nestjs-repository';
+import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 import {
   GetUserQuery,
   GetUserByEmailQuery,

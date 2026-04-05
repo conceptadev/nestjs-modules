@@ -69,7 +69,7 @@ function definitionTransform(
   extras: InvitationOptionsExtrasInterface,
 ): DynamicModule {
   const { imports = [], providers = [] } = definition;
-  const { global = false, entities } = extras;
+  const { global = false, entities, repositories } = extras;
   const entityKey =
     entities?.invitation ?? INVITATION_MODULE_DEFAULT_ENTITY_KEY;
 
@@ -77,7 +77,11 @@ function definitionTransform(
     ...definition,
     global,
     imports: createInvitationImports({ imports }),
-    providers: createInvitationProviders({ providers, entityKey }),
+    providers: createInvitationProviders({
+      providers,
+      entityKey,
+      repositories,
+    }),
     exports: [ConfigModule, RAW_OPTIONS_TOKEN, ...createInvitationExports()],
   };
 }
@@ -102,12 +106,16 @@ export function createInvitationProviders(options: {
   overrides?: InvitationOptions;
   providers?: Provider[];
   entityKey: string;
+  repositories?: InvitationOptionsExtrasInterface['repositories'];
 }): Provider[] {
   return [
     ...(options.providers ?? []),
     InvitationService,
     createInvitationSettingsProvider(options.overrides),
-    createInvitationRepositoryProvider(options.entityKey),
+    ...createInvitationRepositoryProvider(
+      options.entityKey,
+      options.repositories?.invitation,
+    ),
     createInvitationOtpPolicyProvider(),
     createInvitationEmailPolicyProvider(),
     createInvitationOtpPortProvider(),
