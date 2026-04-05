@@ -563,7 +563,6 @@ implement.
 | OTP | `OtpInterface`, `OtpCreatableInterface`, `OtpCreateInterface`, `OtpDeleteInterface`, `OtpValidateInterface`, `OtpClearInterface`, `OtpParamsInterface`, `OtpCreateParamsInterface`, `OtpValidateLimitParamsInterface` |
 | Org | `OrgInterface`, `OrgCreatableInterface`, `OrgUpdatableInterface`, `OrgReplaceableInterface`, `OrgEntityInterface`, `OrgOwnableInterface`, `OrgMemberInterface`, `OrgOwnerInterface`, `OrgMemberEntityInterface` |
 | Org Profile | `OrgProfileInterface`, `OrgProfileCreatableInterface`, `OrgProfileEntityInterface` |
-| Federated | `FederatedInterface`, `FederatedCreatableInterface`, `FederatedUpdatableInterface`, `FederatedEntityInterface` |
 | File | `FileInterface`, `FileCreatableInterface`, `FileUpdatableInterface`, `FileOwnableInterface`, `FileEntityInterface` |
 | Report | `ReportInterface`, `ReportCreatableInterface`, `ReportUpdatableInterface`, `ReportEntityInterface`, `ReportStatusEnum` |
 | Email | `EmailSendInterface`, `EmailSendOptionsInterface` |

@@ -1,0 +1,59 @@
+import { randomUUID } from 'crypto';
+
+import {
+  DomainFactory,
+  EventContextHost,
+  ReferenceIdInterface,
+} from '@concepta/nestjs-common';
+import {
+  AggregateMetaInterface,
+  DomainAggregate,
+} from '@concepta/nestjs-common/aggregate';
+
+import { IdentityCreatedEvent } from '../events/identity-created.event';
+import { IdentityCreatableInterface } from '../interfaces/identity-creatable.interface';
+import { IdentityInterface } from '../interfaces/identity.interface';
+
+export class Identity extends DomainAggregate<IdentityInterface> {
+  constructor(
+    id: string,
+    props: IdentityInterface,
+    version?: number,
+    meta?: AggregateMetaInterface,
+  ) {
+    super(id, props, version, meta);
+  }
+
+  get provider() {
+    return this.props.provider;
+  }
+  get subject() {
+    return this.props.subject;
+  }
+  get user(): ReferenceIdInterface {
+    return this.props.user;
+  }
+
+  static create(
+    eventContext: EventContextHost,
+    dto: IdentityCreatableInterface,
+  ): Identity {
+    return Identity.createWithId(eventContext, randomUUID(), dto);
+  }
+
+  static createWithId(
+    eventContext: EventContextHost,
+    id: string,
+    dto: IdentityCreatableInterface,
+  ): Identity {
+    const { provider, subject, user } = dto;
+
+    const identity = new Identity(id, { provider, subject, user });
+
+    identity.apply(new IdentityCreatedEvent(eventContext, identity.toPlain()));
+
+    return identity;
+  }
+}
+
+Identity satisfies DomainFactory<IdentityCreatableInterface, Identity>;

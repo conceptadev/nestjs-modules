@@ -44,9 +44,6 @@ export { RoleAssignmentSqliteEntity } from './entities/role/role-assignment-sqli
 // report entities
 export { ReportPostgresEntity } from './entities/report/report-postgres.entity';
 export { ReportSqliteEntity } from './entities/report/report-sqlite.entity';
-// federated entities
-export { FederatedPostgresEntity } from './entities/federated/federated-postgres.entity';
-export { FederatedSqliteEntity } from './entities/federated/federated-sqlite.entity';
 // cache entities
 export { CachePostgresEntity } from './entities/cache/cache-postgres.entity';
 export { CacheSqliteEntity } from './entities/cache/cache-sqlite.entity';
