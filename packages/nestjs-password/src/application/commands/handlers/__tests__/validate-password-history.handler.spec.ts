@@ -1,5 +1,6 @@
 import { ValidatePasswordHistoryCommand } from '../../impl/validate-password-history.command';
 import { ValidatePasswordHistoryHandler } from '../validate-password-history.handler';
+
 import { createMockCreationService } from './mock.helpers';
 
 describe(ValidatePasswordHistoryHandler.name, () => {

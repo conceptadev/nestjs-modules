@@ -3,7 +3,10 @@ import { PasswordStorageInterface } from '@concepta/nestjs-common';
 import { PasswordNotStrongException } from '../../application/exceptions/password-not-strong.exception';
 import { PasswordUsedRecentlyException } from '../../application/exceptions/password-used-recently.exception';
 import { PasswordStrengthEnum } from '../../enum/password-strength.enum';
-import { PasswordPolicy, PasswordPolicySettings } from '../policies/password.policy';
+import {
+  PasswordPolicy,
+  PasswordPolicySettings,
+} from '../policies/password.policy';
 
 import { PasswordCreationService } from './password-creation.service';
 import { PasswordStorageService } from './password-storage.service';
@@ -101,7 +104,10 @@ describe(PasswordCreationService, () => {
     });
 
     it('should throw an error due to required current password setting', async () => {
-      const strictPolicy = new PasswordPolicy({ ...policySettings, requireCurrentToUpdate: true });
+      const strictPolicy = new PasswordPolicy({
+        ...policySettings,
+        requireCurrentToUpdate: true,
+      });
       const strictService = new PasswordCreationService(
         strictPolicy,
         passwordStorageService,

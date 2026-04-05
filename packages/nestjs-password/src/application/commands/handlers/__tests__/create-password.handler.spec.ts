@@ -2,6 +2,7 @@ import { PasswordStorageInterface } from '@concepta/nestjs-common';
 
 import { CreatePasswordCommand } from '../../impl/create-password.command';
 import { CreatePasswordHandler } from '../create-password.handler';
+
 import { createMockCreationService } from './mock.helpers';
 
 describe(CreatePasswordHandler.name, () => {

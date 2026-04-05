@@ -5,7 +5,10 @@ export { PasswordModule } from './password.module';
 export { PasswordStrengthEnum } from './enum/password-strength.enum';
 
 // domain policies
-export { PasswordPolicy, PasswordPolicySettings } from './domain/policies/password.policy';
+export {
+  PasswordPolicy,
+  PasswordPolicySettings,
+} from './domain/policies/password.policy';
 
 // domain services
 export { PasswordCreationService } from './domain/services/password-creation.service';

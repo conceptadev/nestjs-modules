@@ -1,5 +1,6 @@
 import { ValidatePasswordCommand } from '../../impl/validate-password.command';
 import { ValidatePasswordHandler } from '../validate-password.handler';
+
 import { createMockValidationService } from './mock.helpers';
 
 describe(ValidatePasswordHandler.name, () => {

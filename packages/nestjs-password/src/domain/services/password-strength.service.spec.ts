@@ -1,5 +1,8 @@
 import { PasswordStrengthEnum } from '../../enum/password-strength.enum';
-import { PasswordPolicy, PasswordPolicySettings } from '../policies/password.policy';
+import {
+  PasswordPolicy,
+  PasswordPolicySettings,
+} from '../policies/password.policy';
 
 import { PasswordStrengthService } from './password-strength.service';
 

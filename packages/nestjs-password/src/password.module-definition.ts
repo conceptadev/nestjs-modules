@@ -12,11 +12,11 @@ import { CreatePasswordHandler } from './application/commands/handlers/create-pa
 import { ValidateCurrentPasswordHandler } from './application/commands/handlers/validate-current-password.handler';
 import { ValidatePasswordHistoryHandler } from './application/commands/handlers/validate-password-history.handler';
 import { ValidatePasswordHandler } from './application/commands/handlers/validate-password.handler';
+import { PasswordPolicy } from './domain/policies/password.policy';
 import { PasswordCreationService } from './domain/services/password-creation.service';
 import { PasswordStorageService } from './domain/services/password-storage.service';
 import { PasswordStrengthService } from './domain/services/password-strength.service';
 import { PasswordValidationService } from './domain/services/password-validation.service';
-import { PasswordPolicy } from './domain/policies/password.policy';
 import { PasswordOptionsExtrasInterface } from './infrastructure/config/interfaces/password-options-extras.interface';
 import { PasswordOptionsInterface } from './infrastructure/config/interfaces/password-options.interface';
 import { PasswordSettingsInterface } from './infrastructure/config/interfaces/password-settings.interface';

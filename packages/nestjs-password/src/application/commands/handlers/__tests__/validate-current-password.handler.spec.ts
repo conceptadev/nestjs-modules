@@ -1,5 +1,6 @@
 import { ValidateCurrentPasswordCommand } from '../../impl/validate-current-password.command';
 import { ValidateCurrentPasswordHandler } from '../validate-current-password.handler';
+
 import { createMockCreationService } from './mock.helpers';
 
 describe(ValidateCurrentPasswordHandler.name, () => {
