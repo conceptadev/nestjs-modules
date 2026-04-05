@@ -139,7 +139,10 @@ describe(InvitationService.name, () => {
 
       await service.sendById(ctx, 'test-id');
 
-      expect(mockRepo.get).toHaveBeenCalledWith(ctx, 'test-id');
+      expect(mockRepo.get).toHaveBeenCalledWith(
+        expect.any(AppContextHost),
+        'test-id',
+      );
       expect(mockOtpPort.create).toHaveBeenCalledTimes(1);
     });
 
@@ -231,11 +234,11 @@ describe(InvitationService.name, () => {
       await service.revokeByEmail(ctx, 'test@example.com', 'user');
 
       expect(mockUserPort.getByEmail).toHaveBeenCalledWith(
-        ctx,
+        expect.any(AppContextHost),
         'test@example.com',
       );
       expect(mockRepo.findAllByUserAndCategory).toHaveBeenCalledWith(
-        ctx,
+        expect.any(AppContextHost),
         'test-user-id',
         'user',
       );
@@ -275,7 +278,7 @@ describe(InvitationService.name, () => {
       await service.revokeByUserId(ctx, 'test-user-id', 'user');
 
       expect(mockRepo.findAllByUserAndCategory).toHaveBeenCalledWith(
-        ctx,
+        expect.any(AppContextHost),
         'test-user-id',
         'user',
       );

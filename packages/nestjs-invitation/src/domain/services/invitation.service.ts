@@ -108,13 +108,15 @@ export class InvitationService {
     ctx: PlainLiteralObject,
     invitationId: ReferenceId,
   ): Promise<void> {
-    const invitation = await this.invitationRepo.get(ctx, invitationId);
+    return this.txScope.run(ctx, async (txCtx) => {
+      const invitation = await this.invitationRepo.get(txCtx, invitationId);
 
-    if (!invitation) {
-      throw new InvitationNotFoundException(invitationId);
-    }
+      if (!invitation) {
+        throw new InvitationNotFoundException(invitationId);
+      }
 
-    await this.send(ctx, invitation);
+      await this.send(txCtx, invitation);
+    });
   }
 
   async accept(
@@ -191,13 +193,15 @@ export class InvitationService {
     email: string,
     category: string,
   ): Promise<void> {
-    const user = await this.userPort.getByEmail(ctx, email);
+    return this.txScope.run(ctx, async (txCtx) => {
+      const user = await this.userPort.getByEmail(txCtx, email);
 
-    if (!user) {
-      throw new InvitationUserUndefinedException();
-    }
+      if (!user) {
+        throw new InvitationUserUndefinedException();
+      }
 
-    await this.revokeByUserId(ctx, user.id, category);
+      await this.revokeByUserId(txCtx, user.id, category);
+    });
   }
 
   async revokeByUserId(
@@ -205,21 +209,23 @@ export class InvitationService {
     userId: ReferenceId,
     category: string,
   ): Promise<void> {
-    const invitations = await this.invitationRepo.findAllByUserAndCategory(
-      ctx,
-      userId,
-      category,
-    );
+    return this.txScope.run(ctx, async (txCtx) => {
+      const invitations = await this.invitationRepo.findAllByUserAndCategory(
+        txCtx,
+        userId,
+        category,
+      );
 
-    const activeInvitations = invitations.filter((inv) => inv.active);
+      const activeInvitations = invitations.filter((inv) => inv.active);
 
-    if (activeInvitations.length === 0) {
-      return;
-    }
+      if (activeInvitations.length === 0) {
+        return;
+      }
 
-    const eventContext = new EventContextHost({}, {});
+      const eventContext = new EventContextHost({}, {});
 
-    await this.revokeActive(ctx, eventContext, activeInvitations);
+      await this.revokeActive(txCtx, eventContext, activeInvitations);
+    });
   }
 
   protected async revokeActive(

@@ -1,5 +1,7 @@
 import { EventPublisher } from '@nestjs/cqrs';
 
+import { AppContextHost } from '@concepta/nestjs-common';
+
 import {
   createMockEventPublisher,
   createMockIdentityRepository,
@@ -65,11 +67,14 @@ describe(FederatedOAuthService, () => {
 
       expect(result).toEqual(mockUser);
       expect(identityRepo.findByProviderAndSubject).toHaveBeenCalledWith(
-        {},
+        expect.any(AppContextHost),
         'google',
         'subject-id',
       );
-      expect(userPort.getById).toHaveBeenCalledWith({}, 'user-id');
+      expect(userPort.getById).toHaveBeenCalledWith(
+        expect.any(AppContextHost),
+        'user-id',
+      );
     });
 
     it('should create new user and identity when they do not exist', async () => {
@@ -87,15 +92,15 @@ describe(FederatedOAuthService, () => {
 
       expect(result).toEqual(mockUser);
       expect(identityRepo.findByProviderAndSubject).toHaveBeenCalledWith(
-        {},
+        expect.any(AppContextHost),
         'google',
         'subject-id',
       );
       expect(userPort.getByEmail).toHaveBeenCalledWith(
-        expect.anything(),
+        expect.any(AppContextHost),
         'test@example.com',
       );
-      expect(userPort.create).toHaveBeenCalledWith(expect.anything(), {
+      expect(userPort.create).toHaveBeenCalledWith(expect.any(AppContextHost), {
         email: 'test@example.com',
         username: 'test@example.com',
       });
@@ -116,12 +121,12 @@ describe(FederatedOAuthService, () => {
 
       expect(result).toEqual(mockUser);
       expect(identityRepo.findByProviderAndSubject).toHaveBeenCalledWith(
-        {},
+        expect.any(AppContextHost),
         'google',
         'subject-id',
       );
       expect(userPort.getByEmail).toHaveBeenCalledWith(
-        expect.anything(),
+        expect.any(AppContextHost),
         'test@example.com',
       );
       expect(userPort.create).not.toHaveBeenCalled();

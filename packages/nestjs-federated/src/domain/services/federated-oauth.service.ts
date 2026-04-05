@@ -31,27 +31,32 @@ export class FederatedOAuthService implements FederatedOAuthServiceInterface {
     email: string,
     subject: string,
   ): Promise<FederatedCredentialsInterface> {
-    const existing = await this.identityRepo.findByProviderAndSubject(
-      ctx,
-      provider,
-      subject,
-    );
+    return this.txScope.run(ctx, async (txCtx) => {
+      const existing = await this.identityRepo.findByProviderAndSubject(
+        txCtx,
+        provider,
+        subject,
+      );
 
-    if (!existing) {
-      return this.createUserWithIdentity(ctx, provider, email, subject);
-    }
+      if (!existing) {
+        return this.createUserWithIdentity(txCtx, provider, email, subject);
+      }
 
-    if (!existing.user?.id) {
-      throw new IdentityUserRelationshipException(existing.id);
-    }
+      if (!existing.user?.id) {
+        throw new IdentityUserRelationshipException(existing.id);
+      }
 
-    const user = await this.userPort.getById(ctx, existing.user.id);
+      const user = await this.userPort.getById(txCtx, existing.user.id);
 
-    if (!user) {
-      throw new IdentityFindUserException(this.constructor.name, existing.user);
-    }
+      if (!user) {
+        throw new IdentityFindUserException(
+          this.constructor.name,
+          existing.user,
+        );
+      }
 
-    return user;
+      return user;
+    });
   }
 
   protected async createUserWithIdentity(
