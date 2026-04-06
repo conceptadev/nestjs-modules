@@ -32,16 +32,6 @@ export { OrgProfileInterface } from './org-profile/interfaces/org-profile.interf
 export { OrgProfileCreatableInterface } from './org-profile/interfaces/org-profile-creatable.interface';
 export { OrgProfileEntityInterface } from './org-profile/interfaces/org-profile-entity.interface';
 
-export { OtpClearInterface } from './otp/interfaces/otp-clear.interface';
-export { OtpParamsInterface } from './otp/interfaces/otp-params.interface';
-export { OtpCreateParamsInterface } from './otp/interfaces/otp-create-params.interface';
-export { OtpValidateLimitParamsInterface } from './otp/interfaces/otp-validate-limit-params.interface';
-export { OtpCreatableInterface } from './otp/interfaces/otp-creatable.interface';
-export { OtpCreateInterface } from './otp/interfaces/otp-create.interface';
-export { OtpDeleteInterface } from './otp/interfaces/otp-delete.interface';
-export { OtpValidateInterface } from './otp/interfaces/otp-validate.interface';
-export { OtpInterface } from './otp/interfaces/otp.interface';
-
 export { FileCreatableInterface } from './file/interfaces/file-creatable.interface';
 export { FileUpdatableInterface } from './file/interfaces/file-updatable.interface';
 export { FileOwnableInterface } from './file/interfaces/file-ownable.interface';

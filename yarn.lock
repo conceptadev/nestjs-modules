@@ -2169,25 +2169,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@concepta/typeorm-common@workspace:packages/typeorm-common":
-  version: 0.0.0-use.local
-  resolution: "@concepta/typeorm-common@workspace:packages/typeorm-common"
-  dependencies:
-    "@concepta/nestjs-common": "npm:^7.0.0-alpha.10"
-    "@concepta/nestjs-typeorm-ext": "npm:^7.0.0-alpha.10"
-    "@concepta/typeorm-seeding": "npm:^4.0.0"
-    "@faker-js/faker": "npm:^8.4.1"
-    "@nestjs/common": "npm:^11.1.9"
-    "@nestjs/typeorm": "npm:^11.0.0"
-    jest-mock-extended: "npm:^4.0.0"
-  peerDependencies:
-    "@nestjs/testing": ^10.4.1
-    class-transformer: "*"
-    class-validator: "*"
-    typeorm: ^0.3.0
-  languageName: unknown
-  linkType: soft
-
 "@concepta/typeorm-seeding@npm:^4.0.0":
   version: 4.0.0
   resolution: "@concepta/typeorm-seeding@npm:4.0.0"

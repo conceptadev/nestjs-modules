@@ -1,8 +1,8 @@
-import { OtpCreatableInterface } from '@concepta/nestjs-common';
-
-export interface InvitationOtpSettingsInterface
-  extends Pick<OtpCreatableInterface, 'type' | 'expiresIn'>,
-    Partial<Pick<OtpCreatableInterface, 'rateSeconds' | 'rateThreshold'>> {
+export interface InvitationOtpSettingsInterface {
+  type: string;
+  expiresIn: string;
+  rateSeconds?: number;
+  rateThreshold?: number;
   namespace: string;
   clearOtpOnCreate?: boolean;
 }

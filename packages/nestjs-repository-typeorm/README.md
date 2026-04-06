@@ -393,7 +393,6 @@ Postgres and SQLite variants:
 - Org: `OrgPostgresEntity`, `OrgSqliteEntity`
 - Org Member: `OrgMemberPostgresEntity`, `OrgMemberSqliteEntity`
 - Org Profile: `OrgProfilePostgresEntity`, `OrgProfileSqliteEntity`
-- OTP: `OtpPostgresEntity`, `OtpSqliteEntity`
 - Report: `ReportPostgresEntity`, `ReportSqliteEntity`
 - File: `FilePostgresEntity`, `FileSqliteEntity`
 

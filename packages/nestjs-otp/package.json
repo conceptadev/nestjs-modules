@@ -9,6 +9,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./optional/typeorm": {
+      "types": "./dist/optional-typeorm.d.ts",
+      "default": "./dist/optional-typeorm.js"
+    },
     "./optional/seeding": {
       "types": "./dist/optional-seeding.d.ts",
       "default": "./dist/optional-seeding.js"

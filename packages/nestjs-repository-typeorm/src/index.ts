@@ -23,9 +23,6 @@ export { OrgMemberSqliteEntity } from './entities/org/org-member-sqlite.entity';
 export { OrgProfilePostgresEntity } from './entities/org/org-profile-postgres.entity';
 export { OrgProfileSqliteEntity } from './entities/org/org-profile-sqlite.entity';
 
-// OTP entities
-export { OtpPostgresEntity } from './entities/otp/otp-postgres.entity';
-export { OtpSqliteEntity } from './entities/otp/otp-sqlite.entity';
 // report entities
 export { ReportPostgresEntity } from './entities/report/report-postgres.entity';
 export { ReportSqliteEntity } from './entities/report/report-sqlite.entity';

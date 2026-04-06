@@ -56,7 +56,11 @@ export { ValidateOtpHandler } from './application/queries/handlers/validate-otp.
 export { OtpContextOverlay, OtpCtx } from './gateways/otp-context.overlay';
 export { OtpNamespace } from './gateways/decorators/otp-namespace.decorator';
 
-// interfaces
+// domain interfaces
+export { OtpInterface } from './domain/interfaces/otp.interface';
+export { OtpCreatableInterface } from './domain/interfaces/otp-creatable.interface';
+
+// config interfaces
 export { OtpExtrasInterface } from './infrastructure/config/interfaces/otp-extras.interface';
 export { OtpOptionsInterface } from './infrastructure/config/interfaces/otp-options.interface';
 export { OtpSettingsInterface } from './infrastructure/config/interfaces/otp-settings.interface';

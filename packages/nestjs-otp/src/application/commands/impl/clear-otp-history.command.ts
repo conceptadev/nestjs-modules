@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { OtpInterface } from '@concepta/nestjs-common';
+import { OtpInterface } from '../../../domain/interfaces/otp.interface';
 
 interface ClearOtpHistoryCommandOptions {
   keepHistoryDays?: number;

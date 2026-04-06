@@ -3,11 +3,9 @@ import { validate } from 'class-validator';
 
 import { Type } from '@nestjs/common';
 
-import {
-  DeepPartial,
-  ModelValidationException,
-  OtpInterface,
-} from '@concepta/nestjs-common';
+import { DeepPartial, ModelValidationException } from '@concepta/nestjs-common';
+
+import { OtpInterface } from '../../domain/interfaces/otp.interface';
 
 export async function validateOtpDto<T extends DeepPartial<OtpInterface>>(
   type: Type<T>,

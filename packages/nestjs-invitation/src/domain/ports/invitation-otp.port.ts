@@ -3,36 +3,52 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
 import {
   AssigneeRelationInterface,
-  OtpCreatableInterface,
-  OtpInterface,
   ReferenceId,
 } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { InvitationOtpPolicy } from '../policies/invitation-otp.policy';
 
+export interface InvitationOtpCreatableInterface {
+  category: string;
+  type: string;
+  assigneeId: ReferenceId;
+  expiresIn: string;
+  rateSeconds?: number;
+  rateThreshold?: number;
+}
+
+export interface InvitationOtpInterface {
+  category: string;
+  type: string;
+  passcode: string;
+  expirationDate: Date;
+  active: boolean;
+  assigneeId: ReferenceId;
+}
+
 export interface CreateOtpCommandInterface {
   ctx: PlainLiteralObject;
   namespace: string;
-  dto: OtpCreatableInterface;
+  dto: InvitationOtpCreatableInterface;
 }
 
 export interface ConsumeOtpCommandInterface {
   ctx: PlainLiteralObject;
   namespace: string;
-  otp: Pick<OtpInterface, 'category' | 'passcode'>;
+  otp: Pick<InvitationOtpInterface, 'category' | 'passcode'>;
 }
 
 export interface ClearOtpsCommandInterface {
   ctx: PlainLiteralObject;
   namespace: string;
-  otp: Pick<OtpInterface, 'assigneeId' | 'category'>;
+  otp: Pick<InvitationOtpInterface, 'assigneeId' | 'category'>;
 }
 
 export interface ValidateOtpQueryInterface {
   ctx: PlainLiteralObject;
   namespace: string;
-  otp: Pick<OtpInterface, 'category' | 'passcode'>;
+  otp: Pick<InvitationOtpInterface, 'category' | 'passcode'>;
 }
 
 export interface InvitationOtpPortSettings {
@@ -56,12 +72,12 @@ export class InvitationOtpPort {
     ctx: PlainLiteralObject,
     category: string,
     assigneeId: ReferenceId,
-  ): Promise<OtpInterface> {
+  ): Promise<InvitationOtpInterface> {
     return this.txScope.run(ctx, async (txCtx) => {
       const { type, expiresIn, namespace, rateSeconds, rateThreshold } =
         this.policy;
 
-      const dto: OtpCreatableInterface = {
+      const dto: InvitationOtpCreatableInterface = {
         category,
         type,
         assigneeId,

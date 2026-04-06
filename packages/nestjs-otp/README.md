@@ -484,7 +484,8 @@ in a parent module for `forFeature()` to resolve its dependencies.
 
 | Import Path | Contents |
 | --- | --- |
-| `@concepta/nestjs-otp` | Module, aggregate, commands, queries, events, handlers, DTOs, repository, exceptions |
+| `@concepta/nestjs-otp` | Module, aggregate, commands, queries, events, handlers, DTOs, repository, exceptions, domain interfaces |
+| `@concepta/nestjs-otp/optional/typeorm` | `OtpSqliteEntity`, `OtpPostgresEntity` |
 | `@concepta/nestjs-otp/optional/seeding` | `OtpFactory` |
 
 ## Seeding

@@ -1,8 +1,9 @@
 import { Column } from 'typeorm';
 
-import { ReferenceId, OtpInterface } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/nestjs-common';
+import { CommonSqliteEntity } from '@concepta/nestjs-repository-typeorm';
 
-import { CommonSqliteEntity } from '../common/common-sqlite.entity';
+import { OtpInterface } from '../../../domain/interfaces/otp.interface';
 
 /**
  * Otp Sqlite Entity

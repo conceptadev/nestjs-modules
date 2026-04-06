@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { OtpCreatableInterface } from '@concepta/nestjs-common';
+import { OtpCreatableInterface } from '../../../domain/interfaces/otp-creatable.interface';
 
 interface CreateOtpCommandOptions {
   duplicateStrategy?: 'ALLOW' | 'DEACTIVATE';

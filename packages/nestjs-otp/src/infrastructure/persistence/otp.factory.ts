@@ -2,8 +2,9 @@ import { randomUUID } from 'crypto';
 
 import { faker } from '@faker-js/faker';
 
-import { OtpInterface } from '@concepta/nestjs-common';
 import { Factory } from '@concepta/typeorm-seeding';
+
+import { OtpInterface } from '../../domain/interfaces/otp.interface';
 
 /**
  * Otp factory

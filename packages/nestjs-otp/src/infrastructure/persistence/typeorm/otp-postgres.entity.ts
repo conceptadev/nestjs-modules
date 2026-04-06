@@ -1,8 +1,9 @@
 import { Column } from 'typeorm';
 
-import { ReferenceId, OtpInterface } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/nestjs-common';
+import { CommonPostgresEntity } from '@concepta/nestjs-repository-typeorm';
 
-import { CommonPostgresEntity } from '../common/common-postgres.entity';
+import { OtpInterface } from '../../../domain/interfaces/otp.interface';
 
 /**
  * Otp Postgres Entity

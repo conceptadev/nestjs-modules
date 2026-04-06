@@ -1,4 +1,4 @@
-import { AssigneeRelationInterface } from '../../assignee/interfaces/assignee-relation.interface';
+import { AssigneeRelationInterface } from '@concepta/nestjs-common';
 
 export interface OtpInterface extends AssigneeRelationInterface {
   /**

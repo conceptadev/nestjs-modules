@@ -1,16 +1,13 @@
 import { randomUUID } from 'crypto';
 
-import {
-  DomainFactory,
-  EventContextHost,
-  OtpInterface,
-} from '@concepta/nestjs-common';
+import { DomainFactory, EventContextHost } from '@concepta/nestjs-common';
 import { DomainAggregate } from '@concepta/nestjs-common/aggregate';
 
 import { OtpEventHeaderInterface } from '../events/interfaces/otp-event-header.interface';
 import { OtpConsumedEvent } from '../events/otp-consumed.event';
 import { OtpCreatedEvent } from '../events/otp-created.event';
 import { OtpDeactivatedEvent } from '../events/otp-deactivated.event';
+import { OtpInterface } from '../interfaces/otp.interface';
 import { getExpirationDate } from '../utils/get-expiration-date.util';
 
 export interface OtpCreateProps {
