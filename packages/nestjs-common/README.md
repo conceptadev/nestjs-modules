@@ -547,19 +547,15 @@ domain aggregates.
 
 ## Domain Interfaces
 
-The module exports domain interfaces for all Rockets feature modules. These
-define the cross-module contracts that entity interfaces, DTOs, and aggregates
-implement.
+The module exports shared domain interfaces that are used across multiple
+modules or that remain here to avoid circular dependencies. Domain-specific
+interfaces for cache, role, and user have moved to their respective modules
+(`@concepta/nestjs-cache`, `@concepta/nestjs-role`, `@concepta/nestjs-user`).
 
 | Domain | Key Interfaces |
 | --- | --- |
 | Auth | `AuthenticatedUserInterface`, `AuthenticationAccessInterface`, `AuthenticationLoginInterface`, `AuthenticationRefreshInterface`, `AuthenticationResponseInterface`, `AuthenticationCodeInterface`, `AuthorizationPayloadInterface` |
 | Password | `PasswordStorageInterface`, `PasswordPlainInterface`, `PasswordPlainCurrentInterface`, `PasswordUpdateInterface`, `isPasswordStorage` |
-| User | `UserInterface`, `UserCreatableInterface`, `UserUpdatableInterface`, `UserEntityInterface`, `UserOwnableInterface`, `UserRelationInterface` |
-| User Credentials | `UserCredentialInterface`, `UserCredentialCreatableInterface`, `UserCredentialEntityInterface` |
-| Role | `RoleInterface`, `RoleCreatableInterface`, `RoleUpdatableInterface`, `RoleEntityInterface`, `RoleRelationInterface`, `RoleAssigneesInterface` |
-| Role Assignment | `RoleAssignmentInterface`, `RoleAssignmentCreatableInterface`, `RoleAssignmentEntityInterface` |
-| Cache | `CacheInterface`, `CacheCreatableInterface`, `CacheUpdatableInterface`, `CacheCreateInterface`, `CacheGetOneInterface`, `CacheUpdateInterface`, `CacheDeleteInterface`, `CacheClearInterface` |
 | OTP | `OtpInterface`, `OtpCreatableInterface`, `OtpCreateInterface`, `OtpDeleteInterface`, `OtpValidateInterface`, `OtpClearInterface`, `OtpParamsInterface`, `OtpCreateParamsInterface`, `OtpValidateLimitParamsInterface` |
 | Org | `OrgInterface`, `OrgCreatableInterface`, `OrgUpdatableInterface`, `OrgReplaceableInterface`, `OrgEntityInterface`, `OrgOwnableInterface`, `OrgMemberInterface`, `OrgOwnerInterface`, `OrgMemberEntityInterface` |
 | Org Profile | `OrgProfileInterface`, `OrgProfileCreatableInterface`, `OrgProfileEntityInterface` |

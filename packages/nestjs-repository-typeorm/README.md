@@ -390,18 +390,11 @@ This gives `OrderEntity` the `id`, `dateCreated`, `dateUpdated`,
 The module exports pre-built entities for common domain models. Each has
 Postgres and SQLite variants:
 
-- User: `UserPostgresEntity`, `UserSqliteEntity`
-- User Credential: `UserCredentialPostgresEntity`, `UserCredentialSqliteEntity`
 - Org: `OrgPostgresEntity`, `OrgSqliteEntity`
 - Org Member: `OrgMemberPostgresEntity`, `OrgMemberSqliteEntity`
 - Org Profile: `OrgProfilePostgresEntity`, `OrgProfileSqliteEntity`
 - OTP: `OtpPostgresEntity`, `OtpSqliteEntity`
-- Cache: `CachePostgresEntity`, `CacheSqliteEntity`
-- Role: `RolePostgresEntity`, `RoleSqliteEntity`
-- Role Assignment: `RoleAssignmentPostgresEntity`, `RoleAssignmentSqliteEntity`
 - Report: `ReportPostgresEntity`, `ReportSqliteEntity`
-- Federated: `FederatedPostgresEntity`, `FederatedSqliteEntity`
-- Invitation: `InvitationPostgresEntity`, `InvitationSqliteEntity`
 - File: `FilePostgresEntity`, `FileSqliteEntity`
 
 ## Exceptions

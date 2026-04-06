@@ -385,7 +385,8 @@ gateway request/handler classes are exported from
 
 ```ts
 import { Module } from '@nestjs/common';
-import { CacheInterface, Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/nestjs-common';
+import { CacheInterface } from '@concepta/nestjs-cache';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import {
   CacheModule,
@@ -486,8 +487,9 @@ for the full API.
 
 | Import Path | Contents |
 | --- | --- |
-| `@concepta/nestjs-cache` | Module, aggregate, commands, queries, events, handlers, DTOs, repository, exceptions |
+| `@concepta/nestjs-cache` | Module, aggregate, commands, queries, events, handlers, DTOs, repository, exceptions, domain interfaces |
 | `@concepta/nestjs-cache/optional/crud` | CRUD request/handler classes, paginated DTO |
+| `@concepta/nestjs-cache/optional/typeorm` | `CacheSqliteEntity`, `CachePostgresEntity` |
 | `@concepta/nestjs-cache/optional/seeding` | `CacheFactory` |
 
 ## Seeding

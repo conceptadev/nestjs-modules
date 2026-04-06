@@ -490,9 +490,10 @@ commands and queries.
 
 ```ts
 import { Module } from '@nestjs/common';
-import { InvitationInterface, Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/nestjs-common';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import {
+  InvitationInterface,
   InvitationModule,
   InvitationDto,
   InvitationCreateDto,

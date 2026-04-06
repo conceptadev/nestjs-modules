@@ -63,11 +63,11 @@ Register the module, define your entities, and wire up repositories.
 
 ### Entities
 
-Define TypeORM entities that implement the interfaces from `@concepta/nestjs-common`:
+Define TypeORM entities that implement the domain interfaces:
 
 ```ts
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { RoleEntityInterface, RoleAssignmentEntityInterface } from '@concepta/nestjs-common';
+import { RoleEntityInterface, RoleAssignmentEntityInterface } from '@concepta/nestjs-role';
 
 @Entity()
 export class RoleEntity implements RoleEntityInterface {
@@ -491,9 +491,10 @@ the role request handlers:
 
 ```ts
 import { Module } from '@nestjs/common';
-import { Operation, RoleInterface } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/nestjs-common';
 import { CrudModule, CrudCqrsResolver } from '@concepta/nestjs-crud';
 import {
+  RoleInterface,
   RoleCreateDto,
   RoleUpdateDto,
   RoleDto,
@@ -655,6 +656,7 @@ import { RoleFactory } from '@concepta/nestjs-role/optional/seeding';
 
 | Import Path | Contents |
 | --- | --- |
-| `@concepta/nestjs-role` | Module, aggregates, commands, queries, events, handlers, DTOs, repositories, exceptions, interfaces, types |
+| `@concepta/nestjs-role` | Module, aggregates, commands, queries, events, handlers, DTOs, repositories, exceptions, domain interfaces, types |
 | `@concepta/nestjs-role/optional/crud` | CRUD request/handler classes, paginated DTOs, batch DTOs |
+| `@concepta/nestjs-role/optional/typeorm` | `RoleSqliteEntity`, `RolePostgresEntity`, `RoleAssignmentSqliteEntity`, `RoleAssignmentPostgresEntity` |
 | `@concepta/nestjs-role/optional/seeding` | `RoleFactory` |

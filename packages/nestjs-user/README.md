@@ -388,6 +388,7 @@ import { UserFactory } from '@concepta/nestjs-user/optional/seeding';
 
 | Import Path | Contents |
 | --- | --- |
-| `@concepta/nestjs-user` | Module, aggregates, commands, queries, events, handlers, DTOs, repositories, exceptions, interfaces |
+| `@concepta/nestjs-user` | Module, aggregates, commands, queries, events, handlers, DTOs, repositories, exceptions, domain interfaces |
 | `@concepta/nestjs-user/optional/crud` | CRUD request/handler classes, paginated DTO |
+| `@concepta/nestjs-user/optional/typeorm` | `UserSqliteEntity`, `UserPostgresEntity`, `UserCredentialSqliteEntity`, `UserCredentialPostgresEntity` |
 | `@concepta/nestjs-user/optional/seeding` | `UserFactory`, `UserCredentialFactory`, `UserSeeder` |
