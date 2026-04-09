@@ -603,7 +603,7 @@ via `CrudQueryParser`.
 
 ### Multiple Filters
 
-```
+```text
 GET /photos?filter[0]=status||$eq||active&filter[1]=views||$gt||100
 ```
 
@@ -611,7 +611,7 @@ GET /photos?filter[0]=status||$eq||active&filter[1]=views||$gt||100
 
 Use dot notation to filter by related entity fields:
 
-```
+```text
 GET /photos?filter=author.name||$eq||Alice
 ```
 

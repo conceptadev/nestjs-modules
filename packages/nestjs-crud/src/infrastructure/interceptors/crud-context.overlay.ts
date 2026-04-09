@@ -111,6 +111,12 @@ export class CrudContextOverlay<
   }
 
   attach(context: ExecutionContext): void {
+    const target = context.getClass();
+    const entity = this.reflectionService.getEntity(target);
+
+    // Skip controllers without CRUD metadata (e.g. normal REST controllers)
+    if (!entity) return;
+
     const request = context.switchToHttp().getRequest();
     const ctx = getAppContext(request);
     const resolved = this.resolve(context);

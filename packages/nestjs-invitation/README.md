@@ -33,6 +33,7 @@ event-driven lifecycle management.
 ## Provided Features
 
 ### Invitation Lifecycle
+
 - Create invitation by user ID (with explicit code)
 - Create invitation by email address (auto-generates code, resolves user)
 - Send/resend invitation email (with OTP passcode generation)
@@ -41,6 +42,7 @@ event-driven lifecycle management.
 - Remove (hard delete) an invitation
 
 ### OTP Integration
+
 - Auto-create OTP on invitation send
 - Consume OTP on acceptance (single-use)
 - Clear all OTPs for a user+category on revocation
@@ -50,19 +52,23 @@ event-driven lifecycle management.
 - Optional rate limiting (rateSeconds + rateThreshold)
 
 ### Email Delivery
+
 - Send invitation email with passcode and expiration
 - Send acceptance confirmation email
 - Handlebars template support with configurable templates
 - Configurable sender address and base URL
 
 ### User Resolution
+
 - Look up user by ID
 - Look up user by email address
 
 ### Event-Driven Architecture
+
 - `InvitationCreatedEvent` -- fired on creation
 - `InvitationDispatchedEvent` -- fired when email should be sent (carries OTP metadata)
-- `InvitationAcceptedEvent` -- fired on acceptance (carries optional payload for downstream listeners)
+- `InvitationAcceptedEvent` -- fired on acceptance (carries optional payload
+  for downstream listeners)
 - `InvitationRevokedEvent` -- fired on revocation
 - `InvitationRemovedEvent` -- fired on deletion
 - Auto-send email on dispatch via `InvitationDispatchedListener`
@@ -70,10 +76,12 @@ event-driven lifecycle management.
 - Auto-clear OTPs on revocation via `InvitationRevokedListener`
 
 ### Auto-Revocation
+
 - On acceptance: automatically revoke all sibling invitations (same user+category)
 - On revocation: automatically clear associated OTPs
 
 ### HTTP Gateway
+
 - Create invitation endpoint (by user ID)
 - Create invitation endpoint (by email)
 - Send/resend invitation endpoint
@@ -83,6 +91,7 @@ event-driven lifecycle management.
 - Read single invitation
 
 ### Repository
+
 - Get invitation by ID
 - Find invitation by code
 - Find all invitations by user+category
@@ -92,9 +101,11 @@ event-driven lifecycle management.
 - Domain-to-persistence mapping via `InvitationMapper`
 
 ### Seeding
+
 - `InvitationFactory` for generating test invitation entities
 
 ### Configurable Settings
+
 - Email: sender address, base URL, invitation template, accepted template
 - OTP: namespace, type, expiration, clear-on-create, rate limiting
 
@@ -271,6 +282,7 @@ commands/queries through the NestJS CQRS bus.
 ### InvitationOtpPort
 
 Settings:
+
 ```ts
 interface InvitationOtpPortSettings {
   createCommand: Type<CreateOtpCommandInterface>;
@@ -290,6 +302,7 @@ interface InvitationOtpPortSettings {
 ### InvitationUserPort
 
 Settings:
+
 ```ts
 interface InvitationUserPortSettings {
   getByIdQuery: Type<GetUserByIdQueryInterface>;
@@ -302,11 +315,13 @@ interface InvitationUserPortSettings {
 | `getById` | `(ctx, userId)` | Fetch user by ID |
 | `getByEmail` | `(ctx, email)` | Fetch user by email |
 
-Returns `InvitationUserResult = (ReferenceIdInterface & InvitationUserInterface) | null`.
+Returns
+`InvitationUserResult = (ReferenceIdInterface & InvitationUserInterface) | null`.
 
 ### InvitationEmailPort
 
 Settings:
+
 ```ts
 interface InvitationEmailPortSettings {
   sendInvitationCommand: Type<SendInvitationEmailCommandInterface>;
@@ -469,7 +484,7 @@ Register the listener as a provider in your module to start receiving events.
 | `InvitationUserUndefinedException` | -- | `INVITATION_USER_UNDEFINED_ERROR` |
 | `InvitationNotAcceptedException` | 400 | `INVITATION_NOT_ACCEPTED_ERROR` |
 
-## HTTP Gateway
+## HTTP Gateway Overview
 
 The gateway layer bridges `@concepta/nestjs-crud` operations to domain
 commands and queries.
@@ -546,7 +561,7 @@ export class InvitationFeatureModule {}
 | `@concepta/nestjs-invitation` | Module, aggregate, commands, queries, events, handlers, ports, policies, DTOs, repository, mapper, exceptions |
 | `@concepta/nestjs-invitation/optional/typeorm` | `InvitationSqliteEntity`, `InvitationPostgresEntity` |
 
-## Seeding
+## Seeding and Test Factories
 
 An `InvitationFactory` is available for test seeding:
 

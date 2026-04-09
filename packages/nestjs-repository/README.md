@@ -494,7 +494,7 @@ The `OrderBy` helper builds ORM-agnostic
 `OrderClause` arrays that `RepositoryAdapter` implementations translate
 into driver-specific sort options.
 
-### Static API
+### OrderBy Static API
 
 Pass the entity type as a generic parameter on each call:
 
@@ -515,7 +515,7 @@ const users = await userRepo.find(
 );
 ```
 
-### Typed Builder API
+### OrderBy Typed Builder API
 
 Bind the entity type once with `OrderBy.for<Entity>()`. All subsequent calls
 type-check field names against the entity:
@@ -553,7 +553,7 @@ const users = await userRepo.findAndCount({
 | `asc(field)` | Ascending sort |
 | `desc(field)` | Descending sort |
 
-### Utility Methods
+### OrderBy Utility Methods
 
 | Method | Description |
 | --- | --- |
@@ -939,6 +939,7 @@ root entity and each relation instead of using SQL JOINs. Results are
 hydrated together transparently.
 
 This is useful when:
+
 - JOINs produce expensive Cartesian products
 - Relations live in different datasources
 - Precise pagination control is needed (JOINs inflate row counts)

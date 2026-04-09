@@ -1,6 +1,6 @@
 import supertest from 'supertest';
 
-import { Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 
@@ -244,5 +244,47 @@ describe('#crud', () => {
       const res = await $.get('/test2/normal/0').expect(200);
       expect(res.body.params).toHaveProperty('id', 0);
     });
+  });
+});
+
+describe('#crud non-crud controller coexistence', () => {
+  @Controller('health')
+  class HealthController {
+    @Get()
+    check() {
+      return { status: 'ok' };
+    }
+
+    @Get('info')
+    info() {
+      return { version: '1.0.0' };
+    }
+  }
+
+  let app: NestApplication;
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      imports: [CrudModule.forRoot({})],
+      controllers: [HealthController],
+    }).compile();
+    app = module.createNestApplication();
+    await app.init();
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('should not throw CRUD_CONTEXT_ERROR on non-crud controller', async () => {
+    const res = await supertest(app.getHttpServer()).get('/health').expect(200);
+    expect(res.body).toEqual({ status: 'ok' });
+  });
+
+  it('should handle multiple routes on non-crud controller', async () => {
+    const res = await supertest(app.getHttpServer())
+      .get('/health/info')
+      .expect(200);
+    expect(res.body).toEqual({ version: '1.0.0' });
   });
 });
