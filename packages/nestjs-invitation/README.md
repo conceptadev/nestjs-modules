@@ -140,7 +140,7 @@ import { InvitationModule } from '@concepta/nestjs-invitation';
       ports: {
         otp: { /* InvitationOtpPortSettings */ },
         user: { /* InvitationUserPortSettings */ },
-        email: { /* InvitationEmailPortSettings */ },
+        notification: { /* InvitationNotificationPortSettings */ },
       },
     }),
   ],
@@ -180,11 +180,10 @@ interface InvitationOptionsInterface extends ModuleOptionsControllerInterface {
 interface InvitationPortsInterface {
   otp: InvitationOtpPortSettings;
   user: InvitationUserPortSettings;
-  email: InvitationEmailPortSettings;
+  notification: InvitationNotificationPortSettings;
 }
 
 interface InvitationSettingsInterface {
-  email: InvitationEmailSettings;
   otp: InvitationOtpSettingsInterface;
 }
 ```
@@ -304,23 +303,40 @@ interface InvitationUserPortSettings {
 
 Returns `InvitationUserResult = (ReferenceIdInterface & InvitationUserInterface) | null`.
 
-### InvitationEmailPort
+### InvitationNotificationPort
+
+Dispatches notification commands through the CQRS bus. The consumer provides
+command classes and registers the matching `@CommandHandler`s — the handler
+decides the transport (email, SMS, push, etc.) and resolves any address/template
+config from its own module settings.
 
 Settings:
 ```ts
-interface InvitationEmailPortSettings {
-  sendInvitationCommand: Type<SendInvitationEmailCommandInterface>;
-  sendAcceptedCommand: Type<SendAcceptedEmailCommandInterface>;
+interface InvitationNotificationPortSettings {
+  sendInvitationCommand: Type<SendInvitationNotificationCommandInterface>;
+  sendAcceptedCommand: Type<SendAcceptedNotificationCommandInterface>;
+}
+```
+
+Command interfaces (transport-agnostic — no email fields):
+```ts
+interface SendInvitationNotificationCommandInterface {
+  ctx: PlainLiteralObject;
+  invitation: InvitationEventPayloadInterface;
+  passcode: string;
+  tokenExp: Date;
+}
+
+interface SendAcceptedNotificationCommandInterface {
+  ctx: PlainLiteralObject;
+  invitation: InvitationEventPayloadInterface;
 }
 ```
 
 | Method | Signature | Description |
 | --- | --- | --- |
-| `sendInvitation` | `(ctx, invitation, { passcode, tokenExp })` | Send invitation email |
-| `sendAccepted` | `(ctx, invitation)` | Send acceptance confirmation email |
-
-Both methods receive the full `InvitationEventPayloadInterface` object. The
-port resolves user details (e.g. email address) via its own user lookup.
+| `sendInvitation` | `(ctx, invitation, { passcode, tokenExp })` | Dispatch invitation notification |
+| `sendAccepted` | `(ctx, invitation)` | Dispatch acceptance confirmation notification |
 
 ## Policies
 
@@ -337,24 +353,6 @@ Behavioral configuration for OTP handling.
 | `rateSeconds` | `number` | Rate limit window in seconds |
 | `rateThreshold` | `number` | Max creations in rate window |
 
-### InvitationEmailPolicy
-
-Email configuration.
-
-| Property | Type | Description |
-| --- | --- | --- |
-| `from` | `string` | Sender address |
-| `baseUrl` | `string` | Application base URL |
-| `invitationTemplate` | `InvitationEmailTemplateSettings` | Template for invitation email |
-| `acceptedTemplate` | `InvitationEmailTemplateSettings` | Template for accepted email |
-
-```ts
-interface InvitationEmailTemplateSettings {
-  logo: string;
-  fileName: string;
-  subject: string;
-}
-```
 
 ## Commands
 

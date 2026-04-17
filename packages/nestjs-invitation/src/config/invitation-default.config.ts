@@ -14,25 +14,6 @@ import { INVITATION_MODULE_DEFAULT_SETTINGS_TOKEN } from '../invitation.constant
 export const invitationDefaultConfig = registerAs(
   INVITATION_MODULE_DEFAULT_SETTINGS_TOKEN,
   (): DeepPartial<InvitationSettingsInterface> => ({
-    email: {
-      from: 'no-reply@dispostable.com',
-      baseUrl: 'http://localhost:3000',
-      templates: {
-        invitation: {
-          logo: 'public/logo.svg',
-          fileName:
-            __dirname + '/../assets/templates/email/invitation.template.hbs',
-          subject: 'Access Invitation',
-        },
-        invitationAccepted: {
-          logo: 'public/logo.svg',
-          fileName:
-            __dirname +
-            '/../assets/templates/email/invitation-accepted.template.hbs',
-          subject: 'Invitation Accepted',
-        },
-      },
-    },
     otp: {
       namespace: 'user-otp',
       type: 'uuid',

@@ -1,6 +1,6 @@
 import { ModuleOptionsControllerInterface } from '@concepta/nestjs-common';
 
-import { InvitationEmailPortSettings } from '../../domain/ports/invitation-email.port';
+import { InvitationNotificationPortSettings } from '../../domain/ports/invitation-notification.port';
 import { InvitationOtpPortSettings } from '../../domain/ports/invitation-otp.port';
 import { InvitationUserPortSettings } from '../../domain/ports/invitation-user.port';
 
@@ -9,7 +9,7 @@ import { InvitationSettingsInterface } from './invitation-settings.interface';
 export interface InvitationPortsInterface {
   otp: InvitationOtpPortSettings;
   user: InvitationUserPortSettings;
-  email: InvitationEmailPortSettings;
+  notification: InvitationNotificationPortSettings;
 }
 
 export interface InvitationOptionsInterface

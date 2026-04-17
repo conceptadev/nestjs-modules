@@ -2,21 +2,25 @@ import { EventContextHost } from '@concepta/nestjs-common';
 
 import { InvitationEventPayloadInterface } from '../../../domain/events/interfaces/invitation-event-payload.interface';
 import { InvitationDispatchedEvent } from '../../../domain/events/invitation-dispatched.event';
-import { InvitationEmailPort } from '../../../domain/ports/invitation-email.port';
+import { InvitationNotificationPort } from '../../../domain/ports/invitation-notification.port';
 import { InvitationDispatchedListener } from '../invitation-dispatched.listener';
 
 describe(InvitationDispatchedListener.name, () => {
   let listener: InvitationDispatchedListener;
-  let emailPort: jest.Mocked<Pick<InvitationEmailPort, 'sendInvitation'>>;
+  let notificationPort: jest.Mocked<
+    Pick<InvitationNotificationPort, 'sendInvitation'>
+  >;
 
   beforeEach(() => {
-    emailPort = { sendInvitation: jest.fn().mockResolvedValue(undefined) };
+    notificationPort = {
+      sendInvitation: jest.fn().mockResolvedValue(undefined),
+    };
     listener = new InvitationDispatchedListener(
-      emailPort as unknown as InvitationEmailPort,
+      notificationPort as unknown as InvitationNotificationPort,
     );
   });
 
-  it('should call emailPort.sendInvitation with invitation and OTP data from meta', async () => {
+  it('should call notificationPort.sendInvitation with invitation and OTP data from meta', async () => {
     const tokenExp = new Date('2026-02-01');
 
     const eventContext = new EventContextHost(
@@ -42,8 +46,8 @@ describe(InvitationDispatchedListener.name, () => {
 
     await listener.handle(event);
 
-    expect(emailPort.sendInvitation).toHaveBeenCalledTimes(1);
-    expect(emailPort.sendInvitation).toHaveBeenCalledWith(
+    expect(notificationPort.sendInvitation).toHaveBeenCalledTimes(1);
+    expect(notificationPort.sendInvitation).toHaveBeenCalledWith(
       expect.anything(),
       invitation,
       { passcode: 'abc123', tokenExp },

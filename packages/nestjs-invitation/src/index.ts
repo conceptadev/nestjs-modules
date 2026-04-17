@@ -26,11 +26,6 @@ export { InvitationEventPayloadInterface } from './domain/events/interfaces/invi
 
 // policies
 export { InvitationOtpPolicy } from './domain/policies/invitation-otp.policy';
-export { InvitationEmailPolicy } from './domain/policies/invitation-email.policy';
-export {
-  InvitationEmailSettings,
-  InvitationEmailTemplateSettings,
-} from './domain/policies/invitation-email.policy';
 
 // ports
 export { InvitationOtpPort } from './domain/ports/invitation-otp.port';
@@ -48,12 +43,12 @@ export {
   GetUserByEmailQueryInterface,
   InvitationUserResult,
 } from './domain/ports/invitation-user.port';
-export { InvitationEmailPort } from './domain/ports/invitation-email.port';
+export { InvitationNotificationPort } from './domain/ports/invitation-notification.port';
 export {
-  InvitationEmailPortSettings,
-  SendInvitationEmailCommandInterface,
-  SendAcceptedEmailCommandInterface,
-} from './domain/ports/invitation-email.port';
+  InvitationNotificationPortSettings,
+  SendInvitationNotificationCommandInterface,
+  SendAcceptedNotificationCommandInterface,
+} from './domain/ports/invitation-notification.port';
 export { InvitationPortsInterface } from './interfaces/options/invitation-options.interface';
 
 // repository

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { InvitationEmailPort } from './domain/ports/invitation-email.port';
+import { InvitationNotificationPort } from './domain/ports/invitation-notification.port';
 import { InvitationOtpPort } from './domain/ports/invitation-otp.port';
 import { InvitationUserPort } from './domain/ports/invitation-user.port';
 import { InvitationService } from './domain/services/invitation.service';
@@ -42,9 +42,11 @@ describe(InvitationModule.name, () => {
     expect(port).toBeInstanceOf(InvitationUserPort);
   });
 
-  it('should resolve InvitationEmailPort', () => {
-    const port = testModule.get<InvitationEmailPort>(InvitationEmailPort);
-    expect(port).toBeInstanceOf(InvitationEmailPort);
+  it('should resolve InvitationNotificationPort', () => {
+    const port = testModule.get<InvitationNotificationPort>(
+      InvitationNotificationPort,
+    );
+    expect(port).toBeInstanceOf(InvitationNotificationPort);
   });
 
   it('should resolve InvitationMapper', () => {

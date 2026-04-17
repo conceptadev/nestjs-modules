@@ -40,19 +40,19 @@ import { ReadInvitationRequestHandler } from '../../queries/handlers/read-invita
 import { ListInvitationsRequest } from '../../queries/impl/list-invitations.request';
 import { ReadInvitationRequest } from '../../queries/impl/read-invitation.request';
 
-import {
-  NoopSendInvitationEmailCommand,
-  NoopSendAcceptedEmailCommand,
-} from './email/noop-email.command';
-import {
-  NoopSendInvitationEmailHandler,
-  NoopSendAcceptedEmailHandler,
-} from './email/noop-email.handler';
 import { InvitationEntityFixture } from './entities/invitation.entity.fixture';
 import { UserCredentialEntityFixture } from './entities/user-credential.entity.fixture';
 import { UserOtpEntityFixture } from './entities/user-otp.entity.fixture';
 import { UserEntityFixture } from './entities/user.entity.fixture';
 import { InvitationAcceptanceController } from './invitation-acceptance.controller';
+import {
+  NoopSendInvitationNotificationCommand,
+  NoopSendAcceptedNotificationCommand,
+} from './notification/noop-notification.command';
+import {
+  NoopSendInvitationNotificationHandler,
+  NoopSendAcceptedNotificationHandler,
+} from './notification/noop-notification.handler';
 
 const USER_ENTITY_KEY = 'user';
 const USER_CREDENTIALS_ENTITY_KEY = 'user-credentials';
@@ -119,9 +119,9 @@ const USER_OTP_ENTITY_KEY = 'user-otp';
             getByIdQuery: GetUserQuery,
             getByEmailQuery: GetUserByEmailQuery,
           },
-          email: {
-            sendInvitationCommand: NoopSendInvitationEmailCommand,
-            sendAcceptedCommand: NoopSendAcceptedEmailCommand,
+          notification: {
+            sendInvitationCommand: NoopSendInvitationNotificationCommand,
+            sendAcceptedCommand: NoopSendAcceptedNotificationCommand,
           },
         },
       }),
@@ -166,8 +166,8 @@ const USER_OTP_ENTITY_KEY = 'user-otp';
     }),
   ],
   providers: [
-    NoopSendInvitationEmailHandler,
-    NoopSendAcceptedEmailHandler,
+    NoopSendInvitationNotificationHandler,
+    NoopSendAcceptedNotificationHandler,
     AcceptInvitationRequestHandler,
   ],
   controllers: [InvitationAcceptanceController],

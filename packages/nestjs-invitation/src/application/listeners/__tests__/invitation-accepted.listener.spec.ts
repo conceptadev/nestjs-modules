@@ -2,21 +2,23 @@ import { EventContextHost } from '@concepta/nestjs-common';
 
 import { InvitationEventPayloadInterface } from '../../../domain/events/interfaces/invitation-event-payload.interface';
 import { InvitationAcceptedEvent } from '../../../domain/events/invitation-accepted.event';
-import { InvitationEmailPort } from '../../../domain/ports/invitation-email.port';
+import { InvitationNotificationPort } from '../../../domain/ports/invitation-notification.port';
 import { InvitationAcceptedListener } from '../invitation-accepted.listener';
 
 describe(InvitationAcceptedListener.name, () => {
   let listener: InvitationAcceptedListener;
-  let emailPort: jest.Mocked<Pick<InvitationEmailPort, 'sendAccepted'>>;
+  let notificationPort: jest.Mocked<
+    Pick<InvitationNotificationPort, 'sendAccepted'>
+  >;
 
   beforeEach(() => {
-    emailPort = { sendAccepted: jest.fn().mockResolvedValue(undefined) };
+    notificationPort = { sendAccepted: jest.fn().mockResolvedValue(undefined) };
     listener = new InvitationAcceptedListener(
-      emailPort as unknown as InvitationEmailPort,
+      notificationPort as unknown as InvitationNotificationPort,
     );
   });
 
-  it('should call emailPort.sendAccepted with the invitation from the event', async () => {
+  it('should call notificationPort.sendAccepted with the invitation from the event', async () => {
     const eventContext = new EventContextHost({}, {});
 
     const invitation: InvitationEventPayloadInterface = {
@@ -37,8 +39,8 @@ describe(InvitationAcceptedListener.name, () => {
 
     await listener.handle(event);
 
-    expect(emailPort.sendAccepted).toHaveBeenCalledTimes(1);
-    expect(emailPort.sendAccepted).toHaveBeenCalledWith(
+    expect(notificationPort.sendAccepted).toHaveBeenCalledTimes(1);
+    expect(notificationPort.sendAccepted).toHaveBeenCalledWith(
       expect.anything(),
       invitation,
     );

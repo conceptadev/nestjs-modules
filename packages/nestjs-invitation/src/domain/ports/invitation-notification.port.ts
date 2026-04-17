@@ -2,38 +2,28 @@ import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
 import { InvitationEventPayloadInterface } from '../events/interfaces/invitation-event-payload.interface';
-import {
-  InvitationEmailPolicy,
-  InvitationEmailTemplateSettings,
-} from '../policies/invitation-email.policy';
 
-export interface SendInvitationEmailCommandInterface {
+export interface SendInvitationNotificationCommandInterface {
   ctx: PlainLiteralObject;
   invitation: InvitationEventPayloadInterface;
   passcode: string;
   tokenExp: Date;
-  from: string;
-  baseUrl: string;
-  template: InvitationEmailTemplateSettings;
 }
 
-export interface SendAcceptedEmailCommandInterface {
+export interface SendAcceptedNotificationCommandInterface {
   ctx: PlainLiteralObject;
   invitation: InvitationEventPayloadInterface;
-  from: string;
-  template: InvitationEmailTemplateSettings;
 }
 
-export interface InvitationEmailPortSettings {
-  sendInvitationCommand: Type<SendInvitationEmailCommandInterface>;
-  sendAcceptedCommand: Type<SendAcceptedEmailCommandInterface>;
+export interface InvitationNotificationPortSettings {
+  sendInvitationCommand: Type<SendInvitationNotificationCommandInterface>;
+  sendAcceptedCommand: Type<SendAcceptedNotificationCommandInterface>;
 }
 
 @Injectable()
-export class InvitationEmailPort {
+export class InvitationNotificationPort {
   constructor(
-    private readonly portSettings: InvitationEmailPortSettings,
-    private readonly policy: InvitationEmailPolicy,
+    private readonly portSettings: InvitationNotificationPortSettings,
     private readonly commandBus: CommandBus,
   ) {}
 
@@ -45,14 +35,10 @@ export class InvitationEmailPort {
       tokenExp: Date;
     },
   ): Promise<void> {
-    const { from, baseUrl } = this.policy;
     return this.commandBus.execute(
       new this.portSettings.sendInvitationCommand({
         ctx,
         invitation,
-        from,
-        baseUrl,
-        template: this.policy.invitationTemplate,
         ...params,
       }),
     );
@@ -62,14 +48,8 @@ export class InvitationEmailPort {
     ctx: PlainLiteralObject,
     invitation: InvitationEventPayloadInterface,
   ): Promise<void> {
-    const { from } = this.policy;
     return this.commandBus.execute(
-      new this.portSettings.sendAcceptedCommand({
-        ctx,
-        invitation,
-        from,
-        template: this.policy.acceptedTemplate,
-      }),
+      new this.portSettings.sendAcceptedCommand({ ctx, invitation }),
     );
   }
 }

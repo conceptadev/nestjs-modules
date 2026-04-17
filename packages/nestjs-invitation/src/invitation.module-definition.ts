@@ -21,14 +21,12 @@ import { InvitationRevokedListener } from './application/listeners/invitation-re
 import { FindInvitationByCodeHandler } from './application/queries/handlers/find-invitation-by-code.handler';
 import { GetInvitationHandler } from './application/queries/handlers/get-invitation.handler';
 import { invitationDefaultConfig } from './config/invitation-default.config';
-import { InvitationEmailPolicy } from './domain/policies/invitation-email.policy';
 import { InvitationOtpPolicy } from './domain/policies/invitation-otp.policy';
-import { InvitationEmailPort } from './domain/ports/invitation-email.port';
+import { InvitationNotificationPort } from './domain/ports/invitation-notification.port';
 import { InvitationOtpPort } from './domain/ports/invitation-otp.port';
 import { InvitationUserPort } from './domain/ports/invitation-user.port';
 import { InvitationService } from './domain/services/invitation.service';
 import { InvitationMapper } from './infrastructure/persistence/invitation.mapper';
-import { createInvitationEmailPolicyProvider } from './infrastructure/utils/create-invitation-email-policy-provider';
 import { createInvitationOtpPolicyProvider } from './infrastructure/utils/create-invitation-otp-policy-provider';
 import { createInvitationRepositoryProvider } from './infrastructure/utils/create-invitation-repository-provider';
 import { InvitationOptionsExtrasInterface } from './interfaces/options/invitation-options-extras.interface';
@@ -117,10 +115,9 @@ export function createInvitationProviders(options: {
       options.repositories?.invitation,
     ),
     createInvitationOtpPolicyProvider(),
-    createInvitationEmailPolicyProvider(),
     createInvitationOtpPortProvider(),
     createInvitationUserPortProvider(),
-    createInvitationEmailPortProvider(),
+    createInvitationNotificationPortProvider(),
     InvitationMapper,
     // command handlers
     CreateInvitationHandler,
@@ -189,14 +186,11 @@ function createInvitationUserPortProvider(): Provider {
   };
 }
 
-function createInvitationEmailPortProvider(): Provider {
+function createInvitationNotificationPortProvider(): Provider {
   return {
-    provide: InvitationEmailPort,
-    inject: [RAW_OPTIONS_TOKEN, InvitationEmailPolicy, CommandBus],
-    useFactory: (
-      options: InvitationOptionsInterface,
-      emailPolicy: InvitationEmailPolicy,
-      commandBus: CommandBus,
-    ) => new InvitationEmailPort(options.ports.email, emailPolicy, commandBus),
+    provide: InvitationNotificationPort,
+    inject: [RAW_OPTIONS_TOKEN, CommandBus],
+    useFactory: (options: InvitationOptionsInterface, commandBus: CommandBus) =>
+      new InvitationNotificationPort(options.ports.notification, commandBus),
   };
 }
