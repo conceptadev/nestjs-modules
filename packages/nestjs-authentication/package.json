@@ -1,6 +1,6 @@
 {
   "name": "@concepta/nestjs-authentication",
-  "version": "8.0.0-alpha.4",
+  "version": "8.0.0-alpha.5",
   "description": "Rockets NestJS Authentication",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,12 +9,14 @@
     "access": "public"
   },
   "files": [
-    "dist/**/!(*.spec|*.e2e-spec|*.fixture).{js,d.ts}"
+    "dist/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "!dist/**/__tests__/**",
+    "!dist/**/__fixtures__/**"
   ],
   "dependencies": {
-    "@concepta/nestjs-common": "8.0.0-alpha.4",
-    "@concepta/nestjs-password": "8.0.0-alpha.4",
-    "@concepta/nestjs-user": "8.0.0-alpha.4",
+    "@concepta/nestjs-common": "8.0.0-alpha.5",
+    "@concepta/nestjs-password": "8.0.0-alpha.5",
+    "@concepta/nestjs-user": "8.0.0-alpha.5",
     "@nestjs/common": "^11.1.9",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.9",
@@ -30,9 +32,9 @@
     "passport-strategy": "^1.0.0"
   },
   "devDependencies": {
-    "@concepta/nestjs-crud": "8.0.0-alpha.4",
+    "@concepta/nestjs-crud": "8.0.0-alpha.5",
     "@concepta/nestjs-email": "^7.0.0-alpha.10",
-    "@concepta/nestjs-otp": "8.0.0-alpha.4",
+    "@concepta/nestjs-otp": "8.0.0-alpha.5",
     "@nestjs/testing": "^11.1.9",
     "express": "^4.21.0",
     "jest-mock-extended": "^4.0.0",
