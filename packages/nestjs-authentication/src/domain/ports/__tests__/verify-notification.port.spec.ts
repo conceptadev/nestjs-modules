@@ -1,0 +1,53 @@
+import { mock } from 'jest-mock-extended';
+
+import { PlainLiteralObject } from '@nestjs/common';
+import { Command, CommandBus } from '@nestjs/cqrs';
+
+import {
+  SendVerifyNotificationCommandInterface,
+  VerifyNotificationPort,
+  VerifyNotificationPortSettings,
+} from '../verify-notification.port';
+
+class MockSendVerifyNotificationCommand
+  extends Command<void>
+  implements SendVerifyNotificationCommandInterface
+{
+  constructor(
+    public readonly ctx: PlainLiteralObject,
+    public readonly email: string,
+    public readonly passcode: string,
+    public readonly tokenExp: Date,
+  ) {
+    super();
+  }
+}
+
+describe(VerifyNotificationPort.name, () => {
+  let port: VerifyNotificationPort;
+  let commandBus: CommandBus;
+
+  const portSettings: VerifyNotificationPortSettings = {
+    sendVerifyNotificationCommand: MockSendVerifyNotificationCommand,
+  };
+
+  beforeEach(() => {
+    commandBus = mock<CommandBus>();
+    port = new VerifyNotificationPort(portSettings, commandBus);
+  });
+
+  describe('sendVerify', () => {
+    it('should dispatch command via commandBus', () => {
+      jest.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
+
+      port.sendVerify({}, 'me@mail.com', {
+        passcode: 'abc123',
+        tokenExp: new Date(),
+      });
+
+      expect(commandBus.execute).toHaveBeenCalledWith(
+        expect.any(MockSendVerifyNotificationCommand),
+      );
+    });
+  });
+});

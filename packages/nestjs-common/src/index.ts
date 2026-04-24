@@ -15,9 +15,6 @@ export { AuditDto } from './audit/dto/audit.dto';
 export { CommonEntityDto } from './common/dto/common-entity.dto';
 export { ReferenceIdDto } from './reference/dto/reference-id.dto';
 
-// Decorators
-export { AuthUser } from './decorators/auth-user.decorator';
-
 // Module utilities
 export { createSettingsProvider } from './modules/utils/create-settings-provider';
 

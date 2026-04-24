@@ -1,5 +1,7 @@
 import { PlainLiteralObject } from '@nestjs/common';
+import { Command } from '@nestjs/cqrs';
 
+import { Otp } from '../../../domain/aggregates/otp';
 import { OtpCreatableInterface } from '../../../domain/interfaces/otp-creatable.interface';
 
 interface CreateOtpCommandOptions {
@@ -8,7 +10,7 @@ interface CreateOtpCommandOptions {
   rateThreshold?: number;
 }
 
-export class CreateOtpCommand {
+export class CreateOtpCommand extends Command<Otp> {
   public readonly duplicateStrategy?: CreateOtpCommandOptions['duplicateStrategy'];
   public readonly rateSeconds?: number;
   public readonly rateThreshold?: number;
@@ -19,6 +21,7 @@ export class CreateOtpCommand {
     public readonly dto: OtpCreatableInterface,
     options?: CreateOtpCommandOptions,
   ) {
+    super();
     this.duplicateStrategy = options?.duplicateStrategy;
     this.rateSeconds = options?.rateSeconds;
     this.rateThreshold = options?.rateThreshold;

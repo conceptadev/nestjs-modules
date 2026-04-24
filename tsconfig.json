@@ -34,9 +34,6 @@
       "path": "packages/nestjs-event"
     },
     {
-      "path": "packages/nestjs-jwt"
-    },
-    {
       "path": "packages/nestjs-logger"
     },
     {
@@ -44,12 +41,6 @@
     },
     {
       "path": "packages/nestjs-password"
-    },
-    {
-      "path": "packages/nestjs-auth-local"
-    },
-    {
-      "path": "packages/nestjs-auth-jwt"
     },
     {
       "path": "packages/nestjs-auth-github"
@@ -73,9 +64,6 @@
       "path": "packages/nestjs-org"
     },
     {
-      "path": "packages/nestjs-auth-refresh"
-    },
-    {
       "path": "packages/nestjs-swagger-ui"
     },
     {
@@ -86,9 +74,6 @@
     },
     {
       "path": "packages/nestjs-otp"
-    },
-    {
-      "path": "packages/nestjs-auth-recovery"
     },
     {
       "path": "packages/nestjs-invitation"
@@ -115,13 +100,7 @@
       "path": "packages/nestjs-report"
     },
     {
-      "path": "packages/nestjs-auth-verify"
-    },
-    {
       "path": "packages/nestjs-samples"
-    },
-    {
-      "path": "packages/nestjs-auth-router"
     }
   ]
 }

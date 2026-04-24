@@ -60,6 +60,9 @@ export { OtpNamespace } from './gateways/decorators/otp-namespace.decorator';
 export { OtpInterface } from './domain/interfaces/otp.interface';
 export { OtpCreatableInterface } from './domain/interfaces/otp-creatable.interface';
 
+// persistence interfaces
+export { OtpEntityInterface } from './infrastructure/persistence/interfaces/otp-entity.interface';
+
 // config interfaces
 export { OtpExtrasInterface } from './infrastructure/config/interfaces/otp-extras.interface';
 export { OtpOptionsInterface } from './infrastructure/config/interfaces/otp-options.interface';

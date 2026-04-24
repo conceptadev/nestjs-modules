@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import {
   DynamicModule,
   Inject,
@@ -7,36 +9,35 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { JwtModule } from '@concepta/nestjs-jwt';
-
-import { ValidateTokenService } from './authentication.constants';
+import { GlobalModuleFixture } from './__tests__/fixtures/global.module.fixture';
+import { AUTHENTICATION_JWT_PORT_TOKEN } from './authentication.constants';
 import { AuthenticationModule } from './authentication.module';
-import { IssueTokenServiceInterface } from './interfaces/issue-token-service.interface';
-import { ValidateTokenServiceInterface } from './interfaces/validate-token-service.interface';
-import { VerifyTokenServiceInterface } from './interfaces/verify-token-service.interface';
-import { IssueTokenService } from './services/issue-token.service';
-import { VerifyTokenService } from './services/verify-token.service';
-
-import { GlobalModuleFixture } from './__fixtures__/global.module.fixture';
-import { IssueTokenServiceFixture } from './__fixtures__/services/issue-token.service.fixture';
-import { ValidateTokenServiceFixture } from './__fixtures__/services/validate-token.service.fixture';
-import { VerifyTokenServiceFixture } from './__fixtures__/services/verify-token.service.fixture';
+import { Token } from './domain/aggregates/token.aggregate';
+import { JwtPolicy } from './domain/policies/jwt.policy';
+import { JwtPort } from './domain/ports/jwt.port';
+import { JwtService } from './infrastructure/jwt/jwt.service';
 
 describe(AuthenticationModule, () => {
   let testModule: TestingModule;
   let authenticationModule: AuthenticationModule;
-  let issueTokenService: IssueTokenServiceInterface;
-  let verifyTokenService: VerifyTokenServiceInterface;
-  let validateTokenService: ValidateTokenServiceInterface;
 
   describe(AuthenticationModule.forRoot, () => {
     beforeEach(async () => {
       testModule = await Test.createTestingModule(
         testModuleFactory([
           AuthenticationModule.forRoot({
-            verifyTokenService: new VerifyTokenServiceFixture(),
-            issueTokenService: new IssueTokenServiceFixture(),
-            validateTokenService: new ValidateTokenServiceFixture(),
+            settings: {
+              jwt: {
+                access: {
+                  secret: 'access-secret',
+                  signOptions: { expiresIn: '1h' },
+                },
+                refresh: {
+                  secret: 'refresh-secret',
+                  signOptions: { expiresIn: '7d' },
+                },
+              },
+            },
           }),
         ]),
       ).compile();
@@ -53,9 +54,18 @@ describe(AuthenticationModule, () => {
       testModule = await Test.createTestingModule(
         testModuleFactory([
           AuthenticationModule.register({
-            verifyTokenService: new VerifyTokenServiceFixture(),
-            issueTokenService: new IssueTokenServiceFixture(),
-            validateTokenService: new ValidateTokenServiceFixture(),
+            settings: {
+              jwt: {
+                access: {
+                  secret: 'access-secret',
+                  signOptions: { expiresIn: '1h' },
+                },
+                refresh: {
+                  secret: 'refresh-secret',
+                  signOptions: { expiresIn: '7d' },
+                },
+              },
+            },
           }),
         ]),
       ).compile();
@@ -72,19 +82,20 @@ describe(AuthenticationModule, () => {
       testModule = await Test.createTestingModule(
         testModuleFactory([
           AuthenticationModule.forRootAsync({
-            inject: [
-              VerifyTokenServiceFixture,
-              IssueTokenServiceFixture,
-              ValidateTokenServiceFixture,
-            ],
-            useFactory: (
-              verifyTokenService: VerifyTokenServiceInterface,
-              issueTokenService: IssueTokenServiceInterface,
-              validateTokenService: ValidateTokenServiceInterface,
-            ) => ({
-              verifyTokenService,
-              issueTokenService,
-              validateTokenService,
+            inject: [],
+            useFactory: () => ({
+              settings: {
+                jwt: {
+                  access: {
+                    secret: 'access-secret',
+                    signOptions: { expiresIn: '1h' },
+                  },
+                  refresh: {
+                    secret: 'refresh-secret',
+                    signOptions: { expiresIn: '7d' },
+                  },
+                },
+              },
             }),
           }),
         ]),
@@ -98,48 +109,55 @@ describe(AuthenticationModule, () => {
   });
 
   describe(AuthenticationModule.forRootAsync, () => {
-    class TestController {
-      constructor(
-        @Inject(IssueTokenService)
-        private readonly issueTokenService: IssueTokenService,
-      ) {
-        // TestController with injected IssueTokenService
-      }
-    }
     @Injectable()
     class TestService {
       constructor(
-        @Inject(IssueTokenService)
-        private readonly issueTokenService: IssueTokenService,
-        @Inject(VerifyTokenService)
-        private readonly verifyTokenService: VerifyTokenService,
+        @Inject(JwtService)
+        private readonly jwtService: JwtService,
+        @Inject(JwtPolicy)
+        private readonly jwtPolicy: JwtPolicy,
       ) {}
 
-      // Method to issue tokens using TEMP secrets
       async issueAccessToken(payload: { sub: string }) {
-        return this.issueTokenService.accessToken(payload);
+        const now = new Date();
+        const token = new Token(randomUUID(), {
+          sub: payload.sub,
+          type: 'access',
+          scope: [],
+          iat: now,
+          exp: this.jwtPolicy.getAccessExpiry(now),
+        });
+        return this.jwtService.signAccessToken(token);
       }
 
       async issueRefreshToken(payload: { sub: string }) {
-        return this.issueTokenService.refreshToken(payload);
+        const now = new Date();
+        const token = new Token(randomUUID(), {
+          sub: payload.sub,
+          type: 'refresh',
+          scope: [],
+          iat: now,
+          exp: this.jwtPolicy.getRefreshExpiry(now),
+        });
+        return this.jwtService.signRefreshToken(token);
       }
 
-      // Method to verify tokens using TEMP secrets
       async verifyAccessToken(token: string) {
-        return this.verifyTokenService.accessToken(token);
+        return this.jwtService.verifyAccessToken(token);
       }
 
       async verifyRefreshToken(token: string) {
-        return this.verifyTokenService.refreshToken(token);
+        return this.jwtService.verifyRefreshToken(token);
       }
     }
 
     @Module({
       imports: [
         AuthenticationModule.registerAsync({
-          imports: [
-            JwtModule.forRoot({
-              settings: {
+          inject: [],
+          useFactory: () => ({
+            settings: {
+              jwt: {
                 access: {
                   secret: 'TEMP',
                   signOptions: {
@@ -153,13 +171,10 @@ describe(AuthenticationModule, () => {
                   },
                 },
               },
-            }),
-          ],
-          inject: [],
-          useFactory: () => ({}),
+            },
+          }),
         }),
       ],
-      controllers: [TestController],
       providers: [TestService],
     })
     class TestModule {}
@@ -170,7 +185,20 @@ describe(AuthenticationModule, () => {
           TestModule,
           AuthenticationModule.forRootAsync({
             inject: [],
-            useFactory: () => ({}),
+            useFactory: () => ({
+              settings: {
+                jwt: {
+                  access: {
+                    secret: 'global-access-secret',
+                    signOptions: { expiresIn: '1h' },
+                  },
+                  refresh: {
+                    secret: 'global-refresh-secret',
+                    signOptions: { expiresIn: '7d' },
+                  },
+                },
+              },
+            }),
           }),
         ]),
       ).compile();
@@ -179,46 +207,58 @@ describe(AuthenticationModule, () => {
     it('should isolate TEMP secrets from global secrets - cross-verification should fail', async () => {
       commonVars();
 
-      // Get services from the main testModule (global JWT)
-      // These are the services from the testModuleFactory with 'global' secrets
-      const globalIssueService = issueTokenService;
-      const globalVerifyService = verifyTokenService;
-
-      // Get TestService from TestModule (which has TEMP JWT injected)
+      const globalJwtService = testModule.get(JwtService);
       const testService = testModule.get(TestService);
 
       const payload = { sub: 'test-user-id' };
+      const globalJwtPolicy = testModule.get(JwtPolicy);
 
-      // Create token with TEMP secret (via TestService)
       const tempAccessToken = await testService.issueAccessToken(payload);
       const tempRefreshToken = await testService.issueRefreshToken(payload);
 
-      // Create token with global secret (from main testModule)
-      const globalAccessToken = await globalIssueService.accessToken(payload);
-      const globalRefreshToken = await globalIssueService.refreshToken(payload);
+      const makeToken = (type: 'access' | 'refresh') => {
+        const now = new Date();
+        return new Token(randomUUID(), {
+          sub: payload.sub,
+          type,
+          scope: [],
+          iat: now,
+          exp:
+            type === 'access'
+              ? globalJwtPolicy.getAccessExpiry(now)
+              : globalJwtPolicy.getRefreshExpiry(now),
+        });
+      };
 
-      // Test 1: TEMP token should NOT be verifiable by global service
+      const globalAccessToken = await globalJwtService.signAccessToken(
+        makeToken('access'),
+      );
+      const globalRefreshToken = await globalJwtService.signRefreshToken(
+        makeToken('refresh'),
+      );
+
+      // TEMP token should NOT be verifiable by global service
       await expect(
-        globalVerifyService.accessToken(tempAccessToken),
-      ).rejects.toThrow(); // Should fail due to wrong secret
+        globalJwtService.verifyAccessToken(tempAccessToken),
+      ).rejects.toThrow();
 
       await expect(
-        globalVerifyService.refreshToken(tempRefreshToken),
-      ).rejects.toThrow(); // Should fail due to wrong secret
+        globalJwtService.verifyRefreshToken(tempRefreshToken),
+      ).rejects.toThrow();
 
-      // Test 2: Global token should NOT be verifiable by TEMP service (via TestService)
+      // Global token should NOT be verifiable by TEMP service
       await expect(
         testService.verifyAccessToken(globalAccessToken),
-      ).rejects.toThrow(); // Should fail due to wrong secret
+      ).rejects.toThrow();
 
       await expect(
         testService.verifyRefreshToken(globalRefreshToken),
-      ).rejects.toThrow(); // Should fail due to wrong secret
+      ).rejects.toThrow();
 
-      // Test 3: But tokens should be verifiable by their own services (sanity check)
+      // Tokens should be verifiable by their own services
       const tempVerified = await testService.verifyAccessToken(tempAccessToken);
       const globalVerified =
-        await globalVerifyService.accessToken(globalAccessToken);
+        await globalJwtService.verifyAccessToken(globalAccessToken);
 
       expect(tempVerified).toBeDefined();
       expect(globalVerified).toBeDefined();
@@ -230,19 +270,20 @@ describe(AuthenticationModule, () => {
       testModule = await Test.createTestingModule(
         testModuleFactory([
           AuthenticationModule.registerAsync({
-            inject: [
-              VerifyTokenServiceFixture,
-              IssueTokenServiceFixture,
-              ValidateTokenServiceFixture,
-            ],
-            useFactory: (
-              verifyTokenService: VerifyTokenServiceInterface,
-              issueTokenService: IssueTokenServiceInterface,
-              validateTokenService: ValidateTokenServiceInterface,
-            ) => ({
-              verifyTokenService,
-              issueTokenService,
-              validateTokenService,
+            inject: [],
+            useFactory: () => ({
+              settings: {
+                jwt: {
+                  access: {
+                    secret: 'access-secret',
+                    signOptions: { expiresIn: '1h' },
+                  },
+                  refresh: {
+                    secret: 'refresh-secret',
+                    signOptions: { expiresIn: '7d' },
+                  },
+                },
+              },
             }),
           }),
         ]),
@@ -257,28 +298,23 @@ describe(AuthenticationModule, () => {
 
   function commonVars() {
     authenticationModule = testModule.get(AuthenticationModule);
-    verifyTokenService = testModule.get(VerifyTokenService);
-    issueTokenService = testModule.get(IssueTokenService);
-    validateTokenService = testModule.get(ValidateTokenService);
   }
 
   function commonTests() {
     expect(authenticationModule).toBeInstanceOf(AuthenticationModule);
-    expect(issueTokenService).toBeInstanceOf(IssueTokenServiceFixture);
-    expect(verifyTokenService).toBeInstanceOf(VerifyTokenServiceFixture);
-    expect(validateTokenService).toBeInstanceOf(ValidateTokenServiceFixture);
+
+    const jwtPort = testModule.get(AUTHENTICATION_JWT_PORT_TOKEN);
+    expect(jwtPort).toBeInstanceOf(JwtPort);
+
+    const jwtService = testModule.get(JwtService);
+    expect(jwtService).toBeInstanceOf(JwtService);
   }
 });
 
-/**
- * Factory function to create test module configuration
- *
- * @param extraImports - Additional imports to include in the test module
- */
 function testModuleFactory(
   extraImports: DynamicModule['imports'] = [],
 ): ModuleMetadata {
   return {
-    imports: [GlobalModuleFixture, JwtModule.forRoot({}), ...extraImports],
+    imports: [GlobalModuleFixture, ...extraImports],
   };
 }
