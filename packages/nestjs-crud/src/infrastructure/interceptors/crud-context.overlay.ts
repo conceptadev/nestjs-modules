@@ -111,6 +111,16 @@ export class CrudContextOverlay<
   }
 
   attach(context: ExecutionContext): void {
+    const target = context.getClass();
+    const handler = context.getHandler();
+
+    if (
+      !this.reflectionService.getEntity(target) ||
+      !this.reflectionService.getOperation(handler)
+    ) {
+      return;
+    }
+
     const request = context.switchToHttp().getRequest();
     const ctx = getAppContext(request);
     const resolved = this.resolve(context);
