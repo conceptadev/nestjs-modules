@@ -6,6 +6,7 @@ import {
   createMockCacheEntity,
   toCacheDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
+import { CreateCacheCommand } from '../../../../../application/commands/impl/create-cache.command';
 import { CacheCreatableInterface } from '../../../../../domain/interfaces/cache-creatable.interface';
 import { CacheInterface } from '../../../../../domain/interfaces/cache.interface';
 import { CreateCacheRequestHandler } from '../create-cache-request.handler';
@@ -41,5 +42,9 @@ describe(CreateCacheRequestHandler.name, () => {
 
     expect(result.id).toBe('test-id');
     expect(result.key).toBe('test-key');
+    expect(commandBus.execute).toHaveBeenCalledTimes(1);
+    expect(commandBus.execute).toHaveBeenCalledWith(
+      expect.any(CreateCacheCommand),
+    );
   });
 });

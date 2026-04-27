@@ -1382,6 +1382,9 @@ __metadata:
     "@nestjs/passport": "npm:^11.0.5"
     "@nestjs/swagger": "npm:^11.2.2"
     "@nestjs/testing": "npm:^11.1.9"
+    "@types/passport-jwt": "npm:^4.0.1"
+    "@types/passport-local": "npm:^1.0.38"
+    "@types/passport-strategy": "npm:^0.2.38"
     express: "npm:^4.21.0"
     jest-mock-extended: "npm:^4.0.0"
     jsonwebtoken: "npm:^9.0.0"
@@ -6008,7 +6011,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:9.0.10, @types/jsonwebtoken@npm:^9.0.4":
+"@types/jsonwebtoken@npm:*, @types/jsonwebtoken@npm:9.0.10, @types/jsonwebtoken@npm:^9.0.4":
   version: 9.0.10
   resolution: "@types/jsonwebtoken@npm:9.0.10"
   dependencies:
@@ -6138,6 +6141,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/passport-jwt@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@types/passport-jwt@npm:4.0.1"
+  dependencies:
+    "@types/jsonwebtoken": "npm:*"
+    "@types/passport-strategy": "npm:*"
+  checksum: 10c0/0ced0eaa7bb379d674821108d9bc6758223f1a5f2b9790ec78d3eaaccce6a58a424cf8ed22b53d813740ec53d929e21d92cf794ef0fb30c732866750763c0d7a
+  languageName: node
+  linkType: hard
+
+"@types/passport-local@npm:^1.0.38":
+  version: 1.0.38
+  resolution: "@types/passport-local@npm:1.0.38"
+  dependencies:
+    "@types/express": "npm:*"
+    "@types/passport": "npm:*"
+    "@types/passport-strategy": "npm:*"
+  checksum: 10c0/a8464df03f073a4bb9aef7fa7cc9e76a355f149a1148330da88346d0e9c600f845601e99ed40949a13287eacae0a7ad01cd0eb5ca00d8b81da263b1dfc3aee60
+  languageName: node
+  linkType: hard
+
 "@types/passport-oauth2@npm:*":
   version: 1.8.0
   resolution: "@types/passport-oauth2@npm:1.8.0"
@@ -6146,6 +6170,16 @@ __metadata:
     "@types/oauth": "npm:*"
     "@types/passport": "npm:*"
   checksum: 10c0/1635679ed70044858570488fb46a14868099286f4fe785d47874c1a02706cf5b5cee07e5be0e75a5103a5c260ea9e903e0243d8b7992281680233e69f60e72fa
+  languageName: node
+  linkType: hard
+
+"@types/passport-strategy@npm:*, @types/passport-strategy@npm:^0.2.38":
+  version: 0.2.38
+  resolution: "@types/passport-strategy@npm:0.2.38"
+  dependencies:
+    "@types/express": "npm:*"
+    "@types/passport": "npm:*"
+  checksum: 10c0/d7d2b1782a0845bd8914250aa9213a23c8d9c2225db46d854b77f2bf0129a789f46d4a5e9ad336eca277fc7e0a051c0a2942da5c864e7c6710763f102d9d4295
   languageName: node
   linkType: hard
 

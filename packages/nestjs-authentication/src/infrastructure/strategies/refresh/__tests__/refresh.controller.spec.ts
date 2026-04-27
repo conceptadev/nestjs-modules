@@ -1,9 +1,10 @@
 import { randomUUID } from 'crypto';
 
-import { mock } from 'jest-mock-extended';
+import { MockProxy, mock } from 'jest-mock-extended';
 
 import { CommandBus } from '@nestjs/cqrs';
 
+import { IssueAuthenticatedResponseCommand } from '../../../../application/commands/impl/issue-authenticated-response.command';
 import { AuthenticatedResponseInterface } from '../../../../domain/interfaces/authenticated-response.interface';
 import { AuthenticatedUserInterface } from '../../../../domain/interfaces/authenticated-user.interface';
 
@@ -13,13 +14,14 @@ describe(RefreshControllerFixture, () => {
   const accessToken = 'accessToken';
   const refreshToken = 'refreshToken';
   let controller: RefreshControllerFixture;
+  let commandBus: MockProxy<CommandBus>;
   const response: AuthenticatedResponseInterface = {
     accessToken,
     refreshToken,
   };
 
   beforeEach(async () => {
-    const commandBus = mock<CommandBus>();
+    commandBus = mock<CommandBus>();
     jest.spyOn(commandBus, 'execute').mockResolvedValue(response);
     controller = new RefreshControllerFixture(commandBus);
   });
@@ -31,6 +33,13 @@ describe(RefreshControllerFixture, () => {
       };
       const result = await controller.refresh(user);
       expect(result.accessToken).toBe(response.accessToken);
+      expect(commandBus.execute).toHaveBeenCalledTimes(1);
+      expect(commandBus.execute).toHaveBeenCalledWith(
+        expect.any(IssueAuthenticatedResponseCommand),
+      );
+      expect(commandBus.execute).toHaveBeenCalledWith(
+        expect.objectContaining({ id: user.id }),
+      );
     });
   });
 });

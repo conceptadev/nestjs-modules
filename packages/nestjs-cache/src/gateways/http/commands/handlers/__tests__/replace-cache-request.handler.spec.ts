@@ -6,6 +6,7 @@ import {
   createMockCacheEntity,
   toCacheDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
+import { ReplaceCacheCommand } from '../../../../../application/commands/impl/replace-cache.command';
 import { CacheCreatableInterface } from '../../../../../domain/interfaces/cache-creatable.interface';
 import { CacheInterface } from '../../../../../domain/interfaces/cache.interface';
 import { ReplaceCacheRequestHandler } from '../replace-cache-request.handler';
@@ -44,6 +45,10 @@ describe(ReplaceCacheRequestHandler.name, () => {
     );
 
     expect(result.data).toBe('replaced-data');
+    expect(commandBus.execute).toHaveBeenCalledTimes(1);
+    expect(commandBus.execute).toHaveBeenCalledWith(
+      expect.any(ReplaceCacheCommand),
+    );
   });
 
   it('should throw when id is not a string', async () => {

@@ -5,6 +5,7 @@ import {
   createMockInvitationEntity,
   toInvitationDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
+import { RemoveInvitationCommand } from '../../../../../application/commands/impl/remove-invitation.command';
 import { DeleteInvitationRequest } from '../../impl/delete-invitation.request';
 import { DeleteInvitationRequestHandler } from '../delete-invitation-request.handler';
 
@@ -32,6 +33,10 @@ describe(DeleteInvitationRequestHandler.name, () => {
     const result = await handler.execute(new DeleteInvitationRequest(context));
 
     expect(result).toBeNull();
+    expect(commandBus.execute).toHaveBeenCalledTimes(1);
+    expect(commandBus.execute).toHaveBeenCalledWith(
+      expect.any(RemoveInvitationCommand),
+    );
   });
 
   it('should return plain object when returnDeleted is true', async () => {
@@ -50,6 +55,10 @@ describe(DeleteInvitationRequestHandler.name, () => {
 
     expect(result).not.toBeNull();
     expect(result!.id).toBe('test-id');
+    expect(commandBus.execute).toHaveBeenCalledTimes(1);
+    expect(commandBus.execute).toHaveBeenCalledWith(
+      expect.any(RemoveInvitationCommand),
+    );
   });
 
   it('should throw when id is not a string', async () => {

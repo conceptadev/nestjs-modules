@@ -6,6 +6,7 @@ import {
   createMockCacheEntity,
   toCacheDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
+import { UpdateCacheCommand } from '../../../../../application/commands/impl/update-cache.command';
 import { CacheUpdatableInterface } from '../../../../../domain/interfaces/cache-updatable.interface';
 import { CacheInterface } from '../../../../../domain/interfaces/cache.interface';
 import { UpdateCacheRequestHandler } from '../update-cache-request.handler';
@@ -41,6 +42,10 @@ describe(UpdateCacheRequestHandler.name, () => {
     );
 
     expect(result.data).toBe('updated-data');
+    expect(commandBus.execute).toHaveBeenCalledTimes(1);
+    expect(commandBus.execute).toHaveBeenCalledWith(
+      expect.any(UpdateCacheCommand),
+    );
   });
 
   it('should throw when id is not a string', async () => {

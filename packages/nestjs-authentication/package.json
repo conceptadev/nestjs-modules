@@ -36,6 +36,9 @@
     "@concepta/nestjs-email": "^7.0.0-alpha.10",
     "@concepta/nestjs-otp": "8.0.0-alpha.5",
     "@nestjs/testing": "^11.1.9",
+    "@types/passport-jwt": "^4.0.1",
+    "@types/passport-local": "^1.0.38",
+    "@types/passport-strategy": "^0.2.38",
     "express": "^4.21.0",
     "jest-mock-extended": "^4.0.0",
     "supertest": "^6.3.4"

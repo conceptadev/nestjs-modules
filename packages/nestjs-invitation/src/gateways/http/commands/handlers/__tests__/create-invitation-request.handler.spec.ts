@@ -3,6 +3,7 @@ import {
   createMockInvitationEntity,
   toInvitationDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
+import { CreateInvitationCommand } from '../../../../../application/commands/impl/create-invitation.command';
 import { InvitationCreatableInterface } from '../../../../../domain/interfaces/invitation-creatable.interface';
 import { CreateInvitationRequest } from '../../impl/create-invitation.request';
 import { CreateInvitationRequestHandler } from '../create-invitation-request.handler';
@@ -33,5 +34,9 @@ describe(CreateInvitationRequestHandler.name, () => {
 
     expect(result.id).toBe('test-id');
     expect(result.code).toBe('test-code');
+    expect(commandBus.execute).toHaveBeenCalledTimes(1);
+    expect(commandBus.execute).toHaveBeenCalledWith(
+      expect.any(CreateInvitationCommand),
+    );
   });
 });
