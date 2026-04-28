@@ -1,11 +1,15 @@
 import { PlainLiteralObject } from '@nestjs/common';
+import { Command } from '@nestjs/cqrs';
 
+import { Cache } from '../../../domain/aggregates/cache';
 import { CacheCreatableInterface } from '../../../domain/interfaces/cache-creatable.interface';
 
-export class UpsertCacheCommand {
+export class UpsertCacheCommand extends Command<Cache> {
   constructor(
     public readonly ctx: PlainLiteralObject,
     public readonly namespace: string,
     public readonly dto: CacheCreatableInterface,
-  ) {}
+  ) {
+    super();
+  }
 }

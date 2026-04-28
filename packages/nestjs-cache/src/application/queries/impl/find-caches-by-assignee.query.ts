@@ -1,9 +1,14 @@
 import { PlainLiteralObject } from '@nestjs/common';
+import { Query } from '@nestjs/cqrs';
 
-export class FindCachesByAssigneeQuery {
+import { Cache } from '../../../domain/aggregates/cache';
+
+export class FindCachesByAssigneeQuery extends Query<Cache[]> {
   constructor(
     public readonly ctx: PlainLiteralObject,
     public readonly namespace: string,
     public readonly assigneeId: string,
-  ) {}
+  ) {
+    super();
+  }
 }
