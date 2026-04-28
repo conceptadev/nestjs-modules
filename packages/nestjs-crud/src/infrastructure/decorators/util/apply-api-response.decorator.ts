@@ -63,8 +63,8 @@ export function applyApiResponse(
     // dto meta options
     const dtoMetaOptions: ApiResponseMetadata = {};
 
-    // dto schema options
-    let dtoSchemaOptions: ApiResponseSchemaHost = { schema: {} };
+    // dto schema options — only populated for operations that need a schema object
+    let dtoSchemaOptions: Partial<ApiResponseSchemaHost> = {};
 
     // operation is the discriminator
     switch (operation) {
@@ -80,7 +80,7 @@ export function applyApiResponse(
 
       // create batch (array response)
       case Operation.CreateBatch:
-        dtoSchemaOptions.schema = createArraySchema(dto);
+        dtoSchemaOptions = { schema: createArraySchema(dto) };
         break;
 
       // returns deleted item or empty

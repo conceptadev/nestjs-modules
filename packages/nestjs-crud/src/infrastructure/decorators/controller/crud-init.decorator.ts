@@ -1,5 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 
+import { CrudInitApiBody } from './crud-init-api-body.decorator';
 import { CrudInitApiParams } from './crud-init-api-params.decorator';
 import { CrudInitApiQuery } from './crud-init-api-query.decorator';
 import { CrudInitApiResponse } from './crud-init-api-response.decorator';
@@ -20,6 +21,7 @@ export const CrudInit = () =>
     CrudInitSerialization(),
     CrudInitQuery(),
     CrudInitCommand(),
+    CrudInitApiBody(),
     CrudInitApiQuery(),
     CrudInitApiParams(),
     CrudInitApiResponse(),

@@ -38,12 +38,11 @@ export class Swagger {
       includeDeleted,
     } = Swagger.getQueryParamsNames();
     const oldVersion = Swagger.getSwaggerVersion() < 4;
-    const docsLink = (a: string) =>
-      `<a href="https://github.com/nestjsx/crud/wiki/Requests#${a}" target="_blank">Docs</a>`;
+    const docsLink = `<a href="https://www.npmjs.com/package/@concepta/nestjs-crud#query-string-parameters" target="_blank">Docs</a>`;
 
     const fieldsMetaBase = {
       name: fields,
-      description: `Selects resource fields. ${docsLink('select')}`,
+      description: `Selects resource fields. ${docsLink}`,
       required: false,
       in: 'query',
     };
@@ -70,7 +69,7 @@ export class Swagger {
 
     const searchMetaBase = {
       name: search,
-      description: `Adds search condition. ${docsLink('search')}`,
+      description: `Adds search condition. ${docsLink}`,
       required: false,
       in: 'query',
     };
@@ -80,7 +79,7 @@ export class Swagger {
 
     const filterMetaBase = {
       name: filter,
-      description: `Adds filter condition. ${docsLink('filter')}`,
+      description: `Adds filter condition. ${docsLink}`,
       required: false,
       in: 'query',
     };
@@ -107,7 +106,7 @@ export class Swagger {
 
     const orMetaBase = {
       name: or,
-      description: `Adds OR condition. ${docsLink('or')}`,
+      description: `Adds OR condition. ${docsLink}`,
       required: false,
       in: 'query',
     };
@@ -134,7 +133,7 @@ export class Swagger {
 
     const sortMetaBase = {
       name: sort,
-      description: `Adds sort by field. ${docsLink('sort')}`,
+      description: `Adds sort by field. ${docsLink}`,
       required: false,
       in: 'query',
     };
@@ -161,7 +160,7 @@ export class Swagger {
 
     const joinMetaBase = {
       name: join,
-      description: `Adds relational resources. ${docsLink('join')}`,
+      description: `Adds relational resources. ${docsLink}`,
       required: false,
       in: 'query',
     };
@@ -188,7 +187,7 @@ export class Swagger {
 
     const limitMetaBase = {
       name: limit,
-      description: `Limit amount of resources. ${docsLink('limit')}`,
+      description: `Limit amount of resources. ${docsLink}`,
       required: false,
       in: 'query',
     };
@@ -198,7 +197,7 @@ export class Swagger {
 
     const offsetMetaBase = {
       name: offset,
-      description: `Offset amount of resources. ${docsLink('offset')}`,
+      description: `Offset amount of resources. ${docsLink}`,
       required: false,
       in: 'query',
     };
@@ -208,7 +207,7 @@ export class Swagger {
 
     const pageMetaBase = {
       name: page,
-      description: `Page portion of resources. ${docsLink('page')}`,
+      description: `Page portion of resources. ${docsLink}`,
       required: false,
       in: 'query',
     };
@@ -218,7 +217,7 @@ export class Swagger {
 
     const cacheMetaBase = {
       name: cache,
-      description: `Reset cache (if was enabled). ${docsLink('cache')}`,
+      description: `Reset cache (if was enabled). ${docsLink}`,
       required: false,
       in: 'query',
     };
@@ -236,7 +235,7 @@ export class Swagger {
 
     const includeDeletedMetaBase = {
       name: includeDeleted,
-      description: `Include deleted. ${docsLink('includeDeleted')}`,
+      description: `Include deleted. ${docsLink}`,
       required: false,
       in: 'query',
     };
@@ -302,8 +301,8 @@ export class Swagger {
   }
 
   private static getSwaggerVersion(): number {
-    return swaggerPkgJson
-      ? parseInt(swaggerPkgJson.version[0], 10)
-      : /* istanbul ignore next */ 3;
+    if (!swaggerPkgJson) return 3;
+    const major = parseInt(swaggerPkgJson.version.split('.')[0], 10);
+    return isNaN(major) ? 3 : major;
   }
 }
