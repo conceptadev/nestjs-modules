@@ -21,7 +21,8 @@ build on to define their own hook types and method decorators.
 - [Defining Hooks](#defining-hooks)
 - [UseHooks Decorator](#usehooks-decorator)
 - [Specifications](#specifications)
-- [HookInterceptor](#hookinterceptor)
+- [HookContextOverlay](#hookcontextoverlay)
+- [Accessing Hooks Downstream](#accessing-hooks-downstream)
 - [HookResolverService](#hookresolverservice)
 - [Extending for Other Modules](#extending-for-other-modules)
 
@@ -64,7 +65,8 @@ export class AppModule {}
 ```
 
 - Module is `@Global()` -- registered once for the entire application
-- Automatically registers `HookInterceptor` as a global `APP_INTERCEPTOR`
+- Automatically registers `HookContextOverlay` as a global `APP_INTERCEPTOR`
+  (the overlay is its own interceptor — it extends `ContextOverlayInterceptor`)
 - Provides `HookResolverService` globally for subsystem consumption
 - Hook classes must be registered as providers in your application modules
 
@@ -73,8 +75,8 @@ export class AppModule {}
 ```text
 @UseHooks(TenantHook)            <-- Controller/method decorator
          |
-   HookInterceptor               <-- Gathers hooks, attaches to request ctx
-         |
+   HookContextOverlay            <-- Reads @UseHooks metadata, calls
+         |                           ctx.defineOverlay(HooksCtx, { hooks })
    HookResolverService.execute() <-- Called by subsystems (repository, etc.)
          |
    @Hook({ type: ... })          <-- Hook class with method decorators
@@ -82,8 +84,9 @@ export class AppModule {}
      @AfterCreate()
 ```
 
-- **HookInterceptor** gathers hook configurations from `@UseHooks`
-  decorators and attaches them to the request context
+- **HookContextOverlay** reads `@UseHooks` metadata, normalizes hook
+  configurations, and attaches them to the request context via
+  `ctx.defineOverlay(HooksCtx, { hooks })`
 - **HookResolverService** is called by subsystems to execute hooks for a
   specific type and method key
 - **Specifications** filter which hooks apply at runtime, evaluated against
@@ -170,7 +173,7 @@ restrictDelete(entity, ctx) {
 ## UseHooks Decorator
 
 `@UseHooks()` specifies which hooks apply to a controller or route. The
-global `HookInterceptor` reads this metadata and attaches the hooks to the
+global `HookContextOverlay` reads this metadata and attaches the hooks to the
 request context.
 
 ### Class-Level
@@ -288,56 +291,109 @@ specific one wins:
 | 3 | `@Specification()` on the class or `@Hook({ spec })` | Class-level spec |
 | 4 (default) | None provided | `Spec.always()` |
 
-## HookInterceptor
+## HookContextOverlay
 
-`HookInterceptor` is registered globally by `HookModule.forRoot()`. It runs
-on every HTTP request and:
+`HookContextOverlay` is the overlay interceptor registered globally by
+`HookModule.forRoot()`. It extends `ContextOverlayInterceptor` from
+`@concepta/nestjs-common` — making the overlay class its own interceptor with
+no separate wrapper.
 
-1. Gets the app context from the request
-2. Skips processing if hooks are already attached (idempotent)
-3. Reads `@UseHooks` metadata from both the controller class and method,
-   merging them
-4. Normalizes each hook option (extracting the hook type from `@Hook`
-   metadata)
-5. Registers the hooks array on the request context
-
-The interceptor bridges the decorator layer (`@UseHooks`) with the runtime
-layer (`HookResolverService`).
-
-### Custom Interceptor
-
-If the global interceptor doesn't suit your needs (e.g., for non-HTTP
-transports or custom context setup), you can build your own:
+The `HooksCtx` overlay ref is exported for consumers that need direct access:
 
 ```ts
-import { Injectable, NestInterceptor, CallHandler, ExecutionContext } from '@nestjs/common';
+import { HooksCtx } from '@concepta/nestjs-hook';
+import { OverlayRef } from '@concepta/nestjs-common';
+
+// HooksCtx is:
+// new OverlayRef<'withHooks', HookContextInterface>('withHooks')
+```
+
+On every HTTP request, `HookContextOverlay.attach()`:
+
+1. Reads `@UseHooks` metadata from both the controller class and method
+   (merged via `Reflector.getAllAndMerge`)
+2. Normalizes each hook option: resolves the hook type from `@Hook` metadata
+3. Calls `ctx.defineOverlay(HooksCtx, { hooks })` to attach the resolved
+   hooks to the request context
+
+Idempotency is handled by `defineOverlay` itself — subsequent calls with the
+same overlay name are no-ops, so re-entering the interceptor is safe.
+
+### Custom Overlay
+
+If the global `HookContextOverlay` doesn't suit your needs (e.g., for
+non-HTTP transports or custom context setup), subclass
+`ContextOverlayInterceptor` directly:
+
+```ts
+import { Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
-import { HookOption, HookContextInterface, getAppContext } from '@concepta/nestjs-common';
+import { ExecutionContext } from '@nestjs/common';
+import {
+  ContextOverlayInterceptor,
+  getAppContext,
+  HookOption,
+} from '@concepta/nestjs-common';
+import { HooksCtx } from '@concepta/nestjs-hook';
 
 @Injectable()
-export class CustomHookInterceptor implements NestInterceptor {
-  constructor(private readonly reflector: Reflector) {}
+export class CustomHookContextOverlay extends ContextOverlayInterceptor {
+  readonly ref = HooksCtx;
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  constructor(private readonly reflector: Reflector) {
+    super();
+  }
+
+  attach(context: ExecutionContext): void {
     const request = context.switchToHttp().getRequest();
-    const ctx = getAppContext<HookContextInterface>(request);
-
-    if (ctx.has('hooks')) {
-      return next.handle();
-    }
+    const ctx = getAppContext(request);
 
     // Gather hooks from @UseHooks metadata
-    const hooks = this.reflector.getAllAndMerge<HookOption[]>(
+    const decoratorHooks = this.reflector.getAllAndMerge<HookOption[]>(
       'NESTJS_HOOK_HOOKS',
       [context.getHandler(), context.getClass()],
     );
 
-    // Attach to context for downstream consumption
-    ctx.register('hooks', hooks);
-
-    return next.handle();
+    // Normalize and attach (defineOverlay is idempotent)
+    ctx.defineOverlay(HooksCtx, { hooks: decoratorHooks ?? [] });
   }
+}
+```
+
+## Accessing Hooks Downstream
+
+Once `HookContextOverlay` has run, downstream code accesses the hooks context
+through the standard overlay APIs provided by `AppContextHost`.
+
+### Fluent chain (preferred for optional overlays)
+
+```ts
+// Used internally by RepositoryAdapter.entityCtx():
+const hookCtx = appCtx.optional().withHooks();
+```
+
+The `.withHooks()` method is installed dynamically by `defineOverlay(HooksCtx, ...)`
+and returns the `HookContextInterface` value (`{ hooks }`) — or `undefined`
+when the overlay is absent and `.optional()` precedes it.
+
+### Direct unwrap
+
+```ts
+import { AppContextHost } from '@concepta/nestjs-common';
+import { HooksCtx } from '@concepta/nestjs-hook';
+
+const hookCtx = appCtx.with(HooksCtx); // throws if overlay absent
+```
+
+### Parameter decorator
+
+```ts
+import { Ctx } from '@concepta/nestjs-common';
+import { HooksCtx } from '@concepta/nestjs-hook';
+
+@Get()
+async findAll(@Ctx(HooksCtx) hookCtx: HookContextInterface) {
+  // hookCtx.hooks is the resolved array
 }
 ```
 
@@ -351,7 +407,7 @@ async execute<T>(
   hookType: { readonly KEY: string },
   methodKey: HookMethodKeyType,
   payload: T,
-  ctx: HookContextInterface | undefined,
+  ctx: PlainLiteralObject | undefined,
 ): Promise<T>
 ```
 
@@ -373,7 +429,7 @@ async execute<T>(
 export class MyService {
   constructor(private readonly hookResolver: HookResolverService) {}
 
-  async process(data: ProcessData, ctx: HookContextInterface) {
+  async process(data: ProcessData, ctx: PlainLiteralObject) {
     // Run "before" hooks
     const processedData = await this.hookResolver.execute(
       MyHookType,       // hook type (filters by KEY)

@@ -6,7 +6,7 @@ import { HookModuleClass } from './hook.module-definition';
  * Hook module providing specification-based hooks for NestJS applications.
  *
  * This module:
- * - Registers the HookInterceptor globally to gather hooks from `@UseHooks`
+ * - Registers the HookContextOverlay globally to gather hooks from `@UseHooks`
  * - Provides HookResolverService for resolving hook instances
  *
  * Hook classes should be registered as providers in your application modules.

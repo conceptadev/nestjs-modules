@@ -7,7 +7,7 @@ import { HOOKS_METADATA_KEY } from '../hook.constants';
 /**
  * Decorator to specify hooks for a controller class or method.
  *
- * The HookInterceptor (registered globally via HookModule) gathers hooks from
+ * The HookContextOverlay (registered globally via HookModule) gathers hooks from
  * this decorator and attaches them to the request context.
  *
  * When applied to a class, the hooks apply to all methods in that class.
