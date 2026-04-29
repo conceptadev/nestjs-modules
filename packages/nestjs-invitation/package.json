@@ -1,6 +1,6 @@
 {
   "name": "@concepta/nestjs-invitation",
-  "version": "8.0.0-alpha.5",
+  "version": "8.0.0-alpha.6",
   "description": "Rockets NestJS Invitation",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,8 +24,8 @@
     "!dist/**/__fixtures__/**"
   ],
   "dependencies": {
-    "@concepta/nestjs-common": "8.0.0-alpha.5",
-    "@concepta/nestjs-repository": "8.0.0-alpha.5",
+    "@concepta/nestjs-common": "8.0.0-alpha.6",
+    "@concepta/nestjs-repository": "8.0.0-alpha.6",
     "@nestjs/common": "^11.1.9",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.9",
@@ -33,12 +33,12 @@
     "@nestjs/swagger": "^11.2.2"
   },
   "devDependencies": {
-    "@concepta/nestjs-crud": "8.0.0-alpha.5",
+    "@concepta/nestjs-crud": "8.0.0-alpha.6",
     "@concepta/nestjs-email": "^7.0.0-alpha.10",
-    "@concepta/nestjs-otp": "8.0.0-alpha.5",
-    "@concepta/nestjs-password": "8.0.0-alpha.5",
-    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.5",
-    "@concepta/nestjs-user": "8.0.0-alpha.5",
+    "@concepta/nestjs-otp": "8.0.0-alpha.6",
+    "@concepta/nestjs-password": "8.0.0-alpha.6",
+    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.6",
+    "@concepta/nestjs-user": "8.0.0-alpha.6",
     "@concepta/typeorm-seeding": "^4.0.0",
     "@faker-js/faker": "^8.4.1",
     "@nestjs-modules/mailer": "^1.11.2",
@@ -48,7 +48,7 @@
     "supertest": "^6.3.4"
   },
   "peerDependencies": {
-    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.5",
+    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.6",
     "class-transformer": "*",
     "class-validator": "*",
     "rxjs": "^7.1.0",

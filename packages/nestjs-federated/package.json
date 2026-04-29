@@ -1,6 +1,6 @@
 {
   "name": "@concepta/nestjs-federated",
-  "version": "8.0.0-alpha.5",
+  "version": "8.0.0-alpha.6",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -23,20 +23,20 @@
     "!dist/**/__fixtures__/**"
   ],
   "dependencies": {
-    "@concepta/nestjs-common": "8.0.0-alpha.5",
-    "@concepta/nestjs-repository": "8.0.0-alpha.5",
+    "@concepta/nestjs-common": "8.0.0-alpha.6",
+    "@concepta/nestjs-repository": "8.0.0-alpha.6",
     "@nestjs/common": "^11.1.9",
     "@nestjs/config": "^4.0.2",
     "@nestjs/cqrs": "^11.0.0",
     "@nestjs/swagger": "^11.2.2"
   },
   "devDependencies": {
-    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.5",
+    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.6",
     "@nestjs/testing": "^11.1.9",
     "jest-mock-extended": "^4.0.0"
   },
   "peerDependencies": {
-    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.5",
+    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.6",
     "class-transformer": "*",
     "class-validator": "*",
     "rxjs": "^7.1.0",

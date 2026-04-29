@@ -1,6 +1,6 @@
 {
   "name": "@concepta/nestjs-password",
-  "version": "8.0.0-alpha.5",
+  "version": "8.0.0-alpha.6",
   "description": "Rockets NestJS Password",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,7 @@
     "!dist/**/__fixtures__/**"
   ],
   "dependencies": {
-    "@concepta/nestjs-common": "^8.0.0-alpha.5",
+    "@concepta/nestjs-common": "^8.0.0-alpha.6",
     "@nestjs/common": "^11.1.9",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.9",

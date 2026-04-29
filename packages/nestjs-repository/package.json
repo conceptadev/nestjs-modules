@@ -1,6 +1,6 @@
 {
   "name": "@concepta/nestjs-repository",
-  "version": "8.0.0-alpha.5",
+  "version": "8.0.0-alpha.6",
   "description": "Rockets NestJS Repository",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,8 +24,8 @@
     "!dist/**/__fixtures__/**"
   ],
   "dependencies": {
-    "@concepta/nestjs-common": "8.0.0-alpha.5",
-    "@concepta/nestjs-hook": "8.0.0-alpha.5",
+    "@concepta/nestjs-common": "8.0.0-alpha.6",
+    "@concepta/nestjs-hook": "8.0.0-alpha.6",
     "@nestjs/common": "^11.1.9",
     "@nestjs/core": "^11.1.9",
     "@tsyche/membrane": "^0.7.0"
