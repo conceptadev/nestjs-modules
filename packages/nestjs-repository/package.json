@@ -31,7 +31,8 @@
     "@tsyche/membrane": "^0.7.0"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.1.9"
+    "@nestjs/testing": "^11.1.9",
+    "jest-mock-extended": "^4.0.0"
   },
   "peerDependencies": {
     "class-transformer": "*",

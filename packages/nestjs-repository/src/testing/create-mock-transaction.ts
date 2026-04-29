@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import { AppContextHost } from '@concepta/nestjs-common';
 
 import {
@@ -19,7 +21,7 @@ export interface MockTransactionHandle {
  * so that nested `AppContextHost.from()` calls work correctly.
  */
 export function createMockTransaction(): {
-  transaction: jest.Mocked<TransactionScope>;
+  transaction: DeepMockProxy<TransactionScope>;
   trxHandle: MockTransactionHandle;
 } {
   const trxHandle: MockTransactionHandle = {
@@ -33,12 +35,8 @@ export function createMockTransaction(): {
   } as unknown as TransactionContextInterface);
   const mockTxCtx = mockHost.with(TrxCtx);
 
-  const transaction = {
-    run: jest.fn(
-      (_ctx: unknown, fn: (txCtx: TransactionContextInterface) => unknown) =>
-        fn(mockTxCtx),
-    ),
-  } as unknown as jest.Mocked<TransactionScope>;
+  const transaction = mockDeep<TransactionScope>();
+  transaction.run.mockImplementation((_ctx, fn) => fn(mockTxCtx));
 
   return { transaction, trxHandle };
 }

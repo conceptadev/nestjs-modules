@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import { ModuleRef } from '@nestjs/core';
 
 import { OtpEntityNotFoundException } from '../../exceptions/otp-entity-not-found.exception';
@@ -6,12 +8,12 @@ import { OtpRepository } from '../otp.repository';
 
 describe(OtpRepositoryResolver.name, () => {
   let resolver: OtpRepositoryResolver;
-  let mockModuleRef: { get: jest.Mock };
+  let mockModuleRef: DeepMockProxy<ModuleRef>;
   const mockRepo = {} as OtpRepository;
 
   beforeEach(() => {
-    mockModuleRef = { get: jest.fn() };
-    resolver = new OtpRepositoryResolver(mockModuleRef as unknown as ModuleRef);
+    mockModuleRef = mockDeep<ModuleRef>();
+    resolver = new OtpRepositoryResolver(mockModuleRef);
   });
 
   it('should resolve a repository by entity key', () => {

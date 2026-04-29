@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import { UserPasswordHistoryViolationException } from '../../exceptions/user-password-history-violation.exception';
 import { UserPasswordPort } from '../../ports/user-password.port';
 import { UserCredentialsCollection } from '../user-credentials.collection';
@@ -8,11 +10,8 @@ describe(UserCredentialsCollection.name, () => {
     { id: 'cred-2', passwordHash: 'hash2' },
   ];
 
-  const mockPasswordPort: jest.Mocked<
-    Pick<UserPasswordPort, 'validateHistory'>
-  > = {
-    validateHistory: jest.fn(),
-  };
+  const mockPasswordPort: DeepMockProxy<UserPasswordPort> =
+    mockDeep<UserPasswordPort>();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -24,7 +23,7 @@ describe(UserCredentialsCollection.name, () => {
 
       const collection = new UserCredentialsCollection(
         entries,
-        mockPasswordPort as unknown as UserPasswordPort,
+        mockPasswordPort,
       );
 
       await expect(collection.notReused('new-pass')).resolves.toBeUndefined();
@@ -39,7 +38,7 @@ describe(UserCredentialsCollection.name, () => {
 
       const collection = new UserCredentialsCollection(
         entries,
-        mockPasswordPort as unknown as UserPasswordPort,
+        mockPasswordPort,
       );
 
       await expect(collection.notReused('old-pass')).rejects.toThrow(

@@ -1,12 +1,11 @@
 import { createMockInvitationService } from '../../../../__tests__/helpers/mock.helpers';
 import { Invitation } from '../../../../domain/aggregates/invitation';
-import { InvitationService } from '../../../../domain/services/invitation.service';
 import { AcceptInvitationCommand } from '../../impl/accept-invitation.command';
 import { AcceptInvitationHandler } from '../accept-invitation.handler';
 
 describe(AcceptInvitationHandler.name, () => {
   const ctx = {};
-  let mockService: jest.Mocked<InvitationService>;
+  let mockService: ReturnType<typeof createMockInvitationService>;
   let handler: AcceptInvitationHandler;
 
   const mockInvitation = new Invitation('inv-id', {

@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import { EventContextHost } from '@concepta/nestjs-common';
 
 import { InvitationEventPayloadInterface } from '../../../domain/events/interfaces/invitation-event-payload.interface';
@@ -7,15 +9,11 @@ import { InvitationAcceptedListener } from '../invitation-accepted.listener';
 
 describe(InvitationAcceptedListener.name, () => {
   let listener: InvitationAcceptedListener;
-  let notificationPort: jest.Mocked<
-    Pick<InvitationNotificationPort, 'sendAccepted'>
-  >;
+  let notificationPort: DeepMockProxy<InvitationNotificationPort>;
 
   beforeEach(() => {
-    notificationPort = { sendAccepted: jest.fn().mockResolvedValue(undefined) };
-    listener = new InvitationAcceptedListener(
-      notificationPort as unknown as InvitationNotificationPort,
-    );
+    notificationPort = mockDeep<InvitationNotificationPort>();
+    listener = new InvitationAcceptedListener(notificationPort);
   });
 
   it('should call notificationPort.sendAccepted with the invitation from the event', async () => {

@@ -1,3 +1,5 @@
+import { mock, MockProxy } from 'jest-mock-extended';
+
 import { RepositoryInterface } from '@concepta/nestjs-repository';
 
 import { createMockUserEntity } from '../../../__tests__/helpers/mock.helpers';
@@ -10,29 +12,14 @@ const userMapper = new UserMapper();
 
 const mockEntity = createMockUserEntity();
 
-function createMockRepository(): jest.Mocked<
-  Pick<
-    RepositoryInterface<UserEntityInterface>,
-    'findOne' | 'upsert' | 'delete'
-  >
-> {
-  return {
-    findOne: jest.fn(),
-    upsert: jest.fn(),
-    delete: jest.fn(),
-  };
-}
-
 describe(UserRepository.name, () => {
-  const innerRepo = createMockRepository();
+  const innerRepo: MockProxy<RepositoryInterface<UserEntityInterface>> =
+    mock<RepositoryInterface<UserEntityInterface>>();
   let repository: UserRepository;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    repository = new UserRepository(
-      innerRepo as unknown as RepositoryInterface<UserEntityInterface>,
-      new UserMapper(),
-    );
+    repository = new UserRepository(innerRepo, new UserMapper());
   });
 
   describe('get', () => {

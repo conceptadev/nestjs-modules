@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import { EventContextHost } from '@concepta/nestjs-common';
 
 import { InvitationRevokedEvent } from '../../../domain/events/invitation-revoked.event';
@@ -6,13 +8,11 @@ import { InvitationRevokedListener } from '../invitation-revoked.listener';
 
 describe(InvitationRevokedListener.name, () => {
   let listener: InvitationRevokedListener;
-  let otpPort: jest.Mocked<Pick<InvitationOtpPort, 'clear'>>;
+  let otpPort: DeepMockProxy<InvitationOtpPort>;
 
   beforeEach(() => {
-    otpPort = { clear: jest.fn().mockResolvedValue(undefined) };
-    listener = new InvitationRevokedListener(
-      otpPort as unknown as InvitationOtpPort,
-    );
+    otpPort = mockDeep<InvitationOtpPort>();
+    listener = new InvitationRevokedListener(otpPort);
   });
 
   it('should call otpPort.clear with category and userId from event', async () => {

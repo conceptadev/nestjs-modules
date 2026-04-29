@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import { ModuleRef } from '@nestjs/core';
 
 import { CacheEntityNotFoundException } from '../../exceptions/cache-entity-not-found.exception';
@@ -6,12 +8,10 @@ import { CacheRepository } from '../cache.repository';
 
 describe(CacheRepositoryResolver.name, () => {
   let resolver: CacheRepositoryResolver;
-  let mockModuleRef: jest.Mocked<ModuleRef>;
+  let mockModuleRef: DeepMockProxy<ModuleRef>;
 
   beforeEach(() => {
-    mockModuleRef = {
-      get: jest.fn(),
-    } as unknown as jest.Mocked<ModuleRef>;
+    mockModuleRef = mockDeep<ModuleRef>();
 
     resolver = new CacheRepositoryResolver(mockModuleRef);
   });

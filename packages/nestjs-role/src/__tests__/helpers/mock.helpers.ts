@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import { EventContextHost } from '@concepta/nestjs-common';
 import {
   createMockCommandBus,
@@ -25,43 +27,28 @@ export {
 };
 export type { MockTransactionHandle } from '@concepta/nestjs-repository/testing';
 
-export function createMockRoleRepository(): jest.Mocked<RoleRepository> {
-  return {
-    get: jest.fn(),
-    save: jest.fn(),
-    remove: jest.fn(),
-  } as unknown as jest.Mocked<RoleRepository>;
+export function createMockRoleRepository(): DeepMockProxy<RoleRepository> {
+  return mockDeep<RoleRepository>();
 }
 
-export function createMockRoleAssignmentRepository(): jest.Mocked<RoleAssignmentRepository> {
-  return {
-    get: jest.fn(),
-    findByAssignee: jest.fn(),
-    findByRoleIdsAndAssignee: jest.fn(),
-    findOne: jest.fn(),
-    countByRoleIdAndAssignee: jest.fn(),
-    countByRoleIdsAndAssignee: jest.fn(),
-    save: jest.fn(),
-    saveMany: jest.fn(),
-    remove: jest.fn(),
-    removeMany: jest.fn(),
-  } as unknown as jest.Mocked<RoleAssignmentRepository>;
+export function createMockRoleAssignmentRepository(): DeepMockProxy<RoleAssignmentRepository> {
+  return mockDeep<RoleAssignmentRepository>();
 }
 
 export function createMockRoleRepositoryResolver(
   repo: RoleRepository,
-): jest.Mocked<RoleRepositoryResolver> {
-  return {
-    resolve: jest.fn().mockReturnValue(repo),
-  } as unknown as jest.Mocked<RoleRepositoryResolver>;
+): DeepMockProxy<RoleRepositoryResolver> {
+  const resolver = mockDeep<RoleRepositoryResolver>();
+  resolver.resolve.mockReturnValue(repo);
+  return resolver;
 }
 
 export function createMockAssignmentRepositoryResolver(
   repo: RoleAssignmentRepository,
-): jest.Mocked<RoleAssignmentRepositoryResolver> {
-  return {
-    resolve: jest.fn().mockReturnValue(repo),
-  } as unknown as jest.Mocked<RoleAssignmentRepositoryResolver>;
+): DeepMockProxy<RoleAssignmentRepositoryResolver> {
+  const resolver = mockDeep<RoleAssignmentRepositoryResolver>();
+  resolver.resolve.mockReturnValue(repo);
+  return resolver;
 }
 
 export function createMockEventContext(namespace = DEFAULT_ROLE_NAMESPACE) {

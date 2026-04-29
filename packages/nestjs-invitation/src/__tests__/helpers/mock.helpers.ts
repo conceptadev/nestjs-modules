@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import {
   createMockCommandBus,
   createMockEventPublisher,
@@ -17,27 +19,12 @@ export {
 };
 export type { MockTransactionHandle } from '@concepta/nestjs-repository/testing';
 
-export function createMockInvitationService(): jest.Mocked<InvitationService> {
-  return {
-    create: jest.fn(),
-    createByEmail: jest.fn(),
-    send: jest.fn(),
-    sendById: jest.fn(),
-    accept: jest.fn(),
-    remove: jest.fn(),
-    revokeByEmail: jest.fn(),
-    revokeByUserId: jest.fn(),
-  } as unknown as jest.Mocked<InvitationService>;
+export function createMockInvitationService(): DeepMockProxy<InvitationService> {
+  return mockDeep<InvitationService>();
 }
 
-export function createMockInvitationRepository(): jest.Mocked<InvitationRepository> {
-  return {
-    get: jest.fn(),
-    findOneByCode: jest.fn(),
-    findAllByUserAndCategory: jest.fn(),
-    save: jest.fn(),
-    remove: jest.fn(),
-  } as unknown as jest.Mocked<InvitationRepository>;
+export function createMockInvitationRepository(): DeepMockProxy<InvitationRepository> {
+  return mockDeep<InvitationRepository>();
 }
 
 export function createMockInvitationEntity(

@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import {
   ActionEnum,
   AppContextHost,
@@ -27,24 +29,16 @@ export {
 };
 export type { MockTransactionHandle } from '@concepta/nestjs-repository/testing';
 
-export function createMockCacheRepository(): jest.Mocked<CacheRepository> {
-  return {
-    get: jest.fn(),
-    findOne: jest.fn(),
-    findAllByAssignee: jest.fn(),
-    removeAllByAssignee: jest.fn(),
-    save: jest.fn(),
-    remove: jest.fn(),
-    softRemove: jest.fn(),
-  } as unknown as jest.Mocked<CacheRepository>;
+export function createMockCacheRepository(): DeepMockProxy<CacheRepository> {
+  return mockDeep<CacheRepository>();
 }
 
 export function createMockRepositoryResolver(
   repo: CacheRepository,
-): jest.Mocked<CacheRepositoryResolver> {
-  return {
-    resolve: jest.fn().mockReturnValue(repo),
-  } as unknown as jest.Mocked<CacheRepositoryResolver>;
+): DeepMockProxy<CacheRepositoryResolver> {
+  const resolver = mockDeep<CacheRepositoryResolver>();
+  resolver.resolve.mockReturnValue(repo);
+  return resolver;
 }
 
 export function createMockEventContext(namespace = DEFAULT_CACHE_NAMESPACE) {

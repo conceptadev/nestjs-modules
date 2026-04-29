@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import { EventPublisher } from '@nestjs/cqrs';
 
 /**
@@ -5,8 +7,8 @@ import { EventPublisher } from '@nestjs/cqrs';
  *
  * `mergeObjectContext` returns the object unchanged, matching real behavior.
  */
-export function createMockEventPublisher(): jest.Mocked<EventPublisher> {
-  return {
-    mergeObjectContext: jest.fn((obj: unknown) => obj),
-  } as unknown as jest.Mocked<EventPublisher>;
+export function createMockEventPublisher(): DeepMockProxy<EventPublisher> {
+  const publisher = mockDeep<EventPublisher>();
+  publisher.mergeObjectContext.mockImplementation((obj) => obj);
+  return publisher;
 }

@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import { EventPublisher } from '@nestjs/cqrs';
 
 import { AppContextHost } from '@concepta/nestjs-common';
@@ -18,7 +20,7 @@ import { UserCredentialsService } from '../../domain/services/user-credentials.s
 import { UserCredentialsMapper } from '../../infrastructure/persistence/user-credentials.mapper';
 import { UserMapper } from '../../infrastructure/persistence/user.mapper';
 
-export function createMockTxScope(): jest.Mocked<TransactionScope> {
+export function createMockTxScope(): DeepMockProxy<TransactionScope> {
   const trxHandle = {
     onCommit: jest.fn(),
     onRollback: jest.fn(),
@@ -30,24 +32,20 @@ export function createMockTxScope(): jest.Mocked<TransactionScope> {
   } as unknown as TransactionContextInterface);
   const mockTxCtx = mockHost.with(TrxCtx);
 
-  const mock = {
-    run: jest.fn(),
-    runReadOnly: jest.fn(),
-  } as unknown as jest.Mocked<TransactionScope>;
+  const txScope = mockDeep<TransactionScope>();
+  txScope.run.mockImplementation((_ctx, fn) => fn(mockTxCtx));
 
-  mock.run.mockImplementation((_ctx, fn) => fn(mockTxCtx));
-
-  return mock;
+  return txScope;
 }
 
-export function createMockEventPublisher(): jest.Mocked<EventPublisher> {
-  return {
-    mergeObjectContext: jest.fn().mockImplementation((obj) => {
-      obj.commit = jest.fn();
-      obj.uncommit = jest.fn();
-      return obj;
-    }),
-  } as unknown as jest.Mocked<EventPublisher>;
+export function createMockEventPublisher(): DeepMockProxy<EventPublisher> {
+  const publisher = mockDeep<EventPublisher>();
+  publisher.mergeObjectContext.mockImplementation((obj) => {
+    obj.commit = jest.fn();
+    obj.uncommit = jest.fn();
+    return obj;
+  });
+  return publisher;
 }
 
 export function createMockUserRepository(): jest.Mocked<UserRepositoryInterface> {
@@ -68,19 +66,12 @@ export function createMockUserCredentialsRepository(): jest.Mocked<UserCredentia
   };
 }
 
-export function createMockPasswordPort(): jest.Mocked<UserPasswordPort> {
-  return {
-    create: jest.fn(),
-    validateCurrent: jest.fn(),
-    validateHistory: jest.fn(),
-  } as unknown as jest.Mocked<UserPasswordPort>;
+export function createMockPasswordPort(): DeepMockProxy<UserPasswordPort> {
+  return mockDeep<UserPasswordPort>();
 }
 
-export function createMockUserCredentialsService(): jest.Mocked<UserCredentialsService> {
-  return {
-    setPassword: jest.fn(),
-    updatePassword: jest.fn(),
-  } as unknown as jest.Mocked<UserCredentialsService>;
+export function createMockUserCredentialsService(): DeepMockProxy<UserCredentialsService> {
+  return mockDeep<UserCredentialsService>();
 }
 
 export function createMockUserEntity(

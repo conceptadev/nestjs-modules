@@ -1,3 +1,5 @@
+import { mock, MockProxy } from 'jest-mock-extended';
+
 import { RepositoryInterface } from '@concepta/nestjs-repository';
 
 import { UserCredentials } from '../../../domain/aggregates/user-credentials';
@@ -20,27 +22,16 @@ const mockEntity: UserCredentialEntityInterface = {
   version: 1,
 };
 
-function createMockRepository(): jest.Mocked<
-  Pick<
-    RepositoryInterface<UserCredentialEntityInterface>,
-    'findOne' | 'find' | 'upsert'
-  >
-> {
-  return {
-    findOne: jest.fn(),
-    find: jest.fn(),
-    upsert: jest.fn(),
-  };
-}
-
 describe(UserCredentialsRepository.name, () => {
-  const innerRepo = createMockRepository();
+  const innerRepo: MockProxy<
+    RepositoryInterface<UserCredentialEntityInterface>
+  > = mock<RepositoryInterface<UserCredentialEntityInterface>>();
   let repository: UserCredentialsRepository;
 
   beforeEach(() => {
     jest.clearAllMocks();
     repository = new UserCredentialsRepository(
-      innerRepo as unknown as RepositoryInterface<UserCredentialEntityInterface>,
+      innerRepo,
       new UserCredentialsMapper(),
     );
   });

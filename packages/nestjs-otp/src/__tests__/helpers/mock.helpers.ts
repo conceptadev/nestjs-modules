@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import { EventContextHost } from '@concepta/nestjs-common';
 import {
   createMockCommandBus,
@@ -23,27 +25,16 @@ export {
 };
 export type { MockTransactionHandle } from '@concepta/nestjs-repository/testing';
 
-export function createMockOtpRepository(): jest.Mocked<OtpRepository> {
-  return {
-    get: jest.fn(),
-    findActiveByPasscode: jest.fn(),
-    findByPasscode: jest.fn(),
-    findActiveByAssignee: jest.fn(),
-    findAllByAssigneeAndCategory: jest.fn(),
-    countCreatedSince: jest.fn(),
-    findOlderThan: jest.fn(),
-    save: jest.fn(),
-    remove: jest.fn(),
-    removeAll: jest.fn(),
-  } as unknown as jest.Mocked<OtpRepository>;
+export function createMockOtpRepository(): DeepMockProxy<OtpRepository> {
+  return mockDeep<OtpRepository>();
 }
 
 export function createMockRepositoryResolver(
   repo: OtpRepository,
-): jest.Mocked<OtpRepositoryResolver> {
-  return {
-    resolve: jest.fn().mockReturnValue(repo),
-  } as unknown as jest.Mocked<OtpRepositoryResolver>;
+): DeepMockProxy<OtpRepositoryResolver> {
+  const resolver = mockDeep<OtpRepositoryResolver>();
+  resolver.resolve.mockReturnValue(repo);
+  return resolver;
 }
 
 export function createMockEventContext(namespace = DEFAULT_OTP_NAMESPACE) {

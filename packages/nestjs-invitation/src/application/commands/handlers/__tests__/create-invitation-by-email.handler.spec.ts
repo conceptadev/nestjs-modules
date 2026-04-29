@@ -4,13 +4,12 @@ import {
   toInvitationDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { Invitation } from '../../../../domain/aggregates/invitation';
-import { InvitationService } from '../../../../domain/services/invitation.service';
 import { CreateInvitationByEmailCommand } from '../../impl/create-invitation-by-email.command';
 import { CreateInvitationByEmailHandler } from '../create-invitation-by-email.handler';
 
 describe(CreateInvitationByEmailHandler.name, () => {
   const ctx = {};
-  let mockService: jest.Mocked<InvitationService>;
+  let mockService: ReturnType<typeof createMockInvitationService>;
   let handler: CreateInvitationByEmailHandler;
 
   beforeEach(() => {

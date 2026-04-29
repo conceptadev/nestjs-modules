@@ -1,3 +1,4 @@
+import { mockDeep } from 'jest-mock-extended';
 import { DataSource, Repository } from 'typeorm';
 
 import { getDataSourceToken } from '@nestjs/typeorm';
@@ -429,9 +430,7 @@ describe('typeorm-repository.util', () => {
 
     it('useFactory should return TypeOrmTransactionFactory', () => {
       const descriptor = createTransactionFactoryDescriptor();
-      const mockDataSource = {
-        createQueryRunner: jest.fn(),
-      } as unknown as DataSource;
+      const mockDataSource = mockDeep<DataSource>();
 
       const factory = descriptor.useFactory(mockDataSource);
 

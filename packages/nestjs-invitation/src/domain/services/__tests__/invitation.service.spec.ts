@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import { AppContextHost } from '@concepta/nestjs-common';
 
 import {
@@ -17,8 +19,8 @@ import { InvitationService } from '../invitation.service';
 describe(InvitationService.name, () => {
   const ctx = {};
   let mockRepo: ReturnType<typeof createMockInvitationRepository>;
-  let mockOtpPort: jest.Mocked<InvitationOtpPort>;
-  let mockUserPort: jest.Mocked<InvitationUserPort>;
+  let mockOtpPort: DeepMockProxy<InvitationOtpPort>;
+  let mockUserPort: DeepMockProxy<InvitationUserPort>;
   let service: InvitationService;
   let trxHandle: ReturnType<typeof createMockTransaction>['trxHandle'];
 
@@ -29,17 +31,8 @@ describe(InvitationService.name, () => {
 
     mockRepo = createMockInvitationRepository();
 
-    mockOtpPort = {
-      create: jest.fn(),
-      consume: jest.fn(),
-      clear: jest.fn(),
-      validate: jest.fn(),
-    } as unknown as jest.Mocked<InvitationOtpPort>;
-
-    mockUserPort = {
-      getById: jest.fn(),
-      getByEmail: jest.fn(),
-    } as unknown as jest.Mocked<InvitationUserPort>;
+    mockOtpPort = mockDeep<InvitationOtpPort>();
+    mockUserPort = mockDeep<InvitationUserPort>();
 
     const eventPublisher = createMockEventPublisher();
     const { transaction, trxHandle: trx } = createMockTransaction();

@@ -1,3 +1,5 @@
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
 import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
@@ -6,15 +8,13 @@ import { getAppContext } from '@concepta/nestjs-common';
 import { OtpCtx, OtpContextOverlay } from '../otp-context.overlay';
 
 describe('OtpContextOverlay', () => {
-  let reflector: jest.Mocked<Reflector>;
+  let reflector: DeepMockProxy<Reflector>;
   let overlay: OtpContextOverlay;
   let mockContext: ExecutionContext;
   let mockRequest: Record<string | symbol, unknown>;
 
   beforeEach(() => {
-    reflector = {
-      getAllAndOverride: jest.fn(),
-    } as unknown as jest.Mocked<Reflector>;
+    reflector = mockDeep<Reflector>();
 
     overlay = new OtpContextOverlay(reflector);
 

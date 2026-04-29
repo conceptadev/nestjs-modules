@@ -1,4 +1,5 @@
-import { DataSource, EntityManager } from 'typeorm';
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { DataSource, EntityManager, QueryRunner } from 'typeorm';
 
 import { TypeOrmTransaction } from './typeorm-transaction';
 import { TypeOrmTransactionFactory } from './typeorm-transaction.factory';
@@ -15,14 +16,12 @@ interface MockQueryRunner {
 
 describe(TypeOrmTransaction.name, () => {
   let transaction: TypeOrmTransaction;
-  let mockDataSource: jest.Mocked<DataSource>;
+  let mockDataSource: DeepMockProxy<DataSource>;
   let mockQueryRunner: MockQueryRunner;
-  let mockEntityManager: jest.Mocked<EntityManager>;
+  let mockEntityManager: DeepMockProxy<EntityManager>;
 
   beforeEach(() => {
-    mockEntityManager = {
-      getRepository: jest.fn(),
-    } as unknown as jest.Mocked<EntityManager>;
+    mockEntityManager = mockDeep<EntityManager>();
 
     mockQueryRunner = {
       connect: jest.fn().mockResolvedValue(undefined),
@@ -34,9 +33,10 @@ describe(TypeOrmTransaction.name, () => {
       manager: mockEntityManager,
     };
 
-    mockDataSource = {
-      createQueryRunner: jest.fn().mockReturnValue(mockQueryRunner as unknown),
-    } as unknown as jest.Mocked<DataSource>;
+    mockDataSource = mockDeep<DataSource>();
+    mockDataSource.createQueryRunner.mockReturnValue(
+      mockQueryRunner as unknown as QueryRunner,
+    );
 
     transaction = new TypeOrmTransaction(mockDataSource);
   });
@@ -192,13 +192,10 @@ describe(TypeOrmTransaction.name, () => {
 
 describe(TypeOrmTransactionFactory.name, () => {
   let factory: TypeOrmTransactionFactory;
-  let mockDataSource: jest.Mocked<DataSource>;
+  let mockDataSource: DeepMockProxy<DataSource>;
 
   beforeEach(() => {
-    mockDataSource = {
-      createQueryRunner: jest.fn(),
-    } as unknown as jest.Mocked<DataSource>;
-
+    mockDataSource = mockDeep<DataSource>();
     factory = new TypeOrmTransactionFactory(mockDataSource);
   });
 

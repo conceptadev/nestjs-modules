@@ -1647,6 +1647,7 @@ __metadata:
     "@nestjs/common": "npm:^11.1.9"
     "@nestjs/core": "npm:^11.1.9"
     "@nestjs/testing": "npm:^11.1.9"
+    jest-mock-extended: "npm:^4.0.0"
     rxjs: "npm:^7.8.1"
   peerDependencies:
     rxjs: ^7.8.1
@@ -1823,6 +1824,7 @@ __metadata:
     "@nestjs/cqrs": "npm:^11.0.0"
     "@nestjs/testing": "npm:^11.1.9"
     "@nestjs/typeorm": "npm:^11.0.0"
+    jest-mock-extended: "npm:^4.0.0"
   peerDependencies:
     "@concepta/typeorm-seeding": ^4.0.0
     "@faker-js/faker": ^8.4.1
@@ -1907,6 +1909,7 @@ __metadata:
     "@nestjs/testing": "npm:^11.1.9"
     "@nestjs/typeorm": "npm:^11.0.0"
     "@tsyche/membrane": "npm:^0.7.0"
+    jest-mock-extended: "npm:^4.0.0"
     sqlite3: "npm:^5.1.4"
   peerDependencies:
     class-transformer: "*"
@@ -1925,6 +1928,7 @@ __metadata:
     "@nestjs/core": "npm:^11.1.9"
     "@nestjs/testing": "npm:^11.1.9"
     "@tsyche/membrane": "npm:^0.7.0"
+    jest-mock-extended: "npm:^4.0.0"
   peerDependencies:
     class-transformer: "*"
     class-validator: "*"
@@ -1950,6 +1954,7 @@ __metadata:
     "@nestjs/swagger": "npm:^11.2.2"
     "@nestjs/testing": "npm:^11.1.9"
     "@nestjs/typeorm": "npm:^11.0.0"
+    jest-mock-extended: "npm:^4.0.0"
     supertest: "npm:^6.3.4"
   peerDependencies:
     "@concepta/nestjs-crud": 8.0.0-alpha.5
@@ -2051,6 +2056,7 @@ __metadata:
     "@nestjs/testing": "npm:^11.1.9"
     "@nestjs/typeorm": "npm:^11.0.0"
     accesscontrol: "npm:^2.2.1"
+    jest-mock-extended: "npm:^4.0.0"
     rxjs: "npm:^7.8.1"
     supertest: "npm:^6.3.4"
   peerDependencies:
