@@ -3,16 +3,13 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import {
-  ExceptionsFilter,
-  Operation,
-  PasswordUpdateInterface,
-} from '@concepta/nestjs-common';
+import { ExceptionsFilter, Operation } from '@concepta/nestjs-common';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import { HookModule, UseHooks } from '@concepta/nestjs-hook';
 import {
   CreatePasswordCommand,
   PasswordModule,
+  PasswordUpdateInterface,
   ValidateCurrentPasswordCommand,
   ValidatePasswordHistoryCommand,
 } from '@concepta/nestjs-password';

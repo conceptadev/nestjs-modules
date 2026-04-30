@@ -1,4 +1,4 @@
-import { PasswordStorageInterface } from '@concepta/nestjs-common';
+import { PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
 
 import { PasswordCurrentPasswordInterface } from './password-current-password.interface';
 import { PasswordHistoryPasswordInterface } from './password-history-password.interface';

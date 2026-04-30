@@ -1,6 +1,6 @@
 import { Command } from '@nestjs/cqrs';
 
-import { PasswordStorageInterface } from '@concepta/nestjs-common';
+import { PasswordStorageInterface } from '../../../domain/password/interfaces/password-storage.interface';
 
 export class ValidateCurrentPasswordCommand extends Command<boolean> {
   constructor(

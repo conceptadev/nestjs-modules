@@ -1,6 +1,5 @@
-import { PasswordStorageInterface } from '@concepta/nestjs-common';
-
 import { PasswordRequiredException } from '../exceptions/password-required.exception';
+import { PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
 
 import { PasswordStorageService } from './password-storage.service';
 import { PasswordValidationService } from './password-validation.service';

@@ -3,7 +3,7 @@ import { IsOptional, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { PasswordPlainCurrentInterface } from '@concepta/nestjs-common';
+import { PasswordPlainCurrentInterface } from '@concepta/nestjs-password';
 
 import { UserPasswordDto } from './user-password.dto';
 

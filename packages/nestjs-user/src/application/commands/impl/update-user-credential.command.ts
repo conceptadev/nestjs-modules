@@ -1,7 +1,8 @@
 import { PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { PasswordUpdateInterface, ReferenceId } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/nestjs-common';
+import { PasswordUpdateInterface } from '@concepta/nestjs-password';
 
 export class UpdateUserCredentialCommand extends Command<void> {
   constructor(

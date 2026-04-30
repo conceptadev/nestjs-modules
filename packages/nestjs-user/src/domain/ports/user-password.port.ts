@@ -1,10 +1,8 @@
 import { Injectable, Type } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import {
-  PasswordStorageInterface,
-  ReferenceIdInterface,
-} from '@concepta/nestjs-common';
+import { ReferenceIdInterface } from '@concepta/nestjs-common';
+import { PasswordStorageInterface } from '@concepta/nestjs-password';
 
 export interface CreatePasswordCommandInterface {
   password: string;

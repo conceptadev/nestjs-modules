@@ -3,12 +3,6 @@ export { EmailSendInterface } from './email/interfaces/email-send.interface';
 
 export { AssigneeRelationInterface } from './assignee/interfaces/assignee-relation.interface';
 
-export { PasswordStorageInterface } from './password/interfaces/password-storage.interface';
-export { PasswordPlainCurrentInterface } from './password/interfaces/password-plain-current.interface';
-export { PasswordPlainInterface } from './password/interfaces/password-plain.interface';
-export { PasswordUpdateInterface } from './password/interfaces/password-update.interface';
-export { isPasswordStorage } from './password/is-password-storage.typeguard';
-
 export { OrgCreatableInterface } from './org/interfaces/org-creatable.interface';
 export { OrgOwnableInterface } from './org/interfaces/org-ownable.interface';
 export { OrgMemberInterface } from './org/interfaces/org-member.interface';

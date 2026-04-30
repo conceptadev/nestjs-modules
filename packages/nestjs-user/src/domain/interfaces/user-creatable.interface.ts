@@ -1,4 +1,4 @@
-import { PasswordPlainInterface } from '@concepta/nestjs-common';
+import { PasswordPlainInterface } from '@concepta/nestjs-password';
 
 import { UserInterface } from './user.interface';
 

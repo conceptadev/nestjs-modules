@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { PasswordStorageInterface } from '@concepta/nestjs-common';
-
+import { PasswordStorageInterface } from '../../../domain/password/interfaces/password-storage.interface';
 import { PasswordCreationService } from '../../../domain/services/password-creation.service';
 import { CreatePasswordCommand } from '../impl/create-password.command';
 

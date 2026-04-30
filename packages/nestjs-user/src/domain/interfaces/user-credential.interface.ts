@@ -1,7 +1,5 @@
-import {
-  ReferenceActiveInterface,
-  PasswordStorageInterface,
-} from '@concepta/nestjs-common';
+import { ReferenceActiveInterface } from '@concepta/nestjs-common';
+import { PasswordStorageInterface } from '@concepta/nestjs-password';
 
 import { UserOwnableInterface } from './user-ownable.interface';
 

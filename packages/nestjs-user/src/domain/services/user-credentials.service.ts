@@ -3,10 +3,10 @@ import { EventPublisher } from '@nestjs/cqrs';
 
 import {
   EventContextHost,
-  PasswordStorageInterface,
   ReferenceId,
   ReferenceIdInterface,
 } from '@concepta/nestjs-common';
+import { PasswordStorageInterface } from '@concepta/nestjs-password';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { USER_CREDENTIALS_REPOSITORY_TOKEN } from '../../user.constants';

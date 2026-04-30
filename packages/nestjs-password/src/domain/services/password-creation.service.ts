@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
-import { PasswordStorageInterface } from '@concepta/nestjs-common';
-
 import { PasswordCurrentRequiredException } from '../exceptions/password-current-required.exception';
 import { PasswordNotStrongException } from '../exceptions/password-not-strong.exception';
 import { PasswordUsedRecentlyException } from '../exceptions/password-used-recently.exception';
 import { PasswordCreationServiceInterface } from '../interfaces/password-creation-service.interface';
 import { PasswordCurrentPasswordInterface } from '../interfaces/password-current-password.interface';
 import { PasswordHistoryPasswordInterface } from '../interfaces/password-history-password.interface';
+import { PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
 import { PasswordPolicy } from '../policies/password.policy';
 
 import { PasswordStorageService } from './password-storage.service';

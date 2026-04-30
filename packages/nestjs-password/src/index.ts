@@ -4,6 +4,13 @@ export { PasswordModule } from './password.module';
 // enum
 export { PasswordStrengthEnum } from './domain/enum/password-strength.enum';
 
+// password primitives
+export { PasswordPlainInterface } from './domain/password/interfaces/password-plain.interface';
+export { PasswordPlainCurrentInterface } from './domain/password/interfaces/password-plain-current.interface';
+export { PasswordStorageInterface } from './domain/password/interfaces/password-storage.interface';
+export { PasswordUpdateInterface } from './domain/password/interfaces/password-update.interface';
+export { isPasswordStorage } from './domain/password/is-password-storage.typeguard';
+
 // domain policies
 export {
   PasswordPolicy,

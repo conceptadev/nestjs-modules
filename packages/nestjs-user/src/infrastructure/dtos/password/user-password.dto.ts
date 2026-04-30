@@ -3,7 +3,7 @@ import { IsString, MinLength } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { PasswordPlainInterface } from '@concepta/nestjs-common';
+import { PasswordPlainInterface } from '@concepta/nestjs-password';
 
 @Exclude()
 export class UserPasswordDto implements PasswordPlainInterface {

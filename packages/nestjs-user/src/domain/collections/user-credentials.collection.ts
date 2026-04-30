@@ -1,7 +1,5 @@
-import {
-  PasswordStorageInterface,
-  ReferenceIdInterface,
-} from '@concepta/nestjs-common';
+import { ReferenceIdInterface } from '@concepta/nestjs-common';
+import { PasswordStorageInterface } from '@concepta/nestjs-password';
 
 import { UserPasswordHistoryViolationException } from '../exceptions/user-password-history-violation.exception';
 import { UserPasswordPort } from '../ports/user-password.port';

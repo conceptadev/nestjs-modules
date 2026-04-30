@@ -1,8 +1,7 @@
-import { PasswordStorageInterface } from '@concepta/nestjs-common';
-
 import { PasswordStrengthEnum } from '../enum/password-strength.enum';
 import { PasswordNotStrongException } from '../exceptions/password-not-strong.exception';
 import { PasswordUsedRecentlyException } from '../exceptions/password-used-recently.exception';
+import { PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
 import {
   PasswordPolicy,
   PasswordPolicySettings,

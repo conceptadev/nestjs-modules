@@ -1,5 +1,4 @@
-import { PasswordStorageInterface } from '@concepta/nestjs-common';
-
+import { PasswordStorageInterface } from '../../../../domain/password/interfaces/password-storage.interface';
 import { CreatePasswordCommand } from '../../impl/create-password.command';
 import { CreatePasswordHandler } from '../create-password.handler';
 

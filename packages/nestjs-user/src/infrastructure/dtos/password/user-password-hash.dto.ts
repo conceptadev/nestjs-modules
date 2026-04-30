@@ -3,7 +3,7 @@ import { IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { PasswordStorageInterface } from '@concepta/nestjs-common';
+import { PasswordStorageInterface } from '@concepta/nestjs-password';
 
 @Exclude()
 export class UserPasswordHashDto implements PasswordStorageInterface {

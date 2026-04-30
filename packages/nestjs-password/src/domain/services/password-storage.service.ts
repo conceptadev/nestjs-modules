@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import {
-  PasswordPlainInterface,
-  PasswordStorageInterface,
-} from '@concepta/nestjs-common';
-
 import { PasswordRequiredException } from '../exceptions/password-required.exception';
 import { PasswordHashObjectOptionsInterface } from '../interfaces/password-hash-object-options.interface';
 import { PasswordStorageServiceInterface } from '../interfaces/password-storage-service.interface';
+import { PasswordPlainInterface } from '../password/interfaces/password-plain.interface';
+import { PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
 import { CryptUtil } from '../utils/crypt.util';
 
 /**

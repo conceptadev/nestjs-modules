@@ -1,4 +1,4 @@
-import { PasswordUpdateInterface } from '@concepta/nestjs-common';
+import { PasswordUpdateInterface } from '@concepta/nestjs-password';
 
 import { UserCreatableInterface } from '../../../../domain/interfaces/user-creatable.interface';
 import { UserUpdatableInterface } from '../../../../domain/interfaces/user-updatable.interface';
