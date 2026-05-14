@@ -1,4 +1,4 @@
-import { AppContextHost } from '@concepta/nestjs-common';
+import { AppContextHost } from '@concepta/rockets-app';
 
 import {
   createMockRoleAssignmentRepository,

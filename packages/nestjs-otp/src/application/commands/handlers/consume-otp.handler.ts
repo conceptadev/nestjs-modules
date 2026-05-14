@@ -1,11 +1,11 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
+import { TransactionScope } from '@concepta/nestjs-repository';
 import {
   AssigneeRelationInterface,
   EventContextHost,
-} from '@concepta/nestjs-common';
-import { TransactionScope } from '@concepta/nestjs-repository';
+} from '@concepta/rockets-app';
 
 import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception';
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';

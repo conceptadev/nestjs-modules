@@ -4,11 +4,11 @@ import {
   DomainFactory,
   EventContextHost,
   ReferenceIdInterface,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 import {
   AggregateMetaInterface,
   DomainAggregate,
-} from '@concepta/nestjs-common/aggregate';
+} from '@concepta/rockets-app/aggregate';
 
 import { IdentityCreatedEvent } from '../events/identity-created.event';
 import { IdentityCreatableInterface } from '../interfaces/identity-creatable.interface';

@@ -2,7 +2,7 @@ import { mock } from 'jest-mock-extended';
 
 import { ExecutionContext, HttpArgumentsHost } from '@nestjs/common/interfaces';
 
-import { getAppContext } from '@concepta/nestjs-common';
+import { getAppContext } from '@concepta/rockets-app';
 
 import {
   AuthUserCtx,

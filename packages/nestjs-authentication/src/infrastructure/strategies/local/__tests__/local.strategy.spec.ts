@@ -5,7 +5,7 @@ import { mock } from 'jest-mock-extended';
 
 import { BadRequestException, HttpStatus } from '@nestjs/common';
 
-import { ReferenceIdInterface } from '@concepta/nestjs-common';
+import { ReferenceIdInterface } from '@concepta/rockets-app';
 
 import { LocalServiceInterface } from '../../../../application/services/local/interfaces/local-service.interface';
 import { LocalValidateUserInterface } from '../../../../application/services/local/interfaces/local-validate-user.interface';

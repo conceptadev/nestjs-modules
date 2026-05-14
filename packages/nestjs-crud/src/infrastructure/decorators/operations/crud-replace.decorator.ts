@@ -1,6 +1,6 @@
 import { applyDecorators, PlainLiteralObject, Put } from '@nestjs/common';
 
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 
 import { CrudReplaceHandler } from '../../../application/commands/handlers/crud-replace.handler';
 import { CrudReplaceCommand } from '../../../application/commands/impl/crud-replace.command';

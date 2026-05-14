@@ -5,7 +5,7 @@ import { INestApplication } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ExceptionsFilter } from '@concepta/nestjs-common';
+import { ExceptionsFilter } from '@concepta/rockets-app';
 
 import { FIXTURE_USER } from '../../../../__tests__/fixtures/user.module.fixture';
 

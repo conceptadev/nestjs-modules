@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { DeepPartial } from '@concepta/nestjs-common';
+import { DeepPartial } from '@concepta/rockets-app';
 
 import { RepositoryMetadataInterface } from './repository-metadata.interface';
 import {

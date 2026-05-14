@@ -13,7 +13,7 @@ import {
   Operation,
   OverlayRef,
   RuntimeException,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 import { ControllerTarget, MethodHandler } from '../../crud.types';
 import { CrudContextException } from '../exceptions/crud-context.exception';

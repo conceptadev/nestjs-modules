@@ -22,13 +22,6 @@ import {
 import { PlainLiteralObject } from '@nestjs/common';
 
 import {
-  AppContextHost,
-  AppContextLike,
-  DeepPartial,
-  RuntimeException,
-} from '@concepta/nestjs-common';
-import { HookResolverService } from '@concepta/nestjs-hook';
-import {
   isWhereCondition,
   JoinClause,
   RelationActionConfig,
@@ -46,6 +39,13 @@ import {
   WhereCondition,
   WhereOperator,
 } from '@concepta/nestjs-repository';
+import {
+  AppContextHost,
+  AppContextLike,
+  DeepPartial,
+  RuntimeException,
+  HookResolverService,
+} from '@concepta/rockets-app';
 
 import { TypeOrmEntityNameException } from '../exceptions/typeorm-entity-name.exception';
 

@@ -6,7 +6,7 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { createSettingsProvider } from '@concepta/nestjs-common';
+import { createSettingsProvider } from '@concepta/rockets-app';
 
 import { CreatePasswordHandler } from './application/commands/handlers/create-password.handler';
 import { ValidateCurrentPasswordHandler } from './application/commands/handlers/validate-current-password.handler';

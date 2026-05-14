@@ -1,4 +1,4 @@
-import { RuntimeExceptionOptions } from '@concepta/nestjs-common';
+import { RuntimeExceptionOptions } from '@concepta/rockets-app';
 
 import { LocalUnauthorizedException } from './local-unauthorized.exception';
 

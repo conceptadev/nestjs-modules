@@ -385,7 +385,7 @@ gateway request/handler classes are exported from
 
 ```ts
 import { Module } from '@nestjs/common';
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 import { CacheInterface } from '@concepta/nestjs-cache';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import {

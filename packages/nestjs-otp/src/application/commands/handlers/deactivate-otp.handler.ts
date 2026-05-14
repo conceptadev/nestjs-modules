@@ -1,8 +1,8 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
+import { EventContextHost } from '@concepta/rockets-app';
 
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
 import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../../otp.constants';

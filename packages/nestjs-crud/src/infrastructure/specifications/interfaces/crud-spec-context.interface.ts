@@ -1,4 +1,4 @@
-import { ActionEnum, Operation } from '@concepta/nestjs-common';
+import { ActionEnum, Operation } from '@concepta/rockets-app';
 
 /**
  * Minimal context interface for domain specifications.

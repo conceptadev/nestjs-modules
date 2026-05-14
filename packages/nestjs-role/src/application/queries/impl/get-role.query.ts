@@ -1,7 +1,7 @@
 import { PlainLiteralObject } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
-import { ReferenceId } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/rockets-app';
 
 import { Role } from '../../../domain/aggregates/role';
 

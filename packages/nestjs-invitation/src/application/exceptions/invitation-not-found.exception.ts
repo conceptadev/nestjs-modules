@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { RuntimeException } from '@concepta/nestjs-common';
+import { RuntimeException } from '@concepta/rockets-app';
 
 import { InvitationException } from '../../domain/exceptions/invitation.exception';
 

@@ -1,10 +1,10 @@
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 
+import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 import {
   createMockCommandBus,
   createMockEventPublisher,
-} from '@concepta/nestjs-common/testing';
-import { createMockTransaction } from '@concepta/nestjs-repository/testing';
+} from '@concepta/rockets-app/testing';
 
 import { Invitation } from '../../domain/aggregates/invitation';
 import { InvitationService } from '../../domain/services/invitation.service';

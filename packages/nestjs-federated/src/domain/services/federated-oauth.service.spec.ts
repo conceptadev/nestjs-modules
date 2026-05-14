@@ -1,6 +1,6 @@
 import { EventPublisher } from '@nestjs/cqrs';
 
-import { AppContextHost } from '@concepta/nestjs-common';
+import { AppContextHost } from '@concepta/rockets-app';
 
 import {
   createMockEventPublisher,

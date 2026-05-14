@@ -2,7 +2,7 @@ import {
   ReferenceEmailInterface,
   ReferenceIdInterface,
   ReferenceUsernameInterface,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 /**
  * Credentials Interface

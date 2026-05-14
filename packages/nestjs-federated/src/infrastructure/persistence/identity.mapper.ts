@@ -1,4 +1,4 @@
-import { DomainMapper } from '@concepta/nestjs-common/aggregate';
+import { DomainMapper } from '@concepta/rockets-app/aggregate';
 
 import { Identity } from '../../domain/aggregates/identity';
 import { IdentityInterface } from '../../domain/interfaces/identity.interface';

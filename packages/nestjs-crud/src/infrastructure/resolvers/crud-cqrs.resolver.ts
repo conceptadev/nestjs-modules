@@ -6,7 +6,7 @@ import {
   QueryHandler,
 } from '@nestjs/cqrs';
 
-import { DeepPartial } from '@concepta/nestjs-common';
+import { DeepPartial } from '@concepta/rockets-app';
 
 import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
 import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';

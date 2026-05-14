@@ -1,4 +1,4 @@
-import { ReferenceEmailInterface } from '@concepta/nestjs-common';
+import { ReferenceEmailInterface } from '@concepta/rockets-app';
 
 import { InvitationCreatableInterface } from './invitation-creatable.interface';
 

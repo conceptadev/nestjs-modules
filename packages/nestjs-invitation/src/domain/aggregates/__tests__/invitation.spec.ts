@@ -1,4 +1,4 @@
-import { EventContextHost } from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/rockets-app';
 
 import { InvitationAlreadyAcceptedException } from '../../exceptions/invitation-already-accepted.exception';
 import { InvitationRevokedException } from '../../exceptions/invitation-revoked.exception';

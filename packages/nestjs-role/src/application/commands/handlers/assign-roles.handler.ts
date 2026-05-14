@@ -1,8 +1,8 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
+import { EventContextHost } from '@concepta/rockets-app';
 
 import { RoleAssignment } from '../../../domain/aggregates/role-assignment';
 import { RoleAssignmentRepositoryResolverInterface } from '../../../domain/repositories/role-assignment-repository-resolver.interface';

@@ -7,7 +7,7 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { CommandBus, CqrsModule } from '@nestjs/cqrs';
 
-import { createSettingsProvider } from '@concepta/nestjs-common';
+import { createSettingsProvider } from '@concepta/rockets-app';
 
 import { CreateUserCredentialHandler } from './application/commands/handlers/create-user-credential.handler';
 import { CreateUserHandler } from './application/commands/handlers/create-user.handler';

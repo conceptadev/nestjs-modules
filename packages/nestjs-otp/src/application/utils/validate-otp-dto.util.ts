@@ -3,8 +3,9 @@ import { validate } from 'class-validator';
 
 import { Type } from '@nestjs/common';
 
-import { DeepPartial, ModelValidationException } from '@concepta/nestjs-common';
+import { DeepPartial } from '@concepta/rockets-app';
 
+import { OtpValidationException } from '../../domain/exceptions/otp-validation.exception';
 import { OtpInterface } from '../../domain/interfaces/otp.interface';
 
 export async function validateOtpDto<T extends DeepPartial<OtpInterface>>(
@@ -15,7 +16,7 @@ export async function validateOtpDto<T extends DeepPartial<OtpInterface>>(
   const errors = await validate(dto);
 
   if (errors.length) {
-    throw new ModelValidationException(type.name, errors);
+    throw new OtpValidationException(type.name, errors);
   }
 
   return dto;

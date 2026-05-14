@@ -1,6 +1,6 @@
 import { applyDecorators, Get, PlainLiteralObject } from '@nestjs/common';
 
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 
 import { CrudReadHandler } from '../../../application/queries/handlers/crud-read.handler';
 import { CrudReadQuery } from '../../../application/queries/impl/crud-read.query';

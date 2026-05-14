@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { ReferenceIdInterface } from '@concepta/nestjs-common';
+import { ReferenceIdInterface } from '@concepta/rockets-app';
 
 import { GuardsPolicy } from '../../../domain/policies/guards.policy';
 import { AuthGuard } from '../../auth.guard';

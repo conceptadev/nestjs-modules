@@ -7,8 +7,9 @@ import {
   AppContextHost,
   DeepPartial,
   RuntimeException,
-} from '@concepta/nestjs-common';
-import { HookMethodKeyType, HookResolverService } from '@concepta/nestjs-hook';
+  HookMethodKeyType,
+  HookResolverService,
+} from '@concepta/rockets-app';
 
 import { RepoCtx } from '../context/interfaces/repository-context.interface';
 import { FederationOrchestrator } from '../federation/federation-orchestrator.service';

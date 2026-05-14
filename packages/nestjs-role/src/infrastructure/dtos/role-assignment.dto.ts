@@ -3,8 +3,8 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { ReferenceId } from '@concepta/nestjs-common';
-import { DomainAggregateDto } from '@concepta/nestjs-common/aggregate';
+import { ReferenceId } from '@concepta/rockets-app';
+import { DomainAggregateDto } from '@concepta/rockets-app/aggregate';
 
 import { RoleAssignmentInterface } from '../../domain/interfaces/role-assignment.interface';
 

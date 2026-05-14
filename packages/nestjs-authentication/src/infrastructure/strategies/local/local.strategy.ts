@@ -7,7 +7,7 @@ import {
   ReferenceIdInterface,
   ReferenceUsername,
   getAppContext,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 import { LocalServiceInterface } from '../../../application/services/local/interfaces/local-service.interface';
 import { LocalService } from '../../../application/services/local/local.service';

@@ -1,6 +1,6 @@
 import { isString } from 'class-validator';
 
-import { ReferenceId } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/rockets-app';
 
 import { UserException } from '../../domain/exceptions/user.exception';
 

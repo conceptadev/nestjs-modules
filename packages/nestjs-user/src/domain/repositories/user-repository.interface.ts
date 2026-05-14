@@ -4,7 +4,7 @@ import {
   ReferenceEmail,
   ReferenceId,
   ReferenceUsername,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 import { User } from '../aggregates/user';
 

@@ -5,7 +5,7 @@ import {
   ApiResponseOptions,
 } from '@nestjs/swagger';
 
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 
 import {
   ControllerTarget,

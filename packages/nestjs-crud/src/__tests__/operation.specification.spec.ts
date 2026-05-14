@@ -1,4 +1,4 @@
-import { ActionEnum, Operation } from '@concepta/nestjs-common';
+import { ActionEnum, Operation } from '@concepta/rockets-app';
 
 import { CrudSpecContextInterface } from '../infrastructure/specifications/interfaces/crud-spec-context.interface';
 import { OperationSpecification } from '../infrastructure/specifications/operation.specification';

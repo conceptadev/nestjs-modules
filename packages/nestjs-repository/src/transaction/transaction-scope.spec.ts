@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { AppContextHost } from '@concepta/nestjs-common';
+import { AppContextHost } from '@concepta/rockets-app';
 
 import { TransactionRequiredException } from '../exceptions/transaction-required.exception';
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception';

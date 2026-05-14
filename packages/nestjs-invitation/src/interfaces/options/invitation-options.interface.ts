@@ -1,4 +1,4 @@
-import { ModuleOptionsControllerInterface } from '@concepta/nestjs-common';
+import { ModuleOptionsControllerInterface } from '@concepta/rockets-app';
 
 import { InvitationNotificationPortSettings } from '../../domain/ports/invitation-notification.port';
 import { InvitationOtpPortSettings } from '../../domain/ports/invitation-otp.port';

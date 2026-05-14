@@ -1,4 +1,6 @@
-import { LiteralObject, ReferenceId } from '@concepta/nestjs-common';
+import { PlainLiteralObject } from '@nestjs/common';
+
+import { ReferenceId } from '@concepta/rockets-app';
 
 export interface InvitationUserRelationInterface<
   T extends ReferenceId = ReferenceId,
@@ -9,7 +11,7 @@ export interface InvitationUserRelationInterface<
 export interface InvitationInterface extends InvitationUserRelationInterface {
   code: string;
   category: string;
-  constraints: LiteralObject | undefined;
+  constraints: PlainLiteralObject | undefined;
   dateAccepted: Date | null;
   dateRevoked: Date | null;
 }

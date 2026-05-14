@@ -2,7 +2,7 @@ import { PlainLiteralObject } from '@nestjs/common';
 import { Command, CommandBus, Query, QueryBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { AssigneeRelationInterface } from '@concepta/nestjs-common';
+import { AssigneeRelationInterface } from '@concepta/rockets-app';
 
 import {
   OtpPort,

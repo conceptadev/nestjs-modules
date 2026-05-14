@@ -1,6 +1,6 @@
 import { PlainLiteralObject, Type } from '@nestjs/common';
 
-import { DeepPartial, RuntimeException } from '@concepta/nestjs-common';
+import { DeepPartial, RuntimeException } from '@concepta/rockets-app';
 
 import { JoinClause } from './interfaces/join-clause.interface';
 import { RepositoryMetadataInterface } from './interfaces/repository-metadata.interface';

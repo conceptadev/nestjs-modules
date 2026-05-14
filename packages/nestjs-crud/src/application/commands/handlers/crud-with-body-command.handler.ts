@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { DeepPartial } from '@concepta/nestjs-common';
+import { DeepPartial } from '@concepta/rockets-app';
 
 import { CrudAdapter } from '../../../infrastructure/adapters/crud.adapter';
 import { CrudWithBodyCommand } from '../impl/crud-with-body.command';

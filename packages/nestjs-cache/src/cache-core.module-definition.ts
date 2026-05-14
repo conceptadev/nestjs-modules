@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { createSettingsProvider } from '@concepta/nestjs-common';
+import { createSettingsProvider } from '@concepta/rockets-app';
 
 import { ArchiveCacheHandler } from './application/commands/handlers/archive-cache.handler';
 import { ClearCachesByAssigneeHandler } from './application/commands/handlers/clear-caches-by-assignee.handler';

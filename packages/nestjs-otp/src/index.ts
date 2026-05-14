@@ -76,3 +76,4 @@ export { OtpTypeNotDefinedException } from './domain/exceptions/otp-type-not-def
 export { OtpLimitReachedException } from './domain/exceptions/otp-limit-reached.exception';
 export { OtpNotFoundException } from './application/exceptions/otp-not-found.exception';
 export { OtpInvalidExpirationDateException } from './domain/exceptions/otp-invalid-expiration-date.exception';
+export { OtpValidationException } from './domain/exceptions/otp-validation.exception';

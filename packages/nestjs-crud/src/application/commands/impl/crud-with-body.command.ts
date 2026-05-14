@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { DeepPartial } from '@concepta/nestjs-common';
+import { DeepPartial } from '@concepta/rockets-app';
 
 import { CrudCreateBatchInterface } from '../../../infrastructure/dtos/interfaces/crud-create-batch.interface';
 import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';

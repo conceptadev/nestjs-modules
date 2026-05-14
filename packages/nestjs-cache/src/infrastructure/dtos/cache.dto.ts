@@ -3,7 +3,7 @@ import { Allow, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { DomainAggregateDto } from '@concepta/nestjs-common/aggregate';
+import { DomainAggregateDto } from '@concepta/rockets-app/aggregate';
 
 import { CacheInterface } from '../../domain/interfaces/cache.interface';
 

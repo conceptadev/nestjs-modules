@@ -1,5 +1,4 @@
-import { ActionEnum } from '@concepta/nestjs-common';
-import { CompositeSpecification } from '@concepta/nestjs-hook';
+import { ActionEnum, CompositeSpecification } from '@concepta/rockets-app';
 
 import { CrudSpecContextInterface } from './interfaces/crud-spec-context.interface';
 

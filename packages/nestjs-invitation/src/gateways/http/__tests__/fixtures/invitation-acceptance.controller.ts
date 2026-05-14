@@ -1,6 +1,5 @@
 import { CommandBus } from '@nestjs/cqrs';
 
-import { Ctx } from '@concepta/nestjs-common';
 import {
   CrudBody,
   CrudContextInterface,
@@ -8,6 +7,7 @@ import {
   CrudCtx,
   CrudUpdate,
 } from '@concepta/nestjs-crud';
+import { Ctx } from '@concepta/rockets-app';
 
 import { InvitationAcceptableInterface } from '../../../../domain/interfaces/invitation-acceptable.interface';
 import { InvitationAcceptDto } from '../../../../infrastructure/dtos/invitation-accept.dto';

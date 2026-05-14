@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/rockets-app';
 
 import { AUTHENTICATION_JWT_PORT_TOKEN } from '../../../authentication.constants';
 import { Token } from '../../../domain/aggregates/token.aggregate';

@@ -4,7 +4,7 @@ import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { AppContextHost } from '@concepta/nestjs-common';
+import { AppContextHost } from '@concepta/rockets-app';
 
 import { TransactionFactoryInterface } from '../interfaces/transaction-factory.interface';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants';

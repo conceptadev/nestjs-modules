@@ -1,5 +1,5 @@
-import { Operation } from '@concepta/nestjs-common';
 import { CrudDeleteCommand } from '@concepta/nestjs-crud';
+import { Operation } from '@concepta/rockets-app';
 
 import {
   createMockCommandBus,

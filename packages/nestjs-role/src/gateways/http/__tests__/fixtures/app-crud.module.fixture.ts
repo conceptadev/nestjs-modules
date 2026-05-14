@@ -3,11 +3,14 @@ import { APP_FILTER } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ExceptionsFilter, Operation } from '@concepta/nestjs-common';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
-import { HookModule } from '@concepta/nestjs-hook';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
+import {
+  RocketsAppModule,
+  ExceptionsFilter,
+  Operation,
+} from '@concepta/rockets-app';
 
 import { RoleEntityFixture } from '../../../../__tests__/fixtures/entities/role-entity.fixture';
 import { UserEntityFixture } from '../../../../__tests__/fixtures/entities/user-entity.fixture';
@@ -60,7 +63,7 @@ const USER_ROLE_ENTITY_KEY = 'userRole';
     CrudModule.forRoot({
       defaultResolver: CrudCqrsResolver,
     }),
-    HookModule.forRoot({}),
+    RocketsAppModule.forRoot(),
     RepositoryModule.forFeature({
       module: TypeOrmRepositoryModule,
       entities: [

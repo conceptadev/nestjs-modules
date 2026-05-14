@@ -1,4 +1,4 @@
-import { EventContextHost } from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/rockets-app';
 
 import { TokenIssuedEvent } from '../../events/token-issued.event';
 import { TokenRevokedEvent } from '../../events/token-revoked.event';

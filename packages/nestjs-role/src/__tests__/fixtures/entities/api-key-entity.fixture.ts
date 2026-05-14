@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-import { ReferenceIdInterface } from '@concepta/nestjs-common';
+import { ReferenceIdInterface } from '@concepta/rockets-app';
 
 /**
  * Api Key Entity Fixture

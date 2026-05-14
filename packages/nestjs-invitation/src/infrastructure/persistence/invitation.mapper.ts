@@ -1,4 +1,4 @@
-import { DomainMapper } from '@concepta/nestjs-common/aggregate';
+import { DomainMapper } from '@concepta/rockets-app/aggregate';
 
 import { Invitation } from '../../domain/aggregates/invitation';
 import { InvitationInterface } from '../../domain/interfaces/invitation.interface';

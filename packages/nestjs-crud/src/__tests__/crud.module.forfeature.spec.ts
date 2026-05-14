@@ -7,12 +7,12 @@ import { Get, Inject, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 
-import { Ctx, Operation } from '@concepta/nestjs-common';
 import {
   getDynamicRepositoryToken,
   RepositoryModule,
 } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
+import { Ctx, Operation } from '@concepta/rockets-app';
 
 import { CrudUpdateHandler } from '../application/commands/handlers/crud-update.handler';
 import { CrudListHandler } from '../application/queries/handlers/crud-list.handler';

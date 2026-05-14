@@ -4,7 +4,7 @@ import {
   ContextOverlayInterceptor,
   getAppContext,
   OverlayRef,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 import { AuthenticatedUserInterface } from '../domain/interfaces/authenticated-user.interface';
 

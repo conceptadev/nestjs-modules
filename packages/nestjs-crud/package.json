@@ -14,9 +14,8 @@
     "!dist/**/__fixtures__/**"
   ],
   "dependencies": {
-    "@concepta/nestjs-common": "8.0.0-alpha.6",
-    "@concepta/nestjs-hook": "8.0.0-alpha.6",
     "@concepta/nestjs-repository": "8.0.0-alpha.6",
+    "@concepta/rockets-app": "^0.0.1-alpha.0",
     "@nestjs/common": "^11.1.9",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.9",

@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { EventContextHost } from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/rockets-app';
 
 import { AppRepoModuleFixture } from '../../../__tests__/fixtures/app-repo.module.fixture';
 import { User } from '../../../domain/aggregates/user';

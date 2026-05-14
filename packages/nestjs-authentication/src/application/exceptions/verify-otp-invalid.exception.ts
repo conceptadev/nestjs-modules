@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { RuntimeExceptionOptions } from '@concepta/nestjs-common';
+import { RuntimeExceptionOptions } from '@concepta/rockets-app';
 
 import { VerifyException } from '../../infrastructure/mfa/verify/exceptions/verify.exception';
 

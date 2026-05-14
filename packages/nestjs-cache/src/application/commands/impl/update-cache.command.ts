@@ -1,7 +1,7 @@
 import { PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { ReferenceId } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/rockets-app';
 
 import { Cache } from '../../../domain/aggregates/cache';
 import { CacheUpdatableInterface } from '../../../domain/interfaces/cache-updatable.interface';

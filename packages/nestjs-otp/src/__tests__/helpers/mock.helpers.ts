@@ -1,12 +1,12 @@
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 
-import { EventContextHost } from '@concepta/nestjs-common';
+import { createMockTransaction } from '@concepta/nestjs-repository/testing';
+import { EventContextHost } from '@concepta/rockets-app';
 import {
   createMockCommandBus,
   createMockEventPublisher,
   createMockQueryBus,
-} from '@concepta/nestjs-common/testing';
-import { createMockTransaction } from '@concepta/nestjs-repository/testing';
+} from '@concepta/rockets-app/testing';
 
 import { Otp } from '../../domain/aggregates/otp';
 import { OtpSettingsInterface } from '../../infrastructure/config/interfaces/otp-settings.interface';

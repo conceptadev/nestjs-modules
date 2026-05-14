@@ -1,6 +1,6 @@
-import { AppContextHost } from '@concepta/nestjs-common';
 import { Where } from '@concepta/nestjs-repository';
 import { createMockRepository } from '@concepta/nestjs-repository/testing';
+import { AppContextHost } from '@concepta/rockets-app';
 
 import { toCacheDomain } from '../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../domain/aggregates/cache';

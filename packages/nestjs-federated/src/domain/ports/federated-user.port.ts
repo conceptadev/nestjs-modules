@@ -6,7 +6,7 @@ import {
   ReferenceEmailInterface,
   ReferenceId,
   ReferenceUsernameInterface,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 import { FederatedCredentialsInterface } from '../../interfaces/federated-credentials.interface';
 

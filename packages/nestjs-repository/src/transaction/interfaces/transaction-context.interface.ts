@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { OverlayRef } from '@concepta/nestjs-common';
+import { OverlayRef } from '@concepta/rockets-app';
 
 import { TransactionManager } from '../transaction-manager';
 

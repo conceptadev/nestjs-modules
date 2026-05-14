@@ -1,7 +1,7 @@
 import {
   RuntimeException,
   RuntimeExceptionOptions,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 /**
  * Generic auth router exception.
  */

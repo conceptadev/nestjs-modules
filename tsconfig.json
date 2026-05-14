@@ -22,7 +22,7 @@
       "path": "packages/nestjs-common"
     },
     {
-      "path": "packages/nestjs-hook"
+      "path": "packages/rockets-app"
     },
     {
       "path": "packages/nestjs-access-control"

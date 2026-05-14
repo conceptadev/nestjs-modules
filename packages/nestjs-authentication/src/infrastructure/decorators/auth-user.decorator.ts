@@ -1,6 +1,6 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
-import { getAppContext } from '@concepta/nestjs-common';
+import { getAppContext } from '@concepta/rockets-app';
 
 import { AuthUserCtx } from '../../gateways/auth-user-context.overlay';
 

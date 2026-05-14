@@ -17,7 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { Ctx } from '@concepta/nestjs-common';
+import { Ctx } from '@concepta/rockets-app';
 
 import { RecoveryService } from '../../../../../application/services/recovery/recovery.service';
 import { AuthPublic } from '../../../../decorators/auth-public.decorator';

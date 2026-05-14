@@ -2,7 +2,7 @@ import {
   ReferenceActiveInterface,
   ReferenceEmailInterface,
   ReferenceUsernameInterface,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 export interface UserInterface
   extends ReferenceEmailInterface,

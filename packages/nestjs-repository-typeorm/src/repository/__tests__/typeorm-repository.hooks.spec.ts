@@ -2,8 +2,6 @@ import { Type } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 
-import { AppContextHost, DeepPartial } from '@concepta/nestjs-common';
-import { HookModule, HooksCtx } from '@concepta/nestjs-hook';
 import {
   RepositoryModule,
   RepoHook,
@@ -85,6 +83,12 @@ import {
   TrxCtx,
   TransactionContextInterface,
 } from '@concepta/nestjs-repository';
+import {
+  AppContextHost,
+  DeepPartial,
+  RocketsAppModule,
+  HooksCtx,
+} from '@concepta/rockets-app';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
 import { ormConfig } from '../../__fixtures__/repository/config/ormconfig.fixture';
@@ -396,7 +400,7 @@ describe('TypeOrmRepository Hooks', () => {
     moduleFixture = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(ormConfig),
-        HookModule.forRoot({}),
+        RocketsAppModule.forRoot(),
         RepositoryModule.forRoot({}),
         RepositoryModule.forFeature({
           module: TypeOrmRepositoryModule,
@@ -783,7 +787,7 @@ describe('TypeOrmRepository Hooks', () => {
       const localModule = await Test.createTestingModule({
         imports: [
           TypeOrmModule.forRoot(ormConfig),
-          HookModule.forRoot({}),
+          RocketsAppModule.forRoot(),
           RepositoryModule.forRoot({}),
           RepositoryModule.forFeature({
             module: TypeOrmRepositoryModule,
@@ -826,7 +830,7 @@ describe('TypeOrmRepository Hooks', () => {
       const localModule = await Test.createTestingModule({
         imports: [
           TypeOrmModule.forRoot(ormConfig),
-          HookModule.forRoot({}),
+          RocketsAppModule.forRoot(),
           RepositoryModule.forRoot({}),
           RepositoryModule.forFeature({
             module: TypeOrmRepositoryModule,
@@ -874,7 +878,7 @@ describe('TypeOrmRepository Hooks', () => {
       const localModule = await Test.createTestingModule({
         imports: [
           TypeOrmModule.forRoot(ormConfig),
-          HookModule.forRoot({}),
+          RocketsAppModule.forRoot(),
           RepositoryModule.forRoot({}),
           RepositoryModule.forFeature({
             module: TypeOrmRepositoryModule,
@@ -946,7 +950,7 @@ describe('TypeOrmRepository Hooks', () => {
       const localModule = await Test.createTestingModule({
         imports: [
           TypeOrmModule.forRoot(ormConfig),
-          HookModule.forRoot({}),
+          RocketsAppModule.forRoot(),
           RepositoryModule.forRoot({}),
           RepositoryModule.forFeature({
             module: TypeOrmRepositoryModule,

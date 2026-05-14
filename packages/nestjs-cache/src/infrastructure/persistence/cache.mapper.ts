@@ -1,4 +1,4 @@
-import { DomainMapper } from '@concepta/nestjs-common/aggregate';
+import { DomainMapper } from '@concepta/rockets-app/aggregate';
 
 import { Cache } from '../../domain/aggregates/cache';
 import { CacheInterface } from '../../domain/interfaces/cache.interface';

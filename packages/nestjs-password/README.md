@@ -34,7 +34,7 @@ yarn add @concepta/nestjs-password
 
 | Package | Notes |
 | --- | --- |
-| `@concepta/nestjs-common` | Core interfaces (`PasswordStorageInterface`, `PasswordPlainInterface`) and utilities |
+| `@concepta/rockets-app` | Core interfaces (`PasswordStorageInterface`, `PasswordPlainInterface`) and utilities |
 | `@nestjs/common` | NestJS core |
 | `@nestjs/core` | NestJS core |
 | `@nestjs/config` | Configuration module |
@@ -189,7 +189,7 @@ import {
   CreatePasswordCommand,
   ValidatePasswordCommand,
 } from '@concepta/nestjs-password';
-import { PasswordStorageInterface } from '@concepta/nestjs-common';
+import { PasswordStorageInterface } from '@concepta/rockets-app';
 
 // Create a hashed password
 const storage = await this.commandBus.execute<
@@ -218,7 +218,7 @@ const isValid = await this.commandBus.execute<
 | `PasswordUsedRecentlyException` | Password matches a recent credential in history |
 
 All exceptions extend `PasswordException`, which extends `RuntimeException`
-from `@concepta/nestjs-common`.
+from `@concepta/rockets-app`.
 
 ## Environment Variables
 

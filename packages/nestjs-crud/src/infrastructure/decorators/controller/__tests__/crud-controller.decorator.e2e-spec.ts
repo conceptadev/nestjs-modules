@@ -4,8 +4,8 @@ import { Inject, INestApplication } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 
-import { Ctx, ExceptionsFilter } from '@concepta/nestjs-common';
 import { WhereOperator } from '@concepta/nestjs-repository';
+import { Ctx, ExceptionsFilter } from '@concepta/rockets-app';
 
 import { TestModelCreateBatchDto } from '../../../../__fixtures__/crud/dto/test-model-create-batch.dto';
 import { TestModelCreateDto } from '../../../../__fixtures__/crud/dto/test-model-create.dto';

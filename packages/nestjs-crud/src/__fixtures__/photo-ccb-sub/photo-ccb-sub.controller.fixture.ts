@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 
-import { Ctx } from '@concepta/nestjs-common';
+import { Ctx } from '@concepta/rockets-app';
 
 import { CrudController } from '../../infrastructure/decorators/controller/crud-controller.decorator';
 import { CrudCreateBatch } from '../../infrastructure/decorators/operations/crud-create-batch.decorator';

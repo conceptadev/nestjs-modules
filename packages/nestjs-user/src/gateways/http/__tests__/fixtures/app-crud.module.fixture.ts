@@ -3,9 +3,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ExceptionsFilter, Operation } from '@concepta/nestjs-common';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
-import { HookModule, UseHooks } from '@concepta/nestjs-hook';
 import {
   CreatePasswordCommand,
   PasswordModule,
@@ -15,6 +13,12 @@ import {
 } from '@concepta/nestjs-password';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
+import {
+  RocketsAppModule,
+  UseHooks,
+  ExceptionsFilter,
+  Operation,
+} from '@concepta/rockets-app';
 
 import { UserCredentialEntityFixture } from '../../../../__tests__/fixtures/entities/user-credential.entity.fixture';
 import { UserEntityFixture } from '../../../../__tests__/fixtures/entities/user.entity.fixture';
@@ -54,7 +58,7 @@ const USER_CREDENTIALS_ENTITY_KEY_FIXTURE = 'user-credentials';
     CrudModule.forRoot({
       defaultResolver: CrudCqrsResolver,
     }),
-    HookModule.forRoot({}),
+    RocketsAppModule.forRoot(),
     PasswordModule.forRoot({}),
     RepositoryModule.forFeature({
       module: TypeOrmRepositoryModule,

@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { ReferenceId } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/rockets-app';
 
 import { PhotoEntityInterfaceFixture } from './interfaces/photo-entity.interface.fixture';
 

@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 
-import { DomainFactory, EventContextHost } from '@concepta/nestjs-common';
-import { DomainAggregate } from '@concepta/nestjs-common/aggregate';
+import { DomainFactory, EventContextHost } from '@concepta/rockets-app';
+import { DomainAggregate } from '@concepta/rockets-app/aggregate';
 
 import { OtpEventHeaderInterface } from '../events/interfaces/otp-event-header.interface';
 import { OtpConsumedEvent } from '../events/otp-consumed.event';

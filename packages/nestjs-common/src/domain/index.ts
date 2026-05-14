@@ -1,8 +1,6 @@
 export { EmailSendOptionsInterface } from './email/interfaces/email-send-options.interface';
 export { EmailSendInterface } from './email/interfaces/email-send.interface';
 
-export { AssigneeRelationInterface } from './assignee/interfaces/assignee-relation.interface';
-
 export { OrgCreatableInterface } from './org/interfaces/org-creatable.interface';
 export { OrgOwnableInterface } from './org/interfaces/org-ownable.interface';
 export { OrgMemberInterface } from './org/interfaces/org-member.interface';

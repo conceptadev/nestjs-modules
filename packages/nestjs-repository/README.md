@@ -40,8 +40,8 @@ yarn add @concepta/nestjs-repository
 
 | Package | Notes |
 | --- | --- |
-| `@concepta/nestjs-common` | Core interfaces and utilities |
-| `@concepta/nestjs-hook` | Hook system for repository lifecycle events |
+| `@concepta/rockets-app` | Core interfaces and utilities |
+| `@concepta/rockets-app` | Hook system for repository lifecycle events |
 | `@nestjs/common` | NestJS core |
 | `@nestjs/core` | Reflector for metadata |
 
@@ -656,7 +656,7 @@ This ensures domain events are only published after the transaction succeeds.
 
 ```ts
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-import { EventContextHost } from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/rockets-app';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 @CommandHandler(CreateOrderCommand)
@@ -837,7 +837,7 @@ export class CustomInterceptor implements NestInterceptor {
 ## Repository Hooks
 
 The hook system provides cross-cutting concerns for repository operations.
-Hooks are resolved at runtime via `@concepta/nestjs-hook` and can be scoped
+Hooks are resolved at runtime via `@concepta/rockets-app` and can be scoped
 to specific entities using specifications.
 
 ### Defining a Hook
@@ -870,7 +870,7 @@ export class AuditHook {
 Use specifications to restrict a hook to specific entities:
 
 ```ts
-import { Spec } from '@concepta/nestjs-hook';
+import { Spec } from '@concepta/rockets-app';
 
 @RepoHook(Spec.entity('User'))
 export class UserOnlyHook {

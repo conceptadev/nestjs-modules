@@ -1,7 +1,7 @@
 import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 import { Command, CommandBus } from '@nestjs/cqrs';
 
-import { ReferenceEmail } from '@concepta/nestjs-common';
+import { ReferenceEmail } from '@concepta/rockets-app';
 
 import { AuthenticationEmailException } from '../exceptions/authentication-email.exception';
 

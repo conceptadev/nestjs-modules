@@ -1,11 +1,11 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceId } from '@concepta/nestjs-common';
 import {
   OrderBy,
   RepositoryInterface,
   Where,
 } from '@concepta/nestjs-repository';
+import { ReferenceId } from '@concepta/rockets-app';
 
 import { UserCredentials } from '../../domain/aggregates/user-credentials';
 import { UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';

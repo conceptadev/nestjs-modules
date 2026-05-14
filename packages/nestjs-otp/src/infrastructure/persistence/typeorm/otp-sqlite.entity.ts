@@ -1,7 +1,7 @@
 import { Column } from 'typeorm';
 
-import { ReferenceId } from '@concepta/nestjs-common';
 import { CommonSqliteEntity } from '@concepta/nestjs-repository-typeorm';
+import { ReferenceId } from '@concepta/rockets-app';
 
 import { OtpInterface } from '../../../domain/interfaces/otp.interface';
 

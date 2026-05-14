@@ -1,6 +1,6 @@
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 
-import { EventContextHost } from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/rockets-app';
 
 import { InvitationEventPayloadInterface } from '../../../domain/events/interfaces/invitation-event-payload.interface';
 import { InvitationAcceptedEvent } from '../../../domain/events/invitation-accepted.event';

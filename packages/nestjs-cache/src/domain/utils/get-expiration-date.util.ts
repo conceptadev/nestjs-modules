@@ -1,4 +1,4 @@
-import { toMilliseconds } from '@concepta/nestjs-common';
+import { toMilliseconds } from '@concepta/rockets-app';
 
 import { CacheInvalidExpiredDateException } from '../exceptions/cache-invalid-expired-date.exception';
 

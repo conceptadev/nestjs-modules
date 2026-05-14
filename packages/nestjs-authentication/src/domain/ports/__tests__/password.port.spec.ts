@@ -2,7 +2,7 @@ import { PlainLiteralObject } from '@nestjs/common';
 import { Command, CommandBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ReferenceId, ReferenceIdInterface } from '@concepta/nestjs-common';
+import { ReferenceId, ReferenceIdInterface } from '@concepta/rockets-app';
 
 import {
   PasswordPort,

@@ -1,8 +1,8 @@
 import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
 import { EventPublisher } from '@nestjs/cqrs';
 
-import { EventContextHost, NotAnErrorException } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
+import { EventContextHost, NotAnErrorException } from '@concepta/rockets-app';
 
 import { FEDERATED_MODULE_IDENTITY_REPOSITORY_TOKEN } from '../../federated.constants';
 import { FederatedCredentialsInterface } from '../../interfaces/federated-credentials.interface';

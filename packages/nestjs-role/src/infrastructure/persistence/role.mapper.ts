@@ -1,4 +1,4 @@
-import { DomainMapper } from '@concepta/nestjs-common/aggregate';
+import { DomainMapper } from '@concepta/rockets-app/aggregate';
 
 import { Role } from '../../domain/aggregates/role';
 import { RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';

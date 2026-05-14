@@ -6,7 +6,7 @@ import {
   PlainLiteralObject,
 } from '@nestjs/common';
 
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 
 import { CrudDeleteHandler } from '../../../application/commands/handlers/crud-delete.handler';
 import { CrudDeleteCommand } from '../../../application/commands/impl/crud-delete.command';

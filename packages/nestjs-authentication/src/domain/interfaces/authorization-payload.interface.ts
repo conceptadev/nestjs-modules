@@ -1,4 +1,4 @@
-import { ReferenceSubjectInterface } from '@concepta/nestjs-common';
+import { ReferenceSubjectInterface } from '@concepta/rockets-app';
 
 export interface AuthorizationPayloadInterface
   extends ReferenceSubjectInterface {}

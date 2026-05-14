@@ -3,7 +3,7 @@ import { HttpStatus } from '@nestjs/common';
 import {
   RuntimeException,
   RuntimeExceptionOptions,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 import { FederatedException } from './federated.exception';
 

@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { Operation } from '@concepta/nestjs-common';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import {
   CreateOtpCommand,
@@ -23,6 +22,7 @@ import {
   GetUserByEmailQuery,
   UserModule,
 } from '@concepta/nestjs-user';
+import { Operation } from '@concepta/rockets-app';
 
 import { InvitationInterface } from '../../../../domain/interfaces/invitation.interface';
 import { InvitationCreateDto } from '../../../../infrastructure/dtos/invitation-create.dto';

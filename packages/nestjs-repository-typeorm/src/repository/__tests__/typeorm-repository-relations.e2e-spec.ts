@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken } from '@nestjs/typeorm';
 
-import { RuntimeException } from '@concepta/nestjs-common';
 import { getDynamicRepositoryToken, Where } from '@concepta/nestjs-repository';
+import { RuntimeException } from '@concepta/rockets-app';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
 import {

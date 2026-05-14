@@ -4,7 +4,7 @@ import { catchError } from 'rxjs/operators';
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { getAppContext } from '@concepta/nestjs-common';
+import { getAppContext } from '@concepta/rockets-app';
 
 import { TransactionScope } from './transaction-scope';
 import {

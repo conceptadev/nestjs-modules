@@ -4,7 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ExceptionsFilter } from '@concepta/nestjs-common';
+import { ExceptionsFilter } from '@concepta/rockets-app';
 
 import { AppModuleFixture } from '../../../../__tests__/fixtures/app.module.fixture';
 import { VerifyOtpInvalidException } from '../../../../application/exceptions/verify-otp-invalid.exception';

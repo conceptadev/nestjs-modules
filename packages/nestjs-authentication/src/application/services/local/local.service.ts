@@ -1,6 +1,6 @@
 import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceIdInterface } from '@concepta/nestjs-common';
+import { ReferenceIdInterface } from '@concepta/rockets-app';
 
 import {
   AUTHENTICATION_PASSWORD_PORT_TOKEN,

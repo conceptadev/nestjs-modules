@@ -1,14 +1,12 @@
 import { randomUUID } from 'crypto';
 
-import {
-  DomainFactory,
-  EventContextHost,
-  LiteralObject,
-} from '@concepta/nestjs-common';
+import { PlainLiteralObject } from '@nestjs/common';
+
+import { DomainFactory, EventContextHost } from '@concepta/rockets-app';
 import {
   AggregateMetaInterface,
   DomainAggregate,
-} from '@concepta/nestjs-common/aggregate';
+} from '@concepta/rockets-app/aggregate';
 
 import { InvitationDispatchedMetadataInterface } from '../events/interfaces/invitation-dispatched-metadata.interface';
 import { InvitationEventHeaderInterface } from '../events/interfaces/invitation-event-header.interface';
@@ -95,7 +93,7 @@ export class Invitation extends DomainAggregate<InvitationInterface> {
 
   accept(
     eventContext: EventContextHost<InvitationEventHeaderInterface>,
-    payload?: LiteralObject,
+    payload?: PlainLiteralObject,
   ): void {
     if (this.isAccepted) {
       throw new InvitationAlreadyAcceptedException();

@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceId } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/rockets-app';
 
 import { Cache } from '../aggregates/cache';
 

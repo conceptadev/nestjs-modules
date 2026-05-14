@@ -8,9 +8,9 @@ import {
 
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { DeepPartial, ModelQueryException } from '@concepta/nestjs-common';
-import { HookMethodKeyType } from '@concepta/nestjs-hook';
+import { DeepPartial, HookMethodKeyType } from '@concepta/rockets-app';
 
+import { RepositoryQueryException } from '../exceptions/repository-query.exception';
 import {
   RepositoryFindOptions,
   RepositoryFindOneOptions,
@@ -73,8 +73,10 @@ export class RepoPermeatorFactory<
 
     const options: PermeatorOptions = {
       onError: (error: unknown): never => {
-        if (error instanceof ModelQueryException) throw error;
-        throw new ModelQueryException(entityName, { originalError: error });
+        if (error instanceof RepositoryQueryException) throw error;
+        throw new RepositoryQueryException(entityName, {
+          originalError: error,
+        });
       },
     };
 

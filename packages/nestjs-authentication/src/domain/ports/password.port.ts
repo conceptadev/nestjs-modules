@@ -1,7 +1,7 @@
 import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 import { Command, CommandBus } from '@nestjs/cqrs';
 
-import { ReferenceId, ReferenceIdInterface } from '@concepta/nestjs-common';
+import { ReferenceId, ReferenceIdInterface } from '@concepta/rockets-app';
 
 export interface ValidatePasswordCommandInterface extends Command<boolean> {
   ctx: PlainLiteralObject;

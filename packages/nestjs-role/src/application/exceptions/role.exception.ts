@@ -1,7 +1,7 @@
 import {
   RuntimeException,
   RuntimeExceptionOptions,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 export class RoleException extends RuntimeException {
   constructor(options?: RuntimeExceptionOptions) {

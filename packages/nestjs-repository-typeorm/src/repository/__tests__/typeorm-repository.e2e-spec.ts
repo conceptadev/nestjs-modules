@@ -1,8 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken } from '@nestjs/typeorm';
 
-import { ModelQueryException } from '@concepta/nestjs-common';
-import { getDynamicRepositoryToken, Where } from '@concepta/nestjs-repository';
+import {
+  getDynamicRepositoryToken,
+  RepositoryQueryException,
+  Where,
+} from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
 import { TEST_ENTITY_TOKEN } from '../../__fixtures__/repository/config/test.constants.fixture';
@@ -293,12 +296,14 @@ describe(TypeOrmRepository, () => {
       });
     });
 
-    it('should throw ModelQueryException on error', async () => {
+    it('should throw RepositoryQueryException on error', async () => {
       jest.spyOn(testRepository['repo'], 'find').mockImplementationOnce(() => {
         throw new Error();
       });
 
-      await expect(testRepository.find()).rejects.toThrow(ModelQueryException);
+      await expect(testRepository.find()).rejects.toThrow(
+        RepositoryQueryException,
+      );
     });
   });
 
@@ -320,7 +325,7 @@ describe(TypeOrmRepository, () => {
       expect(result?.firstName).toBe('Alice');
     });
 
-    it('should throw ModelQueryException on error', async () => {
+    it('should throw RepositoryQueryException on error', async () => {
       jest
         .spyOn(testRepository['repo'], 'findOne')
         .mockImplementationOnce(() => {
@@ -328,7 +333,7 @@ describe(TypeOrmRepository, () => {
         });
 
       await expect(testRepository.findOne({})).rejects.toThrow(
-        ModelQueryException,
+        RepositoryQueryException,
       );
     });
   });

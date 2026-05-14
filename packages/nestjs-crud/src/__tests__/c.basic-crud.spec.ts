@@ -7,9 +7,9 @@ import { APP_FILTER } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 
-import { ExceptionsFilter, Ctx } from '@concepta/nestjs-common';
 import { RepositoryModule, Transactional } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
+import { ExceptionsFilter, Ctx } from '@concepta/rockets-app';
 
 import { CrudCreateBatchHandler } from '../application/commands/handlers/crud-create-batch.handler';
 import { CrudCreateHandler } from '../application/commands/handlers/crud-create.handler';

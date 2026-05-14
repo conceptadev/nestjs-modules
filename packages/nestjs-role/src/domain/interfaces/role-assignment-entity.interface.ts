@@ -2,7 +2,7 @@ import {
   AuditInterface,
   ReferenceIdInterface,
   ReferenceVersionInterface,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 import { RoleAssignmentInterface } from './role-assignment.interface';
 

@@ -12,7 +12,7 @@ import {
   ReferenceEmail,
   ReferenceId,
   ReferenceSubject,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 import {
   AuthenticationUserInterface,

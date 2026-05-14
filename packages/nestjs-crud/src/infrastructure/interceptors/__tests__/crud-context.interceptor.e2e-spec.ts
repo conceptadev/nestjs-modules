@@ -4,12 +4,12 @@ import { Param, ParseIntPipe, Query } from '@nestjs/common';
 import { NestApplication } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 
-import { Ctx } from '@concepta/nestjs-common';
 import {
   OrderSortKeyArr,
   RepositoryInterface,
   WhereConditionArr,
 } from '@concepta/nestjs-repository';
+import { Ctx } from '@concepta/rockets-app';
 
 import { TestCrudAdapter } from '../../../__fixtures__/crud/adapters/test-crud.adapter';
 import { TestModelDto } from '../../../__fixtures__/crud/models/test.model';

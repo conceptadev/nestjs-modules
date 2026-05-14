@@ -5,7 +5,7 @@ import { mock } from 'jest-mock-extended';
 import { ExecutionContext } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
-import { ReferenceIdInterface } from '@concepta/nestjs-common';
+import { ReferenceIdInterface } from '@concepta/rockets-app';
 
 import { JwtUnauthorizedException } from '../exceptions/jwt-unauthorized.exception';
 import { JwtGuard } from '../jwt.guard';

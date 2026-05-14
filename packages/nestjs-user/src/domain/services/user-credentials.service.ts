@@ -1,13 +1,13 @@
 import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
 import { EventPublisher } from '@nestjs/cqrs';
 
+import { PasswordStorageInterface } from '@concepta/nestjs-password';
+import { TransactionScope } from '@concepta/nestjs-repository';
 import {
   EventContextHost,
   ReferenceId,
   ReferenceIdInterface,
-} from '@concepta/nestjs-common';
-import { PasswordStorageInterface } from '@concepta/nestjs-password';
-import { TransactionScope } from '@concepta/nestjs-repository';
+} from '@concepta/rockets-app';
 
 import { USER_CREDENTIALS_REPOSITORY_TOKEN } from '../../user.constants';
 import { UserCredentials } from '../aggregates/user-credentials';

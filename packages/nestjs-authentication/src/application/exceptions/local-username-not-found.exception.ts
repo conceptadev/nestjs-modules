@@ -1,4 +1,4 @@
-import { RuntimeExceptionOptions } from '@concepta/nestjs-common';
+import { RuntimeExceptionOptions } from '@concepta/rockets-app';
 
 import { LocalInvalidCredentialsException } from '../../infrastructure/strategies/local/exceptions/local-invalid-credentials.exception';
 

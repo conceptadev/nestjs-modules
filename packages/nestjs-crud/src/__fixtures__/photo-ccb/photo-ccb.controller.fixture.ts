@@ -1,4 +1,4 @@
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 
 import { ConfigurableCrudBuilder } from '../../infrastructure/utils/configurable-crud.builder';
 import { CRUD_TEST_PHOTO_CCB_ENTITY_NAME } from '../crud-test.constants';

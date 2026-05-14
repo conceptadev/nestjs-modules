@@ -1,11 +1,11 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
+import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
 import {
   ReferenceEmail,
   ReferenceId,
   ReferenceUsername,
-} from '@concepta/nestjs-common';
-import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
+} from '@concepta/rockets-app';
 
 import { User } from '../../domain/aggregates/user';
 import { UserEntityInterface } from '../../domain/interfaces/user-entity.interface';

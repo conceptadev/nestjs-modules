@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
+import { EventContextHost } from '@concepta/rockets-app';
 
 import { UserCredentials } from '../../../domain/aggregates/user-credentials';
 import { UserCredentialsService } from '../../../domain/services/user-credentials.service';

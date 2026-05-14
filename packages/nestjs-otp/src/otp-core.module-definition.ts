@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { createSettingsProvider } from '@concepta/nestjs-common';
+import { createSettingsProvider } from '@concepta/rockets-app';
 
 import { ClearOtpHistoryHandler } from './application/commands/handlers/clear-otp-history.handler';
 import { ClearOtpsHandler } from './application/commands/handlers/clear-otps.handler';

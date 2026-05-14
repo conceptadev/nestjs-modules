@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ExceptionsFilter } from '@concepta/nestjs-common';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
+import { ExceptionsFilter } from '@concepta/rockets-app';
 
 import { CacheModule } from '../../cache.module';
 

@@ -1,7 +1,7 @@
 import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
-import { DeepPartial } from '@concepta/nestjs-common';
+import { DeepPartial } from '@concepta/rockets-app';
 
 import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
 import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';

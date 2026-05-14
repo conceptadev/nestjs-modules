@@ -1,10 +1,7 @@
 import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 import { Command, CommandBus, Query, QueryBus } from '@nestjs/cqrs';
 
-import {
-  AssigneeRelationInterface,
-  ReferenceId,
-} from '@concepta/nestjs-common';
+import { AssigneeRelationInterface, ReferenceId } from '@concepta/rockets-app';
 
 export interface AuthenticationOtpCreatableInterface {
   category: string;

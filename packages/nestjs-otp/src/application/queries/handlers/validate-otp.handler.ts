@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { AssigneeRelationInterface } from '@concepta/nestjs-common';
+import { AssigneeRelationInterface } from '@concepta/rockets-app';
 
 import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception';
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';

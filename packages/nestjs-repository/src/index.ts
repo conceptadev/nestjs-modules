@@ -24,6 +24,7 @@ export {
 // Exceptions
 // ═══════════════════════════════════════════════════════════════════
 export { RepositoryDuplicateKeyException } from './exceptions/repository-duplicate-key.exception';
+export { RepositoryQueryException } from './exceptions/repository-query.exception';
 export { FederationException } from './federation/exceptions/federation.exception';
 export { TransactionRequiredException } from './exceptions/transaction-required.exception';
 export { TransactionTimeoutException } from './exceptions/transaction-timeout.exception';

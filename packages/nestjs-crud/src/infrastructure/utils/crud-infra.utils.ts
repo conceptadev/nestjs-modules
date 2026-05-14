@@ -1,11 +1,11 @@
 import { PlainLiteralObject, Type } from '@nestjs/common';
 
-import { ActionEnum, Operation, ReadOperation } from '@concepta/nestjs-common';
 import {
   isArrayCondition,
   WhereCondition,
   WhereConditionArray,
 } from '@concepta/nestjs-repository';
+import { ActionEnum, Operation, ReadOperation } from '@concepta/rockets-app';
 
 import { CrudAdapter } from '../adapters/crud.adapter';
 import { CrudAdapterProvider } from '../adapters/interfaces/crud-adapter.types';

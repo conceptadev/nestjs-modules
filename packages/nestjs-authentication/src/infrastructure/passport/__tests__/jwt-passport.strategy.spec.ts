@@ -1,6 +1,6 @@
 import { mock } from 'jest-mock-extended';
 
-import { NotAnErrorException } from '@concepta/nestjs-common';
+import { NotAnErrorException } from '@concepta/rockets-app';
 
 import { JwtPassportOptionsInterface } from '../interfaces/jwt-passport-options.interface';
 import { JwtPassportStrategy } from '../jwt-passport.strategy';

@@ -102,7 +102,7 @@ export { ConfigurableCrudOptionsTransformer } from './crud.types';
 
 // operation types
 export { CrudOperationOptions } from './infrastructure/utils/crud-operation-options.type';
-export { Operation } from '@concepta/nestjs-common';
+export { Operation } from '@concepta/rockets-app';
 
 // specifications
 export { CrudSpecContextInterface } from './infrastructure/specifications/interfaces/crud-spec-context.interface';

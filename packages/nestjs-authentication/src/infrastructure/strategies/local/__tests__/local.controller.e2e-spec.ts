@@ -4,8 +4,8 @@ import { INestApplication } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ExceptionsFilter } from '@concepta/nestjs-common';
 import { PasswordValidationService } from '@concepta/nestjs-password';
+import { ExceptionsFilter } from '@concepta/rockets-app';
 
 import { LocalService } from '../../../../application/services/local/local.service';
 import { LocalInvalidCredentialsException } from '../exceptions/local-invalid-credentials.exception';

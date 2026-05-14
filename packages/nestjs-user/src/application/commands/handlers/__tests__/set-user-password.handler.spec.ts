@@ -1,4 +1,4 @@
-import { createMockCommandBus } from '@concepta/nestjs-common/testing';
+import { createMockCommandBus } from '@concepta/rockets-app/testing';
 
 import {
   createMockTxScope,

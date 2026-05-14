@@ -6,11 +6,11 @@ import {
   Type,
 } from '@nestjs/common';
 
-import { DeepPartial, Operation, Ctx } from '@concepta/nestjs-common';
 import {
   Transactional,
   TransactionalOptions,
 } from '@concepta/nestjs-repository';
+import { DeepPartial, Operation, Ctx } from '@concepta/rockets-app';
 
 import { ConfigurableCrudOptionsTransformer } from '../../crud.types';
 import { CrudAdapter } from '../adapters/crud.adapter';

@@ -7,9 +7,6 @@ export {
   MutateOperations,
 } from './enums/operation.enum';
 
-// Core
-export { DomainFactory } from './core.interfaces';
-
 // DTOs
 export { AuditDto } from './audit/dto/audit.dto';
 export { CommonEntityDto } from './common/dto/common-entity.dto';
@@ -95,7 +92,6 @@ export {
 export { AuditDateCreatedInterface } from './audit/interfaces/audit-date-created.interface';
 export { AuditDateDeletedInterface } from './audit/interfaces/audit-date-deleted.interface';
 export { AuditDateUpdatedInterface } from './audit/interfaces/audit-date-updated.interface';
-export { AuditVersionInterface } from './audit/interfaces/audit-version.interface';
 export { AuditInterface } from './audit/interfaces/audit.interface';
 
 // exception types
@@ -110,28 +106,3 @@ export { RuntimeExceptionInterface } from './exceptions/interfaces/runtime-excep
 
 // exceptions
 export { RuntimeException } from './exceptions/runtime.exception';
-
-// Hook interfaces and types
-export { SpecificationInterface } from './hooks/interfaces/specification.interface';
-export { HookOption, HookWithSpec } from './hooks/hook.types';
-
-// Context host and decorators
-export { AppContextHost } from './context/app-context.host';
-export { RefsToMethods } from './context/refs-to-methods.type';
-export { getAppContext } from './context/get-app-context.util';
-export { Ctx } from './context/ctx.decorator';
-
-// Context primitives
-export { OverlayRef } from './context/overlay-ref';
-export type { AppContextLike } from './context/app-context-like.type';
-export { OverlayNotDefinedException } from './context/exceptions/overlay-not-defined.exception';
-
-// Context overlay utilities
-export { ContextOverlayInterceptor } from './context/context-overlay.interceptor';
-
-// Context interfaces
-export { AppContextInterface } from './context/interfaces/app-context.interface';
-export { HookContextInterface } from './context/interfaces/hook-context.interface';
-// Event context
-export { EventContextHost } from './events/event-context.host';
-export { EventContextInterface } from './events/interfaces/event-context-interface';

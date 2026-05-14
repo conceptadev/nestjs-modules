@@ -6,7 +6,7 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
-import { createSettingsProvider } from '@concepta/nestjs-common';
+import { createSettingsProvider } from '@concepta/rockets-app';
 
 import {
   CRUD_DEFAULT_RESOLVER_TOKEN,

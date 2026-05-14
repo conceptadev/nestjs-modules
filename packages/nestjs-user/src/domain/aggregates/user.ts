@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 
-import { type DomainFactory, EventContextHost } from '@concepta/nestjs-common';
-import { DomainAggregate } from '@concepta/nestjs-common/aggregate';
+import { type DomainFactory, EventContextHost } from '@concepta/rockets-app';
+import { DomainAggregate } from '@concepta/rockets-app/aggregate';
 
 import { UserCreatedEvent } from '../events/user-created.event';
 import { UserRemovedEvent } from '../events/user-removed.event';

@@ -1,11 +1,8 @@
 import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
-import {
-  AssigneeRelationInterface,
-  ReferenceId,
-} from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
+import { AssigneeRelationInterface, ReferenceId } from '@concepta/rockets-app';
 
 import { InvitationOtpPolicy } from '../policies/invitation-otp.policy';
 

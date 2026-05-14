@@ -6,7 +6,7 @@ import {
   ReferenceId,
   ReferenceIdInterface,
   ReferenceSubject,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 export interface AuthenticationUserInterface {
   email: ReferenceEmail;

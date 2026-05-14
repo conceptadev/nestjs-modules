@@ -68,7 +68,7 @@ optional TypeORM subpath:
 
 ```ts
 import { Entity, ManyToOne, JoinColumn } from 'typeorm';
-import { ReferenceIdInterface } from '@concepta/nestjs-common';
+import { ReferenceIdInterface } from '@concepta/rockets-app';
 import { IdentitySqliteEntity } from '@concepta/nestjs-federated/optional/typeorm';
 import { UserEntity } from '../user/user.entity';
 

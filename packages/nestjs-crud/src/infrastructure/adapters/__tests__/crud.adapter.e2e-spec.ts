@@ -8,7 +8,6 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ActionEnum, AppContextHost, Operation } from '@concepta/nestjs-common';
 import {
   getDynamicRepositoryToken,
   RepoCtx,
@@ -22,6 +21,7 @@ import {
   TypeOrmRepository,
   TypeOrmRepositoryModule,
 } from '@concepta/nestjs-repository-typeorm';
+import { ActionEnum, AppContextHost, Operation } from '@concepta/rockets-app';
 
 import { mockCrudParsedQuery } from '../../../__fixtures__/crud/mocks/crud-parsed-query.mock';
 import { CompanyEntity } from '../../../__fixtures__/typeorm/company/company.entity';

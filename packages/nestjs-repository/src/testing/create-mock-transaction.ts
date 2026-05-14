@@ -1,6 +1,6 @@
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 
-import { AppContextHost } from '@concepta/nestjs-common';
+import { AppContextHost } from '@concepta/rockets-app';
 
 import {
   TransactionContextInterface,

@@ -1,6 +1,6 @@
-import { LiteralObject } from '@concepta/nestjs-common';
+import { PlainLiteralObject } from '@nestjs/common';
 
 export interface InvitationAcceptableInterface {
   passcode: string;
-  payload?: LiteralObject;
+  payload?: PlainLiteralObject;
 }

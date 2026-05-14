@@ -13,7 +13,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { Ctx } from '@concepta/nestjs-common';
+import { Ctx } from '@concepta/rockets-app';
 
 import { VerifyService } from '../../../../../application/services/verify/verify.service';
 import { AuthPublic } from '../../../../decorators/auth-public.decorator';

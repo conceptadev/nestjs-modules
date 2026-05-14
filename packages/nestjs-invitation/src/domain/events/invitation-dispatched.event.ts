@@ -1,6 +1,6 @@
 import { IEvent } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/rockets-app';
 
 import { InvitationDispatchedMetadataInterface } from './interfaces/invitation-dispatched-metadata.interface';
 import { InvitationEventHeaderInterface } from './interfaces/invitation-event-header.interface';

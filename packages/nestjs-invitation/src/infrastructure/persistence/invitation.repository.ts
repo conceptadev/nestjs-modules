@@ -1,7 +1,7 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceId } from '@concepta/nestjs-common';
 import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
+import { ReferenceId } from '@concepta/rockets-app';
 
 import { Invitation } from '../../domain/aggregates/invitation';
 import { InvitationRepositoryInterface } from '../../domain/repositories/invitation-repository.interface';

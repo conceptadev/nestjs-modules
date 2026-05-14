@@ -3,8 +3,8 @@ import { randomUUID } from 'crypto';
 import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
 import { EventPublisher } from '@nestjs/cqrs';
 
-import { EventContextHost, ReferenceId } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
+import { EventContextHost, ReferenceId } from '@concepta/rockets-app';
 
 import { InvitationNotFoundException } from '../../application/exceptions/invitation-not-found.exception';
 import { InvitationUserUndefinedException } from '../../application/exceptions/invitation-user-undefined.exception';

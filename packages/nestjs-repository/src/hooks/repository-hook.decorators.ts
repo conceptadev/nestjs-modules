@@ -1,9 +1,9 @@
-import { SpecificationInterface } from '@concepta/nestjs-common';
 import {
+  SpecificationInterface,
   createHookMethodDecorator,
   Hook,
   HookTypeInterface,
-} from '@concepta/nestjs-hook';
+} from '@concepta/rockets-app';
 
 /**
  * Repository hook method keys.

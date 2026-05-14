@@ -5,8 +5,8 @@ import {
   ReadOperations,
   SpecificationInterface,
   WriteOperations,
-} from '@concepta/nestjs-common';
-import { Spec } from '@concepta/nestjs-hook';
+  Spec,
+} from '@concepta/rockets-app';
 
 import { ActionSpecification } from './action.specification';
 import { CrudSpecContextInterface } from './interfaces/crud-spec-context.interface';

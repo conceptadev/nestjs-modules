@@ -8,7 +8,7 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 
 import { DecoratorTargetObject } from '../../../crud.types';
 import { CrudInvalidResponseDto } from '../../dtos/crud-invalid-response.dto';

@@ -1,4 +1,4 @@
-import { DomainMapper } from '@concepta/nestjs-common/aggregate';
+import { DomainMapper } from '@concepta/rockets-app/aggregate';
 
 import { Otp } from '../../domain/aggregates/otp';
 import { OtpInterface } from '../../domain/interfaces/otp.interface';

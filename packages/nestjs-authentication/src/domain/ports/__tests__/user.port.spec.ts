@@ -3,7 +3,7 @@ import { mock } from 'jest-mock-extended';
 import { PlainLiteralObject } from '@nestjs/common';
 import { Command, CommandBus, Query, QueryBus } from '@nestjs/cqrs';
 
-import { ReferenceId } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/rockets-app';
 
 import {
   AuthenticationUserInterface,

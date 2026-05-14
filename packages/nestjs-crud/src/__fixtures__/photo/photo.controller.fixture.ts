@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { Ctx } from '@concepta/nestjs-common';
+import { Ctx } from '@concepta/rockets-app';
 
 import { CrudCreateBatchCommand } from '../../application/commands/impl/crud-create-batch.command';
 import { CrudCreateCommand } from '../../application/commands/impl/crud-create.command';

@@ -3,7 +3,7 @@ import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
 import {
   AssigneeRelationInterface,
   ReferenceIdInterface,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 import {
   AUTHENTICATION_OTP_PORT_TOKEN,

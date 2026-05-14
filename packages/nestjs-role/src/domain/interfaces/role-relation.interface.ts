@@ -1,4 +1,4 @@
-import { ReferenceId } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/rockets-app';
 
 /**
  * Belongs to role.

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { ReferenceIdInterface, getAppContext } from '@concepta/nestjs-common';
+import { ReferenceIdInterface, getAppContext } from '@concepta/rockets-app';
 
 import {
   AUTHENTICATION_JWT_PORT_TOKEN,

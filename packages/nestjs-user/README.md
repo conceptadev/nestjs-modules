@@ -39,7 +39,7 @@ yarn add @concepta/nestjs-user
 
 | Package | Notes |
 | --- | --- |
-| `@concepta/nestjs-common` | Core interfaces, event context, and utilities |
+| `@concepta/rockets-app` | Core interfaces, event context, and utilities |
 | `@concepta/nestjs-repository` | Repository abstraction and transaction scope |
 | `@concepta/nestjs-password` | Password hashing and validation |
 | `@concepta/nestjs-event` | Event dispatch/listener utilities |
@@ -361,7 +361,7 @@ import {
 | `UserPasswordHistoryViolationException` | 400 | `USER_PASSWORD_HISTORY_VIOLATION` |
 
 All exceptions extend `UserException`, which extends `RuntimeException` from
-`@concepta/nestjs-common`.
+`@concepta/rockets-app`.
 
 ## Environment Variables
 

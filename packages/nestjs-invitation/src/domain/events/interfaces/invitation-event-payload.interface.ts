@@ -2,7 +2,7 @@ import {
   AuditInterface,
   ReferenceIdInterface,
   ReferenceVersionInterface,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 import { InvitationInterface } from '../../interfaces/invitation.interface';
 

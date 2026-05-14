@@ -1,7 +1,7 @@
 import { PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { AssigneeRelationInterface } from '@concepta/nestjs-common';
+import { AssigneeRelationInterface } from '@concepta/rockets-app';
 
 import { OtpInterface } from '../../../domain/interfaces/otp.interface';
 

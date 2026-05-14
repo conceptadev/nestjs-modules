@@ -1,10 +1,10 @@
 import { Exclude, Expose } from 'class-transformer';
 import { IsBoolean, IsObject, IsOptional, IsString } from 'class-validator';
 
+import { PlainLiteralObject } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { LiteralObject } from '@concepta/nestjs-common';
-import { DomainAggregateDto } from '@concepta/nestjs-common/aggregate';
+import { DomainAggregateDto } from '@concepta/rockets-app/aggregate';
 
 import { InvitationInterface } from '../../domain/interfaces/invitation.interface';
 
@@ -45,7 +45,7 @@ export class InvitationDto
   })
   @IsObject()
   @IsOptional()
-  constraints!: LiteralObject | undefined;
+  constraints!: PlainLiteralObject | undefined;
 
   @Expose()
   @ApiProperty({

@@ -1,6 +1,6 @@
 import { HttpException, PlainLiteralObject } from '@nestjs/common';
 
-import { DeepPartial } from '@concepta/nestjs-common';
+import { DeepPartial } from '@concepta/rockets-app';
 
 import { CrudQueryException } from '../../../infrastructure/exceptions/crud-query.exception';
 import { CrudReplaceCommand } from '../impl/crud-replace.command';

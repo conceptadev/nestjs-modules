@@ -3,7 +3,7 @@ import { IsBoolean, IsEmail, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { DomainAggregateDto } from '@concepta/nestjs-common/aggregate';
+import { DomainAggregateDto } from '@concepta/rockets-app/aggregate';
 
 import { UserInterface } from '../../domain/interfaces/user.interface';
 

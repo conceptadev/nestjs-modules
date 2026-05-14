@@ -1,4 +1,4 @@
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 
 import { CRUD_MODULE_ROUTE_OPERATION_METADATA } from '../../../crud.constants';
 import {

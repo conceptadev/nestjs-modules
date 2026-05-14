@@ -3,7 +3,7 @@ import { Strategy as PassportStrategy } from 'passport-strategy';
 
 import { HttpStatus } from '@nestjs/common';
 
-import { NotAnErrorException } from '@concepta/nestjs-common';
+import { NotAnErrorException } from '@concepta/rockets-app';
 
 import { JwtVerifyException } from '../jwt/exceptions/jwt-verify.exception';
 

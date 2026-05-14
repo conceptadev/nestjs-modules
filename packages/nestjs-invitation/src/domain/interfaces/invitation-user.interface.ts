@@ -1,3 +1,3 @@
-import { ReferenceEmailInterface } from '@concepta/nestjs-common';
+import { ReferenceEmailInterface } from '@concepta/rockets-app';
 
 export interface InvitationUserInterface extends ReferenceEmailInterface {}

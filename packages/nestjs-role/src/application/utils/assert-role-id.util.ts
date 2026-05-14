@@ -1,6 +1,6 @@
 import { isString } from 'class-validator';
 
-import { ReferenceId } from '@concepta/nestjs-common';
+import { ReferenceId } from '@concepta/rockets-app';
 
 import { RoleException } from '../exceptions/role.exception';
 

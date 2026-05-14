@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { RuntimeExceptionOptions } from '@concepta/nestjs-common';
+import { RuntimeExceptionOptions } from '@concepta/rockets-app';
 
 import { CrudException } from '../../exceptions/crud.exception';
 

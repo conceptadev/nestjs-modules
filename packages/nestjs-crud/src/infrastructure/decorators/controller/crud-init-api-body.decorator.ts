@@ -2,7 +2,7 @@ import { Type } from '@nestjs/common';
 import { MetadataScanner } from '@nestjs/core';
 import { ApiBody, ApiExtraModels } from '@nestjs/swagger';
 
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 
 import { CrudMetaview } from '../../services/crud-metaview.service';
 import { swaggerConst } from '../../utils/swagger.helper';

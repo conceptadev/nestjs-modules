@@ -1,10 +1,10 @@
 import { randomUUID } from 'crypto';
 
-import { DomainFactory, EventContextHost } from '@concepta/nestjs-common';
+import { DomainFactory, EventContextHost } from '@concepta/rockets-app';
 import {
   AggregateMetaInterface,
   DomainAggregate,
-} from '@concepta/nestjs-common/aggregate';
+} from '@concepta/rockets-app/aggregate';
 
 import { TokenIssuedEvent } from '../events/token-issued.event';
 import { TokenRevokedEvent } from '../events/token-revoked.event';

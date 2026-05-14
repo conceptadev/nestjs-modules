@@ -40,9 +40,9 @@ yarn add @concepta/nestjs-crud
 
 | Package | Notes |
 | --- | --- |
-| `@concepta/nestjs-common` | Core interfaces and utilities |
+| `@concepta/rockets-app` | Core interfaces and utilities |
 | `@concepta/nestjs-repository` | Repository abstraction layer |
-| `@concepta/nestjs-hook` | Hook system integration |
+| `@concepta/rockets-app` | Hook system integration |
 | `@nestjs/common` | NestJS core |
 | `@nestjs/core` | Module reference and reflection |
 | `@nestjs/swagger` | OpenAPI decorator support |
@@ -130,7 +130,7 @@ export class PhotoPaginatedDto extends CrudResponsePaginatedDto<PhotoDto> {
 
 ```ts
 import { Module } from '@nestjs/common';
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 import { CrudModule } from '@concepta/nestjs-crud';
@@ -301,7 +301,7 @@ Zero hand-written controller code. Pass controller options and an operations
 array — the builder generates the controller class, methods, and providers.
 
 ```ts
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 import { ConfigurableCrudBuilder } from '@concepta/nestjs-crud';
 
 const builder = new ConfigurableCrudBuilder<PhotoEntity>({
@@ -333,7 +333,7 @@ implementations. The builder extracts handler metadata for provider registration
 
 ```ts
 import { Inject } from '@nestjs/common';
-import { Ctx } from '@concepta/nestjs-common';
+import { Ctx } from '@concepta/rockets-app';
 import {
   CrudController,
   CrudList,
@@ -858,11 +858,11 @@ export class AuditHook {
 
 ### Registering Hooks
 
-Attach hooks to a controller with `@UseHooks()` from `@concepta/nestjs-hook`.
+Attach hooks to a controller with `@UseHooks()` from `@concepta/rockets-app`.
 Hooks can be plain classes or `{ hook, spec }` objects:
 
 ```ts
-import { UseHooks } from '@concepta/nestjs-hook';
+import { UseHooks } from '@concepta/rockets-app';
 import { CrudSpec } from '@concepta/nestjs-crud';
 
 // Simple: hook runs for all operations on this controller

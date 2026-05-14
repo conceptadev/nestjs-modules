@@ -1,5 +1,4 @@
-import { ActionEnum, Operation } from '@concepta/nestjs-common';
-import { Spec } from '@concepta/nestjs-hook';
+import { ActionEnum, Operation, Spec } from '@concepta/rockets-app';
 
 import { ActionSpecification } from '../infrastructure/specifications/action.specification';
 import { CrudSpec } from '../infrastructure/specifications/crud-spec.factory';

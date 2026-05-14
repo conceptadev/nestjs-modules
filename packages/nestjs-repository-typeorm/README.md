@@ -35,8 +35,8 @@ yarn add @concepta/nestjs-repository-typeorm
 
 | Package | Notes |
 | --- | --- |
-| `@concepta/nestjs-common` | Core interfaces and utilities |
-| `@concepta/nestjs-hook` | Hook system for repository lifecycle events |
+| `@concepta/rockets-app` | Core interfaces and utilities |
+| `@concepta/rockets-app` | Hook system for repository lifecycle events |
 | `@concepta/nestjs-repository` | Abstract repository layer (`RepositoryAdapter`) |
 | `@nestjs/common` | NestJS core |
 | `@nestjs/typeorm` | TypeORM integration for NestJS |
@@ -148,7 +148,7 @@ export class OrderService {
 `TypeOrmRepository` extends `RepositoryAdapter` from
 `@concepta/nestjs-repository` and implements all abstract methods using
 TypeORM. Every operation is transaction-aware, runs repository hooks,
-and throws `ModelQueryException` on errors.
+and throws `RepositoryQueryException` on errors.
 
 ### Methods
 
@@ -345,7 +345,7 @@ fine-grained hooks fire automatically.
 | `softDelete` | `beforeTransition` -> `beforeSoftDelete` | `afterSoftDelete` -> `afterTransition` |
 | `restore` | `beforeTransition` -> `beforeRestore` | `afterRestore` -> `afterTransition` |
 
-Hooks are resolved via `HookResolverService` from `@concepta/nestjs-hook`.
+Hooks are resolved via `HookResolverService` from `@concepta/rockets-app`.
 The hook resolver is optional -- `TypeOrmRepository` works without it.
 
 ## Base Entities
@@ -401,7 +401,7 @@ Postgres and SQLite variants:
 | Exception | Description |
 | --- | --- |
 | `TypeOrmEntityNameException` | Entity name cannot be resolved from TypeORM repository metadata |
-| `ModelQueryException` | TypeORM query error (wraps original error) |
+| `RepositoryQueryException` | Repository query error (wraps original error) |
 
 ## Entry Points
 

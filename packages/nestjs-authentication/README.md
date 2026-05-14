@@ -207,7 +207,7 @@ import { Command } from '@nestjs/cqrs';
 import {
   ValidatePasswordCommandInterface,
 } from '@concepta/nestjs-authentication';
-import { ReferenceIdInterface } from '@concepta/nestjs-common';
+import { ReferenceIdInterface } from '@concepta/rockets-app';
 
 export class ValidatePasswordCommand
   extends Command<boolean>
@@ -919,7 +919,7 @@ AuthenticationModule.forRoot({
 
 ```typescript
 import { AuthUserCtx } from '@concepta/nestjs-authentication';
-import { getAppContext } from '@concepta/nestjs-common';
+import { getAppContext } from '@concepta/rockets-app';
 
 // In a handler or interceptor:
 const ctx = getAppContext(request);
@@ -1085,7 +1085,7 @@ user without taking it as a parameter.
 
 **Runtime dependencies:**
 
-- [`@concepta/nestjs-common`](../nestjs-common) — `AppContextHost`, `OverlayRef`,
+- [`@concepta/rockets-app`](../nestjs-common) — `AppContextHost`, `OverlayRef`,
   `ReferenceId`, event/exception base classes.
 - [`@concepta/nestjs-password`](../nestjs-password) — password hashing and
   validation utilities (typically used in `PasswordPort` command handlers).

@@ -1,5 +1,5 @@
-import { LiteralObject } from '@concepta/nestjs-common';
+import { PlainLiteralObject } from '@nestjs/common';
 
 export interface RoleSettingsInterface {
-  assignments: LiteralObject<{ entityKey: string }>;
+  assignments: PlainLiteralObject & { entityKey: string };
 }

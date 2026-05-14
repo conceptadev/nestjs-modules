@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { ActionEnum, Operation } from '@concepta/nestjs-common';
+import { ActionEnum, Operation } from '@concepta/rockets-app';
 
 import { CrudParsedQueryInterface } from '../../request/interfaces/crud-parsed-query.interface';
 import { CrudSpecContextInterface } from '../../specifications/interfaces/crud-spec-context.interface';

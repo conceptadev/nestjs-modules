@@ -1,4 +1,4 @@
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 
 import { CrudQueryBuilder } from '../request/crud-query.builder';
 

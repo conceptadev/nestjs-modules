@@ -38,7 +38,7 @@ yarn add @concepta/nestjs-role
 
 | Package | Notes |
 | --- | --- |
-| `@concepta/nestjs-common` | Core interfaces, event context, and utilities |
+| `@concepta/rockets-app` | Core interfaces, event context, and utilities |
 | `@concepta/nestjs-repository` | Repository abstraction and transaction scope |
 | `@nestjs/common` | NestJS core |
 | `@nestjs/core` | Module reference and reflection |
@@ -491,7 +491,7 @@ the role request handlers:
 
 ```ts
 import { Module } from '@nestjs/common';
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 import { CrudModule, CrudCqrsResolver } from '@concepta/nestjs-crud';
 import {
   RoleInterface,
@@ -641,7 +641,7 @@ Exported from `@concepta/nestjs-role/optional/crud`:
 | `RoleEntityNotFoundException` | — | `ROLE_ENTITY_NOT_FOUND_ERROR` | `{ entityName }` |
 
 All exceptions extend `RoleException`, which extends `RuntimeException` from
-`@concepta/nestjs-common`.
+`@concepta/rockets-app`.
 
 ## Seeding (Optional)
 

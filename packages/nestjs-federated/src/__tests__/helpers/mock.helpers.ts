@@ -1,10 +1,10 @@
 import { mock } from 'jest-mock-extended';
 
+import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 import {
   createMockCommandBus,
   createMockEventPublisher,
-} from '@concepta/nestjs-common/testing';
-import { createMockTransaction } from '@concepta/nestjs-repository/testing';
+} from '@concepta/rockets-app/testing';
 
 import { Identity } from '../../domain/aggregates/identity';
 import { FederatedUserPort } from '../../domain/ports/federated-user.port';

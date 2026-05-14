@@ -1,6 +1,6 @@
 import { PrimaryGeneratedColumn } from 'typeorm';
 
-import { AuditInterface, ReferenceIdInterface } from '@concepta/nestjs-common';
+import { AuditInterface, ReferenceIdInterface } from '@concepta/rockets-app';
 
 import { AuditSqlLiteEntity } from '../audit/audit-sqlite.entity';
 

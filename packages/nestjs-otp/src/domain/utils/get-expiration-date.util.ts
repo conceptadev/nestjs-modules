@@ -1,4 +1,4 @@
-import { toMilliseconds } from '@concepta/nestjs-common';
+import { toMilliseconds } from '@concepta/rockets-app';
 
 import { OtpInvalidExpirationDateException } from '../exceptions/otp-invalid-expiration-date.exception';
 

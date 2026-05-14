@@ -1,9 +1,8 @@
 import { Expose } from 'class-transformer';
 import { IsObject, IsOptional, IsString } from 'class-validator';
 
+import { PlainLiteralObject } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-
-import { LiteralObject } from '@concepta/nestjs-common';
 
 import { InvitationAcceptableInterface } from '../../domain/interfaces/invitation-acceptable.interface';
 
@@ -28,5 +27,5 @@ export class InvitationAcceptDto implements InvitationAcceptableInterface {
   })
   @IsObject()
   @IsOptional()
-  payload?: LiteralObject;
+  payload?: PlainLiteralObject;
 }

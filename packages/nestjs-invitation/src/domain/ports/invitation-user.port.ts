@@ -5,7 +5,7 @@ import {
   ReferenceEmail,
   ReferenceId,
   ReferenceIdInterface,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 import { InvitationUserInterface } from '../interfaces/invitation-user.interface';
 

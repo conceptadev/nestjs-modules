@@ -1,6 +1,6 @@
 import { Inject, PlainLiteralObject } from '@nestjs/common';
 
-import { Ctx, Operation } from '@concepta/nestjs-common';
+import { Ctx, Operation } from '@concepta/rockets-app';
 
 import { ConfigurableCrudOptionsTransformer } from '../../../crud.types';
 import { CrudAdapter } from '../../adapters/crud.adapter';

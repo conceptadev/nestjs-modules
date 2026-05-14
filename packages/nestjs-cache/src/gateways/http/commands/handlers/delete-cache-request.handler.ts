@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { Operation } from '@concepta/nestjs-common';
+import { Operation } from '@concepta/rockets-app';
 
 import { ArchiveCacheCommand } from '../../../../application/commands/impl/archive-cache.command';
 import { RemoveCacheCommand } from '../../../../application/commands/impl/remove-cache.command';

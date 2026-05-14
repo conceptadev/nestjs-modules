@@ -11,7 +11,7 @@ import {
   AuditDateUpdated,
   AuditInterface,
   AuditVersion,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 /**
  * Audit Postgres

@@ -1,11 +1,11 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-common';
 import {
   TransactionContextInterface,
   TransactionScope,
 } from '@concepta/nestjs-repository';
+import { EventContextHost } from '@concepta/rockets-app';
 
 import { Otp } from '../../../domain/aggregates/otp';
 import { OtpLimitReachedException } from '../../../domain/exceptions/otp-limit-reached.exception';

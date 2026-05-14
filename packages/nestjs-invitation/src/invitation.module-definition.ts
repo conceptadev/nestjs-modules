@@ -6,8 +6,8 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
 
-import { createSettingsProvider } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
+import { createSettingsProvider } from '@concepta/rockets-app';
 
 import { AcceptInvitationHandler } from './application/commands/handlers/accept-invitation.handler';
 import { CreateInvitationByEmailHandler } from './application/commands/handlers/create-invitation-by-email.handler';

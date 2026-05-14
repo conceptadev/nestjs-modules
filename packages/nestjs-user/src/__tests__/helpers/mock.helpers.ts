@@ -2,12 +2,12 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 
 import { EventPublisher } from '@nestjs/cqrs';
 
-import { AppContextHost } from '@concepta/nestjs-common';
 import {
   TrxCtx,
   TransactionScope,
   TransactionContextInterface,
 } from '@concepta/nestjs-repository';
+import { AppContextHost } from '@concepta/rockets-app';
 
 import { User } from '../../domain/aggregates/user';
 import { UserCredentials } from '../../domain/aggregates/user-credentials';

@@ -3,8 +3,8 @@ import { IsString, ValidateNested } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { ReferenceIdDto, ReferenceIdInterface } from '@concepta/nestjs-common';
-import { DomainAggregateDto } from '@concepta/nestjs-common/aggregate';
+import { ReferenceIdDto, ReferenceIdInterface } from '@concepta/rockets-app';
+import { DomainAggregateDto } from '@concepta/rockets-app/aggregate';
 
 import { IdentityInterface } from '../../domain/interfaces/identity.interface';
 

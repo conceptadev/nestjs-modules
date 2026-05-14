@@ -1,8 +1,8 @@
 import { Inject } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 
-import { AppContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
+import { AppContextHost } from '@concepta/rockets-app';
 
 import { OtpCreatedEvent } from '../../domain/events/otp-created.event';
 import { OtpHistoryCleanupService } from '../../domain/services/otp-history-cleanup.service';

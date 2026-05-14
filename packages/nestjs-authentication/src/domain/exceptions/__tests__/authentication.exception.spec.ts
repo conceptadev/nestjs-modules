@@ -1,4 +1,4 @@
-import { RuntimeException } from '@concepta/nestjs-common';
+import { RuntimeException } from '@concepta/rockets-app';
 
 import { AuthenticationException } from '../authentication.exception';
 

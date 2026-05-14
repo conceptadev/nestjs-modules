@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { RuntimeException } from '@concepta/nestjs-common';
+import { RuntimeException } from '@concepta/rockets-app';
 
 import {
   WhereClause,

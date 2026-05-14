@@ -1,4 +1,4 @@
-import { DomainMapper } from '@concepta/nestjs-common/aggregate';
+import { DomainMapper } from '@concepta/rockets-app/aggregate';
 
 import { UserCredentials } from '../../domain/aggregates/user-credentials';
 import { UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';

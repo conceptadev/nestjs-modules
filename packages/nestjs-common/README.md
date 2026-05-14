@@ -24,7 +24,6 @@ exception handling, and shared DTOs.
 - [Context Overlay System](#context-overlay-system)
 - [Event Context](#event-context)
 - [Exceptions](#exceptions)
-- [Hooks](#hooks)
 - [Utilities](#utilities)
 - [Module Configuration](#module-configuration)
 - [DTOs](#dtos)
@@ -185,7 +184,7 @@ Small, composable interfaces for common entity fields:
 
 `AppContextHost` is a per-request container that carries feature-specific
 context through the NestJS request pipeline. Interceptors define **overlays**
-early in the pipeline (e.g. namespace, transaction, hooks), and downstream
+early in the pipeline (e.g. namespace, transaction), and downstream
 handlers consume them via typed `with*()` methods. A `Proxy` guard throws
 `OverlayNotDefinedException` if you call an undefined `with*` method,
 catching misconfiguration at runtime.
@@ -457,22 +456,6 @@ Behavior:
 | `NotAnErrorException` | Wraps non-Error throws |
 | `mapNonErrorToException(error)` | Returns `error` if `Error`, else wraps in `NotAnErrorException` |
 | `mapHttpStatus(statusCode)` | Maps an HTTP status code to a string error code |
-
-## Hooks
-
-The hook system supports conditional execution of hook providers
-via the specification pattern.
-
-```ts
-import { SpecificationInterface, HookOption, HookWithSpec } from '@concepta/nestjs-common';
-```
-
-| Export | Description |
-| --- | --- |
-| `SpecificationInterface<Ctx>` | Contract with `isSatisfiedBy(context): boolean`. Used to guard hook execution. |
-| `HookOption` | Union: a bare NestJS injectable class, or a `HookWithSpec` configuration. |
-| `HookWithSpec` | Object with `hook` (class), optional `type` (string), and optional `spec` (specification guard). |
-| `HookContextInterface` | Context interface carrying the resolved `hooks: HookWithSpec[]` array. Propagated through the request context overlay system. |
 
 ## Utilities
 

@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
 
-import { DeepPartial } from '@concepta/nestjs-common';
+import { DeepPartial } from '@concepta/rockets-app';
 
 import { InvitationSettingsInterface } from '../interfaces/options/invitation-settings.interface';
 import { INVITATION_MODULE_DEFAULT_SETTINGS_TOKEN } from '../invitation.constants';

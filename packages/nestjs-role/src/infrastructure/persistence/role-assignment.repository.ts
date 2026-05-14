@@ -1,7 +1,7 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceId } from '@concepta/nestjs-common';
 import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
+import { ReferenceId } from '@concepta/rockets-app';
 
 import { RoleAssignment } from '../../domain/aggregates/role-assignment';
 import { RoleAssignmentEntityInterface } from '../../domain/interfaces/role-assignment-entity.interface';

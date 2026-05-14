@@ -1,17 +1,17 @@
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 
+import { CrudContextInterface, CrudCtx } from '@concepta/nestjs-crud';
+import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 import {
   ActionEnum,
   AppContextHost,
   EventContextHost,
   Operation,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 import {
   createMockCommandBus,
   createMockEventPublisher,
-} from '@concepta/nestjs-common/testing';
-import { CrudContextInterface, CrudCtx } from '@concepta/nestjs-crud';
-import { createMockTransaction } from '@concepta/nestjs-repository/testing';
+} from '@concepta/rockets-app/testing';
 
 import { Cache } from '../../domain/aggregates/cache';
 import { CacheCtx } from '../../gateways/cache-context.overlay';

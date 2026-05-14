@@ -1,6 +1,6 @@
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 
-import { EventContextHost } from '@concepta/nestjs-common';
+import { EventContextHost } from '@concepta/rockets-app';
 
 import { InvitationRevokedEvent } from '../../../domain/events/invitation-revoked.event';
 import { InvitationOtpPort } from '../../../domain/ports/invitation-otp.port';

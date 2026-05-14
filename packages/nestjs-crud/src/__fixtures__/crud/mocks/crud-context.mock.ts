@@ -1,6 +1,6 @@
 import { PlainLiteralObject } from '@nestjs/common';
 
-import { ActionEnum, AppContextHost, Operation } from '@concepta/nestjs-common';
+import { ActionEnum, AppContextHost, Operation } from '@concepta/rockets-app';
 
 import { CrudCtx } from '../../../infrastructure/interceptors/crud-context.overlay';
 import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';

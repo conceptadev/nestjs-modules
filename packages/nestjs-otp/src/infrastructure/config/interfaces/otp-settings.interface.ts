@@ -1,9 +1,7 @@
-import { LiteralObject } from '@concepta/nestjs-common';
-
 import { OtpTypeServiceInterface } from './otp-type-service.interface';
 
 export interface OtpSettingsInterface {
-  types: LiteralObject<OtpTypeServiceInterface>;
+  types: { [key: string]: OtpTypeServiceInterface };
 
   /**
    * Strategy for handling duplicate OTPs for the same assignee and category.

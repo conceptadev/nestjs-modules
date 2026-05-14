@@ -3,7 +3,7 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { getAppContext } from '@concepta/nestjs-common';
+import { getAppContext } from '@concepta/rockets-app';
 
 import { OtpCtx, OtpContextOverlay } from '../otp-context.overlay';
 

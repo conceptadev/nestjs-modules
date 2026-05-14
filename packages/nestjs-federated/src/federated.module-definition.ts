@@ -6,7 +6,7 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
 
-import { createSettingsProvider } from '@concepta/nestjs-common';
+import { createSettingsProvider } from '@concepta/rockets-app';
 
 import { CreateIdentityHandler } from './application/commands/handlers/create-identity.handler';
 import { FindIdentityByProviderHandler } from './application/queries/handlers/find-identity-by-provider.handler';

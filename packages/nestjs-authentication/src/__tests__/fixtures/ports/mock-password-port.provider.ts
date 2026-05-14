@@ -1,7 +1,7 @@
 import { PlainLiteralObject, Provider } from '@nestjs/common';
 import { Command, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 
-import { ReferenceId, ReferenceIdInterface } from '@concepta/nestjs-common';
+import { ReferenceId, ReferenceIdInterface } from '@concepta/rockets-app';
 
 import {
   PasswordPortSettings,

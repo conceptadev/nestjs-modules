@@ -5,7 +5,7 @@ import {
   ContextOverlayInterceptor,
   getAppContext,
   OverlayRef,
-} from '@concepta/nestjs-common';
+} from '@concepta/rockets-app';
 
 import {
   OTP_NAMESPACE_KEY,

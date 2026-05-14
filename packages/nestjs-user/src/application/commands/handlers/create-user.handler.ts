@@ -6,8 +6,8 @@ import {
   ICommandHandler,
 } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-common';
 import { TransactionScope } from '@concepta/nestjs-repository';
+import { EventContextHost } from '@concepta/rockets-app';
 
 import { User } from '../../../domain/aggregates/user';
 import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface';
