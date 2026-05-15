@@ -1,0 +1,53 @@
+{
+  "name": "@concepta/rockets-crud",
+  "version": "0.0.1-alpha.0",
+  "description": "Rockets NestJS CRUD",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "BSD-3-Clause",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "!dist/**/__tests__/**",
+    "!dist/**/__fixtures__/**"
+  ],
+  "dependencies": {
+    "@concepta/rockets-app": "^0.0.1-alpha.0",
+    "@concepta/rockets-repository": "0.0.1-alpha.0",
+    "@nestjs/common": "^11.1.9",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/core": "^11.1.9",
+    "@nestjs/swagger": "^11.2.2",
+    "deepmerge": "^3.2.0",
+    "qs": "^6.14.0"
+  },
+  "devDependencies": {
+    "@concepta/rockets-repository-typeorm": "0.0.1-alpha.0",
+    "@concepta/typeorm-seeding": "^4.0.0",
+    "@faker-js/faker": "^8.4.1",
+    "@nestjs/cqrs": "^11.0.0",
+    "@nestjs/testing": "^11.1.9",
+    "@nestjs/typeorm": "^11.0.0",
+    "jest-extended": "^7.0.0",
+    "jest-mock-extended": "^4.0.0",
+    "supertest": "^6.3.4",
+    "typeorm": "^0.3.28"
+  },
+  "peerDependencies": {
+    "@concepta/rockets-repository-typeorm": "0.0.1-alpha.0",
+    "@nestjs/cqrs": "^11.0.0",
+    "class-transformer": "*",
+    "class-validator": "*",
+    "rxjs": "^7.1.0"
+  },
+  "peerDependenciesMeta": {
+    "@concepta/rockets-repository-typeorm": {
+      "optional": true
+    },
+    "@nestjs/cqrs": {
+      "optional": true
+    }
+  }
+}

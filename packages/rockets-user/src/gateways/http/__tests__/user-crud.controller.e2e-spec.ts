@@ -1,0 +1,224 @@
+import supertest from 'supertest';
+
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getDataSourceToken } from '@nestjs/typeorm';
+
+import { TransactionScope } from '@concepta/rockets-repository';
+import { SeedingSource } from '@concepta/typeorm-seeding';
+
+import { UserEntityFixture } from '../../../__tests__/fixtures/entities/user.entity.fixture';
+import { UserEntityInterface } from '../../../domain/interfaces/user-entity.interface';
+import { UserFactory } from '../../../infrastructure/seeding/user.factory';
+import { UserSeeder } from '../../../infrastructure/seeding/user.seeder';
+
+import { AppModuleCrudFixture } from './fixtures/app-crud.module.fixture';
+import { FakeAuthInterceptorFixture } from './fixtures/fake-auth.interceptor.fixture';
+
+describe('UserCrudController (e2e)', () => {
+  let app: INestApplication;
+  let seedingSource: SeedingSource;
+  let txSpy: jest.SpyInstance;
+
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModuleCrudFixture],
+    }).compile();
+    app = moduleFixture.createNestApplication();
+    await app.init();
+
+    const txScope = app.get(TransactionScope);
+    txSpy = jest.spyOn(txScope, 'run');
+
+    seedingSource = new SeedingSource({
+      dataSource: app.get(getDataSourceToken()),
+    });
+
+    await seedingSource.initialize();
+
+    const userSeeder = new UserSeeder({
+      factories: [new UserFactory({ entity: UserEntityFixture })],
+    });
+
+    await seedingSource.run.one(userSeeder);
+  });
+
+  afterEach(async () => {
+    jest.clearAllMocks();
+    return app ? await app.close() : undefined;
+  });
+
+  describe('User CRUD', () => {
+    it('GET /user', async () => {
+      const res = await supertest(app.getHttpServer())
+        .get('/user?limit=10')
+        .expect(200);
+
+      expect(res.body).toEqual({
+        count: expect.any(Number),
+        total: expect.any(Number),
+        page: 1,
+        pageCount: expect.any(Number),
+        limit: 10,
+        data: expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(String),
+            username: expect.any(String),
+            email: expect.any(String),
+          }),
+        ]),
+      });
+    });
+
+    it('GET /user/:id', async () => {
+      const listRes = await supertest(app.getHttpServer())
+        .get('/user?limit=1')
+        .expect(200);
+
+      const user = listRes.body.data[0];
+
+      const res = await supertest(app.getHttpServer())
+        .get(`/user/${user.id}`)
+        .expect(200);
+
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          id: user.id,
+          username: user.username,
+          email: user.email,
+        }),
+      );
+    });
+
+    it('POST /user', async () => {
+      const res = await supertest(app.getHttpServer())
+        .post('/user')
+        .send({
+          username: 'user1',
+          email: 'user1@dispostable.com',
+          password: 'pass1',
+        })
+        .expect(201);
+
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          username: 'user1',
+          email: 'user1@dispostable.com',
+        }),
+      );
+    });
+
+    it('POST /user (no password)', async () => {
+      const res = await supertest(app.getHttpServer())
+        .post('/user')
+        .send({
+          username: 'user1',
+          email: 'user1@dispostable.com',
+        })
+        .expect(201);
+
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          username: 'user1',
+          email: 'user1@dispostable.com',
+        }),
+      );
+    });
+
+    it('DELETE /user/:id', async () => {
+      const listRes = await supertest(app.getHttpServer())
+        .get('/user?limit=1')
+        .expect(200);
+
+      await supertest(app.getHttpServer())
+        .delete(`/user/${listRes.body.data[0].id}`)
+        .expect(204);
+    });
+  });
+
+  describe('@Transactional', () => {
+    it('should use transaction for POST /user', async () => {
+      await supertest(app.getHttpServer())
+        .post('/user')
+        .send({ username: 'tx-test', email: 'tx@test.com' })
+        .expect(201);
+
+      expect(txSpy).toHaveBeenCalled();
+    });
+
+    it('should NOT use transaction for GET /user (list)', async () => {
+      txSpy.mockClear();
+
+      await supertest(app.getHttpServer()).get('/user?limit=1').expect(200);
+
+      expect(txSpy).not.toHaveBeenCalled();
+    });
+
+    it('should NOT use transaction for GET /user/:id (read)', async () => {
+      const listRes = await supertest(app.getHttpServer())
+        .get('/user?limit=1')
+        .expect(200);
+
+      txSpy.mockClear();
+
+      await supertest(app.getHttpServer())
+        .get(`/user/${listRes.body.data[0].id}`)
+        .expect(200);
+
+      expect(txSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Password CRUD', () => {
+    let userA: UserEntityInterface;
+    let userB: UserEntityInterface;
+    let fakeAuth: FakeAuthInterceptorFixture;
+
+    beforeEach(async () => {
+      fakeAuth = app.get(FakeAuthInterceptorFixture);
+
+      // Create two users with known passwords
+      const resA = await supertest(app.getHttpServer())
+        .post('/user')
+        .send({
+          username: 'user-a',
+          email: 'user-a@test.com',
+          password: 'passwordA',
+        })
+        .expect(201);
+
+      userA = resA.body;
+
+      const resB = await supertest(app.getHttpServer())
+        .post('/user')
+        .send({
+          username: 'user-b',
+          email: 'user-b@test.com',
+          password: 'passwordB',
+        })
+        .expect(201);
+
+      userB = resB.body;
+    });
+
+    it('PATCH /password/:id (update own password)', async () => {
+      fakeAuth.user = userA;
+
+      await supertest(app.getHttpServer())
+        .patch(`/password/${userA.id}`)
+        .send({ password: 'newPasswordA' })
+        .expect(200);
+    });
+
+    it('PATCH /password/:id (scoped — cannot update another user)', async () => {
+      fakeAuth.user = userA;
+
+      await supertest(app.getHttpServer())
+        .patch(`/password/${userB.id}`)
+        .send({ password: 'hackedPassword' })
+        .expect(404);
+    });
+  });
+});

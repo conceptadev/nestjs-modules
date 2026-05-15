@@ -37,28 +37,28 @@
       "path": "packages/nestjs-logger"
     },
     {
-      "path": "packages/nestjs-authentication"
+      "path": "packages/rockets-authentication"
     },
     {
-      "path": "packages/nestjs-password"
+      "path": "packages/rockets-password"
+    },
+    {
+      "path": "packages/rockets-crud"
     },
     {
       "path": "packages/nestjs-auth-github"
     },
     {
-      "path": "packages/nestjs-typeorm-ext"
+      "path": "packages/rockets-repository"
     },
     {
-      "path": "packages/nestjs-repository"
+      "path": "packages/rockets-repository-typeorm"
     },
     {
-      "path": "packages/nestjs-repository-typeorm"
+      "path": "packages/rockets-role"
     },
     {
-      "path": "packages/nestjs-role"
-    },
-    {
-      "path": "packages/nestjs-user"
+      "path": "packages/rockets-user"
     },
     {
       "path": "packages/nestjs-org"
@@ -67,19 +67,19 @@
       "path": "packages/nestjs-swagger-ui"
     },
     {
-      "path": "packages/nestjs-federated"
+      "path": "packages/rockets-federated"
     },
     {
       "path": "packages/typeorm-common"
     },
     {
-      "path": "packages/nestjs-otp"
+      "path": "packages/rockets-otp"
     },
     {
-      "path": "packages/nestjs-invitation"
+      "path": "packages/rockets-invitation"
     },
     {
-      "path": "packages/nestjs-cache"
+      "path": "packages/rockets-cache"
     },
     {
       "path": "packages/nestjs-auth-google"
