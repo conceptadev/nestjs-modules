@@ -1180,23 +1180,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@concepta/nestjs-access-control@npm:^7.0.0-alpha.10, @concepta/nestjs-access-control@workspace:packages/nestjs-access-control":
-  version: 0.0.0-use.local
-  resolution: "@concepta/nestjs-access-control@workspace:packages/nestjs-access-control"
+"@concepta/nestjs-access-control@npm:^7.0.0-alpha.10":
+  version: 7.0.0-alpha.10
+  resolution: "@concepta/nestjs-access-control@npm:7.0.0-alpha.10"
   dependencies:
-    "@concepta/nestjs-common": "npm:8.0.0-alpha.1"
+    "@concepta/nestjs-common": "npm:^7.0.0-alpha.10"
     "@nestjs/common": "npm:^11.1.9"
     "@nestjs/config": "npm:^4.0.2"
     "@nestjs/core": "npm:^11.1.9"
-    "@nestjs/swagger": "npm:^11.2.2"
-    "@nestjs/testing": "npm:^11.1.9"
-    "@types/supertest": "npm:^6.0.3"
     accesscontrol: "npm:^2.2.1"
-    jest-mock-extended: "npm:^4.0.0"
     rxjs: "npm:^7.8.1"
-    supertest: "npm:^6.3.4"
-  languageName: unknown
-  linkType: soft
+  checksum: 10c0/69ad39665444b131b2a1e6342d9e26752fb77ada82084a91b3ccd50982f1816aab8ecc4e49427656b257de71c3c695f6188fb1cfc00259f5b91f2095c8f167d7
+  languageName: node
+  linkType: hard
 
 "@concepta/nestjs-auth-apple@workspace:packages/nestjs-auth-apple":
   version: 0.0.0-use.local
@@ -1739,6 +1735,25 @@ __metadata:
   checksum: 10c0/7f2980804717aff4e8b4482d26d0caafcd3e1c09a8f8d74fcf8e82097024147694524815356c3f86869525005d89b06085b95f60f200f4a18a96f3f3fb3b6551
   languageName: node
   linkType: hard
+
+"@concepta/rockets-access-control@workspace:packages/rockets-access-control":
+  version: 0.0.0-use.local
+  resolution: "@concepta/rockets-access-control@workspace:packages/rockets-access-control"
+  dependencies:
+    "@concepta/nestjs-common": "npm:8.0.0-alpha.1"
+    "@nestjs/common": "npm:^11.1.9"
+    "@nestjs/config": "npm:^4.0.2"
+    "@nestjs/core": "npm:^11.1.9"
+    "@nestjs/cqrs": "npm:^11.0.0"
+    "@nestjs/swagger": "npm:^11.2.2"
+    "@nestjs/testing": "npm:^11.1.9"
+    "@types/supertest": "npm:^6.0.3"
+    accesscontrol: "npm:^2.2.1"
+    jest-mock-extended: "npm:^4.0.0"
+    rxjs: "npm:^7.8.1"
+    supertest: "npm:^6.3.4"
+  languageName: unknown
+  linkType: soft
 
 "@concepta/rockets-app@npm:^0.0.1-alpha.0, @concepta/rockets-app@workspace:packages/rockets-app":
   version: 0.0.0-use.local
