@@ -14,7 +14,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "typeRoots": ["./node_modules/@types"]
+    "typeRoots": [
+      "./node_modules/@types"
+    ]
   },
   "files": [],
   "references": [
@@ -22,10 +24,10 @@
       "path": "packages/nestjs-common"
     },
     {
-      "path": "packages/rockets-app"
+      "path": "packages/nestjs-core"
     },
     {
-      "path": "packages/rockets-access-control"
+      "path": "packages/nestjs-access-control"
     },
     {
       "path": "packages/nestjs-email"
@@ -37,28 +39,28 @@
       "path": "packages/nestjs-logger"
     },
     {
-      "path": "packages/rockets-authentication"
+      "path": "packages/nestjs-authentication"
     },
     {
-      "path": "packages/rockets-password"
+      "path": "packages/nestjs-password"
     },
     {
-      "path": "packages/rockets-crud"
+      "path": "packages/nestjs-crud"
     },
     {
       "path": "packages/nestjs-auth-github"
     },
     {
-      "path": "packages/rockets-repository"
+      "path": "packages/nestjs-repository"
     },
     {
-      "path": "packages/rockets-repository-typeorm"
+      "path": "packages/nestjs-repository-typeorm"
     },
     {
-      "path": "packages/rockets-role"
+      "path": "packages/nestjs-role"
     },
     {
-      "path": "packages/rockets-user"
+      "path": "packages/nestjs-user"
     },
     {
       "path": "packages/nestjs-org"
@@ -67,19 +69,19 @@
       "path": "packages/nestjs-swagger-ui"
     },
     {
-      "path": "packages/rockets-federated"
+      "path": "packages/nestjs-federated"
     },
     {
       "path": "packages/typeorm-common"
     },
     {
-      "path": "packages/rockets-otp"
+      "path": "packages/nestjs-otp"
     },
     {
-      "path": "packages/rockets-invitation"
+      "path": "packages/nestjs-invitation"
     },
     {
-      "path": "packages/rockets-cache"
+      "path": "packages/nestjs-cache"
     },
     {
       "path": "packages/nestjs-auth-google"

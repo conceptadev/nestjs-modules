@@ -31,9 +31,8 @@ import { OrgProfileTypeOrmCrudAdapter } from '../__fixtures__/org-profile-typeor
 
 export class OrgProfileCrudBuilder<
   Entity extends OrgProfileEntityInterface = OrgProfileEntityInterface,
-  Creatable extends DeepPartial<Entity> &
-    OrgProfileCreatableInterface = DeepPartial<Entity> &
-    OrgProfileCreatableInterface,
+  Creatable extends DeepPartial<Entity> & OrgProfileCreatableInterface =
+    DeepPartial<Entity> & OrgProfileCreatableInterface,
   Updatable extends DeepPartial<Entity> = DeepPartial<Entity>,
   Replaceable extends Creatable = Creatable,
   ExtraOptions extends PlainLiteralObject = PlainLiteralObject,

@@ -10,7 +10,8 @@ import { LoggerCoralogixConfigInterface } from './logger-coralogix-config.interf
  * Coralogix options interface.
  */
 export interface LoggerCoralogixSettingsInterface
-  extends Partial<Pick<LoggerSettingsInterface, 'logLevel'>>,
+  extends
+    Partial<Pick<LoggerSettingsInterface, 'logLevel'>>,
     LoggerTransportSettingsInterface<Severity> {
   /**
    *

@@ -4,7 +4,8 @@ import { LoggerConfig } from 'coralogix-logger';
  * mapping to be used on Coralogix transport.
  */
 export interface LoggerCoralogixConfigInterface
-  extends Pick<LoggerConfig, 'privateKey'>,
+  extends
+    Pick<LoggerConfig, 'privateKey'>,
     Partial<Omit<LoggerConfig, 'privateKey'>> {
   category: string;
 }

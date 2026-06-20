@@ -3,6 +3,4 @@ import { ReferenceIdInterface } from '../../../reference/interfaces/reference-id
 import { OrgOwnableInterface } from '../../org/interfaces/org-ownable.interface';
 
 export interface OrgProfileInterface
-  extends ReferenceIdInterface,
-    AuditInterface,
-    OrgOwnableInterface {}
+  extends ReferenceIdInterface, AuditInterface, OrgOwnableInterface {}

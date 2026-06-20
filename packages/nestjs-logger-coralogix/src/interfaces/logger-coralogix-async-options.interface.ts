@@ -6,7 +6,8 @@ import { CoralogixOptionsInterface } from './logger-coralogix-options.interface'
  * Coralogix async options.
  */
 export interface CoralogixAsyncOptionsInterface
-  extends Pick<ModuleMetadata, 'imports'>,
+  extends
+    Pick<ModuleMetadata, 'imports'>,
     Pick<
       FactoryProvider<
         CoralogixOptionsInterface | Promise<CoralogixOptionsInterface>

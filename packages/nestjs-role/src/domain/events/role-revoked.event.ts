@@ -1,0 +1,14 @@
+import { IEvent } from '@nestjs/cqrs';
+
+import { EventContextHost } from '@concepta/nestjs-core';
+
+import { RoleAssignmentInterface } from '../interfaces/role-assignment.interface';
+
+import { RoleEventHeaderInterface } from './interfaces/role-event-header.interface';
+
+export class RoleRevokedEvent implements IEvent {
+  constructor(
+    public readonly eventContext: EventContextHost<RoleEventHeaderInterface>,
+    public readonly assignment: RoleAssignmentInterface,
+  ) {}
+}

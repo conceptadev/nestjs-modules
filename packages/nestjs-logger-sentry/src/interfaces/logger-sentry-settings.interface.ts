@@ -11,7 +11,8 @@ import { LoggerSentryConfigInterface } from './logger-sentry-config.interface';
  * LoggerSentry options interface.
  */
 export interface LoggerSentrySettingsInterface
-  extends Partial<Pick<LoggerSettingsInterface, 'logLevel'>>,
+  extends
+    Partial<Pick<LoggerSettingsInterface, 'logLevel'>>,
     LoggerTransportSettingsInterface<SeverityLevel> {
   /**
    *

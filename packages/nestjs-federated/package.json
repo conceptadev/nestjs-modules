@@ -1,0 +1,53 @@
+{
+  "name": "@concepta/nestjs-federated",
+  "version": "8.0.0-alpha.7",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./optional/typeorm": {
+      "types": "./dist/optional-typeorm.d.ts",
+      "default": "./dist/optional-typeorm.js"
+    }
+  },
+  "license": "BSD-3-Clause",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "!dist/**/__tests__/**",
+    "!dist/**/__fixtures__/**"
+  ],
+  "dependencies": {
+    "@concepta/nestjs-core": "^8.0.0-alpha.7",
+    "@concepta/nestjs-repository": "8.0.0-alpha.7",
+    "@nestjs/common": "^11.1.9",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/cqrs": "^11.0.0",
+    "@nestjs/swagger": "11.2.2"
+  },
+  "devDependencies": {
+    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.7",
+    "@nestjs/testing": "^11.1.9",
+    "jest-mock-extended": "^4.0.0"
+  },
+  "peerDependencies": {
+    "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.7",
+    "class-transformer": "*",
+    "class-validator": "*",
+    "rxjs": "^7.1.0",
+    "typeorm": "^0.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@concepta/nestjs-repository-typeorm": {
+      "optional": true
+    },
+    "typeorm": {
+      "optional": true
+    }
+  }
+}

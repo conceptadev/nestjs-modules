@@ -7,7 +7,8 @@ import {
 } from '@concepta/nestjs-common';
 
 export interface FileModelServiceInterface
-  extends ByIdInterface<ReferenceId, FileEntityInterface>,
+  extends
+    ByIdInterface<ReferenceId, FileEntityInterface>,
     CreateOneInterface<FileCreatableInterface, FileEntityInterface> {
   getUniqueFile(
     org: Pick<FileCreatableInterface, 'serviceKey' | 'fileName'>,

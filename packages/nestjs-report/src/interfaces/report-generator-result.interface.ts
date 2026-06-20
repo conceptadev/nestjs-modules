@@ -4,5 +4,4 @@ import {
 } from '@concepta/nestjs-common';
 
 export interface ReportGeneratorResultInterface
-  extends ReportUpdatableInterface,
-    ReferenceIdInterface {}
+  extends ReportUpdatableInterface, ReferenceIdInterface {}

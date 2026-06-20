@@ -6,7 +6,8 @@ import { OrgProfileInterface } from '../../org-profile/interfaces/org-profile.in
 import { OrgOwnerInterface } from './org-owner.interface';
 
 export interface OrgInterface
-  extends ReferenceIdInterface,
+  extends
+    ReferenceIdInterface,
     ReferenceActiveInterface,
     AuditInterface,
     OrgOwnerInterface {

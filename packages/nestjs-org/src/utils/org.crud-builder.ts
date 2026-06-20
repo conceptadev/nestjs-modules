@@ -34,10 +34,10 @@ import { OrgTypeOrmCrudAdapter } from '../__fixtures__/org-typeorm-crud.adapter'
 
 export class OrgCrudBuilder<
   Entity extends OrgEntityInterface = OrgEntityInterface,
-  Creatable extends DeepPartial<Entity> &
-    OrgCreatableInterface = DeepPartial<Entity> & OrgCreatableInterface,
-  Updatable extends DeepPartial<Entity> &
-    OrgUpdatableInterface = DeepPartial<Entity> & OrgUpdatableInterface,
+  Creatable extends DeepPartial<Entity> & OrgCreatableInterface =
+    DeepPartial<Entity> & OrgCreatableInterface,
+  Updatable extends DeepPartial<Entity> & OrgUpdatableInterface =
+    DeepPartial<Entity> & OrgUpdatableInterface,
   Replaceable extends Creatable = Creatable,
   ExtraOptions extends PlainLiteralObject = PlainLiteralObject,
 > extends ConfigurableCrudBuilder<

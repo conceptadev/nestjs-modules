@@ -1,4 +1,6 @@
 import { DynamicModule } from '@nestjs/common';
 
-export interface AuthGoogleOptionsExtrasInterface
-  extends Pick<DynamicModule, 'global'> {}
+export interface AuthGoogleOptionsExtrasInterface extends Pick<
+  DynamicModule,
+  'global'
+> {}

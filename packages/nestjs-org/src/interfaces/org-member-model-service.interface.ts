@@ -9,7 +9,8 @@ import {
 import { OrgMemberCreatableInterface } from './org-member-creatable.interface';
 
 export interface OrgMemberModelServiceInterface
-  extends ByIdInterface<ReferenceId, OrgMemberEntityInterface>,
+  extends
+    ByIdInterface<ReferenceId, OrgMemberEntityInterface>,
     CreateOneInterface<OrgMemberCreatableInterface, OrgMemberEntityInterface>,
     RemoveOneInterface<
       Pick<OrgMemberEntityInterface, 'id'>,

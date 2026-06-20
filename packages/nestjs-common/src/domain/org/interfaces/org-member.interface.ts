@@ -10,7 +10,8 @@ export interface OrgMemberOwnableInterface {
 }
 
 export interface OrgMemberInterface
-  extends ReferenceIdInterface,
+  extends
+    ReferenceIdInterface,
     ReferenceActiveInterface,
     OrgOwnableInterface,
     OrgMemberOwnableInterface,

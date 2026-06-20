@@ -5,8 +5,7 @@ import { JwtVerifyServiceInterface } from '@concepta/nestjs-jwt';
 import { AuthAppleServiceInterface } from './auth-apple-service.interface';
 import { AuthAppleSettingsInterface } from './auth-apple-settings.interface';
 
-export interface AuthAppleOptionsInterface
-  extends ModuleOptionsSettingsInterface<AuthAppleSettingsInterface> {
+export interface AuthAppleOptionsInterface extends ModuleOptionsSettingsInterface<AuthAppleSettingsInterface> {
   /**
    * Implementation of a class used to verify Apple tokens
    */

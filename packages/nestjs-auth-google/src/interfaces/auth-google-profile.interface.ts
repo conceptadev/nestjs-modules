@@ -6,8 +6,7 @@ import {
 import { AuthGoogleEmailsInterface } from './auth-google-emails.interface';
 
 export interface AuthGoogleProfileInterface
-  extends ReferenceIdInterface,
-    Partial<ReferenceEmailInterface> {
+  extends ReferenceIdInterface, Partial<ReferenceEmailInterface> {
   displayName: string;
   name: {
     familyName: string;

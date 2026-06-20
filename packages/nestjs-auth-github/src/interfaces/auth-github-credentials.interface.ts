@@ -4,5 +4,4 @@ import {
 } from '@concepta/nestjs-common';
 
 export interface AuthGithubCredentialsInterface
-  extends ReferenceIdInterface,
-    ReferenceEmailInterface {}
+  extends ReferenceIdInterface, ReferenceEmailInterface {}

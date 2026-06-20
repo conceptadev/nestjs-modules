@@ -29,9 +29,10 @@ import { EventBaseInterface } from './interfaces/event-base.interface';
  * const myEvent = new MyEvent({id: 1234, active: true});
  * ```
  */
-export abstract class EventBase<P = undefined, R = P>
-  implements EventBaseInterface<P, R>
-{
+export abstract class EventBase<
+  P = undefined,
+  R = P,
+> implements EventBaseInterface<P, R> {
   /**
    * Expects return of payload
    *
