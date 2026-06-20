@@ -5,7 +5,7 @@ import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 import {
   AppContextHost,
   DeepPartial,
-  RocketsAppModule,
+  CoreModule,
   HooksCtx,
 } from '@concepta/nestjs-core';
 import {
@@ -400,7 +400,7 @@ describe('TypeOrmRepository Hooks', () => {
     moduleFixture = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(ormConfig),
-        RocketsAppModule.forRoot(),
+        CoreModule.forRoot(),
         RepositoryModule.forRoot({}),
         RepositoryModule.forFeature({
           module: TypeOrmRepositoryModule,
@@ -790,7 +790,7 @@ describe('TypeOrmRepository Hooks', () => {
       moduleFixture = await Test.createTestingModule({
         imports: [
           TypeOrmModule.forRoot(ormConfig),
-          RocketsAppModule.forRoot(),
+          CoreModule.forRoot(),
           RepositoryModule.forRoot({}),
           RepositoryModule.forFeature({
             module: TypeOrmRepositoryModule,
@@ -835,7 +835,7 @@ describe('TypeOrmRepository Hooks', () => {
       moduleFixture = await Test.createTestingModule({
         imports: [
           TypeOrmModule.forRoot(ormConfig),
-          RocketsAppModule.forRoot(),
+          CoreModule.forRoot(),
           RepositoryModule.forRoot({}),
           RepositoryModule.forFeature({
             module: TypeOrmRepositoryModule,
@@ -885,7 +885,7 @@ describe('TypeOrmRepository Hooks', () => {
       moduleFixture = await Test.createTestingModule({
         imports: [
           TypeOrmModule.forRoot(ormConfig),
-          RocketsAppModule.forRoot(),
+          CoreModule.forRoot(),
           RepositoryModule.forRoot({}),
           RepositoryModule.forFeature({
             module: TypeOrmRepositoryModule,
@@ -961,7 +961,7 @@ describe('TypeOrmRepository Hooks', () => {
       moduleFixture = await Test.createTestingModule({
         imports: [
           TypeOrmModule.forRoot(ormConfig),
-          RocketsAppModule.forRoot(),
+          CoreModule.forRoot(),
           RepositoryModule.forRoot({}),
           RepositoryModule.forFeature({
             module: TypeOrmRepositoryModule,

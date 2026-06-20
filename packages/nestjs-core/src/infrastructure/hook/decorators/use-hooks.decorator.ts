@@ -6,7 +6,7 @@ import { HookOption } from '../hook.types';
 /**
  * Decorator to specify hooks for a controller class or method.
  *
- * The HookContextOverlay (registered globally via RocketsAppModule) gathers hooks from
+ * The HookContextOverlay (registered globally via CoreModule) gathers hooks from
  * this decorator and attaches them to the request context.
  *
  * When applied to a class, the hooks apply to all methods in that class.

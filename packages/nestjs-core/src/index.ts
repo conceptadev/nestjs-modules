@@ -112,7 +112,7 @@ export { EventContextHost } from './domain/events/event-context.host';
 export { EventContextInterface } from './domain/events/interfaces/event-context.interface';
 
 // Top-level module
-export { RocketsAppModule } from './rockets-app.module';
+export { CoreModule } from './core.module';
 
 // Hook feature
 export { HookTypeInterface } from './infrastructure/hook/hook.interfaces';

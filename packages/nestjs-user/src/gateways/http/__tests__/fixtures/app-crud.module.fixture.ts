@@ -4,7 +4,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import {
-  RocketsAppModule,
+  CoreModule,
   UseHooks,
   ExceptionsFilter,
   Operation,
@@ -58,7 +58,7 @@ const USER_CREDENTIALS_ENTITY_KEY_FIXTURE = 'user-credentials';
     CrudModule.forRoot({
       defaultResolver: CrudCqrsResolver,
     }),
-    RocketsAppModule.forRoot(),
+    CoreModule.forRoot(),
     PasswordModule.forRoot({}),
     RepositoryModule.forFeature({
       module: TypeOrmRepositoryModule,

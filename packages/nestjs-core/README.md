@@ -62,17 +62,17 @@ Direct dependencies: `@nestjs/common`, `@nestjs/core`, `@nestjs/swagger`,
 
 ## Module Registration
 
-Register `RocketsAppModule` once at the application root. It defaults to
+Register `CoreModule` once at the application root. It defaults to
 `global: true` so a global `APP_INTERCEPTOR` registered by the module
 intercepts requests from every controller in the app without additional imports.
 
 ### Synchronous
 
 ```ts
-import { RocketsAppModule } from '@concepta/nestjs-core';
+import { CoreModule } from '@concepta/nestjs-core';
 
 @Module({
-  imports: [RocketsAppModule.forRoot()],
+  imports: [CoreModule.forRoot()],
 })
 export class AppModule {}
 ```
@@ -82,7 +82,7 @@ export class AppModule {}
 ```ts
 @Module({
   imports: [
-    RocketsAppModule.forRootAsync({
+    CoreModule.forRootAsync({
       useFactory: async () => ({}),
     }),
   ],
@@ -103,7 +103,7 @@ export class AppModule {}
 
 The hook system enables conditional execution of NestJS injectable classes
 (hooks) attached to controllers or methods. A global `APP_INTERCEPTOR`
-registered by `RocketsAppModule` reads `@UseHooks(...)` metadata from the
+registered by `CoreModule` reads `@UseHooks(...)` metadata from the
 current handler and attaches the resolved hook list to the request context via
 `HooksCtx`. Downstream services consume the list via `HookResolverService`.
 
@@ -189,7 +189,7 @@ export class IsAdminSpec implements SpecificationInterface {
 
 ### Consuming Hooks
 
-`HookResolverService` is exported by `RocketsAppModule` and available for
+`HookResolverService` is exported by `CoreModule` and available for
 injection. It resolves and executes the matching hook methods from the request
 context, passing the payload through each applicable hook in sequence.
 
@@ -472,7 +472,7 @@ const moduleRef = await Test.createTestingModule({
 
 | Export | Description |
 | --- | --- |
-| `RocketsAppModule` | The root module. Registers a global `APP_INTERCEPTOR` for hook context and exports `HookResolverService`. |
+| `CoreModule` | The root module. Registers a global `APP_INTERCEPTOR` for hook context and exports `HookResolverService`. |
 
 ### Hook Decorators
 

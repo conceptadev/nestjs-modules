@@ -3,11 +3,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import {
-  RocketsAppModule,
-  ExceptionsFilter,
-  Operation,
-} from '@concepta/nestjs-core';
+import { CoreModule, ExceptionsFilter, Operation } from '@concepta/nestjs-core';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
@@ -48,7 +44,7 @@ import { ReadCacheRequest } from '../../queries/impl/read-cache.request';
     CrudModule.forRoot({
       defaultResolver: CrudCqrsResolver,
     }),
-    RocketsAppModule.forRoot(),
+    CoreModule.forRoot(),
     RepositoryModule.forFeature({
       module: TypeOrmRepositoryModule,
       entities: [
