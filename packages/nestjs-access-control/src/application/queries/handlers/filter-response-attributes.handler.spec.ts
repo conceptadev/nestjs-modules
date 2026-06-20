@@ -5,7 +5,7 @@ import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { QueryBus } from '@nestjs/cqrs';
 
-import { ActionEnum } from '@concepta/nestjs-common';
+import { ActionEnum } from '@concepta/nestjs-core';
 
 import { ACCESS_CONTROL_MODULE_GRANT_METADATA } from '../../../access-control.constants';
 import { AccessControlSettingsInterface } from '../../../infrastructure/config/interfaces/access-control-settings.interface';

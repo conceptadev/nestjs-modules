@@ -7,7 +7,7 @@ import { Reflector } from '@nestjs/core';
 import { QueryBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ActionEnum } from '@concepta/nestjs-common';
+import { ActionEnum } from '@concepta/nestjs-core';
 
 import {
   ACCESS_CONTROL_MODULE_QUERY_METADATA,
