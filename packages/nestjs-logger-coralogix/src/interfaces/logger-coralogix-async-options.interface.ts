@@ -1,6 +1,6 @@
-import { FactoryProvider, ModuleMetadata } from '@nestjs/common';
+import { type FactoryProvider, type ModuleMetadata } from '@nestjs/common';
 
-import { CoralogixOptionsInterface } from './logger-coralogix-options.interface';
+import { type CoralogixOptionsInterface } from './logger-coralogix-options.interface';
 
 /**
  * Coralogix async options.

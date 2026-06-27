@@ -1,4 +1,4 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import {
@@ -11,13 +11,13 @@ import {
   AccessControlUpdateOne,
 } from '@concepta/nestjs-access-control';
 import {
-  DeepPartial,
-  OrgProfileCreatableInterface,
-  OrgProfileEntityInterface,
+  type DeepPartial,
+  type OrgProfileCreatableInterface,
+  type OrgProfileEntityInterface,
 } from '@concepta/nestjs-common';
 import {
   ConfigurableCrudBuilder,
-  ConfigurableCrudOptions,
+  type ConfigurableCrudOptions,
 } from '@concepta/nestjs-crud';
 
 import { OrgProfileCreateDto } from '../dto/profile/org-profile-create.dto';

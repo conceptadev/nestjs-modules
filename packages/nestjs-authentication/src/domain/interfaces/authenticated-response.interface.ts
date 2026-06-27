@@ -1,5 +1,5 @@
-import { AuthenticationAccessInterface } from './authentication-access.interface';
-import { AuthenticationRefreshInterface } from './authentication-refresh.interface';
+import { type AuthenticationAccessInterface } from './authentication-access.interface';
+import { type AuthenticationRefreshInterface } from './authentication-refresh.interface';
 
 /**
  * Authentication response interface

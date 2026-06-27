@@ -1,4 +1,4 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import { OverlayRef } from '@concepta/nestjs-core';
 

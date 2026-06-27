@@ -1,8 +1,8 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import {
-  OrderSortKeyAsc,
-  OrderSortKeyDesc,
+  type OrderSortKeyAsc,
+  type OrderSortKeyDesc,
 } from './interfaces/order-sort-key.interface';
 
 /**

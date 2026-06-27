@@ -5,11 +5,11 @@
     "removeComments": false,
     "baseUrl": ".",
     "paths": {
-      "@concepta/nestjs-core/aggregate": ["packages/nestjs-core/dist/index-aggregate"],
-      "@concepta/nestjs-core/testing": ["packages/nestjs-core/dist/testing"],
-      "@concepta/nestjs-otp/optional/typeorm": ["packages/nestjs-otp/dist/optional-typeorm"],
-      "@concepta/nestjs-repository/testing": ["packages/nestjs-repository/dist/testing"],
-      "@concepta/nestjs-user/optional/typeorm": ["packages/nestjs-user/dist/optional-typeorm"]
+      "@concepta/nestjs-core/aggregate": ["packages/nestjs-core/dist/cjs/index-aggregate"],
+      "@concepta/nestjs-core/testing": ["packages/nestjs-core/dist/cjs/testing"],
+      "@concepta/nestjs-otp/optional/typeorm": ["packages/nestjs-otp/dist/cjs/optional-typeorm"],
+      "@concepta/nestjs-repository/testing": ["packages/nestjs-repository/dist/cjs/testing"],
+      "@concepta/nestjs-user/optional/typeorm": ["packages/nestjs-user/dist/cjs/optional-typeorm"]
     }
   }
 }

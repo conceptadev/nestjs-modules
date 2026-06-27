@@ -1,7 +1,7 @@
 import {
   ConfigurableModuleBuilder,
-  DynamicModule,
-  Provider,
+  type DynamicModule,
+  type Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
@@ -29,9 +29,9 @@ import { InvitationService } from './domain/services/invitation.service';
 import { InvitationMapper } from './infrastructure/persistence/invitation.mapper';
 import { createInvitationOtpPolicyProvider } from './infrastructure/utils/create-invitation-otp-policy-provider';
 import { createInvitationRepositoryProvider } from './infrastructure/utils/create-invitation-repository-provider';
-import { InvitationOptionsExtrasInterface } from './interfaces/options/invitation-options-extras.interface';
-import { InvitationOptionsInterface } from './interfaces/options/invitation-options.interface';
-import { InvitationSettingsInterface } from './interfaces/options/invitation-settings.interface';
+import { type InvitationOptionsExtrasInterface } from './interfaces/options/invitation-options-extras.interface';
+import { type InvitationOptionsInterface } from './interfaces/options/invitation-options.interface';
+import { type InvitationSettingsInterface } from './interfaces/options/invitation-settings.interface';
 import {
   INVITATION_MODULE_DEFAULT_ENTITY_KEY,
   INVITATION_MODULE_SETTINGS_TOKEN,

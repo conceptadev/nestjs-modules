@@ -1,9 +1,9 @@
-import { IssueTokenServiceInterface } from '@concepta/nestjs-authentication';
-import { ModuleOptionsSettingsInterface } from '@concepta/nestjs-common';
-import { JwtVerifyServiceInterface } from '@concepta/nestjs-jwt';
+import { type IssueTokenServiceInterface } from '@concepta/nestjs-authentication';
+import { type ModuleOptionsSettingsInterface } from '@concepta/nestjs-common';
+import { type JwtVerifyServiceInterface } from '@concepta/nestjs-jwt';
 
-import { AuthAppleServiceInterface } from './auth-apple-service.interface';
-import { AuthAppleSettingsInterface } from './auth-apple-settings.interface';
+import { type AuthAppleServiceInterface } from './auth-apple-service.interface';
+import { type AuthAppleSettingsInterface } from './auth-apple-settings.interface';
 
 export interface AuthAppleOptionsInterface extends ModuleOptionsSettingsInterface<AuthAppleSettingsInterface> {
   /**

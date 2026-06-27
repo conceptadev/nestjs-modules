@@ -1,6 +1,6 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { SpecificationInterface } from '../interfaces/specification.interface';
+import { type SpecificationInterface } from '../interfaces/specification.interface';
 
 import { AlwaysSpecification } from './specifications/always.specification';
 import { AndSpecification } from './specifications/and.specification';

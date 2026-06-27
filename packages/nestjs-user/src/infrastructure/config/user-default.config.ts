@@ -5,7 +5,7 @@ import {
   USER_MODULE_USER_PASSWORD_REUSE_AFTER_DAYS_DEFAULT,
 } from '../../user.constants';
 
-import { UserSettingsInterface } from './interfaces/user-settings.interface';
+import { type UserSettingsInterface } from './interfaces/user-settings.interface';
 
 export const userDefaultConfig = registerAs(
   USER_MODULE_DEFAULT_SETTINGS_TOKEN,

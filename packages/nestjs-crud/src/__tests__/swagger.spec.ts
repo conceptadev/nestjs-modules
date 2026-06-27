@@ -1,11 +1,15 @@
 import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-import { INestApplication } from '@nestjs/common';
-import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+import { type INestApplication } from '@nestjs/common';
 import {
-  OperationObject,
-  ParameterObject,
+  DocumentBuilder,
+  type OpenAPIObject,
+  SwaggerModule,
+} from '@nestjs/swagger';
+import {
+  type OperationObject,
+  type ParameterObject,
 } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { Test } from '@nestjs/testing';
 

@@ -1,15 +1,15 @@
 import { randomUUID } from 'crypto';
 
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 
 import { EventContextHost } from '@concepta/nestjs-core';
 
 import { AppRepoModuleFixture } from '../../../__tests__/fixtures/app-repo.module.fixture';
 import { User } from '../../../domain/aggregates/user';
 import { UserCredentials } from '../../../domain/aggregates/user-credentials';
-import { UserCredentialEntityInterface } from '../../../domain/interfaces/user-credential-entity.interface';
-import { UserCredentialsRepositoryInterface } from '../../../domain/repositories/user-credentials-repository.interface';
-import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface';
+import { type UserCredentialEntityInterface } from '../../../domain/interfaces/user-credential-entity.interface';
+import { type UserCredentialsRepositoryInterface } from '../../../domain/repositories/user-credentials-repository.interface';
+import { type UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface';
 import {
   USER_CREDENTIALS_REPOSITORY_TOKEN,
   USER_REPOSITORY_TOKEN,

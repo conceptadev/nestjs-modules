@@ -1,8 +1,8 @@
-import { Provider } from '@nestjs/common';
+import { type Provider } from '@nestjs/common';
 
 import { LocalService } from '../../application/services/local/local.service';
 import { LocalStrategyPolicy } from '../../domain/policies/local-strategy.policy';
-import { AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
 import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception';
 import { LocalStrategy } from '../strategies/local/local.strategy';
 

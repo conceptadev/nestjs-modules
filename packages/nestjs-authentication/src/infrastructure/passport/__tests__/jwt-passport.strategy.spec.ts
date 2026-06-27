@@ -2,7 +2,7 @@ import { mock } from 'jest-mock-extended';
 
 import { NotAnErrorException } from '@concepta/nestjs-core';
 
-import { JwtPassportOptionsInterface } from '../interfaces/jwt-passport-options.interface';
+import { type JwtPassportOptionsInterface } from '../interfaces/jwt-passport-options.interface';
 import { JwtPassportStrategy } from '../jwt-passport.strategy';
 
 describe(JwtPassportStrategy, () => {
@@ -20,7 +20,7 @@ describe(JwtPassportStrategy, () => {
   });
 
   describe(JwtPassportStrategy.prototype.authenticate, () => {
-    let req: Parameters<typeof jwtStrategy.authenticate>[0];
+    const req = mock<Parameters<typeof jwtStrategy.authenticate>[0]>();
     it('should success', async () => {
       const userResponse = jwtStrategy.authenticate(req);
       expect(userResponse).toBe(true);

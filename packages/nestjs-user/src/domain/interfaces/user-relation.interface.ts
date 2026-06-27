@@ -1,4 +1,4 @@
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 
 /**
  * Belongs to user.

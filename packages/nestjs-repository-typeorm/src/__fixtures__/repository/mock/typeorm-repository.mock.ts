@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { type Repository } from 'typeorm';
 
 import { TypeOrmRepository } from '../../../repository/typeorm-repository';
 

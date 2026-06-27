@@ -1,5 +1,5 @@
-import { HookMethodKeyType } from './decorators/hook-method.decorator';
-import { SpecificationInterface } from './interfaces/specification.interface';
+import { type HookMethodKeyType } from './decorators/hook-method.decorator';
+import { type SpecificationInterface } from './interfaces/specification.interface';
 
 /**
  * Hook type decorator with KEY property for subsystem filtering.

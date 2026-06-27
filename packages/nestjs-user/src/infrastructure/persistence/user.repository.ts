@@ -1,17 +1,17 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import {
-  ReferenceEmail,
-  ReferenceId,
-  ReferenceUsername,
+  type ReferenceEmail,
+  type ReferenceId,
+  type ReferenceUsername,
 } from '@concepta/nestjs-core';
-import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
+import { type RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
-import { User } from '../../domain/aggregates/user';
-import { UserEntityInterface } from '../../domain/interfaces/user-entity.interface';
-import { UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
+import { type User } from '../../domain/aggregates/user';
+import { type UserEntityInterface } from '../../domain/interfaces/user-entity.interface';
+import { type UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
 
-import { UserMapper } from './user.mapper';
+import { type UserMapper } from './user.mapper';
 
 export class UserRepository implements UserRepositoryInterface {
   constructor(

@@ -1,20 +1,20 @@
 import { mock } from 'jest-mock-extended';
 
-import { PlainLiteralObject } from '@nestjs/common';
-import { Command, CommandBus, Query, QueryBus } from '@nestjs/cqrs';
+import { type PlainLiteralObject } from '@nestjs/common';
+import { Command, type CommandBus, Query, type QueryBus } from '@nestjs/cqrs';
 
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 
 import {
-  AuthenticationUserInterface,
+  type AuthenticationUserInterface,
   UserPort,
-  UserPortSettings,
-  AuthenticationUserResult,
-  GetUserByIdQueryInterface,
-  GetUserBySubjectQueryInterface,
-  GetUserByUsernameQueryInterface,
-  GetUserByEmailQueryInterface,
-  UpdateUserCommandInterface,
+  type UserPortSettings,
+  type AuthenticationUserResult,
+  type GetUserByIdQueryInterface,
+  type GetUserBySubjectQueryInterface,
+  type GetUserByUsernameQueryInterface,
+  type GetUserByEmailQueryInterface,
+  type UpdateUserCommandInterface,
 } from '../user.port';
 
 class MockGetByIdQuery

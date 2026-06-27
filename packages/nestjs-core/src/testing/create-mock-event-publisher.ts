@@ -1,6 +1,6 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 
-import { EventPublisher } from '@nestjs/cqrs';
+import { type EventPublisher } from '@nestjs/cqrs';
 
 /**
  * Create a mock EventPublisher for unit testing.

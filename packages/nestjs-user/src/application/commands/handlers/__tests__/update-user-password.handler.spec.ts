@@ -7,7 +7,7 @@ import {
   toUserDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { UserNotFoundException } from '../../../exceptions/user-not-found.exception';
-import { UpdateUserCredentialCommand } from '../../impl/update-user-credential.command';
+import { type UpdateUserCredentialCommand } from '../../impl/update-user-credential.command';
 import { UpdateUserPasswordCommand } from '../../impl/update-user-password.command';
 import { UpdateUserPasswordHandler } from '../update-user-password.handler';
 

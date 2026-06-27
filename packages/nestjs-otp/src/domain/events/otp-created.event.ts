@@ -1,10 +1,10 @@
-import { IEvent } from '@nestjs/cqrs';
+import { type IEvent } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { type EventContextHost } from '@concepta/nestjs-core';
 
-import { OtpInterface } from '../interfaces/otp.interface';
+import { type OtpInterface } from '../interfaces/otp.interface';
 
-import { OtpEventHeaderInterface } from './interfaces/otp-event-header.interface';
+import { type OtpEventHeaderInterface } from './interfaces/otp-event-header.interface';
 
 export class OtpCreatedEvent implements IEvent {
   constructor(

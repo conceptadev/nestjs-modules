@@ -1,4 +1,4 @@
-import { Provider } from '@nestjs/common';
+import { type Provider } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
 import { IssueAccessTokenCommand } from '../../application/commands/impl/issue-access-token.command';
@@ -7,7 +7,10 @@ import { ValidateTokenQuery } from '../../application/queries/impl/validate-toke
 import { VerifyAccessTokenQuery } from '../../application/queries/impl/verify-access-token.query';
 import { VerifyRefreshTokenQuery } from '../../application/queries/impl/verify-refresh-token.query';
 import { AUTHENTICATION_TOKEN_PORT_TOKEN } from '../../authentication.constants';
-import { TokenPort, TokenPortSettings } from '../../domain/ports/token.port';
+import {
+  TokenPort,
+  type TokenPortSettings,
+} from '../../domain/ports/token.port';
 
 export const DEFAULT_TOKEN_PORT_SETTINGS: TokenPortSettings = {
   issueAccessTokenCommand: IssueAccessTokenCommand,

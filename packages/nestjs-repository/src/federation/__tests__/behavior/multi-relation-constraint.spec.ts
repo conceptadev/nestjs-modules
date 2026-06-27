@@ -13,7 +13,11 @@ import {
   WhereOperator,
 } from '../../../repository/repository.types';
 import { Where } from '../../../repository/where.helpers';
-import { TestRoot, TestRelation, TestProfile } from '../federation-test-data';
+import {
+  type TestRoot,
+  type TestRelation,
+  type TestProfile,
+} from '../federation-test-data';
 import {
   mockTestRepo,
   mockOrchestrator,

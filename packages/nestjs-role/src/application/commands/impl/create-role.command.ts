@@ -1,7 +1,10 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { Role, RoleCreateProps } from '../../../domain/aggregates/role';
+import {
+  type Role,
+  type RoleCreateProps,
+} from '../../../domain/aggregates/role';
 
 export class CreateRoleCommand extends Command<Role> {
   constructor(

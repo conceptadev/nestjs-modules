@@ -1,7 +1,7 @@
 import {
-  MutateOperations,
-  ReadOperations,
-  WriteOperations,
+  type MutateOperations,
+  type ReadOperations,
+  type WriteOperations,
 } from '../enums/operation.enum';
 
 export type ExceptionContext = Record<string, unknown> & {

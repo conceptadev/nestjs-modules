@@ -1,6 +1,9 @@
 import { mock } from 'jest-mock-extended';
 
-import { ExecutionContext, HttpArgumentsHost } from '@nestjs/common/interfaces';
+import {
+  type ExecutionContext,
+  type HttpArgumentsHost,
+} from '@nestjs/common/interfaces';
 
 import { getAppContext } from '@concepta/nestjs-core';
 

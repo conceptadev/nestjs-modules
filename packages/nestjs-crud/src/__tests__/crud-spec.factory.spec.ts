@@ -2,7 +2,7 @@ import { ActionEnum, Operation, Spec } from '@concepta/nestjs-core';
 
 import { ActionSpecification } from '../infrastructure/specifications/action.specification';
 import { CrudSpec } from '../infrastructure/specifications/crud-spec.factory';
-import { CrudSpecContextInterface } from '../infrastructure/specifications/interfaces/crud-spec-context.interface';
+import { type CrudSpecContextInterface } from '../infrastructure/specifications/interfaces/crud-spec-context.interface';
 import { OperationSpecification } from '../infrastructure/specifications/operation.specification';
 
 // ═══════════════════════════════════════════════════════════════════════════

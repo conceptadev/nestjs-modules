@@ -85,6 +85,12 @@ export default tseslint.config(
       // Disable nested param checking since TSDoc doesn't support dot notation
       'jsdoc/check-param-names': ['warn', { checkDestructured: false }],
       'tsdoc/syntax': 'error',
+
+      // ESM tree-shaking: enforce `import type` for type-only imports
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
+      ],
     },
   },
 

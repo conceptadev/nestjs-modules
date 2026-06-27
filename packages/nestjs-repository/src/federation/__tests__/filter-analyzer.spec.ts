@@ -3,7 +3,7 @@ import {
   WhereOperator,
 } from '../../repository/repository.types';
 import { FederationException } from '../exceptions/federation.exception';
-import { FederatedRelation } from '../federation.types';
+import { type FederatedRelation } from '../federation.types';
 import { FilterAnalyzer } from '../filter-analyzer';
 
 const makeRelation = (

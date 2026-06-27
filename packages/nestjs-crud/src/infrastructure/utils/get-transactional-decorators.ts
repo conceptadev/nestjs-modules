@@ -1,6 +1,6 @@
 import {
   Transactional,
-  TransactionalOptions,
+  type TransactionalOptions,
 } from '@concepta/nestjs-repository';
 
 /**

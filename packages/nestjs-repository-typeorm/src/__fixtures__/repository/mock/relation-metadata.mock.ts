@@ -1,15 +1,29 @@
-import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
+import {
+  type TypeOrmRelationMetadata,
+  type TypeOrmInverseRelation,
+} from '../../../repository/typeorm-metadata.types';
+
+type RelationOverrides = Partial<
+  Omit<TypeOrmRelationMetadata, 'inverseRelation'>
+> & {
+  inverseRelation?: TypeOrmInverseRelation;
+};
 
 export function mockRelationMetadata(
-  overrides: Record<string, unknown>,
-): RelationMetadata {
+  overrides: RelationOverrides,
+): TypeOrmRelationMetadata {
+  const { inverseRelation, ...rest } = overrides;
   return {
+    propertyName: 'relation',
+    inverseEntityMetadata: { name: 'Unknown' },
     isOneToMany: false,
     isManyToMany: false,
     isManyToManyOwner: false,
     isOwning: false,
     joinColumns: [],
     inverseJoinColumns: [],
-    ...overrides,
-  } as unknown as RelationMetadata;
+    junctionEntityMetadata: undefined,
+    inverseRelation,
+    ...rest,
+  };
 }

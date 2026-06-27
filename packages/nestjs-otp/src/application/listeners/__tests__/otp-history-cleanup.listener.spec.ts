@@ -8,7 +8,7 @@ import {
 } from '../../../__tests__/helpers/mock.helpers';
 import { OtpCreatedEvent } from '../../../domain/events/otp-created.event';
 import { OtpHistoryCleanupService } from '../../../domain/services/otp-history-cleanup.service';
-import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface';
+import { type OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface';
 import { OtpHistoryCleanupListener } from '../otp-history-cleanup.listener';
 
 describe(OtpHistoryCleanupListener.name, () => {

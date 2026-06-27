@@ -1,8 +1,8 @@
-import { IEvent } from '@nestjs/cqrs';
+import { type IEvent } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { type EventContextHost } from '@concepta/nestjs-core';
 
-import { TokenInterface } from '../interfaces/token.interface';
+import { type TokenInterface } from '../interfaces/token.interface';
 
 export class TokenRevokedEvent implements IEvent {
   constructor(

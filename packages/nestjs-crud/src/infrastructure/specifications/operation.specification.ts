@@ -1,6 +1,6 @@
-import { Operation, CompositeSpecification } from '@concepta/nestjs-core';
+import { type Operation, CompositeSpecification } from '@concepta/nestjs-core';
 
-import { CrudSpecContextInterface } from './interfaces/crud-spec-context.interface';
+import { type CrudSpecContextInterface } from './interfaces/crud-spec-context.interface';
 
 /**
  * Specification that matches specific CRUD operations.

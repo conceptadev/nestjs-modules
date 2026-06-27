@@ -1,6 +1,6 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 
 export interface InvitationUserRelationInterface<
   T extends ReferenceId = ReferenceId,

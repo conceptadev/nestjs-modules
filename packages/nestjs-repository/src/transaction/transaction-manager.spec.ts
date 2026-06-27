@@ -1,4 +1,4 @@
-import { TransactionInterface } from './interfaces/transaction.interface';
+import { type TransactionInterface } from './interfaces/transaction.interface';
 import { TransactionFactoryRegistry } from './transaction-factory-registry';
 import { TransactionManager } from './transaction-manager';
 

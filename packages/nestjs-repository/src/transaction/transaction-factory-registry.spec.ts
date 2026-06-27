@@ -1,6 +1,6 @@
-import { TransactionFactoryInterface } from '../interfaces/transaction-factory.interface';
+import { type TransactionFactoryInterface } from '../interfaces/transaction-factory.interface';
 
-import { TransactionInterface } from './interfaces/transaction.interface';
+import { type TransactionInterface } from './interfaces/transaction.interface';
 import { TransactionFactoryRegistry } from './transaction-factory-registry';
 
 describe(TransactionFactoryRegistry.name, () => {

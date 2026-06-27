@@ -1,4 +1,4 @@
-import { TransactionInterface } from './transaction.interface';
+import { type TransactionInterface } from './transaction.interface';
 
 /**
  * Manages multiple transactions keyed by driver:datasource.

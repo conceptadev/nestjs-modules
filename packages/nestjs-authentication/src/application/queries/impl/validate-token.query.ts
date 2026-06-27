@@ -1,7 +1,7 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
-import { ValidateTokenQueryInterface } from '../../../domain/ports/token.port';
+import { type ValidateTokenQueryInterface } from '../../../domain/ports/token.port';
 
 export class ValidateTokenQuery
   extends Query<boolean>

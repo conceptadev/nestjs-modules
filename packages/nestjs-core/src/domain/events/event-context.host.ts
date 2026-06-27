@@ -1,6 +1,6 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { EventContextInterface } from './interfaces/event-context.interface';
+import { type EventContextInterface } from './interfaces/event-context.interface';
 
 export class EventContextHost<
   H extends PlainLiteralObject = PlainLiteralObject,

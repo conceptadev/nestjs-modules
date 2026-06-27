@@ -5,8 +5,8 @@ import { registerAs } from '@nestjs/config';
 import { LocalLoginDto } from '../strategies/local/dto/local-login.dto';
 
 import {
-  AuthenticationMfaSettingsInterface,
-  AuthenticationStrategiesSettingsInterface,
+  type AuthenticationMfaSettingsInterface,
+  type AuthenticationStrategiesSettingsInterface,
 } from './interfaces/authentication-settings.interface';
 
 export const AUTHENTICATION_MODULE_DEFAULTS_TOKEN =

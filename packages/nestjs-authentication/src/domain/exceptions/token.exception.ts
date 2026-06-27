@@ -1,6 +1,6 @@
 import {
   RuntimeException,
-  RuntimeExceptionOptions,
+  type RuntimeExceptionOptions,
 } from '@concepta/nestjs-core';
 
 export class TokenException extends RuntimeException {

@@ -4,7 +4,7 @@ import {
   toInvitationDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
 import { CreateInvitationCommand } from '../../../../../application/commands/impl/create-invitation.command';
-import { InvitationCreatableInterface } from '../../../../../domain/interfaces/invitation-creatable.interface';
+import { type InvitationCreatableInterface } from '../../../../../domain/interfaces/invitation-creatable.interface';
 import { CreateInvitationRequest } from '../../impl/create-invitation.request';
 import { CreateInvitationRequestHandler } from '../create-invitation-request.handler';
 

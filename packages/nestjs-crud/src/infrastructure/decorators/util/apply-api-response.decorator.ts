@@ -1,16 +1,16 @@
-import { HttpStatus, Type } from '@nestjs/common';
+import { HttpStatus, type Type } from '@nestjs/common';
 import {
   ApiExtraModels,
   ApiResponse,
-  ApiResponseMetadata,
-  ApiResponseOptions,
-  ApiResponseSchemaHost,
+  type ApiResponseMetadata,
+  type ApiResponseOptions,
+  type ApiResponseSchemaHost,
   getSchemaPath,
 } from '@nestjs/swagger';
 
 import { Operation } from '@concepta/nestjs-core';
 
-import { DecoratorTargetObject } from '../../../crud.types';
+import { type DecoratorTargetObject } from '../../../crud.types';
 import { CrudInvalidResponseDto } from '../../dtos/crud-invalid-response.dto';
 import { CrudResponsePaginatedDto } from '../../dtos/crud-response-paginated.dto';
 import { CrudException } from '../../exceptions/crud.exception';

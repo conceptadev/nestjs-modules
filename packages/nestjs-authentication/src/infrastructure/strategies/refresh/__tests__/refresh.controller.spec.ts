@@ -1,12 +1,12 @@
 import { randomUUID } from 'crypto';
 
-import { MockProxy, mock } from 'jest-mock-extended';
+import { type MockProxy, mock } from 'jest-mock-extended';
 
-import { CommandBus } from '@nestjs/cqrs';
+import { type CommandBus } from '@nestjs/cqrs';
 
 import { IssueAuthenticatedResponseCommand } from '../../../../application/commands/impl/issue-authenticated-response.command';
-import { AuthenticatedResponseInterface } from '../../../../domain/interfaces/authenticated-response.interface';
-import { AuthenticatedUserInterface } from '../../../../domain/interfaces/authenticated-user.interface';
+import { type AuthenticatedResponseInterface } from '../../../../domain/interfaces/authenticated-response.interface';
+import { type AuthenticatedUserInterface } from '../../../../domain/interfaces/authenticated-user.interface';
 
 import { RefreshControllerFixture } from './fixtures/refresh.controller.fixture';
 

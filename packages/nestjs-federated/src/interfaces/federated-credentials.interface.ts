@@ -1,7 +1,7 @@
 import {
-  ReferenceEmailInterface,
-  ReferenceIdInterface,
-  ReferenceUsernameInterface,
+  type ReferenceEmailInterface,
+  type ReferenceIdInterface,
+  type ReferenceUsernameInterface,
 } from '@concepta/nestjs-core';
 
 /**

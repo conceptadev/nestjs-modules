@@ -1,7 +1,7 @@
 import {
   ConfigurableModuleBuilder,
-  DynamicModule,
-  Provider,
+  type DynamicModule,
+  type Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
@@ -15,7 +15,7 @@ import {
 } from './access-control.constants';
 import {
   AccessControlPort,
-  AccessControlPortSettings,
+  type AccessControlPortSettings,
 } from './application/ports/access-control.port';
 import { CheckAccessHandler } from './application/queries/handlers/check-access.handler';
 import { FilterResponseAttributesHandler } from './application/queries/handlers/filter-response-attributes.handler';
@@ -26,9 +26,9 @@ import { ResolveUserRolesQuery } from './application/queries/impl/resolve-user-r
 import { AccessControlFilter } from './gateways/http/access-control.filter';
 import { AccessControlGuard } from './gateways/http/access-control.guard';
 import { accessControlDefaultConfig } from './infrastructure/config/access-control-default.config';
-import { AccessControlOptionsExtrasInterface } from './infrastructure/config/interfaces/access-control-options-extras.interface';
-import { AccessControlOptionsInterface } from './infrastructure/config/interfaces/access-control-options.interface';
-import { AccessControlSettingsInterface } from './infrastructure/config/interfaces/access-control-settings.interface';
+import { type AccessControlOptionsExtrasInterface } from './infrastructure/config/interfaces/access-control-options-extras.interface';
+import { type AccessControlOptionsInterface } from './infrastructure/config/interfaces/access-control-options.interface';
+import { type AccessControlSettingsInterface } from './infrastructure/config/interfaces/access-control-settings.interface';
 import { AccessControlService } from './infrastructure/services/access-control.service';
 
 const RAW_OPTIONS_TOKEN = Symbol('__ACCESS_CONTROL_MODULE_RAW_OPTIONS_TOKEN__');

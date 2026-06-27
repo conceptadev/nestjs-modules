@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 
-import { INestApplication, CanActivate } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication, type CanActivate } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 
 import { AuthenticationModule } from '../../../authentication.module';
 import { AuthRouterGuards } from '../auth-router.constants';

@@ -1,6 +1,6 @@
 import {
   RuntimeException,
-  RuntimeExceptionOptions,
+  type RuntimeExceptionOptions,
 } from '@concepta/nestjs-core';
 
 export class FederatedException extends RuntimeException {

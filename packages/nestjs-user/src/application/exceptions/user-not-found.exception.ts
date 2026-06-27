@@ -1,11 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { RuntimeException } from '@concepta/nestjs-core';
+import { type RuntimeException } from '@concepta/nestjs-core';
 
 import { UserException } from '../../domain/exceptions/user.exception';
 
 export class UserNotFoundException extends UserException {
-  context: RuntimeException['context'] & {
+  declare context: RuntimeException['context'] & {
     id: string;
   };
 
@@ -21,7 +21,7 @@ export class UserNotFoundException extends UserException {
     this.errorCode = 'USER_NOT_FOUND_ERROR';
 
     this.context = {
-      ...super.context,
+      ...this.context,
       id,
     };
   }

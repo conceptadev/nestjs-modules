@@ -1,4 +1,4 @@
-import { ApiResponseOptions } from '@nestjs/swagger';
+import { type ApiResponseOptions } from '@nestjs/swagger';
 
 import { CRUD_MODULE_API_RESPONSE_METADATA } from '../../../crud.constants';
 import {

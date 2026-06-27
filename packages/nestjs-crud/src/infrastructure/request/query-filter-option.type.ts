@@ -1,8 +1,8 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { WhereCondition } from '@concepta/nestjs-repository';
+import { type WhereCondition } from '@concepta/nestjs-repository';
 
-import { SCondition } from './crud-query.types';
+import { type SCondition } from './crud-query.types';
 
 export type QueryFilterOption<T extends PlainLiteralObject> =
   | WhereCondition<T>[]

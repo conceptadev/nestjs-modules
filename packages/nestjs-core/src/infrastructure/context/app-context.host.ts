@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { AppContextLike } from '../../domain/context/app-context-like.type';
-import { AppContextInterface } from '../../domain/context/interfaces/app-context.interface';
-import { OverlayRef } from '../../domain/context/overlay-ref';
-import { RefsToMethods } from '../../domain/context/refs-to-methods.type';
+import { type AppContextLike } from '../../domain/context/app-context-like.type';
+import { type AppContextInterface } from '../../domain/context/interfaces/app-context.interface';
+import { type OverlayRef } from '../../domain/context/overlay-ref';
+import { type RefsToMethods } from '../../domain/context/refs-to-methods.type';
 
 import { OverlayNotDefinedException } from './exceptions/overlay-not-defined.exception';
 

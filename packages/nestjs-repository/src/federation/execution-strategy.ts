@@ -1,9 +1,12 @@
-import { OrderClause, OrderSortKey } from '../repository/repository.types';
+import {
+  type OrderClause,
+  type OrderSortKey,
+} from '../repository/repository.types';
 
 import { FederationException } from './exceptions/federation.exception';
-import { FederatedRelation, FederationStrategy } from './federation.types';
-import { FilterAnalyzer } from './filter-analyzer';
-import { ExecutionAnalysis } from './interfaces/execution-analysis.interface';
+import { type FederatedRelation, FederationStrategy } from './federation.types';
+import { type FilterAnalyzer } from './filter-analyzer';
+import { type ExecutionAnalysis } from './interfaces/execution-analysis.interface';
 
 export { ExecutionAnalysis } from './interfaces/execution-analysis.interface';
 

@@ -6,7 +6,7 @@ import {
   toOtpDomain,
 } from '../../../__tests__/helpers/mock.helpers';
 import { Otp } from '../../../domain/aggregates/otp';
-import { OtpEntityInterface } from '../interfaces/otp-entity.interface';
+import { type OtpEntityInterface } from '../interfaces/otp-entity.interface';
 import { OtpMapper } from '../otp.mapper';
 import { OtpRepository } from '../otp.repository';
 

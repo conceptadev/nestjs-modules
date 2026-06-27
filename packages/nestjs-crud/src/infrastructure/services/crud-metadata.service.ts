@@ -1,7 +1,11 @@
-import { applyDecorators, CustomDecorator, Type } from '@nestjs/common';
 import {
-  CreateDecoratorOptions,
-  ReflectableDecorator,
+  applyDecorators,
+  type CustomDecorator,
+  type Type,
+} from '@nestjs/common';
+import {
+  type CreateDecoratorOptions,
+  type ReflectableDecorator,
   Reflector,
 } from '@nestjs/core';
 

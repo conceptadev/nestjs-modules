@@ -1,8 +1,8 @@
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import supertest from 'supertest';
 
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getDataSourceToken } from '@nestjs/typeorm';
 
 import { SeedingSource } from '@concepta/typeorm-seeding';
@@ -15,7 +15,7 @@ import { AppResolverOperationModuleFixture } from '../__fixtures__/app-resolver-
 import { AppModuleFixture } from '../__fixtures__/app.module.fixture';
 import { default as ormConfig } from '../__fixtures__/ormconfig.fixture';
 import { PhotoDtoFixture } from '../__fixtures__/photo/dto/photo.dto.fixture';
-import { PhotoFixture } from '../__fixtures__/photo/photo.entity.fixture';
+import { type PhotoFixture } from '../__fixtures__/photo/photo.entity.fixture';
 import { PhotoFactoryFixture } from '../__fixtures__/photo/photo.factory.fixture';
 import { PhotoSeederFixture } from '../__fixtures__/photo/photo.seeder.fixture';
 

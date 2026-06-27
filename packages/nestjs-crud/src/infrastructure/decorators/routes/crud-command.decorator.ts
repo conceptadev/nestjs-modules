@@ -1,6 +1,6 @@
-import { PlainLiteralObject, Type } from '@nestjs/common';
+import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
-import { CrudCommandInterface } from '../../../application/commands/interfaces/crud-command.interface';
+import { type CrudCommandInterface } from '../../../application/commands/interfaces/crud-command.interface';
 import { CRUD_MODULE_ROUTE_COMMAND_METADATA } from '../../../crud.constants';
 import {
   CrudMetadataLookupTarget,

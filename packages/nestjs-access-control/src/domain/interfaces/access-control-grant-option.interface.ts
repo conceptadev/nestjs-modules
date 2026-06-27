@@ -1,4 +1,4 @@
-import { ActionEnum } from '@concepta/nestjs-common';
+import { type ActionEnum } from '@concepta/nestjs-common';
 
 export interface AccessControlGrantOptionInterface {
   resource: string;

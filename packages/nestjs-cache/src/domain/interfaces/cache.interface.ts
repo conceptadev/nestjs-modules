@@ -1,4 +1,4 @@
-import { AssigneeRelationInterface } from '@concepta/nestjs-core';
+import { type AssigneeRelationInterface } from '@concepta/nestjs-core';
 
 export interface CacheInterface extends AssigneeRelationInterface {
   /**

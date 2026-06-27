@@ -1,10 +1,10 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { DeepPartial } from '@concepta/nestjs-core';
+import { type DeepPartial } from '@concepta/nestjs-core';
 
 import {
-  RepositoryFindOptions,
-  RepositoryFindOneOptions,
+  type RepositoryFindOptions,
+  type RepositoryFindOneOptions,
 } from '../repository/interfaces/repository-options.interface';
 
 // =============================================================================

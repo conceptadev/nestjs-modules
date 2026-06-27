@@ -1,4 +1,4 @@
-import { UserCredentialInterface } from './user-credential.interface';
+import { type UserCredentialInterface } from './user-credential.interface';
 
 export interface UserCredentialCreatableInterface extends Pick<
   UserCredentialInterface,

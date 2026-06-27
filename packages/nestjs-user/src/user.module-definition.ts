@@ -1,8 +1,8 @@
 import {
   ConfigurableModuleBuilder,
-  DynamicModule,
-  Provider,
-  Type,
+  type DynamicModule,
+  type Provider,
+  type Type,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CommandBus, CqrsModule } from '@nestjs/cqrs';
@@ -21,11 +21,11 @@ import { GetUserBySubjectHandler } from './application/queries/handlers/get-user
 import { GetUserByUsernameHandler } from './application/queries/handlers/get-user-by-username.handler';
 import { GetUserHandler } from './application/queries/handlers/get-user.handler';
 import { UserPasswordPort } from './domain/ports/user-password.port';
-import { UserCredentialsRepositoryInterface } from './domain/repositories/user-credentials-repository.interface';
+import { type UserCredentialsRepositoryInterface } from './domain/repositories/user-credentials-repository.interface';
 import { UserCredentialsService } from './domain/services/user-credentials.service';
-import { UserExtrasInterface } from './infrastructure/config/interfaces/user-extras.interface';
-import { UserOptionsInterface } from './infrastructure/config/interfaces/user-options.interface';
-import { UserSettingsInterface } from './infrastructure/config/interfaces/user-settings.interface';
+import { type UserExtrasInterface } from './infrastructure/config/interfaces/user-extras.interface';
+import { type UserOptionsInterface } from './infrastructure/config/interfaces/user-options.interface';
+import { type UserSettingsInterface } from './infrastructure/config/interfaces/user-settings.interface';
 import { userDefaultConfig } from './infrastructure/config/user-default.config';
 import { UserCredentialsMapper } from './infrastructure/persistence/user-credentials.mapper';
 import { UserMapper } from './infrastructure/persistence/user.mapper';

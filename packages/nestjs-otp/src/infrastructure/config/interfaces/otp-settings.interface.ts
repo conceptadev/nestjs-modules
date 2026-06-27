@@ -1,4 +1,4 @@
-import { OtpTypeServiceInterface } from './otp-type-service.interface';
+import { type OtpTypeServiceInterface } from './otp-type-service.interface';
 
 export interface OtpSettingsInterface {
   types: { [key: string]: OtpTypeServiceInterface };

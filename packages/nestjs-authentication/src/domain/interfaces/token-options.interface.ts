@@ -1,4 +1,4 @@
-import { JwtModuleOptions } from '@nestjs/jwt';
+import { type JwtModuleOptions } from '@nestjs/jwt';
 
 /**
  * Token configuration options (excludes secretOrPrivateKey).

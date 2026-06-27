@@ -1,11 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { RuntimeException } from '@concepta/nestjs-core';
+import { type RuntimeException } from '@concepta/nestjs-core';
 
 import { OtpException } from '../../domain/exceptions/otp.exception';
 
 export class OtpNotFoundException extends OtpException {
-  context: RuntimeException['context'] & {
+  declare context: RuntimeException['context'] & {
     id: string;
   };
 
@@ -21,7 +21,7 @@ export class OtpNotFoundException extends OtpException {
     this.errorCode = 'OTP_NOT_FOUND_ERROR';
 
     this.context = {
-      ...super.context,
+      ...this.context,
       id,
     };
   }

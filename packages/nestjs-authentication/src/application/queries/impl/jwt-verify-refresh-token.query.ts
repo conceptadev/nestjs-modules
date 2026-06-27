@@ -1,7 +1,7 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
-import { JwtVerifyTokenQueryInterface } from '../../../domain/ports/jwt.port';
+import { type JwtVerifyTokenQueryInterface } from '../../../domain/ports/jwt.port';
 
 export class JwtVerifyRefreshTokenQuery
   extends Query<PlainLiteralObject>

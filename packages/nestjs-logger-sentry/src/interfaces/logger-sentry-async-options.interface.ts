@@ -1,6 +1,6 @@
-import { FactoryProvider, ModuleMetadata } from '@nestjs/common';
+import { type FactoryProvider, type ModuleMetadata } from '@nestjs/common';
 
-import { LoggerSentryOptionsInterface } from './logger-sentry-options.interface';
+import { type LoggerSentryOptionsInterface } from './logger-sentry-options.interface';
 
 /**
  * LoggerSentry async options.

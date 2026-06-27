@@ -1,8 +1,8 @@
 import { mock } from 'jest-mock-extended';
 
-import { ExecutionContext, CanActivate } from '@nestjs/common';
-import { HttpArgumentsHost } from '@nestjs/common/interfaces';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type ExecutionContext, type CanActivate } from '@nestjs/common';
+import { type HttpArgumentsHost } from '@nestjs/common/interfaces';
+import { Test, type TestingModule } from '@nestjs/testing';
 
 import { AuthRouterGuards } from '../auth-router.constants';
 import { AuthRouterGuard } from '../auth-router.guard';

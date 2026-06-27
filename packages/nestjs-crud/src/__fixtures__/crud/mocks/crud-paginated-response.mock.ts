@@ -1,4 +1,4 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 /**
  * Creates a standard paginated response matching the service's expected format.

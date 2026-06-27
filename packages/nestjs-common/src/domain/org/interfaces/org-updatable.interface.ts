@@ -1,4 +1,4 @@
-import { OrgInterface } from './org.interface';
+import { type OrgInterface } from './org.interface';
 
 export interface OrgUpdatableInterface
   extends

@@ -4,7 +4,7 @@ import {
   createMockInvitationEntity,
   toInvitationDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
-import { InvitationAcceptableInterface } from '../../../../../domain/interfaces/invitation-acceptable.interface';
+import { type InvitationAcceptableInterface } from '../../../../../domain/interfaces/invitation-acceptable.interface';
 import { InvitationNotAcceptedException } from '../../../../exceptions/invitation-not-accepted.exception';
 import { AcceptInvitationRequest } from '../../impl/accept-invitation.request';
 import { AcceptInvitationRequestHandler } from '../accept-invitation-request.handler';

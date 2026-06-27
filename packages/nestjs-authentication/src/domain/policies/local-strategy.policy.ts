@@ -1,4 +1,4 @@
-import { Type } from '@nestjs/common';
+import { type Type } from '@nestjs/common';
 
 export interface LocalStrategyPolicySettingsInterface {
   loginDto?: Type;

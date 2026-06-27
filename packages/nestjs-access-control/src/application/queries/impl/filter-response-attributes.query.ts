@@ -1,7 +1,7 @@
-import { ExecutionContext } from '@nestjs/common';
+import { type ExecutionContext } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
-import { FilterResponseAttributesQueryInterface } from '../../ports/access-control.port';
+import { type FilterResponseAttributesQueryInterface } from '../../ports/access-control.port';
 
 export class FilterResponseAttributesQuery
   extends Query<unknown>

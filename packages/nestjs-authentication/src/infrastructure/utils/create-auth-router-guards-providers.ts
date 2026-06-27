@@ -1,8 +1,8 @@
-import { CanActivate, Provider, Type } from '@nestjs/common';
+import { type CanActivate, type Provider, type Type } from '@nestjs/common';
 
 import { AuthRouterGuards } from '../router/auth-router.constants';
-import { AuthRouterGuardsRecord } from '../router/auth-router.types';
-import { AuthRouterGuardConfigInterface } from '../router/interfaces/auth-router-guard-config.interface';
+import { type AuthRouterGuardsRecord } from '../router/auth-router.types';
+import { type AuthRouterGuardConfigInterface } from '../router/interfaces/auth-router-guard-config.interface';
 
 export function createAuthRouterGuardsProviders(
   guards: AuthRouterGuardConfigInterface[],

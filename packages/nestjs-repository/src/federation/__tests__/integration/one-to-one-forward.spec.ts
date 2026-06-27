@@ -12,9 +12,9 @@
  */
 import { WhereOperator } from '../../../repository/repository.types';
 import {
-  TestRoot,
-  TestProfile,
-  TestSettings,
+  type TestRoot,
+  type TestProfile,
+  type TestSettings,
   createMultiRelationSet,
 } from '../federation-test-data';
 import {

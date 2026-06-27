@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import {
   RuntimeException,
-  RuntimeExceptionOptions,
+  type RuntimeExceptionOptions,
 } from '@concepta/nestjs-core';
 
 export class CrudQueryParserException extends RuntimeException {

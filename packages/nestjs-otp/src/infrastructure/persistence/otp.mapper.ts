@@ -1,9 +1,9 @@
 import { DomainMapper } from '@concepta/nestjs-core/aggregate';
 
 import { Otp } from '../../domain/aggregates/otp';
-import { OtpInterface } from '../../domain/interfaces/otp.interface';
+import { type OtpInterface } from '../../domain/interfaces/otp.interface';
 
-import { OtpEntityInterface } from './interfaces/otp-entity.interface';
+import { type OtpEntityInterface } from './interfaces/otp-entity.interface';
 
 export class OtpMapper extends DomainMapper<
   OtpEntityInterface,

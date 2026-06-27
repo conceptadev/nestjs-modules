@@ -1,13 +1,13 @@
-import { Provider } from '@nestjs/common';
+import { type Provider } from '@nestjs/common';
 
 import { LocalService } from '../../application/services/local/local.service';
 import {
   AUTHENTICATION_USER_PORT_TOKEN,
   AUTHENTICATION_PASSWORD_PORT_TOKEN,
 } from '../../authentication.constants';
-import { PasswordPort } from '../../domain/ports/password.port';
-import { UserPort } from '../../domain/ports/user.port';
-import { AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
+import { type PasswordPort } from '../../domain/ports/password.port';
+import { type UserPort } from '../../domain/ports/user.port';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
 import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception';
 
 export function createLocalValidateUserServiceProvider(

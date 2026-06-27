@@ -1,7 +1,7 @@
-import { HttpException, PlainLiteralObject } from '@nestjs/common';
+import { HttpException, type PlainLiteralObject } from '@nestjs/common';
 
 import { CrudQueryException } from '../../../infrastructure/exceptions/crud-query.exception';
-import { CrudReadQuery } from '../impl/crud-read.query';
+import { type CrudReadQuery } from '../impl/crud-read.query';
 
 import { CrudQueryHandler } from './crud-query.handler';
 

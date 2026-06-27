@@ -1,7 +1,7 @@
-import { PlainLiteralObject } from '@nestjs/common';
-import { SwaggerEnumType } from '@nestjs/swagger/dist/types/swagger-enum.type';
+import { type PlainLiteralObject } from '@nestjs/common';
+import { type SwaggerEnumType } from '@nestjs/swagger/dist/types/swagger-enum.type';
 
-import { EntityColumn } from '@concepta/nestjs-repository';
+import { type EntityColumn } from '@concepta/nestjs-repository';
 
 export interface CrudParamOptionInterface<T extends PlainLiteralObject> {
   field?: EntityColumn<T>;

@@ -1,4 +1,4 @@
-import { ApiParamOptions } from '@nestjs/swagger';
+import { type ApiParamOptions } from '@nestjs/swagger';
 
 import { CRUD_MODULE_API_PARAMS_METADATA } from '../../../crud.constants';
 import {

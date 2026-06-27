@@ -1,15 +1,15 @@
-import { Provider, Type } from '@nestjs/common';
+import { type Provider, type Type } from '@nestjs/common';
 
 import {
   getDynamicRepositoryToken,
-  RepositoryInterface,
+  type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { IdentityRepositoryInterface } from '../../domain/repositories/identity-repository.interface';
+import { type IdentityRepositoryInterface } from '../../domain/repositories/identity-repository.interface';
 import { FEDERATED_MODULE_IDENTITY_REPOSITORY_TOKEN } from '../../federated.constants';
 import { IdentityMapper } from '../persistence/identity.mapper';
 import { IdentityRepository } from '../persistence/identity.repository';
-import { IdentityEntityInterface } from '../persistence/interfaces/identity-entity.interface';
+import { type IdentityEntityInterface } from '../persistence/interfaces/identity-entity.interface';
 
 export function createIdentityRepositoryProvider(
   entityKey: string,

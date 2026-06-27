@@ -1,7 +1,7 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import { CRUD_MODULE_CONTROLLER_ADAPTER_METADATA } from '../../../crud.constants';
-import { CrudAdapterProvider } from '../../adapters/interfaces/crud-adapter.types';
+import { type CrudAdapterProvider } from '../../adapters/interfaces/crud-adapter.types';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,

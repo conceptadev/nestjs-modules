@@ -2,14 +2,17 @@
   "name": "@concepta/nestjs-authentication",
   "version": "8.0.0-alpha.7",
   "description": "Rockets NestJS Authentication",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/cjs/index.d.ts",
   "license": "BSD-3-Clause",
   "publishConfig": {
     "access": "public"
   },
   "files": [
-    "dist/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/cjs/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/esm/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/cjs/package.json",
+    "dist/esm/package.json",
     "!dist/**/__tests__/**",
     "!dist/**/__fixtures__/**"
   ],
@@ -47,5 +50,18 @@
     "class-transformer": "*",
     "class-validator": "*",
     "rxjs": "^7.1.0"
+  },
+  "module": "./dist/esm/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    }
   }
 }

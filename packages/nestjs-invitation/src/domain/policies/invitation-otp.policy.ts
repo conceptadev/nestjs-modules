@@ -1,4 +1,4 @@
-import { InvitationOtpSettingsInterface } from '../interfaces/invitation-otp-settings.interface';
+import { type InvitationOtpSettingsInterface } from '../interfaces/invitation-otp-settings.interface';
 
 export class InvitationOtpPolicy {
   readonly namespace: string;

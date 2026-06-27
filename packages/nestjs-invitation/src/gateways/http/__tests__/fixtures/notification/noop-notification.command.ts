@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { InvitationEventPayloadInterface } from '../../../../../domain/events/interfaces/invitation-event-payload.interface';
+import { type InvitationEventPayloadInterface } from '../../../../../domain/events/interfaces/invitation-event-payload.interface';
 import {
-  SendAcceptedNotificationCommandInterface,
-  SendInvitationNotificationCommandInterface,
+  type SendAcceptedNotificationCommandInterface,
+  type SendInvitationNotificationCommandInterface,
 } from '../../../../../domain/ports/invitation-notification.port';
 
 export class NoopSendInvitationNotificationCommand implements SendInvitationNotificationCommandInterface {

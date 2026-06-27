@@ -2,7 +2,7 @@ import { CrudQueryException } from '../../../../infrastructure/exceptions/crud-q
 import { CrudQueryHandler } from '../crud-query.handler';
 
 import {
-  TestCrudAdapter,
+  type TestCrudAdapter,
   createTestAdapter,
 } from './fixtures/query-handler-test.fixture';
 

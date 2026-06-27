@@ -1,6 +1,6 @@
-import { CanActivate, DynamicModule } from '@nestjs/common';
+import { type CanActivate, type DynamicModule } from '@nestjs/common';
 
-import { AuthRouterGuardConfigInterface } from '../../router/interfaces/auth-router-guard-config.interface';
+import { type AuthRouterGuardConfigInterface } from '../../router/interfaces/auth-router-guard-config.interface';
 
 export interface AuthenticationOptionsExtrasInterface extends Pick<
   DynamicModule,

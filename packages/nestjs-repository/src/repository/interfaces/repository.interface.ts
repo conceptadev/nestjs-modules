@@ -1,16 +1,16 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { DeepPartial } from '@concepta/nestjs-core';
+import { type DeepPartial } from '@concepta/nestjs-core';
 
-import { RepositoryMetadataInterface } from './repository-metadata.interface';
+import { type RepositoryMetadataInterface } from './repository-metadata.interface';
 import {
-  RepositoryCreateOptions,
-  RepositoryDeleteOptions,
-  RepositoryFindOptions,
-  RepositoryFindOneOptions,
-  RepositoryRestoreOptions,
-  RepositoryUpdateOptions,
-  RepositoryUpsertOptions,
+  type RepositoryCreateOptions,
+  type RepositoryDeleteOptions,
+  type RepositoryFindOptions,
+  type RepositoryFindOneOptions,
+  type RepositoryRestoreOptions,
+  type RepositoryUpdateOptions,
+  type RepositoryUpsertOptions,
 } from './repository-options.interface';
 
 export interface RepositoryInterface<Entity extends PlainLiteralObject> {

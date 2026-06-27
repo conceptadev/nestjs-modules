@@ -1,7 +1,7 @@
-import { DynamicModule, Provider, Type } from '@nestjs/common';
+import { type DynamicModule, type Provider, type Type } from '@nestjs/common';
 
-import { RoleAssignmentRepositoryInterface } from '../../../domain/repositories/role-assignment-repository.interface';
-import { RoleRepositoryInterface } from '../../../domain/repositories/role-repository.interface';
+import { type RoleAssignmentRepositoryInterface } from '../../../domain/repositories/role-assignment-repository.interface';
+import { type RoleRepositoryInterface } from '../../../domain/repositories/role-repository.interface';
 
 export interface RoleExtrasInterface extends Pick<DynamicModule, 'global'> {
   providers?: Provider[];

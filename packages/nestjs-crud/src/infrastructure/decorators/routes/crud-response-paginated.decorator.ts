@@ -1,4 +1,4 @@
-import { Type } from '@nestjs/common';
+import { type Type } from '@nestjs/common';
 
 import { CRUD_MODULE_RESPONSE_PAGINATED_METADATA } from '../../../crud.constants';
 import {

@@ -1,12 +1,12 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import {
-  ReferenceEmail,
-  ReferenceId,
-  ReferenceUsername,
+  type ReferenceEmail,
+  type ReferenceId,
+  type ReferenceUsername,
 } from '@concepta/nestjs-core';
 
-import { User } from '../aggregates/user';
+import { type User } from '../aggregates/user';
 
 export interface UserRepositoryInterface {
   get(ctx: PlainLiteralObject, id: ReferenceId): Promise<User | null>;

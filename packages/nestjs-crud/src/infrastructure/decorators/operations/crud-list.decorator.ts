@@ -1,10 +1,10 @@
-import { applyDecorators, Get, PlainLiteralObject } from '@nestjs/common';
+import { applyDecorators, Get, type PlainLiteralObject } from '@nestjs/common';
 
 import { Operation } from '@concepta/nestjs-core';
 
 import { CrudListHandler } from '../../../application/queries/handlers/crud-list.handler';
 import { CrudListQuery } from '../../../application/queries/impl/crud-list.query';
-import { CrudRouteQueryOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
+import { type CrudRouteQueryOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
 import { getTransactionalDecorators } from '../../utils/get-transactional-decorators';
 import { CrudApiOperation } from '../openapi/crud-api-operation.decorator';
 import { CrudApiQuery } from '../openapi/crud-api-query.decorator';

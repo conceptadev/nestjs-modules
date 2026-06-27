@@ -1,18 +1,18 @@
 import { randomUUID } from 'crypto';
 
 import {
-  DomainFactory,
-  EventContextHost,
-  ReferenceIdInterface,
+  type DomainFactory,
+  type EventContextHost,
+  type ReferenceIdInterface,
 } from '@concepta/nestjs-core';
 import {
-  AggregateMetaInterface,
+  type AggregateMetaInterface,
   DomainAggregate,
 } from '@concepta/nestjs-core/aggregate';
 
 import { IdentityCreatedEvent } from '../events/identity-created.event';
-import { IdentityCreatableInterface } from '../interfaces/identity-creatable.interface';
-import { IdentityInterface } from '../interfaces/identity.interface';
+import { type IdentityCreatableInterface } from '../interfaces/identity-creatable.interface';
+import { type IdentityInterface } from '../interfaces/identity.interface';
 
 export class Identity extends DomainAggregate<IdentityInterface> {
   constructor(

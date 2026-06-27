@@ -1,10 +1,10 @@
 import { PasswordStrengthEnum } from '../enum/password-strength.enum';
 import { PasswordNotStrongException } from '../exceptions/password-not-strong.exception';
 import { PasswordUsedRecentlyException } from '../exceptions/password-used-recently.exception';
-import { PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
+import { type PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
 import {
   PasswordPolicy,
-  PasswordPolicySettings,
+  type PasswordPolicySettings,
 } from '../policies/password.policy';
 
 import { PasswordCreationService } from './password-creation.service';

@@ -1,4 +1,4 @@
-import { RuntimeExceptionOptions } from '@concepta/nestjs-core';
+import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
 import { LocalInvalidCredentialsException } from '../../infrastructure/strategies/local/exceptions/local-invalid-credentials.exception';
 

@@ -1,8 +1,8 @@
-import { Provider } from '@nestjs/common';
+import { type Provider } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
 import { AUTHENTICATION_USER_PORT_TOKEN } from '../../authentication.constants';
-import { UserPort, UserPortSettings } from '../../domain/ports/user.port';
+import { UserPort, type UserPortSettings } from '../../domain/ports/user.port';
 
 export function createUserPortProvider(
   portSettings: UserPortSettings,

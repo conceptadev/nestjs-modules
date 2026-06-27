@@ -1,10 +1,10 @@
 import {
-  AuditInterface,
-  ReferenceIdInterface,
-  ReferenceVersionInterface,
+  type AuditInterface,
+  type ReferenceIdInterface,
+  type ReferenceVersionInterface,
 } from '@concepta/nestjs-core';
 
-import { IdentityInterface } from '../../../domain/interfaces/identity.interface';
+import { type IdentityInterface } from '../../../domain/interfaces/identity.interface';
 
 export interface IdentityEntityInterface
   extends

@@ -7,7 +7,7 @@ import {
   createMockCacheEntity,
   toCacheDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
-import { CacheInterface } from '../../../../../domain/interfaces/cache.interface';
+import { type CacheInterface } from '../../../../../domain/interfaces/cache.interface';
 import { DeleteCacheRequestHandler } from '../delete-cache-request.handler';
 
 describe(DeleteCacheRequestHandler.name, () => {

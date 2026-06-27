@@ -1,4 +1,4 @@
-import { OtpPolicy, OtpPolicySettingsInterface } from './otp.policy';
+import { OtpPolicy, type OtpPolicySettingsInterface } from './otp.policy';
 
 export interface RecoveryPolicySettingsInterface extends OtpPolicySettingsInterface {}
 

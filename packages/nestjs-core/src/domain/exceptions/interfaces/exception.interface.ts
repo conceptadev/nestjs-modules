@@ -1,4 +1,4 @@
-import { ExceptionContext } from '../../types/operation.types';
+import { type ExceptionContext } from '../../types/operation.types';
 
 export interface ExceptionInterface extends Error {
   /**

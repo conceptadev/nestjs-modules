@@ -4,7 +4,7 @@ import {
   createMockTxScope,
   createMockUserCredentialsService,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { UserCredentials } from '../../../../domain/aggregates/user-credentials';
+import { type UserCredentials } from '../../../../domain/aggregates/user-credentials';
 import { CreateUserCredentialCommand } from '../../impl/create-user-credential.command';
 import { CreateUserCredentialHandler } from '../create-user-credential.handler';
 

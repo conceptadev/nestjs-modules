@@ -1,22 +1,22 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 
-import { EventPublisher } from '@nestjs/cqrs';
+import { type EventPublisher } from '@nestjs/cqrs';
 
 import { AppContextHost } from '@concepta/nestjs-core';
 import {
   TrxCtx,
-  TransactionScope,
-  TransactionContextInterface,
+  type TransactionScope,
+  type TransactionContextInterface,
 } from '@concepta/nestjs-repository';
 
-import { User } from '../../domain/aggregates/user';
-import { UserCredentials } from '../../domain/aggregates/user-credentials';
-import { UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';
-import { UserEntityInterface } from '../../domain/interfaces/user-entity.interface';
-import { UserPasswordPort } from '../../domain/ports/user-password.port';
-import { UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';
-import { UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
-import { UserCredentialsService } from '../../domain/services/user-credentials.service';
+import { type User } from '../../domain/aggregates/user';
+import { type UserCredentials } from '../../domain/aggregates/user-credentials';
+import { type UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';
+import { type UserEntityInterface } from '../../domain/interfaces/user-entity.interface';
+import { type UserPasswordPort } from '../../domain/ports/user-password.port';
+import { type UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';
+import { type UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
+import { type UserCredentialsService } from '../../domain/services/user-credentials.service';
 import { UserCredentialsMapper } from '../../infrastructure/persistence/user-credentials.mapper';
 import { UserMapper } from '../../infrastructure/persistence/user.mapper';
 

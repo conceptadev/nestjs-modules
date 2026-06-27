@@ -1,4 +1,4 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
 export class IsAssignedRoleQuery extends Query<boolean> {

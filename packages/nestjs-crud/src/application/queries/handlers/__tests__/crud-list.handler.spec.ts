@@ -7,8 +7,8 @@ import { CrudListQuery } from '../../impl/crud-list.query';
 import { CrudListHandler } from '../crud-list.handler';
 
 import {
-  TestCrudAdapter,
-  TestEntity,
+  type TestCrudAdapter,
+  type TestEntity,
   createTestAdapter,
 } from './fixtures/query-handler-test.fixture';
 

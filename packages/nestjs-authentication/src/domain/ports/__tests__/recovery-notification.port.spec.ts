@@ -1,14 +1,14 @@
 import { mock } from 'jest-mock-extended';
 
-import { PlainLiteralObject } from '@nestjs/common';
-import { Command, CommandBus } from '@nestjs/cqrs';
+import { type PlainLiteralObject } from '@nestjs/common';
+import { Command, type CommandBus } from '@nestjs/cqrs';
 
 import {
   RecoveryNotificationPort,
-  RecoveryNotificationPortSettings,
-  SendPasswordUpdatedNotificationCommandInterface,
-  SendRecoverLoginNotificationCommandInterface,
-  SendRecoverPasswordNotificationCommandInterface,
+  type RecoveryNotificationPortSettings,
+  type SendPasswordUpdatedNotificationCommandInterface,
+  type SendRecoverLoginNotificationCommandInterface,
+  type SendRecoverPasswordNotificationCommandInterface,
 } from '../recovery-notification.port';
 
 class MockSendRecoverLoginCommand

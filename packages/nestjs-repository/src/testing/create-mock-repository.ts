@@ -1,6 +1,6 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { RepositoryInterface } from '../repository/interfaces/repository.interface';
+import { type RepositoryInterface } from '../repository/interfaces/repository.interface';
 
 /**
  * Create a Jest-mocked RepositoryInterface for unit testing.

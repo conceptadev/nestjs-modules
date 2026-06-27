@@ -7,7 +7,7 @@ import { PhotoCreateDtoFixture } from '../photo/dto/photo-create.dto.fixture';
 import { PhotoPaginatedDtoFixture } from '../photo/dto/photo-paginated.dto.fixture';
 import { PhotoUpdateDtoFixture } from '../photo/dto/photo-update.dto.fixture';
 import { PhotoDtoFixture } from '../photo/dto/photo.dto.fixture';
-import { PhotoEntityInterfaceFixture } from '../photo/interfaces/photo-entity.interface.fixture';
+import { type PhotoEntityInterfaceFixture } from '../photo/interfaces/photo-entity.interface.fixture';
 
 const crudBuilder = new ConfigurableCrudBuilder<PhotoEntityInterfaceFixture>({
   controller: {

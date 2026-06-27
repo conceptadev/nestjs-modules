@@ -1,15 +1,15 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { isNil, isObject } from '@nestjs/common/utils/shared.utils';
 
 import {
-  EntityColumn,
-  OrderSortKey,
+  type EntityColumn,
+  type OrderSortKey,
   Where,
-  WhereCondition,
-  WhereConditionScalar,
+  type WhereCondition,
+  type WhereConditionScalar,
 } from '@concepta/nestjs-repository';
 
-import { CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
+import { type CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
 import {
   hasValue,
   isDateString,
@@ -18,7 +18,7 @@ import {
 } from '../utils/validation';
 
 import { CrudQueryBuilder } from './crud-query.builder';
-import { COND_OPERATOR_FACTORY, SCondition } from './crud-query.types';
+import { COND_OPERATOR_FACTORY, type SCondition } from './crud-query.types';
 import { splitSortString } from './crud-query.utils';
 import {
   validateComparisonOperator,
@@ -29,8 +29,8 @@ import {
   validateUUID,
 } from './crud-query.validator';
 import { CrudQueryParserException } from './exceptions/crud-query-parser.exception';
-import { CrudParsedQueryInterface } from './interfaces/crud-parsed-query.interface';
-import { CrudQueryBuilderOptionsInterface } from './interfaces/crud-query-builder-options.interface';
+import { type CrudParsedQueryInterface } from './interfaces/crud-parsed-query.interface';
+import { type CrudQueryBuilderOptionsInterface } from './interfaces/crud-query-builder-options.interface';
 
 export class CrudQueryParser<
   Entity extends PlainLiteralObject,

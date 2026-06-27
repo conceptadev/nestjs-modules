@@ -1,4 +1,4 @@
-import { EventBaseInterface } from './event-base.interface';
+import { type EventBaseInterface } from './event-base.interface';
 
 /**
  * The interface that all standard events must adhere to

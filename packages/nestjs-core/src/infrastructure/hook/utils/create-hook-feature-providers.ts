@@ -1,4 +1,4 @@
-import { Provider, Type } from '@nestjs/common';
+import { type Provider, type Type } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
 import { HookContextOverlay } from '../hook.context.overlay';

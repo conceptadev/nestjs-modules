@@ -1,6 +1,6 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { FederatedCredentialsInterface } from '../../interfaces/federated-credentials.interface';
+import { type FederatedCredentialsInterface } from '../../interfaces/federated-credentials.interface';
 
 export interface FederatedOAuthServiceInterface {
   sign(

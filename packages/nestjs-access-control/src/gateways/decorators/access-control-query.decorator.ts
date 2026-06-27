@@ -1,7 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
 
 import { ACCESS_CONTROL_MODULE_QUERY_METADATA } from '../../access-control.constants';
-import { AccessControlQueryOptionInterface } from '../../domain/interfaces/access-control-query-option.interface';
+import { type AccessControlQueryOptionInterface } from '../../domain/interfaces/access-control-query-option.interface';
 
 /**
  * Define access query options for this route.

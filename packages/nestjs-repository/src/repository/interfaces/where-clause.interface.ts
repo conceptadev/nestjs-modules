@@ -1,13 +1,13 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import {
-  EntityColumn,
-  WhereArrayOperator,
-  WhereCompoundOperator,
-  WhereNullaryOperator,
+  type EntityColumn,
+  type WhereArrayOperator,
+  type WhereCompoundOperator,
+  type WhereNullaryOperator,
   WhereOperator,
-  WherePairOperator,
-  WhereScalarOperator,
+  type WherePairOperator,
+  type WhereScalarOperator,
 } from '../repository.types';
 
 // ═══════════════════════════════════════════════════════════════════════════════

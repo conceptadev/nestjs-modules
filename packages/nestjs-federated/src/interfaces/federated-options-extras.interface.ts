@@ -1,6 +1,6 @@
-import { DynamicModule, Type } from '@nestjs/common';
+import { type DynamicModule, type Type } from '@nestjs/common';
 
-import { IdentityRepositoryInterface } from '../domain/repositories/identity-repository.interface';
+import { type IdentityRepositoryInterface } from '../domain/repositories/identity-repository.interface';
 
 export interface FederatedOptionsExtrasInterface extends Pick<
   DynamicModule,

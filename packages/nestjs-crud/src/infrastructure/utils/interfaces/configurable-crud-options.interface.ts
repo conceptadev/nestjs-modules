@@ -1,12 +1,12 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import {
-  CrudControllerClassOptionsInterface,
-  CrudControllerOptionsInterface,
+  type CrudControllerClassOptionsInterface,
+  type CrudControllerOptionsInterface,
 } from '../../interfaces/crud-controller-options.interface';
-import { CrudOperationOptions } from '../crud-operation-options.type';
+import { type CrudOperationOptions } from '../crud-operation-options.type';
 
-import { CrudExtraDecoratorsInterface } from './crud-extra-decorators.interface';
+import { type CrudExtraDecoratorsInterface } from './crud-extra-decorators.interface';
 
 /**
  * Options for pre-decorated controller class.

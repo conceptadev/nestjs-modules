@@ -2,7 +2,7 @@
 import 'jest-extended';
 import { CrudQueryBuilder } from '../crud-query.builder';
 import { CrudQueryValidatorException } from '../exceptions/crud-query-validator.exception';
-import { CrudQueryBuilderOptionsInterface } from '../interfaces/crud-query-builder-options.interface';
+import { type CrudQueryBuilderOptionsInterface } from '../interfaces/crud-query-builder-options.interface';
 
 const defaultOptions = { ...(CrudQueryBuilder as any)._options };
 

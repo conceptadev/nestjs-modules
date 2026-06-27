@@ -1,7 +1,7 @@
 import {
   ConfigurableModuleBuilder,
-  DynamicModule,
-  Provider,
+  type DynamicModule,
+  type Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -23,9 +23,9 @@ import { GetRoleHandler } from './application/queries/handlers/get-role.handler'
 import { IsAssignedRoleHandler } from './application/queries/handlers/is-assigned-role.handler';
 import { IsAssignedRolesHandler } from './application/queries/handlers/is-assigned-roles.handler';
 import { RoleContextOverlay } from './gateways/role-context.overlay';
-import { RoleExtrasInterface } from './infrastructure/config/interfaces/role-extras.interface';
-import { RoleOptionsInterface } from './infrastructure/config/interfaces/role-options.interface';
-import { RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface';
+import { type RoleExtrasInterface } from './infrastructure/config/interfaces/role-extras.interface';
+import { type RoleOptionsInterface } from './infrastructure/config/interfaces/role-options.interface';
+import { type RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface';
 import { roleDefaultConfig } from './infrastructure/config/role-default.config';
 import { RoleAssignmentRepositoryResolver } from './infrastructure/persistence/role-assignment-repository.resolver';
 import { RoleAssignmentMapper } from './infrastructure/persistence/role-assignment.mapper';

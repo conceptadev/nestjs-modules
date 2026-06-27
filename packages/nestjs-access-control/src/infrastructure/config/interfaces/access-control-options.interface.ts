@@ -1,9 +1,9 @@
-import { CanActivate, NestInterceptor } from '@nestjs/common';
+import { type CanActivate, type NestInterceptor } from '@nestjs/common';
 
-import { AccessControlPortSettings } from '../../../application/ports/access-control.port';
-import { AccessControlServiceInterface } from '../../../domain/ports/access-control-service.interface';
+import { type AccessControlPortSettings } from '../../../application/ports/access-control.port';
+import { type AccessControlServiceInterface } from '../../../domain/ports/access-control-service.interface';
 
-import { AccessControlSettingsInterface } from './access-control-settings.interface';
+import { type AccessControlSettingsInterface } from './access-control-settings.interface';
 
 export interface AccessControlOptionsInterface {
   settings: AccessControlSettingsInterface;

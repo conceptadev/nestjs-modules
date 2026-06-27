@@ -1,4 +1,4 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 
 import {
   createMockCommandBus,
@@ -6,11 +6,11 @@ import {
 } from '@concepta/nestjs-core/testing';
 import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
-import { Invitation } from '../../domain/aggregates/invitation';
-import { InvitationService } from '../../domain/services/invitation.service';
-import { InvitationEntityInterface } from '../../infrastructure/persistence/interfaces/invitation-entity.interface';
+import { type Invitation } from '../../domain/aggregates/invitation';
+import { type InvitationService } from '../../domain/services/invitation.service';
+import { type InvitationEntityInterface } from '../../infrastructure/persistence/interfaces/invitation-entity.interface';
 import { InvitationMapper } from '../../infrastructure/persistence/invitation.mapper';
-import { InvitationRepository } from '../../infrastructure/persistence/invitation.repository';
+import { type InvitationRepository } from '../../infrastructure/persistence/invitation.repository';
 
 export {
   createMockCommandBus,

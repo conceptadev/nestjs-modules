@@ -1,8 +1,8 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
-import { Otp } from '../../../domain/aggregates/otp';
-import { OtpInterface } from '../../../domain/interfaces/otp.interface';
+import { type Otp } from '../../../domain/aggregates/otp';
+import { type OtpInterface } from '../../../domain/interfaces/otp.interface';
 
 export class FindAssignedOtpsQuery extends Query<Otp[]> {
   constructor(

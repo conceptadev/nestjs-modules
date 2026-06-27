@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { getDataSourceToken } from '@nestjs/typeorm';
 
 import { RuntimeException } from '@concepta/nestjs-core';
@@ -17,7 +17,7 @@ import { AuthorFactoryFixture } from '../../__fixtures__/repository/factory/auth
 import { PostFactoryFixture } from '../../__fixtures__/repository/factory/post.factory.fixture';
 import { TagFactoryFixture } from '../../__fixtures__/repository/factory/tag.factory.fixture';
 import { RelationAppModuleFixture } from '../../__fixtures__/repository/module/relation-app.module.fixture';
-import { TypeOrmRepository } from '../typeorm-repository';
+import { type TypeOrmRepository } from '../typeorm-repository';
 
 describe('TypeOrmRepository (relations)', () => {
   let authorRepo: TypeOrmRepository<AuthorEntityFixture>;

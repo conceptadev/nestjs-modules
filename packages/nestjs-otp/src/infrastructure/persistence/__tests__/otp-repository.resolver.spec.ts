@@ -1,10 +1,10 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 
-import { ModuleRef } from '@nestjs/core';
+import { type ModuleRef } from '@nestjs/core';
 
 import { OtpEntityNotFoundException } from '../../exceptions/otp-entity-not-found.exception';
 import { OtpRepositoryResolver } from '../otp-repository.resolver';
-import { OtpRepository } from '../otp.repository';
+import { type OtpRepository } from '../otp.repository';
 
 describe(OtpRepositoryResolver.name, () => {
   let resolver: OtpRepositoryResolver;

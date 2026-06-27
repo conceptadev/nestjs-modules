@@ -1,8 +1,11 @@
 import { randomUUID } from 'crypto';
 
-import { DomainFactory, EventContextHost } from '@concepta/nestjs-core';
 import {
-  AggregateMetaInterface,
+  type DomainFactory,
+  type EventContextHost,
+} from '@concepta/nestjs-core';
+import {
+  type AggregateMetaInterface,
   DomainAggregate,
 } from '@concepta/nestjs-core/aggregate';
 
@@ -10,9 +13,9 @@ import { CacheCreatedEvent } from '../events/cache-created.event';
 import { CacheExtendedEvent } from '../events/cache-extended.event';
 import { CacheReplacedEvent } from '../events/cache-replaced.event';
 import { CacheUpdatedEvent } from '../events/cache-updated.event';
-import { CacheEventHeaderInterface } from '../events/interfaces/cache-event-header.interface';
-import { CacheCreatableInterface } from '../interfaces/cache-creatable.interface';
-import { CacheInterface } from '../interfaces/cache.interface';
+import { type CacheEventHeaderInterface } from '../events/interfaces/cache-event-header.interface';
+import { type CacheCreatableInterface } from '../interfaces/cache-creatable.interface';
+import { type CacheInterface } from '../interfaces/cache.interface';
 
 export class Cache extends DomainAggregate<CacheInterface> {
   constructor(

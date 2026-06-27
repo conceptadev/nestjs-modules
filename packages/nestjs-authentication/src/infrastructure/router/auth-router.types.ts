@@ -1,3 +1,3 @@
-import { CanActivate } from '@nestjs/common';
+import { type CanActivate } from '@nestjs/common';
 
 export type AuthRouterGuardsRecord = Record<string, CanActivate>;

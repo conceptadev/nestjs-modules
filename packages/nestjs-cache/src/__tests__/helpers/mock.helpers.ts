@@ -1,4 +1,4 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 
 import {
   ActionEnum,
@@ -10,15 +10,15 @@ import {
   createMockCommandBus,
   createMockEventPublisher,
 } from '@concepta/nestjs-core/testing';
-import { CrudContextInterface, CrudCtx } from '@concepta/nestjs-crud';
+import { type CrudContextInterface, CrudCtx } from '@concepta/nestjs-crud';
 import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
-import { Cache } from '../../domain/aggregates/cache';
+import { type Cache } from '../../domain/aggregates/cache';
 import { CacheCtx } from '../../gateways/cache-context.overlay';
-import { CacheRepositoryResolver } from '../../infrastructure/persistence/cache-repository.resolver';
+import { type CacheRepositoryResolver } from '../../infrastructure/persistence/cache-repository.resolver';
 import { CacheMapper } from '../../infrastructure/persistence/cache.mapper';
-import { CacheRepository } from '../../infrastructure/persistence/cache.repository';
-import { CacheEntityInterface } from '../../infrastructure/persistence/interfaces/cache-entity.interface';
+import { type CacheRepository } from '../../infrastructure/persistence/cache.repository';
+import { type CacheEntityInterface } from '../../infrastructure/persistence/interfaces/cache-entity.interface';
 
 export const DEFAULT_CACHE_NAMESPACE = 'UserCache';
 

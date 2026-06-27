@@ -1,15 +1,18 @@
 import { randomUUID } from 'crypto';
 
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { DomainFactory, EventContextHost } from '@concepta/nestjs-core';
 import {
-  AggregateMetaInterface,
+  type DomainFactory,
+  type EventContextHost,
+} from '@concepta/nestjs-core';
+import {
+  type AggregateMetaInterface,
   DomainAggregate,
 } from '@concepta/nestjs-core/aggregate';
 
-import { InvitationDispatchedMetadataInterface } from '../events/interfaces/invitation-dispatched-metadata.interface';
-import { InvitationEventHeaderInterface } from '../events/interfaces/invitation-event-header.interface';
+import { type InvitationDispatchedMetadataInterface } from '../events/interfaces/invitation-dispatched-metadata.interface';
+import { type InvitationEventHeaderInterface } from '../events/interfaces/invitation-event-header.interface';
 import { InvitationAcceptedEvent } from '../events/invitation-accepted.event';
 import { InvitationCreatedEvent } from '../events/invitation-created.event';
 import { InvitationDispatchedEvent } from '../events/invitation-dispatched.event';
@@ -17,8 +20,8 @@ import { InvitationRemovedEvent } from '../events/invitation-removed.event';
 import { InvitationRevokedEvent } from '../events/invitation-revoked.event';
 import { InvitationAlreadyAcceptedException } from '../exceptions/invitation-already-accepted.exception';
 import { InvitationRevokedException } from '../exceptions/invitation-revoked.exception';
-import { InvitationCreatableInterface } from '../interfaces/invitation-creatable.interface';
-import { InvitationInterface } from '../interfaces/invitation.interface';
+import { type InvitationCreatableInterface } from '../interfaces/invitation-creatable.interface';
+import { type InvitationInterface } from '../interfaces/invitation.interface';
 
 export class Invitation extends DomainAggregate<InvitationInterface> {
   constructor(

@@ -1,12 +1,12 @@
-import { applyDecorators, PlainLiteralObject, Put } from '@nestjs/common';
+import { applyDecorators, type PlainLiteralObject, Put } from '@nestjs/common';
 
 import { Operation } from '@concepta/nestjs-core';
 
 import { CrudReplaceHandler } from '../../../application/commands/handlers/crud-replace.handler';
 import { CrudReplaceCommand } from '../../../application/commands/impl/crud-replace.command';
 import { CRUD_MODULE_ROUTE_ID_DEFAULT_PATH } from '../../../crud.constants';
-import { CrudValidationOptions } from '../../../crud.types';
-import { CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
+import { type CrudValidationOptions } from '../../../crud.types';
+import { type CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
 import { getTransactionalDecorators } from '../../utils/get-transactional-decorators';
 import { CrudApiBody } from '../openapi/crud-api-body.decorator';
 import { CrudApiOperation } from '../openapi/crud-api-operation.decorator';

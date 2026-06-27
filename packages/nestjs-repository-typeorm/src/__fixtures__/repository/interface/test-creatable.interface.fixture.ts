@@ -1,4 +1,4 @@
-import { TestInterfaceFixture } from './test-entity.interface.fixture';
+import { type TestInterfaceFixture } from './test-entity.interface.fixture';
 
 export interface TestCreatableInterfaceFixture extends Pick<
   TestInterfaceFixture,

@@ -1,7 +1,7 @@
-import { HttpException, PlainLiteralObject } from '@nestjs/common';
+import { HttpException, type PlainLiteralObject } from '@nestjs/common';
 
 import { CrudQueryException } from '../../../infrastructure/exceptions/crud-query.exception';
-import { CrudSoftDeleteCommand } from '../impl/crud-soft-delete.command';
+import { type CrudSoftDeleteCommand } from '../impl/crud-soft-delete.command';
 
 import { CrudCommandHandler } from './crud-command.handler';
 

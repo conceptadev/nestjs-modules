@@ -1,20 +1,20 @@
-import { PlainLiteralObject, Type } from '@nestjs/common';
+import { type PlainLiteralObject, type Type } from '@nestjs/common';
 import {
-  ApiBodyOptions,
-  ApiOperationOptions,
-  ApiParamOptions,
-  ApiQueryOptions,
-  ApiResponseOptions,
+  type ApiBodyOptions,
+  type ApiOperationOptions,
+  type ApiParamOptions,
+  type ApiQueryOptions,
+  type ApiResponseOptions,
 } from '@nestjs/swagger';
 
-import { CrudCommandHandlerInterface } from '../../application/commands/interfaces/crud-command-handler.interface';
-import { CrudCommandInterface } from '../../application/commands/interfaces/crud-command.interface';
-import { CrudQueryHandlerInterface } from '../../application/queries/interfaces/crud-query-handler.interface';
-import { CrudQueryInterface } from '../../application/queries/interfaces/crud-query.interface';
-import { CrudRequestConfig } from '../request/interfaces/crud-request-config.interface';
-import { CrudResponseConfig } from '../request/interfaces/crud-response-config.interface';
+import { type CrudCommandHandlerInterface } from '../../application/commands/interfaces/crud-command-handler.interface';
+import { type CrudCommandInterface } from '../../application/commands/interfaces/crud-command.interface';
+import { type CrudQueryHandlerInterface } from '../../application/queries/interfaces/crud-query-handler.interface';
+import { type CrudQueryInterface } from '../../application/queries/interfaces/crud-query.interface';
+import { type CrudRequestConfig } from '../request/interfaces/crud-request-config.interface';
+import { type CrudResponseConfig } from '../request/interfaces/crud-response-config.interface';
 
-import { CrudTransactionalInterface } from './crud-transactional.interface';
+import { type CrudTransactionalInterface } from './crud-transactional.interface';
 
 interface CrudRouteCtlrOptionsInterface<T extends PlainLiteralObject> {
   path?: string | string[];

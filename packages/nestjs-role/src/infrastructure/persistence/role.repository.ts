@@ -1,13 +1,13 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceId } from '@concepta/nestjs-core';
-import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
+import { type ReferenceId } from '@concepta/nestjs-core';
+import { type RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
-import { Role } from '../../domain/aggregates/role';
-import { RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
-import { RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface';
+import { type Role } from '../../domain/aggregates/role';
+import { type RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
+import { type RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface';
 
-import { RoleMapper } from './role.mapper';
+import { type RoleMapper } from './role.mapper';
 
 export class RoleRepository implements RoleRepositoryInterface {
   constructor(

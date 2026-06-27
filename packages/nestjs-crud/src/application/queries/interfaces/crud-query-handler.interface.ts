@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { CrudAdapter } from '../../../infrastructure/adapters/crud.adapter';
-import { CrudResponsePaginatedInterface } from '../../../infrastructure/dtos/interfaces/crud-response-paginated.interface';
+import { type CrudAdapter } from '../../../infrastructure/adapters/crud.adapter';
+import { type CrudResponsePaginatedInterface } from '../../../infrastructure/dtos/interfaces/crud-response-paginated.interface';
 
-import { CrudQueryInterface } from './crud-query.interface';
+import { type CrudQueryInterface } from './crud-query.interface';
 
 /**
  * The CRUD query handler interface.

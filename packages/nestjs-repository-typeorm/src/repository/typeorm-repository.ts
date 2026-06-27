@@ -2,8 +2,8 @@ import {
   And,
   Between,
   Equal,
-  FindOperator,
-  FindOptionsWhere,
+  type FindOperator,
+  type FindOptionsWhere,
   In,
   IsNull,
   LessThan,
@@ -12,38 +12,38 @@ import {
   MoreThan,
   MoreThanOrEqual,
   Not,
-  Repository,
-  EntityManager,
-  FindOptionsRelations,
-  FindManyOptions,
-  FindOneOptions,
+  type Repository,
+  type EntityManager,
+  type FindOptionsRelations,
+  type FindManyOptions,
+  type FindOneOptions,
 } from 'typeorm';
 
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import {
   AppContextHost,
-  AppContextLike,
-  DeepPartial,
+  type AppContextLike,
+  type DeepPartial,
   RuntimeException,
-  HookResolverService,
+  type HookResolverService,
 } from '@concepta/nestjs-core';
 import {
   isWhereCondition,
-  JoinClause,
-  RelationActionConfig,
+  type JoinClause,
+  type RelationActionConfig,
   TrxCtx,
   RepositoryAdapter,
-  RepositoryCreateOptions,
-  RepositoryDeleteOptions,
-  RepositoryFindOneOptions,
-  RepositoryFindOptions,
-  RepositoryMetadataInterface,
-  RepositoryRestoreOptions,
-  RepositoryUpdateOptions,
-  RepositoryUpsertOptions,
-  WhereClause,
-  WhereCondition,
+  type RepositoryCreateOptions,
+  type RepositoryDeleteOptions,
+  type RepositoryFindOneOptions,
+  type RepositoryFindOptions,
+  type RepositoryMetadataInterface,
+  type RepositoryRestoreOptions,
+  type RepositoryUpdateOptions,
+  type RepositoryUpsertOptions,
+  type WhereClause,
+  type WhereCondition,
   WhereOperator,
 } from '@concepta/nestjs-repository';
 
@@ -378,13 +378,14 @@ export class TypeOrmRepository<
     const repo = await this.getRepo(options?.ctx);
     this.markDirty(options?.ctx);
     const conflictPaths = this.getPrimaryColumns();
-    const insertResult = await repo.upsert(entity, conflictPaths);
+    const entityInstance = repo.create(entity);
+    const insertResult = await repo.upsert(entityInstance, conflictPaths);
 
     const identifiers = insertResult.identifiers[0] ?? {};
     const primaryKeys: Partial<Record<keyof Entity, Entity[keyof Entity]>> = {};
 
     for (const col of conflictPaths) {
-      const value = identifiers[col] ?? entity[col];
+      const value = identifiers[col] ?? entityInstance[col];
 
       if (value === undefined) {
         throw new Error(`Upsert requires primary key "${col}" to be set`);

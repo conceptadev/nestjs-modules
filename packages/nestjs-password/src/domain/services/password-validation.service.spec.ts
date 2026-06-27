@@ -1,4 +1,4 @@
-import { PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
+import { type PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
 
 import { PasswordStorageService } from './password-storage.service';
 import { PasswordValidationService } from './password-validation.service';

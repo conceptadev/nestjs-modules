@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "commonjs",
+    "module": "nodenext",
     "moduleResolution": "nodenext",
     "target": "es2017",
     "sourceMap": true,
@@ -70,9 +70,6 @@
     },
     {
       "path": "packages/nestjs-federated"
-    },
-    {
-      "path": "packages/typeorm-common"
     },
     {
       "path": "packages/nestjs-otp"

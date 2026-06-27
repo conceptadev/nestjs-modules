@@ -3,7 +3,7 @@ import {
   HttpCode,
   HttpStatus,
   Patch,
-  PlainLiteralObject,
+  type PlainLiteralObject,
 } from '@nestjs/common';
 
 import { Operation } from '@concepta/nestjs-core';
@@ -11,7 +11,7 @@ import { Operation } from '@concepta/nestjs-core';
 import { CrudRestoreHandler } from '../../../application/commands/handlers/crud-restore.handler';
 import { CrudRestoreCommand } from '../../../application/commands/impl/crud-restore.command';
 import { CRUD_MODULE_ROUTE_RESTORE_DEFAULT_PATH } from '../../../crud.constants';
-import { CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
+import { type CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
 import { getTransactionalDecorators } from '../../utils/get-transactional-decorators';
 import { CrudApiOperation } from '../openapi/crud-api-operation.decorator';
 import { CrudApiParam } from '../openapi/crud-api-param.decorator';

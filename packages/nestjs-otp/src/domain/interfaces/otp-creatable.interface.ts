@@ -1,4 +1,4 @@
-import { OtpInterface } from './otp.interface';
+import { type OtpInterface } from './otp.interface';
 
 export interface OtpCreatableInterface extends Pick<
   OtpInterface,

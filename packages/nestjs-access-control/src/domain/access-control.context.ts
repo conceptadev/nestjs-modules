@@ -1,9 +1,9 @@
-import { AccessControl, IQueryInfo } from 'accesscontrol';
+import { type AccessControl, type IQueryInfo } from 'accesscontrol';
 
-import { ExecutionContext } from '@nestjs/common';
+import { type ExecutionContext } from '@nestjs/common';
 
-import { AccessControlContextArgsInterface } from './interfaces/access-control-context-args.interface';
-import { AccessControlContextInterface } from './interfaces/access-control-context.interface';
+import { type AccessControlContextArgsInterface } from './interfaces/access-control-context-args.interface';
+import { type AccessControlContextInterface } from './interfaces/access-control-context.interface';
 
 export class AccessControlContext implements AccessControlContextInterface {
   constructor(private readonly ctxArgs: AccessControlContextArgsInterface) {}

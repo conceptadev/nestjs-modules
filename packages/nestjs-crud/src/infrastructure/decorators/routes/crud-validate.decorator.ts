@@ -1,7 +1,7 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import { CRUD_MODULE_ROUTE_VALIDATION_METADATA } from '../../../crud.constants';
-import { CrudValidationOptions } from '../../../crud.types';
+import { type CrudValidationOptions } from '../../../crud.types';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,

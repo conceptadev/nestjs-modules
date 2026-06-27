@@ -1,12 +1,12 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import {
-  EntityColumn,
-  OrderSortKey,
-  WhereCondition,
+  type EntityColumn,
+  type OrderSortKey,
+  type WhereCondition,
 } from '@concepta/nestjs-repository';
 
-import { SCondition } from '../crud-query.types';
+import { type SCondition } from '../crud-query.types';
 
 /**
  * Interface representing parsed query string parameters from a CRUD request.

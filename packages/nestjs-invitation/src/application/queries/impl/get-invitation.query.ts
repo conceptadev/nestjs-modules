@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { Invitation } from '../../../domain/aggregates/invitation';
+import { type Invitation } from '../../../domain/aggregates/invitation';
 
 export class GetInvitationQuery extends Query<Invitation | null> {
   constructor(

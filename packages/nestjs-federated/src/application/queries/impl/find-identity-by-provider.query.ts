@@ -1,7 +1,7 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
-import { Identity } from '../../../domain/aggregates/identity';
+import { type Identity } from '../../../domain/aggregates/identity';
 
 export class FindIdentityByProviderQuery extends Query<Identity | null> {
   constructor(

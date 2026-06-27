@@ -2,16 +2,28 @@
   "name": "@concepta/nestjs-repository",
   "version": "8.0.0-alpha.7",
   "description": "Rockets NestJS Repository",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/cjs/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
     },
     "./testing": {
-      "types": "./dist/testing.d.ts",
-      "default": "./dist/testing.js"
+      "import": {
+        "types": "./dist/esm/testing.d.ts",
+        "default": "./dist/esm/testing.js"
+      },
+      "require": {
+        "types": "./dist/cjs/testing.d.ts",
+        "default": "./dist/cjs/testing.js"
+      }
     }
   },
   "license": "BSD-3-Clause",
@@ -19,7 +31,10 @@
     "access": "public"
   },
   "files": [
-    "dist/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/cjs/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/esm/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/cjs/package.json",
+    "dist/esm/package.json",
     "!dist/**/__tests__/**",
     "!dist/**/__fixtures__/**"
   ],
@@ -37,5 +52,6 @@
     "class-transformer": "*",
     "class-validator": "*",
     "rxjs": "^7.8.1"
-  }
+  },
+  "module": "./dist/esm/index.js"
 }

@@ -1,4 +1,4 @@
-import { Type } from '@nestjs/common';
+import { type Type } from '@nestjs/common';
 
 import { CRUD_MODULE_REQUEST_BODY_METADATA } from '../../../crud.constants';
 import {

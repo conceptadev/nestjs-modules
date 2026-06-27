@@ -1,15 +1,15 @@
-import { BadRequestException, PlainLiteralObject } from '@nestjs/common';
+import { BadRequestException, type PlainLiteralObject } from '@nestjs/common';
 import { isObject } from '@nestjs/common/utils/shared.utils';
 
-import { Where, WhereClause } from '@concepta/nestjs-repository';
+import { Where, type WhereClause } from '@concepta/nestjs-repository';
 
 import { sanitizeForMessage } from '../utils/validation';
 
 import {
   COND_OPERATOR_FACTORY,
   CondOperator,
-  SCondition,
-  SFieldOperator,
+  type SCondition,
+  type SFieldOperator,
 } from './crud-query.types';
 import { COMPARISON_OPERATORS } from './crud-query.validator';
 

@@ -9,7 +9,7 @@ import {
   toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception';
-import { OtpSettingsInterface } from '../../../../infrastructure/config/interfaces/otp-settings.interface';
+import { type OtpSettingsInterface } from '../../../../infrastructure/config/interfaces/otp-settings.interface';
 import { ConsumeOtpCommand } from '../../impl/consume-otp.command';
 import { ConsumeOtpHandler } from '../consume-otp.handler';
 

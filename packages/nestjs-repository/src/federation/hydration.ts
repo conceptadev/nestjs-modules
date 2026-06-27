@@ -1,6 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { FederatedRelation, RelationResult } from './federation.types';
+import {
+  type FederatedRelation,
+  type RelationResult,
+} from './federation.types';
 
 /**
  * Hydrate relations on root entities by matching FK columns.

@@ -1,11 +1,11 @@
-import { ValidationError } from 'class-validator';
+import { type ValidationError } from 'class-validator';
 
-import { RuntimeExceptionOptions } from '@concepta/nestjs-core';
+import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
 import { OtpException } from './otp.exception';
 
 export class OtpValidationException extends OtpException {
-  context: OtpException['context'] & {
+  declare context: OtpException['context'] & {
     entityName: string;
     validationErrors: ValidationError[];
   };
@@ -21,7 +21,7 @@ export class OtpValidationException extends OtpException {
       ...options,
     });
 
-    this.context = { ...super.context, entityName, validationErrors };
+    this.context = { ...this.context, entityName, validationErrors };
     this.errorCode = 'OTP_VALIDATION_ERROR';
   }
 }

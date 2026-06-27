@@ -1,13 +1,13 @@
-import { Provider, Type } from '@nestjs/common';
+import { type Provider, type Type } from '@nestjs/common';
 
 import {
   getDynamicRepositoryToken,
-  RepositoryInterface,
+  type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { OtpRepositoryInterface } from '../../domain/repositories/otp-repository.interface';
+import { type OtpRepositoryInterface } from '../../domain/repositories/otp-repository.interface';
 import { OTP_CUSTOM_REPOSITORY_TOKEN } from '../../otp.constants';
-import { OtpEntityInterface } from '../persistence/interfaces/otp-entity.interface';
+import { type OtpEntityInterface } from '../persistence/interfaces/otp-entity.interface';
 import { OtpMapper } from '../persistence/otp.mapper';
 import { OtpRepository } from '../persistence/otp.repository';
 

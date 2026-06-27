@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 
-import { LocalCredentialsInterface } from '../../interfaces/local-credentials.interface';
+import { type LocalCredentialsInterface } from '../../interfaces/local-credentials.interface';
 
 export const LOGIN_SUCCESS = {
   username: 'random_username',

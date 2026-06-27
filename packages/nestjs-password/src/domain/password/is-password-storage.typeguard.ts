@@ -1,6 +1,6 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { PasswordStorageInterface } from './interfaces/password-storage.interface';
+import { type PasswordStorageInterface } from './interfaces/password-storage.interface';
 
 export function isPasswordStorage(
   target: unknown,

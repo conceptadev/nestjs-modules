@@ -1,9 +1,9 @@
 import { mock } from 'jest-mock-extended';
 import { firstValueFrom, of } from 'rxjs';
 
-import { CallHandler, ExecutionContext } from '@nestjs/common';
+import { type CallHandler, type ExecutionContext } from '@nestjs/common';
 
-import { AccessControlPort } from '../../application/ports/access-control.port';
+import { type AccessControlPort } from '../../application/ports/access-control.port';
 
 import { AccessControlFilter } from './access-control.filter';
 

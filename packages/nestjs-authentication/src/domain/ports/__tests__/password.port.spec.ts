@@ -1,14 +1,17 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Command, CommandBus } from '@nestjs/cqrs';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 
-import { ReferenceId, ReferenceIdInterface } from '@concepta/nestjs-core';
+import {
+  type ReferenceId,
+  type ReferenceIdInterface,
+} from '@concepta/nestjs-core';
 
 import {
   PasswordPort,
-  PasswordPortSettings,
-  SetPasswordCommandInterface,
-  ValidatePasswordCommandInterface,
+  type PasswordPortSettings,
+  type SetPasswordCommandInterface,
+  type ValidatePasswordCommandInterface,
 } from '../password.port';
 
 class MockValidatePasswordCommand

@@ -1,7 +1,7 @@
-import { EventPayload } from '../../event-types';
+import { type EventPayload } from '../../event-types';
 
-import { EventExpectsReturnOfInterface } from './event-expects-return-of.interface';
-import { EventKeyInterface } from './event-key.interface';
+import { type EventExpectsReturnOfInterface } from './event-expects-return-of.interface';
+import { type EventKeyInterface } from './event-key.interface';
 
 /**
  * The interface that defines Event key and payload signatures.

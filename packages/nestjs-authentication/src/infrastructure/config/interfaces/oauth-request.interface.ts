@@ -1,6 +1,6 @@
-import { Request } from 'express';
+import { type Request } from 'express';
 
-import { OAuthParamsInterface } from './oauth-params.interface';
+import { type OAuthParamsInterface } from './oauth-params.interface';
 
 /**
  * Interface for OAuth authentication request with query parameters

@@ -3,8 +3,8 @@ import { randomUUID } from 'crypto';
 
 import supertest from 'supertest';
 
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { getDataSourceToken } from '@nestjs/typeorm';
 
 import { TransactionScope } from '@concepta/nestjs-repository';
@@ -12,10 +12,10 @@ import { SeedingSource } from '@concepta/typeorm-seeding';
 
 import { CacheSeederFixture } from '../../../__tests__/fixtures/cache.seeder.fixture';
 import { UserCacheEntityFixture } from '../../../__tests__/fixtures/entities/user-cache-entity.fixture';
-import { UserEntityFixture } from '../../../__tests__/fixtures/entities/user-entity.fixture';
+import { type UserEntityFixture } from '../../../__tests__/fixtures/entities/user-entity.fixture';
 import { UserCacheFactoryFixture } from '../../../__tests__/fixtures/factories/user-cache.factory.fixture';
 import { UserFactoryFixture } from '../../../__tests__/fixtures/factories/user.factory.fixture';
-import { CacheCreatableInterface } from '../../../domain/interfaces/cache-creatable.interface';
+import { type CacheCreatableInterface } from '../../../domain/interfaces/cache-creatable.interface';
 import { CacheFactory } from '../../../infrastructure/persistence/cache.factory';
 
 import { AppCrudModuleFixture } from './fixtures/app-crud.module.fixture';

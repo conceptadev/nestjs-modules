@@ -9,9 +9,9 @@ import {
   mockOneToOneRelation,
   mockOwningOneToOneRelation,
   mockContext,
-  TestRoot,
-  TestRelation,
-  TestProfile,
+  type TestRoot,
+  type TestRelation,
+  type TestProfile,
 } from './fixtures/federation-orchestrator.mock';
 
 describe('FederationOrchestrator', () => {

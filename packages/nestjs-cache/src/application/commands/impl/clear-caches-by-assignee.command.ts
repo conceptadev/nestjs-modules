@@ -1,4 +1,4 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
 export class ClearCachesByAssigneeCommand extends Command<void> {

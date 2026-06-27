@@ -1,14 +1,14 @@
 import { HttpStatus } from '@nestjs/common';
 
 import {
-  RuntimeException,
-  RuntimeExceptionOptions,
+  type RuntimeException,
+  type RuntimeExceptionOptions,
 } from '@concepta/nestjs-core';
 
 import { FederatedException } from './federated.exception';
 
 export class IdentityUserRelationshipException extends FederatedException {
-  context: RuntimeException['context'] & {
+  declare context: RuntimeException['context'] & {
     identityId: string;
   };
 
@@ -23,7 +23,7 @@ export class IdentityUserRelationshipException extends FederatedException {
     this.errorCode = 'FEDERATED_IDENTITY_USER_RELATIONSHIP_ERROR';
 
     this.context = {
-      ...super.context,
+      ...this.context,
       identityId,
     };
   }

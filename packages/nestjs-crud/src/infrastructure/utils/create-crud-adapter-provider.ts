@@ -1,11 +1,15 @@
-import { PlainLiteralObject, Provider, Type } from '@nestjs/common';
+import {
+  type PlainLiteralObject,
+  type Provider,
+  type Type,
+} from '@nestjs/common';
 
 import {
   getDynamicRepositoryToken,
-  RepositoryInterface,
+  type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { CrudAdapter } from '../adapters/crud.adapter';
+import { type CrudAdapter } from '../adapters/crud.adapter';
 
 import { getDynamicAdapterToken } from './crud-infra.utils';
 

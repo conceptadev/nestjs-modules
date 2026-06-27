@@ -1,12 +1,12 @@
 import {
-  RuntimeException,
-  RuntimeExceptionOptions,
+  type RuntimeException,
+  type RuntimeExceptionOptions,
 } from '@concepta/nestjs-core';
 
 import { RoleException } from '../../application/exceptions/role.exception';
 
 export class RoleEntityNotFoundException extends RoleException {
-  context: RuntimeException['context'] & { entityName: string };
+  declare context: RuntimeException['context'] & { entityName: string };
 
   constructor(entityName: string, options?: RuntimeExceptionOptions) {
     super({
@@ -18,7 +18,7 @@ export class RoleEntityNotFoundException extends RoleException {
     this.errorCode = 'ROLE_ENTITY_NOT_FOUND_ERROR';
 
     this.context = {
-      ...super.context,
+      ...this.context,
       entityName,
     };
   }

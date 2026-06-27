@@ -2,12 +2,12 @@ import { randomUUID } from 'crypto';
 
 import { mock } from 'jest-mock-extended';
 
-import { EventPublisher } from '@nestjs/cqrs';
+import { type EventPublisher } from '@nestjs/cqrs';
 
-import { Token } from '../../../../domain/aggregates/token.aggregate';
-import { AuthenticatedResponseInterface } from '../../../../domain/interfaces/authenticated-response.interface';
-import { JwtPolicy } from '../../../../domain/policies/jwt.policy';
-import { JwtPort } from '../../../../domain/ports/jwt.port';
+import { type Token } from '../../../../domain/aggregates/token.aggregate';
+import { type AuthenticatedResponseInterface } from '../../../../domain/interfaces/authenticated-response.interface';
+import { type JwtPolicy } from '../../../../domain/policies/jwt.policy';
+import { type JwtPort } from '../../../../domain/ports/jwt.port';
 import { IssueAuthenticatedResponseCommand } from '../../impl/issue-authenticated-response.command';
 import { IssueAuthenticatedResponseHandler } from '../issue-authenticated-response.handler';
 

@@ -1,8 +1,8 @@
 import { mock } from 'jest-mock-extended';
 
-import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { HttpArgumentsHost } from '@nestjs/common/interfaces';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { type HttpArgumentsHost } from '@nestjs/common/interfaces';
+import { Test, type TestingModule } from '@nestjs/testing';
 
 import { AccessControlService } from './access-control.service';
 

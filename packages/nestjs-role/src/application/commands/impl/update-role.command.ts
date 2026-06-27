@@ -1,9 +1,12 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { Role, RoleCreateProps } from '../../../domain/aggregates/role';
+import {
+  type Role,
+  type RoleCreateProps,
+} from '../../../domain/aggregates/role';
 
 export class UpdateRoleCommand extends Command<Role> {
   constructor(

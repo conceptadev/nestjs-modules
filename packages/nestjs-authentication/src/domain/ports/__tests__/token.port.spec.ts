@@ -1,15 +1,15 @@
 import { mock } from 'jest-mock-extended';
 
-import { PlainLiteralObject } from '@nestjs/common';
-import { Command, CommandBus, Query, QueryBus } from '@nestjs/cqrs';
+import { type PlainLiteralObject } from '@nestjs/common';
+import { Command, type CommandBus, Query, type QueryBus } from '@nestjs/cqrs';
 
-import { AuthorizationPayloadInterface } from '../../../domain/interfaces/authorization-payload.interface';
+import { type AuthorizationPayloadInterface } from '../../../domain/interfaces/authorization-payload.interface';
 import {
   TokenPort,
-  TokenPortSettings,
-  IssueTokenCommandInterface,
-  ValidateTokenQueryInterface,
-  VerifyTokenQueryInterface,
+  type TokenPortSettings,
+  type IssueTokenCommandInterface,
+  type ValidateTokenQueryInterface,
+  type VerifyTokenQueryInterface,
 } from '../token.port';
 
 class MockIssueAccessTokenCommand

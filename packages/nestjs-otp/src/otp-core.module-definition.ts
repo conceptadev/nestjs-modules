@@ -1,7 +1,7 @@
 import {
   ConfigurableModuleBuilder,
-  DynamicModule,
-  Provider,
+  type DynamicModule,
+  type Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -22,9 +22,9 @@ import { GetOtpHandler } from './application/queries/handlers/get-otp.handler';
 import { ValidateOtpHandler } from './application/queries/handlers/validate-otp.handler';
 import { OtpHistoryCleanupService } from './domain/services/otp-history-cleanup.service';
 import { OtpContextOverlay } from './gateways/otp-context.overlay';
-import { OtpExtrasInterface } from './infrastructure/config/interfaces/otp-extras.interface';
-import { OtpOptionsInterface } from './infrastructure/config/interfaces/otp-options.interface';
-import { OtpSettingsInterface } from './infrastructure/config/interfaces/otp-settings.interface';
+import { type OtpExtrasInterface } from './infrastructure/config/interfaces/otp-extras.interface';
+import { type OtpOptionsInterface } from './infrastructure/config/interfaces/otp-options.interface';
+import { type OtpSettingsInterface } from './infrastructure/config/interfaces/otp-settings.interface';
 import { otpDefaultConfig } from './infrastructure/config/otp-default.config';
 import { OtpRepositoryResolver } from './infrastructure/persistence/otp-repository.resolver';
 import { OtpMapper } from './infrastructure/persistence/otp.mapper';

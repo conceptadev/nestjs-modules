@@ -1,8 +1,8 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { User } from '../../../domain/aggregates/user';
-import { UserCreatableInterface } from '../../../domain/interfaces/user-creatable.interface';
+import { type User } from '../../../domain/aggregates/user';
+import { type UserCreatableInterface } from '../../../domain/interfaces/user-creatable.interface';
 
 export class CreateUserCommand extends Command<User> {
   constructor(

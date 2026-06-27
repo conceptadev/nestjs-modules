@@ -5,7 +5,7 @@ import {
   WhereOperator,
 } from '@concepta/nestjs-repository';
 
-import { SCondition } from '../crud-query.types';
+import { type SCondition } from '../crud-query.types';
 import { SConditionConverter } from '../crud-scondition.converter';
 
 interface TestEntity {

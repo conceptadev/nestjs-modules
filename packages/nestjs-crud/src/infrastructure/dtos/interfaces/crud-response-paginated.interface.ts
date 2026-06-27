@@ -1,4 +1,4 @@
-import { CrudResponseMetrics } from './crud-response-metrics.interface';
+import { type CrudResponseMetrics } from './crud-response-metrics.interface';
 
 export interface CrudResponsePaginatedInterface<T = unknown> {
   data: T[];

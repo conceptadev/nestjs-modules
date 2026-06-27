@@ -1,5 +1,5 @@
-import { JwtPort } from '../../../domain/ports/jwt.port';
-import { JwtVerifyTokenCallback } from '../jwt-passport.types';
+import { type JwtPort } from '../../../domain/ports/jwt.port';
+import { type JwtVerifyTokenCallback } from '../jwt-passport.types';
 
 export const createVerifyTokenCallback = (
   jwtPort: JwtPort,

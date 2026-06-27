@@ -1,10 +1,10 @@
-import { Provider } from '@nestjs/common';
+import { type Provider } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
 import { AUTHENTICATION_PASSWORD_PORT_TOKEN } from '../../authentication.constants';
 import {
   PasswordPort,
-  PasswordPortSettings,
+  type PasswordPortSettings,
 } from '../../domain/ports/password.port';
 
 export function createPasswordPortProvider(

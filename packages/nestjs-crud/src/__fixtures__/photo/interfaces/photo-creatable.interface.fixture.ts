@@ -1,4 +1,4 @@
-import { PhotoEntityInterfaceFixture } from './photo-entity.interface.fixture';
+import { type PhotoEntityInterfaceFixture } from './photo-entity.interface.fixture';
 
 export interface PhotoCreatableInterfaceFixture extends Pick<
   PhotoEntityInterfaceFixture,

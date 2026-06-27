@@ -2,24 +2,48 @@
   "name": "@concepta/nestjs-cache",
   "version": "8.0.0-alpha.7",
   "description": "Rockets NestJS Cache",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/cjs/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
     },
     "./optional/crud": {
-      "types": "./dist/optional-crud.d.ts",
-      "default": "./dist/optional-crud.js"
+      "import": {
+        "types": "./dist/esm/optional-crud.d.ts",
+        "default": "./dist/esm/optional-crud.js"
+      },
+      "require": {
+        "types": "./dist/cjs/optional-crud.d.ts",
+        "default": "./dist/cjs/optional-crud.js"
+      }
     },
     "./optional/seeding": {
-      "types": "./dist/optional-seeding.d.ts",
-      "default": "./dist/optional-seeding.js"
+      "import": {
+        "types": "./dist/esm/optional-seeding.d.ts",
+        "default": "./dist/esm/optional-seeding.js"
+      },
+      "require": {
+        "types": "./dist/cjs/optional-seeding.d.ts",
+        "default": "./dist/cjs/optional-seeding.js"
+      }
     },
     "./optional/typeorm": {
-      "types": "./dist/optional-typeorm.d.ts",
-      "default": "./dist/optional-typeorm.js"
+      "import": {
+        "types": "./dist/esm/optional-typeorm.d.ts",
+        "default": "./dist/esm/optional-typeorm.js"
+      },
+      "require": {
+        "types": "./dist/cjs/optional-typeorm.d.ts",
+        "default": "./dist/cjs/optional-typeorm.js"
+      }
     }
   },
   "license": "BSD-3-Clause",
@@ -27,7 +51,10 @@
     "access": "public"
   },
   "files": [
-    "dist/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/cjs/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/esm/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/cjs/package.json",
+    "dist/esm/package.json",
     "!dist/**/__tests__/**",
     "!dist/**/__fixtures__/**"
   ],
@@ -69,5 +96,6 @@
     "@faker-js/faker": {
       "optional": true
     }
-  }
+  },
+  "module": "./dist/esm/index.js"
 }

@@ -1,4 +1,4 @@
-import { DataSourceOptions } from 'typeorm';
+import { type DataSourceOptions } from 'typeorm';
 
 import { AuthorEntityFixture } from '../entity/author.entity.fixture';
 import { PostEntityFixture } from '../entity/post.entity.fixture';

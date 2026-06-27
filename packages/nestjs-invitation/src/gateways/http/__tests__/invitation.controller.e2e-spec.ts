@@ -2,17 +2,17 @@ import { randomUUID } from 'crypto';
 
 import supertest from 'supertest';
 
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { getDataSourceToken } from '@nestjs/typeorm';
 
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
-import { InvitationCreatableInterface } from '../../../domain/interfaces/invitation-creatable.interface';
+import { type InvitationCreatableInterface } from '../../../domain/interfaces/invitation-creatable.interface';
 import { InvitationOtpPort } from '../../../domain/ports/invitation-otp.port';
-import { InvitationAcceptDto } from '../../../infrastructure/dtos/invitation-accept.dto';
-import { InvitationDto } from '../../../infrastructure/dtos/invitation.dto';
-import { InvitationEntityInterface } from '../../../infrastructure/persistence/interfaces/invitation-entity.interface';
+import { type InvitationAcceptDto } from '../../../infrastructure/dtos/invitation-accept.dto';
+import { type InvitationDto } from '../../../infrastructure/dtos/invitation.dto';
+import { type InvitationEntityInterface } from '../../../infrastructure/persistence/interfaces/invitation-entity.interface';
 import { InvitationFactory } from '../../../seeding/invitation.factory';
 
 import { AppCrudModuleFixture } from './fixtures/app-crud.module.fixture';

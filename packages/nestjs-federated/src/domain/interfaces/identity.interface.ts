@@ -1,4 +1,4 @@
-import { ReferenceIdInterface } from '@concepta/nestjs-core';
+import { type ReferenceIdInterface } from '@concepta/nestjs-core';
 
 export interface IdentityInterface {
   provider: string;

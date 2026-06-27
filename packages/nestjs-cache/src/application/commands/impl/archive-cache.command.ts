@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { Cache } from '../../../domain/aggregates/cache';
+import { type Cache } from '../../../domain/aggregates/cache';
 
 export class ArchiveCacheCommand extends Command<Cache> {
   constructor(

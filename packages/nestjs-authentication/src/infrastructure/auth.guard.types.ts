@@ -1,4 +1,4 @@
-import { CanActivate } from '@nestjs/common';
+import { type CanActivate } from '@nestjs/common';
 
 export interface AuthGuardOptions {
   canDisable?: boolean;

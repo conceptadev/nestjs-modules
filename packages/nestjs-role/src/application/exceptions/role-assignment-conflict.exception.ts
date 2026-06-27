@@ -1,14 +1,14 @@
 import { HttpStatus } from '@nestjs/common';
 
 import {
-  RuntimeException,
-  RuntimeExceptionOptions,
+  type RuntimeException,
+  type RuntimeExceptionOptions,
 } from '@concepta/nestjs-core';
 
 import { RoleException } from './role.exception';
 
 export class RoleAssignmentConflictException extends RoleException {
-  context: RuntimeException['context'] & {
+  declare context: RuntimeException['context'] & {
     roleId: string;
     assigneeId: string;
   };
@@ -28,7 +28,7 @@ export class RoleAssignmentConflictException extends RoleException {
     this.errorCode = 'ROLE_ASSIGNMENT_CONFLICT_ERROR';
 
     this.context = {
-      ...super.context,
+      ...this.context,
       roleId,
       assigneeId,
     };

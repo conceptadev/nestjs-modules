@@ -1,7 +1,7 @@
 import {
   ConfigurableModuleBuilder,
-  DynamicModule,
-  Provider,
+  type DynamicModule,
+  type Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -27,9 +27,9 @@ import {
 import { CacheExpirationPolicy } from './domain/policies/cache-expiration.policy';
 import { CacheContextOverlay } from './gateways/cache-context.overlay';
 import { cacheDefaultConfig } from './infrastructure/config/cache-default.config';
-import { CacheExtrasInterface } from './infrastructure/config/interfaces/cache-extras.interface';
-import { CacheOptionsInterface } from './infrastructure/config/interfaces/cache-options.interface';
-import { CacheSettingsInterface } from './infrastructure/config/interfaces/cache-settings.interface';
+import { type CacheExtrasInterface } from './infrastructure/config/interfaces/cache-extras.interface';
+import { type CacheOptionsInterface } from './infrastructure/config/interfaces/cache-options.interface';
+import { type CacheSettingsInterface } from './infrastructure/config/interfaces/cache-settings.interface';
 import { CacheRepositoryResolver } from './infrastructure/persistence/cache-repository.resolver';
 import { CacheMapper } from './infrastructure/persistence/cache.mapper';
 import { createCacheExpirationPolicyProvider } from './infrastructure/utils/create-cache-expiration-policy-provider';

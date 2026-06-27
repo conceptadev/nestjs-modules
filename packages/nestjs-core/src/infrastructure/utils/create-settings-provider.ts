@@ -1,6 +1,6 @@
-import { InjectionToken, Provider } from '@nestjs/common';
+import { type InjectionToken, type Provider } from '@nestjs/common';
 
-import { ModuleOptionsSettingsInterface } from '../config/interfaces/module-options-settings.interface';
+import { type ModuleOptionsSettingsInterface } from '../config/interfaces/module-options-settings.interface';
 
 export function createSettingsProvider<
   ModuleSettingsType,

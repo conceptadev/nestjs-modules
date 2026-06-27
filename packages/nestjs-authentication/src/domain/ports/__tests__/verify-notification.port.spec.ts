@@ -1,12 +1,12 @@
 import { mock } from 'jest-mock-extended';
 
-import { PlainLiteralObject } from '@nestjs/common';
-import { Command, CommandBus } from '@nestjs/cqrs';
+import { type PlainLiteralObject } from '@nestjs/common';
+import { Command, type CommandBus } from '@nestjs/cqrs';
 
 import {
-  SendVerifyNotificationCommandInterface,
+  type SendVerifyNotificationCommandInterface,
   VerifyNotificationPort,
-  VerifyNotificationPortSettings,
+  type VerifyNotificationPortSettings,
 } from '../verify-notification.port';
 
 class MockSendVerifyNotificationCommand

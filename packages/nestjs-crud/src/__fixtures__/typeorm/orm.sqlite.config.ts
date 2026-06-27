@@ -1,6 +1,6 @@
 import { join } from 'path';
 
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { type TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 export const ormSqliteConfig: TypeOrmModuleOptions = {
   type: 'sqlite',

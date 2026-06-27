@@ -1,12 +1,12 @@
 import {
   applyDecorators,
   Controller,
-  PlainLiteralObject,
+  type PlainLiteralObject,
 } from '@nestjs/common';
 
 import { CRUD_MODULE_DEFAULT_PARAMS_OPTIONS } from '../../../crud.constants';
 import { CrudAdapter as CrudAdapterClass } from '../../adapters/crud.adapter';
-import { CrudControllerOptionsInterface } from '../../interfaces/crud-controller-options.interface';
+import { type CrudControllerOptionsInterface } from '../../interfaces/crud-controller-options.interface';
 import { CrudAdapter } from '../routes/crud-adapter.decorator';
 import { CrudEntity } from '../routes/crud-entity.decorator';
 import { CrudName } from '../routes/crud-name.decorator';

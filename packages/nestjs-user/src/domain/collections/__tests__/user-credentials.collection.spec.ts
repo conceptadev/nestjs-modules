@@ -1,7 +1,7 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 
 import { UserPasswordHistoryViolationException } from '../../exceptions/user-password-history-violation.exception';
-import { UserPasswordPort } from '../../ports/user-password.port';
+import { type UserPasswordPort } from '../../ports/user-password.port';
 import { UserCredentialsCollection } from '../user-credentials.collection';
 
 describe(UserCredentialsCollection.name, () => {

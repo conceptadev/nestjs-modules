@@ -1,10 +1,10 @@
-import { IEvent } from '@nestjs/cqrs';
+import { type IEvent } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { type EventContextHost } from '@concepta/nestjs-core';
 
-import { RoleAssignmentInterface } from '../interfaces/role-assignment.interface';
+import { type RoleAssignmentInterface } from '../interfaces/role-assignment.interface';
 
-import { RoleEventHeaderInterface } from './interfaces/role-event-header.interface';
+import { type RoleEventHeaderInterface } from './interfaces/role-event-header.interface';
 
 export class RoleAssignedEvent implements IEvent {
   constructor(

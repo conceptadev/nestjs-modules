@@ -1,15 +1,15 @@
 import {
   ActionEnum,
   MutateOperations,
-  Operation,
+  type Operation,
   ReadOperations,
-  SpecificationInterface,
+  type SpecificationInterface,
   WriteOperations,
   Spec,
 } from '@concepta/nestjs-core';
 
 import { ActionSpecification } from './action.specification';
-import { CrudSpecContextInterface } from './interfaces/crud-spec-context.interface';
+import { type CrudSpecContextInterface } from './interfaces/crud-spec-context.interface';
 import { OperationSpecification } from './operation.specification';
 
 /**

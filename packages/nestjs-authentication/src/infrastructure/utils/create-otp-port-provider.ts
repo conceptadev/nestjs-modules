@@ -1,8 +1,8 @@
-import { Provider } from '@nestjs/common';
+import { type Provider } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
 import { AUTHENTICATION_OTP_PORT_TOKEN } from '../../authentication.constants';
-import { OtpPort, OtpPortSettings } from '../../domain/ports/otp.port';
+import { OtpPort, type OtpPortSettings } from '../../domain/ports/otp.port';
 
 export function createOtpPortProvider(portSettings: OtpPortSettings): Provider {
   return {

@@ -1,10 +1,10 @@
 import { mock } from 'jest-mock-extended';
 
 import { RecoveryPolicy } from '../../../../domain/policies/recovery.policy';
-import { OtpPort } from '../../../../domain/ports/otp.port';
-import { PasswordPort } from '../../../../domain/ports/password.port';
-import { RecoveryNotificationPort } from '../../../../domain/ports/recovery-notification.port';
-import { UserPort } from '../../../../domain/ports/user.port';
+import { type OtpPort } from '../../../../domain/ports/otp.port';
+import { type PasswordPort } from '../../../../domain/ports/password.port';
+import { type RecoveryNotificationPort } from '../../../../domain/ports/recovery-notification.port';
+import { type UserPort } from '../../../../domain/ports/user.port';
 import { RecoveryService } from '../recovery.service';
 
 describe(RecoveryService, () => {

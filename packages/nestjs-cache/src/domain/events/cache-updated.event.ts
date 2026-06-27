@@ -1,10 +1,10 @@
-import { IEvent } from '@nestjs/cqrs';
+import { type IEvent } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { type EventContextHost } from '@concepta/nestjs-core';
 
-import { CacheInterface } from '../interfaces/cache.interface';
+import { type CacheInterface } from '../interfaces/cache.interface';
 
-import { CacheEventHeaderInterface } from './interfaces/cache-event-header.interface';
+import { type CacheEventHeaderInterface } from './interfaces/cache-event-header.interface';
 
 export class CacheUpdatedEvent implements IEvent {
   constructor(

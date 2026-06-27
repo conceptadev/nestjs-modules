@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import {
-  EntityColumn,
+  type EntityColumn,
   Where,
-  WhereCondition,
+  type WhereCondition,
 } from '@concepta/nestjs-repository';
 
 /**

@@ -1,4 +1,4 @@
-import { PasswordSettingsInterface } from './password-settings.interface';
+import { type PasswordSettingsInterface } from './password-settings.interface';
 
 /**
  * Password module configuration options interface

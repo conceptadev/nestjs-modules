@@ -1,6 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { FederatedRelation, RelationResult } from '../federation.types';
+import {
+  type FederatedRelation,
+  type RelationResult,
+} from '../federation.types';
 import { hydrateRelations, initializeEmptyRelations } from '../hydration';
 
 const makeRelation = (

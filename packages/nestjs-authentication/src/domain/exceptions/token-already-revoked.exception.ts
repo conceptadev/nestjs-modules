@@ -1,11 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { RuntimeException } from '@concepta/nestjs-core';
+import { type RuntimeException } from '@concepta/nestjs-core';
 
 import { TokenException } from './token.exception';
 
 export class TokenAlreadyRevokedException extends TokenException {
-  context: RuntimeException['context'] & { tokenId: string };
+  declare context: RuntimeException['context'] & { tokenId: string };
 
   constructor(tokenId: string) {
     super({
@@ -14,6 +14,6 @@ export class TokenAlreadyRevokedException extends TokenException {
       messageParams: [tokenId],
     });
     this.errorCode = 'TOKEN_ALREADY_REVOKED_ERROR';
-    this.context = { ...super.context, tokenId };
+    this.context = { ...this.context, tokenId };
   }
 }

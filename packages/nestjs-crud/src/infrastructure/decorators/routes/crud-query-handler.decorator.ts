@@ -1,6 +1,6 @@
-import { PlainLiteralObject, Type } from '@nestjs/common';
+import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
-import { CrudQueryHandlerInterface } from '../../../application/queries/interfaces/crud-query-handler.interface';
+import { type CrudQueryHandlerInterface } from '../../../application/queries/interfaces/crud-query-handler.interface';
 import { CRUD_MODULE_ROUTE_QUERY_HANDLER_METADATA } from '../../../crud.constants';
 import {
   CrudMetadataLookupTarget,

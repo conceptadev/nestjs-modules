@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { AssigneeRelationInterface } from '@concepta/nestjs-core';
+import { type AssigneeRelationInterface } from '@concepta/nestjs-core';
 
-import { OtpInterface } from '../../../domain/interfaces/otp.interface';
+import { type OtpInterface } from '../../../domain/interfaces/otp.interface';
 
 export class ConsumeOtpCommand extends Command<AssigneeRelationInterface | null> {
   constructor(

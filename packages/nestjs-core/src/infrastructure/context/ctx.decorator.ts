@@ -1,10 +1,10 @@
 import {
   createParamDecorator,
-  ExecutionContext,
-  PlainLiteralObject,
+  type ExecutionContext,
+  type PlainLiteralObject,
 } from '@nestjs/common';
 
-import { OverlayRef } from '../../domain/context/overlay-ref';
+import { type OverlayRef } from '../../domain/context/overlay-ref';
 
 import { getAppContext } from './get-app-context.util';
 

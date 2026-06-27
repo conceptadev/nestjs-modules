@@ -1,4 +1,4 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 
 import { EventContextHost } from '@concepta/nestjs-core';
 import {
@@ -8,12 +8,12 @@ import {
 } from '@concepta/nestjs-core/testing';
 import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
-import { Otp } from '../../domain/aggregates/otp';
-import { OtpSettingsInterface } from '../../infrastructure/config/interfaces/otp-settings.interface';
-import { OtpEntityInterface } from '../../infrastructure/persistence/interfaces/otp-entity.interface';
-import { OtpRepositoryResolver } from '../../infrastructure/persistence/otp-repository.resolver';
+import { type Otp } from '../../domain/aggregates/otp';
+import { type OtpSettingsInterface } from '../../infrastructure/config/interfaces/otp-settings.interface';
+import { type OtpEntityInterface } from '../../infrastructure/persistence/interfaces/otp-entity.interface';
+import { type OtpRepositoryResolver } from '../../infrastructure/persistence/otp-repository.resolver';
 import { OtpMapper } from '../../infrastructure/persistence/otp.mapper';
-import { OtpRepository } from '../../infrastructure/persistence/otp.repository';
+import { type OtpRepository } from '../../infrastructure/persistence/otp.repository';
 
 export const DEFAULT_OTP_NAMESPACE = 'userOtp';
 
