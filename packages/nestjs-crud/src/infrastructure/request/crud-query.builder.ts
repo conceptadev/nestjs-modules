@@ -1,6 +1,6 @@
 import { stringify } from 'qs';
 
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import {
   isNil,
   isObject,
@@ -9,24 +9,24 @@ import {
 } from '@nestjs/common/utils/shared.utils';
 
 import {
-  EntityColumn,
-  OrderSortKey,
-  OrderSortKeyArr,
-  WhereCondition,
-  WhereConditionArr,
+  type EntityColumn,
+  type OrderSortKey,
+  type OrderSortKeyArr,
+  type WhereCondition,
+  type WhereConditionArr,
 } from '@concepta/nestjs-repository';
 
 import { hasValue } from '../utils/validation';
 
-import { COND_OPERATOR_PREFIX, SCondition } from './crud-query.types';
+import { COND_OPERATOR_PREFIX, type SCondition } from './crud-query.types';
 import {
   validateCondition,
   validateFields,
   validateNumeric,
   validateSort,
 } from './crud-query.validator';
-import { CrudCreateQueryParamsInterface } from './interfaces/crud-create-query-params.interface';
-import { CrudQueryBuilderOptionsInterface } from './interfaces/crud-query-builder-options.interface';
+import { type CrudCreateQueryParamsInterface } from './interfaces/crud-create-query-params.interface';
+import { type CrudQueryBuilderOptionsInterface } from './interfaces/crud-query-builder-options.interface';
 
 export class CrudQueryBuilder<
   Entity extends PlainLiteralObject = PlainLiteralObject,

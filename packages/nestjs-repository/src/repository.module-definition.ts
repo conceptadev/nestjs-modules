@@ -1,7 +1,7 @@
 import {
   ConfigurableModuleBuilder,
-  DynamicModule,
-  Provider,
+  type DynamicModule,
+  type Provider,
 } from '@nestjs/common';
 
 import {
@@ -9,7 +9,7 @@ import {
   FederationOrchestrator,
 } from './federation/federation-orchestrator.service';
 import { TransactionInterceptor } from './interceptors/transaction.interceptor';
-import { RepositoryModuleOptionsInterface } from './interfaces/repository-module-options.interface';
+import { type RepositoryModuleOptionsInterface } from './interfaces/repository-module-options.interface';
 import { REPOSITORY_MODULE_OPTIONS } from './repository.constants';
 import {
   RepositoryRegistryService,

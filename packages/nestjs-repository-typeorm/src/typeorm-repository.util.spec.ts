@@ -1,12 +1,12 @@
 import { mockDeep } from 'jest-mock-extended';
-import { DataSource, Repository } from 'typeorm';
+import { type DataSource, type Repository } from 'typeorm';
 
 import { getDataSourceToken } from '@nestjs/typeorm';
 
 import { HookResolverService } from '@concepta/nestjs-core';
 import { getDynamicRepositoryToken } from '@concepta/nestjs-repository';
 
-import { TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface';
+import { type TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface';
 import { TypeOrmRepository } from './repository/typeorm-repository';
 import { TypeOrmTransactionFactory } from './transaction/typeorm-transaction.factory';
 import { TYPEORM_DEFAULT_DATA_SOURCE_NAME } from './typeorm-repository.constants';

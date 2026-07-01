@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import { ActionEnum, AppContextHost, Operation } from '@concepta/nestjs-core';
 
 import { CrudCtx } from '../../../infrastructure/interceptors/crud-context.overlay';
-import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
+import { type CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
 
 import { mockCrudParsedQuery } from './crud-parsed-query.mock';
 

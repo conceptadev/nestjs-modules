@@ -1,13 +1,13 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceId } from '@concepta/nestjs-core';
-import { RepositoryInterface, Where } from '@concepta/nestjs-repository';
+import { type ReferenceId } from '@concepta/nestjs-core';
+import { type RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
-import { Invitation } from '../../domain/aggregates/invitation';
-import { InvitationRepositoryInterface } from '../../domain/repositories/invitation-repository.interface';
+import { type Invitation } from '../../domain/aggregates/invitation';
+import { type InvitationRepositoryInterface } from '../../domain/repositories/invitation-repository.interface';
 
-import { InvitationEntityInterface } from './interfaces/invitation-entity.interface';
-import { InvitationMapper } from './invitation.mapper';
+import { type InvitationEntityInterface } from './interfaces/invitation-entity.interface';
+import { type InvitationMapper } from './invitation.mapper';
 
 export class InvitationRepository implements InvitationRepositoryInterface {
   constructor(

@@ -1,15 +1,15 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import { RuntimeException } from '@concepta/nestjs-core';
 
 import {
-  OrderSortKeyAsc,
-  OrderSortKeyDesc,
+  type OrderSortKeyAsc,
+  type OrderSortKeyDesc,
 } from './interfaces/order-sort-key.interface';
 import {
-  EntityColumn,
-  OrderClause,
-  OrderSortKey,
+  type EntityColumn,
+  type OrderClause,
+  type OrderSortKey,
   SortOrder,
 } from './repository.types';
 

@@ -1,4 +1,4 @@
-import { RuntimeExceptionOptions } from '@concepta/nestjs-core';
+import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
 import { InvitationException } from '../../domain/exceptions/invitation.exception';
 

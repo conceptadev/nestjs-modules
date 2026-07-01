@@ -1,6 +1,6 @@
-import { AccessControl, IQueryInfo } from 'accesscontrol';
+import { type AccessControl, type IQueryInfo } from 'accesscontrol';
 
-import { ExecutionContext } from '@nestjs/common';
+import { type ExecutionContext } from '@nestjs/common';
 
 export interface AccessControlContextInterface {
   getRequest(property?: string): unknown;

@@ -1,10 +1,10 @@
 import {
-  AuditInterface,
-  ReferenceIdInterface,
-  ReferenceVersionInterface,
+  type AuditInterface,
+  type ReferenceIdInterface,
+  type ReferenceVersionInterface,
 } from '@concepta/nestjs-core';
 
-import { UserCredentialInterface } from './user-credential.interface';
+import { type UserCredentialInterface } from './user-credential.interface';
 
 export interface UserCredentialEntityInterface
   extends

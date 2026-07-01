@@ -1,4 +1,4 @@
-import { EventPublisher } from '@nestjs/cqrs';
+import { type EventPublisher } from '@nestjs/cqrs';
 
 import { AppContextHost } from '@concepta/nestjs-core';
 
@@ -10,7 +10,7 @@ import {
   createMockIdentityEntity,
   toIdentityDomain,
 } from '../../__tests__/helpers/mock.helpers';
-import { FederatedCredentialsInterface } from '../../interfaces/federated-credentials.interface';
+import { type FederatedCredentialsInterface } from '../../interfaces/federated-credentials.interface';
 import { IdentityCreateUserException } from '../exceptions/identity-create-user.exception';
 import { IdentityFindUserException } from '../exceptions/identity-find-user.exception';
 import { IdentityUserRelationshipException } from '../exceptions/identity-user-relationship.exception';

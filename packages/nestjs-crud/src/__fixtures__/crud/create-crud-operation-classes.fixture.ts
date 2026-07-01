@@ -1,4 +1,4 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import { CrudCreateBatchCommand } from '../../application/commands/impl/crud-create-batch.command';
 import { CrudCreateCommand } from '../../application/commands/impl/crud-create.command';

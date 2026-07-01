@@ -1,4 +1,4 @@
-import { SpecificationInterface } from '@concepta/nestjs-core';
+import { type SpecificationInterface } from '@concepta/nestjs-core';
 
 /**
  * Specification that matches when the context's entity key

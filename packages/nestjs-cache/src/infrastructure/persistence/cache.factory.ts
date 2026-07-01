@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker';
 
 import { Factory } from '@concepta/typeorm-seeding';
 
-import { CacheInterface } from '../../domain/interfaces/cache.interface';
+import { type CacheInterface } from '../../domain/interfaces/cache.interface';
 
 /**
  * Cache factory

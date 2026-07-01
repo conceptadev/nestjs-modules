@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { DeepPartial } from '@concepta/nestjs-core';
+import { type DeepPartial } from '@concepta/nestjs-core';
 
-import { CrudAdapter } from '../../../infrastructure/adapters/crud.adapter';
-import { CrudWithBodyCommand } from '../impl/crud-with-body.command';
+import { type CrudAdapter } from '../../../infrastructure/adapters/crud.adapter';
+import { type CrudWithBodyCommand } from '../impl/crud-with-body.command';
 
 import { CrudCommandHandler } from './crud-command.handler';
 

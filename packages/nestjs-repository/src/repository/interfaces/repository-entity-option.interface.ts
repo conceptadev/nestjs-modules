@@ -1,4 +1,4 @@
-import { PlainLiteralObject, Type } from '@nestjs/common';
+import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
 export interface RepositoryEntityOptionInterface<
   T extends PlainLiteralObject = PlainLiteralObject,

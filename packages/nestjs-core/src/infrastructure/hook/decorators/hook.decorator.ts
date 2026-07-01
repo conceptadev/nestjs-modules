@@ -8,15 +8,15 @@ import {
   SPECIFICATION_METADATA_KEY,
 } from '../hook.constants';
 import {
-  HookDecoratorOptions,
-  HookMethodMapInterface,
-  HookMethodMetadataInterface,
-  HookMetadataInterface,
+  type HookDecoratorOptions,
+  type HookMethodMapInterface,
+  type HookMethodMetadataInterface,
+  type HookMetadataInterface,
 } from '../hook.interfaces';
-import { SpecificationInterface } from '../interfaces/specification.interface';
+import { type SpecificationInterface } from '../interfaces/specification.interface';
 import { Spec } from '../specification/spec.factory';
 
-import { HookMethodKeyType } from './hook-method.decorator';
+import { type HookMethodKeyType } from './hook-method.decorator';
 import { Specification } from './specification.decorator';
 
 const metadataScanner = new MetadataScanner();

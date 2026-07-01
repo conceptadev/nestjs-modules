@@ -1,10 +1,15 @@
 import { mock } from 'jest-mock-extended';
 
-import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { HttpArgumentsHost } from '@nestjs/common/interfaces';
-import { Test, TestingModule } from '@nestjs/testing';
+import {
+  type ArgumentsHost,
+  type ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 
 import { AccessControlService } from './access-control.service';
+
+type HttpArgumentsHost = ReturnType<ArgumentsHost['switchToHttp']>;
 
 describe('AccessControlDefaultService', () => {
   let service: AccessControlService;

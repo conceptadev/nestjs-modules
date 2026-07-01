@@ -1,6 +1,6 @@
-import { ApiBody, ApiBodyOptions } from '@nestjs/swagger';
+import { ApiBody, type ApiBodyOptions } from '@nestjs/swagger';
 
-import { DecoratorTargetObject } from '../../../crud.types';
+import { type DecoratorTargetObject } from '../../../crud.types';
 import { CrudException } from '../../exceptions/crud.exception';
 
 /**

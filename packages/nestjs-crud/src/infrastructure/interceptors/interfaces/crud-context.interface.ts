@@ -1,11 +1,11 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { ActionEnum, Operation } from '@concepta/nestjs-core';
+import { type ActionEnum, type Operation } from '@concepta/nestjs-core';
 
-import { CrudParsedQueryInterface } from '../../request/interfaces/crud-parsed-query.interface';
-import { CrudSpecContextInterface } from '../../specifications/interfaces/crud-spec-context.interface';
+import { type CrudParsedQueryInterface } from '../../request/interfaces/crud-parsed-query.interface';
+import { type CrudSpecContextInterface } from '../../specifications/interfaces/crud-spec-context.interface';
 
-import { CrudContextOptionsInterface } from './crud-context-options.interface';
+import { type CrudContextOptionsInterface } from './crud-context-options.interface';
 
 export interface CrudContextInterface<
   T extends PlainLiteralObject = PlainLiteralObject,

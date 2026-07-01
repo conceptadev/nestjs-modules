@@ -1,8 +1,8 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { Identity } from '../aggregates/identity';
+import { type Identity } from '../aggregates/identity';
 
 export interface IdentityRepositoryInterface {
   get(ctx: PlainLiteralObject, id: ReferenceId): Promise<Identity | null>;

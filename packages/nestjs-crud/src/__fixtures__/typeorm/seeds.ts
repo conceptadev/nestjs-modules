@@ -1,7 +1,11 @@
 import { plainToClass } from 'class-transformer';
-import { MigrationInterface, Repository, QueryRunner } from 'typeorm';
+import {
+  type MigrationInterface,
+  type Repository,
+  type QueryRunner,
+} from 'typeorm';
 
-import { PlainLiteralObject, Type } from '@nestjs/common';
+import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
 import { CompanyEntity } from './company/company.entity';
 import { NoteEntity } from './note/note.entity';

@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
-import { ReferenceUsername } from '@concepta/nestjs-core';
+import { type ReferenceUsername } from '@concepta/nestjs-core';
 
-import { User } from '../../../domain/aggregates/user';
+import { type User } from '../../../domain/aggregates/user';
 
 export class GetUserByUsernameQuery extends Query<User | null> {
   constructor(

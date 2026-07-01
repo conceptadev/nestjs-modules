@@ -1,15 +1,17 @@
 import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-import { INestApplication } from '@nestjs/common';
-import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+import { type INestApplication } from '@nestjs/common';
 import {
-  OperationObject,
-  ParameterObject,
-} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+  DocumentBuilder,
+  type OpenAPIObject,
+  SwaggerModule,
+} from '@nestjs/swagger';
 import { Test } from '@nestjs/testing';
 
 import { CrudModule } from '../crud.module';
+
+import { type OperationObject, type ParameterObject } from './openapi-types';
 
 import { PhotoPaginatedDtoFixture } from '../__fixtures__/photo/dto/photo-paginated.dto.fixture';
 import { PhotoDtoFixture } from '../__fixtures__/photo/dto/photo.dto.fixture';

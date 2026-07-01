@@ -1,10 +1,10 @@
-import { PlainLiteralObject, Type } from '@nestjs/common';
+import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
-import { DeepPartial } from '@concepta/nestjs-core';
+import { type DeepPartial } from '@concepta/nestjs-core';
 
-import { CrudCreateBatchInterface } from '../../dtos/interfaces/crud-create-batch.interface';
-import { CrudResponsePaginatedInterface } from '../../dtos/interfaces/crud-response-paginated.interface';
-import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface';
+import { type CrudCreateBatchInterface } from '../../dtos/interfaces/crud-create-batch.interface';
+import { type CrudResponsePaginatedInterface } from '../../dtos/interfaces/crud-response-paginated.interface';
+import { type CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface';
 
 /**
  * Interface for CRUD resolver implementations.

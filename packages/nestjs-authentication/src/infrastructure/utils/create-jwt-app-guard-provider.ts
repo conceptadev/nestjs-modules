@@ -1,8 +1,8 @@
-import { Provider } from '@nestjs/common';
+import { type Provider } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 
-import { AuthenticationOptionsExtrasInterface } from '../config/interfaces/authentication-options-extras.interface';
-import { AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
+import { type AuthenticationOptionsExtrasInterface } from '../config/interfaces/authentication-options-extras.interface';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
 import { JwtGuard } from '../strategies/jwt/jwt.guard';
 
 export function createJwtAppGuardProvider(

@@ -1,4 +1,4 @@
-import { TransactionalOptions } from '@concepta/nestjs-repository';
+import { type TransactionalOptions } from '@concepta/nestjs-repository';
 
 export interface CrudTransactionalInterface {
   /**

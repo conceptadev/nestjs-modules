@@ -1,8 +1,8 @@
 import {
-  SpecificationInterface,
+  type SpecificationInterface,
   createHookMethodDecorator,
   Hook,
-  HookTypeInterface,
+  type HookTypeInterface,
 } from '@concepta/nestjs-core';
 
 /**

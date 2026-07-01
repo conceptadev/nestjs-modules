@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 
 import { AppContextHost } from '@concepta/nestjs-core';
 
@@ -6,8 +6,8 @@ import { TransactionRequiredException } from '../exceptions/transaction-required
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants';
 
-import { TransactionContextInterface } from './interfaces/transaction-context.interface';
-import { TransactionInterface } from './interfaces/transaction.interface';
+import { type TransactionContextInterface } from './interfaces/transaction-context.interface';
+import { type TransactionInterface } from './interfaces/transaction.interface';
 import {
   TransactionFactoryRegistry,
   TRANSACTION_FACTORY_REGISTRY,

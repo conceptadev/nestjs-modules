@@ -1,7 +1,7 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
-import { VerifyTokenQueryInterface } from '../../../domain/ports/token.port';
+import { type VerifyTokenQueryInterface } from '../../../domain/ports/token.port';
 
 export class VerifyRefreshTokenQuery
   extends Query<PlainLiteralObject>

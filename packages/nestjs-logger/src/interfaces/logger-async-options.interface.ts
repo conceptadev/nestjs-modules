@@ -1,6 +1,6 @@
-import { FactoryProvider, ModuleMetadata } from '@nestjs/common';
+import { type FactoryProvider, type ModuleMetadata } from '@nestjs/common';
 
-import { LoggerOptionsInterface } from './logger-options.interface';
+import { type LoggerOptionsInterface } from './logger-options.interface';
 
 /**
  * Logger async options.

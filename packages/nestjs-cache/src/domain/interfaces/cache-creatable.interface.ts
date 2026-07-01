@@ -1,4 +1,4 @@
-import { CacheInterface } from './cache.interface';
+import { type CacheInterface } from './cache.interface';
 
 export interface CacheCreatableInterface extends Pick<
   CacheInterface,

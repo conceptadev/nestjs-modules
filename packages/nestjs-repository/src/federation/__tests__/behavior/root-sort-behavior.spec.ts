@@ -8,8 +8,8 @@
  */
 import { WhereOperator } from '../../../repository/repository.types';
 import {
-  TestRoot,
-  TestRelation,
+  type TestRoot,
+  type TestRelation,
   createNameSortDataSet,
   createIdDescSortDataSet,
   createMultiSortDataSet,

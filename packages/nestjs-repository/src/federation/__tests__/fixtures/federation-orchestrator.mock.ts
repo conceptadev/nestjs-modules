@@ -1,13 +1,13 @@
-import { PlainLiteralObject } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
+import { type PlainLiteralObject } from '@nestjs/common';
+import { type ModuleRef } from '@nestjs/core';
 
-import { RepositoryRelationMetadataInterface } from '../../../repository/interfaces/repository-relation-metadata.interface';
-import { RepositoryInterface } from '../../../repository/interfaces/repository.interface';
+import { type RepositoryRelationMetadataInterface } from '../../../repository/interfaces/repository-relation-metadata.interface';
+import { type RepositoryInterface } from '../../../repository/interfaces/repository.interface';
 import { RepositoryRegistryService } from '../../../services/repository-registry.service';
 import { createMockRepository } from '../../../testing/create-mock-repository';
 import { getDynamicRepositoryToken } from '../../../utils/get-dynamic-repository-token';
 import { FederationOrchestrator } from '../../federation-orchestrator.service';
-import { FederatedRelation } from '../../federation.types';
+import { type FederatedRelation } from '../../federation.types';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types

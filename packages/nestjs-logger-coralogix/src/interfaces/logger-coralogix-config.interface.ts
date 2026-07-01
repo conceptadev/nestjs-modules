@@ -1,4 +1,4 @@
-import { LoggerConfig } from 'coralogix-logger';
+import { type LoggerConfig } from 'coralogix-logger';
 /**
  * Interface for Coralogix configuration to define the log level
  * mapping to be used on Coralogix transport.

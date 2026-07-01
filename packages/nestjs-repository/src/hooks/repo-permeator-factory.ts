@@ -1,19 +1,22 @@
 import {
   Membrane,
   Permeator,
-  IPermeator,
-  PermeateCallback,
-  PermeatorOptions,
+  type IPermeator,
+  type PermeateCallback,
+  type PermeatorOptions,
 } from '@tsyche/membrane';
 
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { DeepPartial, HookMethodKeyType } from '@concepta/nestjs-core';
+import {
+  type DeepPartial,
+  type HookMethodKeyType,
+} from '@concepta/nestjs-core';
 
 import { RepositoryQueryException } from '../exceptions/repository-query.exception';
 import {
-  RepositoryFindOptions,
-  RepositoryFindOneOptions,
+  type RepositoryFindOptions,
+  type RepositoryFindOneOptions,
 } from '../repository/interfaces/repository-options.interface';
 
 import { RepoHookMethodKey as K } from './repository-hook.decorators';

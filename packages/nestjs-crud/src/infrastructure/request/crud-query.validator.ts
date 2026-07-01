@@ -1,19 +1,19 @@
 import { isUUID } from 'class-validator';
 
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { isNil, isNumber, isObject } from '@nestjs/common/utils/shared.utils';
 
 import {
-  EntityColumn,
+  type EntityColumn,
   SortOrder,
-  WhereCondition,
+  type WhereCondition,
   WhereOperator,
 } from '@concepta/nestjs-repository';
 
-import { CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
+import { type CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
 import { isArrayStrings, isStringFull } from '../utils/validation';
 
-import { ComparisonOperator, CondOperator } from './crud-query.types';
+import { type ComparisonOperator, CondOperator } from './crud-query.types';
 import { CrudQueryValidatorException } from './exceptions/crud-query-validator.exception';
 
 export const COMPARISON_OPERATORS: CondOperator[] = Object.values(CondOperator);

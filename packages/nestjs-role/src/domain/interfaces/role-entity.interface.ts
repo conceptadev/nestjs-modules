@@ -1,10 +1,10 @@
 import {
-  AuditInterface,
-  ReferenceIdInterface,
-  ReferenceVersionInterface,
+  type AuditInterface,
+  type ReferenceIdInterface,
+  type ReferenceVersionInterface,
 } from '@concepta/nestjs-core';
 
-import { RoleInterface } from './role.interface';
+import { type RoleInterface } from './role.interface';
 
 export interface RoleEntityInterface
   extends

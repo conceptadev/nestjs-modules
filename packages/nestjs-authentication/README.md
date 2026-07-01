@@ -1,7 +1,7 @@
 # @concepta/nestjs-authentication
 
 [![NPM Latest](https://img.shields.io/npm/v/@concepta/nestjs-authentication)](https://www.npmjs.com/package/@concepta/nestjs-authentication)
-[![NPM Downloads](https://img.shields.io/npm/dw/@conceptadev/nestjs-authentication)](https://www.npmjs.com/package/@concepta/nestjs-authentication)
+[![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-authentication)](https://www.npmjs.com/package/@concepta/nestjs-authentication)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
 [![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
@@ -615,13 +615,13 @@ itself — the strategies live in downstream provider packages.
 
 **Login flow:**
 
-```
+```text
 GET /auth/login?provider=google   →   AuthRouterGuard   →   AuthGoogleGuard
 ```
 
 **Callback flow** (OAuth `code` + `state`):
 
-```
+```text
 GET /auth/callback?code=xxx&state={"provider":"google"}
   →   AuthRouterGuard (extracts provider from state JSON)
   →   AuthGoogleGuard
@@ -663,15 +663,11 @@ async callback(@Req() req: Request) {
 `OAuthAuthenticateOptionsInterface`, `OAuthParamsInterface`,
 `OAuthRequestInterface`, `processOAuthParams`.
 
-**Router exceptions:**
-
-| Class | When thrown |
-|---|---|
-| `AuthRouterProviderMissingException` | `?provider` query param absent and no `state.provider` |
-| `AuthRouterProviderNotSupportedException` | Named provider not registered in `guards: []` |
-| `AuthRouterConfigNotAvailableException` | Guard registry not injected (misconfiguration) |
-| `AuthRouterGuardInvalidException` | Registered guard lacks a `canActivate` method |
-| `AuthRouterAuthenticationFailedException` | Provider guard throws a non-router exception |
+**Router exceptions:** All router errors extend `AuthRouterException` (exported).
+Specific subclasses (`AuthRouterProviderMissingException`,
+`AuthRouterProviderNotSupportedException`, `AuthRouterConfigNotAvailableException`,
+`AuthRouterGuardInvalidException`, `AuthRouterAuthenticationFailedException`)
+are thrown internally but are not part of the public exports.
 
 ---
 
@@ -821,7 +817,7 @@ AuthenticationModule.forRoot({
 
 The module uses a two-tier CQRS chain for token operations:
 
-```
+```text
 TokenPort
   ↓ dispatches IssueAccessTokenCommand
   → IssueAccessTokenHandler
@@ -938,8 +934,9 @@ user without taking it as a parameter.
 | Symbol | Description |
 |---|---|
 | `AuthenticationModule` | `forRoot`, `forRootAsync`, `register`, `registerAsync` |
-| `AuthenticationOptions` | Synchronous options type |
-| `AuthenticationAsyncOptions` | Async options type |
+| `AuthenticationOptionsInterface` | Module options shape |
+| `AuthenticationOptionsExtrasInterface` | Extras (appGuard, guards) shape |
+| `AuthenticationPortsInterface` | Ports configuration shape |
 
 ### Guards and Strategies
 
@@ -1036,11 +1033,6 @@ user without taking it as a parameter.
 | `VerifyException` | Base verify exception |
 | `VerifyOtpInvalidException` | Verify OTP invalid |
 | `AuthRouterException` | Base router exception |
-| `AuthRouterProviderMissingException` | Provider not specified |
-| `AuthRouterProviderNotSupportedException` | Provider not registered |
-| `AuthRouterConfigNotAvailableException` | Guard registry missing |
-| `AuthRouterGuardInvalidException` | Guard lacks canActivate |
-| `AuthRouterAuthenticationFailedException` | Provider guard failed |
 | `AuthenticationUserPortRequiredException` | UserPort not configured |
 | `AuthenticationFeatureConfigException` | Feature misconfiguration |
 
@@ -1061,7 +1053,7 @@ user without taking it as a parameter.
 | `JwtVerifyAccessTokenQuery` | JwtPort |
 | `JwtVerifyRefreshTokenQuery` | JwtPort |
 
-### Context Overlay
+### Context Overlay Exports
 
 | Symbol | Description |
 |---|---|

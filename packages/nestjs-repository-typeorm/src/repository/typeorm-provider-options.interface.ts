@@ -1,10 +1,10 @@
-import { DataSource, Repository } from 'typeorm';
+import { type DataSource, type Repository } from 'typeorm';
 
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { RepositoryProviderOptions } from '@concepta/nestjs-repository';
+import { type RepositoryProviderOptions } from '@concepta/nestjs-repository';
 
-import { TypeOrmDataSourceToken } from '../typeorm-repository.types';
+import { type TypeOrmDataSourceToken } from '../typeorm-repository.types';
 
 /**
  * TypeORM-specific provider options.

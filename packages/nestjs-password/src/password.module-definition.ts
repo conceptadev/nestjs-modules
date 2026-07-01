@@ -1,7 +1,7 @@
 import {
   ConfigurableModuleBuilder,
-  DynamicModule,
-  Provider,
+  type DynamicModule,
+  type Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -17,9 +17,9 @@ import { PasswordCreationService } from './domain/services/password-creation.ser
 import { PasswordStorageService } from './domain/services/password-storage.service';
 import { PasswordStrengthService } from './domain/services/password-strength.service';
 import { PasswordValidationService } from './domain/services/password-validation.service';
-import { PasswordOptionsExtrasInterface } from './infrastructure/config/interfaces/password-options-extras.interface';
-import { PasswordOptionsInterface } from './infrastructure/config/interfaces/password-options.interface';
-import { PasswordSettingsInterface } from './infrastructure/config/interfaces/password-settings.interface';
+import { type PasswordOptionsExtrasInterface } from './infrastructure/config/interfaces/password-options-extras.interface';
+import { type PasswordOptionsInterface } from './infrastructure/config/interfaces/password-options.interface';
+import { type PasswordSettingsInterface } from './infrastructure/config/interfaces/password-settings.interface';
 import { passwordDefaultConfig } from './infrastructure/config/password-default.config';
 import { createPasswordPolicyProvider } from './infrastructure/utils/create-password-policy-provider';
 import { PASSWORD_MODULE_SETTINGS_TOKEN } from './password.constants';

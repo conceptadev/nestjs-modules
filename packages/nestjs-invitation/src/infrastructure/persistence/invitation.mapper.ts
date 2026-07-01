@@ -1,9 +1,9 @@
 import { DomainMapper } from '@concepta/nestjs-core/aggregate';
 
 import { Invitation } from '../../domain/aggregates/invitation';
-import { InvitationInterface } from '../../domain/interfaces/invitation.interface';
+import { type InvitationInterface } from '../../domain/interfaces/invitation.interface';
 
-import { InvitationEntityInterface } from './interfaces/invitation-entity.interface';
+import { type InvitationEntityInterface } from './interfaces/invitation-entity.interface';
 
 export class InvitationMapper extends DomainMapper<
   InvitationEntityInterface,

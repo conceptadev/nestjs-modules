@@ -1,7 +1,7 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
-import { Invitation } from '../../../domain/aggregates/invitation';
+import { type Invitation } from '../../../domain/aggregates/invitation';
 
 export class FindInvitationByCodeQuery extends Query<Invitation | null> {
   constructor(

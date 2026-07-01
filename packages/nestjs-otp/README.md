@@ -397,8 +397,8 @@ classes that bridge CRUD operations to domain commands.
 Extend a CRUD command to define the request type:
 
 ```ts
-import { OtpCreatableInterface, OtpInterface } from '@concepta/nestjs-core';
 import { CrudCreateCommand } from '@concepta/nestjs-crud';
+import { OtpCreatableInterface, OtpInterface } from '@concepta/nestjs-otp';
 
 export class CreateOtpRequest extends CrudCreateCommand<
   OtpInterface,
@@ -413,9 +413,8 @@ The handler receives the CRUD command and dispatches the domain command:
 ```ts
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { OtpCreatableInterface, OtpInterface } from '@concepta/nestjs-core';
 import { CrudCreateCommand } from '@concepta/nestjs-crud';
-import { CreateOtpCommand, Otp } from '@concepta/nestjs-otp';
+import { CreateOtpCommand, Otp, OtpCreatableInterface, OtpInterface } from '@concepta/nestjs-otp';
 
 @Injectable()
 export class CreateOtpRequestHandler {
@@ -437,9 +436,9 @@ export class CreateOtpRequestHandler {
 
 ```ts
 import { Module } from '@nestjs/common';
-import { OtpInterface, Operation } from '@concepta/nestjs-core';
+import { Operation } from '@concepta/nestjs-core';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
-import { OtpModule, OtpCreateDto } from '@concepta/nestjs-otp';
+import { OtpInterface, OtpModule, OtpCreateDto } from '@concepta/nestjs-otp';
 
 import { CreateOtpRequest } from './create-otp.request';
 import { CreateOtpRequestHandler } from './create-otp-request.handler';

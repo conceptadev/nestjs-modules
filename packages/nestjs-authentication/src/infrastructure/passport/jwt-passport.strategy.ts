@@ -1,4 +1,4 @@
-import { Strategy } from 'passport-jwt';
+import { type Strategy } from 'passport-jwt';
 import { Strategy as PassportStrategy } from 'passport-strategy';
 
 import { HttpStatus } from '@nestjs/common';
@@ -7,7 +7,7 @@ import { NotAnErrorException } from '@concepta/nestjs-core';
 
 import { JwtVerifyException } from '../jwt/exceptions/jwt-verify.exception';
 
-import { JwtPassportOptionsInterface } from './interfaces/jwt-passport-options.interface';
+import { type JwtPassportOptionsInterface } from './interfaces/jwt-passport-options.interface';
 
 export class JwtPassportStrategy extends PassportStrategy {
   constructor(

@@ -1,6 +1,6 @@
-import { DynamicModule, Type } from '@nestjs/common';
+import { type DynamicModule, type Type } from '@nestjs/common';
 
-import { CrudResolverInterface } from '../../resolvers/interfaces/crud-resolver.interface';
+import { type CrudResolverInterface } from '../../resolvers/interfaces/crud-resolver.interface';
 
 export interface CrudModuleOptionsExtrasInterface extends Pick<
   DynamicModule,

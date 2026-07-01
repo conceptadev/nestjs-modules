@@ -1,8 +1,8 @@
 import { registerAs } from '@nestjs/config';
 
-import { DeepPartial } from '@concepta/nestjs-core';
+import { type DeepPartial } from '@concepta/nestjs-core';
 
-import { InvitationSettingsInterface } from '../interfaces/options/invitation-settings.interface';
+import { type InvitationSettingsInterface } from '../interfaces/options/invitation-settings.interface';
 import { INVITATION_MODULE_DEFAULT_SETTINGS_TOKEN } from '../invitation.constants';
 
 /**

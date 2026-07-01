@@ -1,4 +1,4 @@
-import { Provider } from '@nestjs/common';
+import { type Provider } from '@nestjs/common';
 
 import { VerifyService } from '../../application/services/verify/verify.service';
 import {
@@ -7,10 +7,10 @@ import {
   AUTHENTICATION_VERIFY_NOTIFICATION_PORT_TOKEN,
 } from '../../authentication.constants';
 import { VerifyPolicy } from '../../domain/policies/verify.policy';
-import { OtpPort } from '../../domain/ports/otp.port';
-import { UserPort } from '../../domain/ports/user.port';
-import { VerifyNotificationPort } from '../../domain/ports/verify-notification.port';
-import { AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
+import { type OtpPort } from '../../domain/ports/otp.port';
+import { type UserPort } from '../../domain/ports/user.port';
+import { type VerifyNotificationPort } from '../../domain/ports/verify-notification.port';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
 import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception';
 
 export function createVerifyServiceProvider(rawOptionsToken: symbol): Provider {

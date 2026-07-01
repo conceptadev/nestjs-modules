@@ -1,8 +1,8 @@
-import { IEvent } from '@nestjs/cqrs';
+import { type IEvent } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { type EventContextHost } from '@concepta/nestjs-core';
 
-import { UserInterface } from '../interfaces/user.interface';
+import { type UserInterface } from '../interfaces/user.interface';
 
 export class UserCreatedEvent implements IEvent {
   constructor(

@@ -1,6 +1,6 @@
-import { ApiOperation, ApiOperationOptions } from '@nestjs/swagger';
+import { ApiOperation, type ApiOperationOptions } from '@nestjs/swagger';
 
-import { DecoratorTargetObject } from '../../../crud.types';
+import { type DecoratorTargetObject } from '../../../crud.types';
 import { CrudException } from '../../exceptions/crud.exception';
 
 /**

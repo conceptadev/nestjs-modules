@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker';
 
 import { Factory } from '@concepta/typeorm-seeding';
 
-import { OtpInterface } from '../../domain/interfaces/otp.interface';
+import { type OtpInterface } from '../../domain/interfaces/otp.interface';
 
 /**
  * Otp factory

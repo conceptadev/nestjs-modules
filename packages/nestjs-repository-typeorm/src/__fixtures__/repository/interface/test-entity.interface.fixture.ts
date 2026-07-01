@@ -1,4 +1,7 @@
-import { AuditInterface, ReferenceIdInterface } from '@concepta/nestjs-core';
+import {
+  type AuditInterface,
+  type ReferenceIdInterface,
+} from '@concepta/nestjs-core';
 
 export interface TestInterfaceFixture
   extends ReferenceIdInterface, AuditInterface {

@@ -1,8 +1,8 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { Cache } from '../aggregates/cache';
+import { type Cache } from '../aggregates/cache';
 
 export interface CacheRepositoryInterface {
   get(ctx: PlainLiteralObject, id: ReferenceId): Promise<Cache | null>;

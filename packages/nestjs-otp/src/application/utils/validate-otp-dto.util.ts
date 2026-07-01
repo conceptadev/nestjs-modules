@@ -1,12 +1,12 @@
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 
-import { Type } from '@nestjs/common';
+import { type Type } from '@nestjs/common';
 
-import { DeepPartial } from '@concepta/nestjs-core';
+import { type DeepPartial } from '@concepta/nestjs-core';
 
 import { OtpValidationException } from '../../domain/exceptions/otp-validation.exception';
-import { OtpInterface } from '../../domain/interfaces/otp.interface';
+import { type OtpInterface } from '../../domain/interfaces/otp.interface';
 
 export async function validateOtpDto<T extends DeepPartial<OtpInterface>>(
   type: Type<T>,

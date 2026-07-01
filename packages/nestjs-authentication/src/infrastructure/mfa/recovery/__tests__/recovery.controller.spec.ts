@@ -1,8 +1,8 @@
 import { mock } from 'jest-mock-extended';
 
-import { RecoveryService } from '../../../../application/services/recovery/recovery.service';
-import { RecoveryRecoverLoginDto } from '../dto/recovery-recover-login.dto';
-import { RecoveryUpdatePasswordDto } from '../dto/recovery-update-password.dto';
+import { type RecoveryService } from '../../../../application/services/recovery/recovery.service';
+import { type RecoveryRecoverLoginDto } from '../dto/recovery-recover-login.dto';
+import { type RecoveryUpdatePasswordDto } from '../dto/recovery-update-password.dto';
 import { RecoveryOtpInvalidException } from '../exceptions/recovery-otp-invalid.exception';
 
 import { RecoveryController } from './fixtures/recovery.controller.fixture';

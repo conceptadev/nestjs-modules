@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "commonjs",
+    "module": "nodenext",
     "moduleResolution": "nodenext",
     "target": "es2017",
     "sourceMap": true,
@@ -20,89 +20,18 @@
   },
   "files": [],
   "references": [
-    {
-      "path": "packages/nestjs-common"
-    },
-    {
-      "path": "packages/nestjs-core"
-    },
-    {
-      "path": "packages/nestjs-access-control"
-    },
-    {
-      "path": "packages/nestjs-email"
-    },
-    {
-      "path": "packages/nestjs-event"
-    },
-    {
-      "path": "packages/nestjs-logger"
-    },
-    {
-      "path": "packages/nestjs-authentication"
-    },
-    {
-      "path": "packages/nestjs-password"
-    },
-    {
-      "path": "packages/nestjs-crud"
-    },
-    {
-      "path": "packages/nestjs-auth-github"
-    },
-    {
-      "path": "packages/nestjs-repository"
-    },
-    {
-      "path": "packages/nestjs-repository-typeorm"
-    },
-    {
-      "path": "packages/nestjs-role"
-    },
-    {
-      "path": "packages/nestjs-user"
-    },
-    {
-      "path": "packages/nestjs-org"
-    },
-    {
-      "path": "packages/nestjs-swagger-ui"
-    },
-    {
-      "path": "packages/nestjs-federated"
-    },
-    {
-      "path": "packages/typeorm-common"
-    },
-    {
-      "path": "packages/nestjs-otp"
-    },
-    {
-      "path": "packages/nestjs-invitation"
-    },
-    {
-      "path": "packages/nestjs-cache"
-    },
-    {
-      "path": "packages/nestjs-auth-google"
-    },
-    {
-      "path": "packages/nestjs-logger-coralogix"
-    },
-    {
-      "path": "packages/nestjs-logger-sentry"
-    },
-    {
-      "path": "packages/nestjs-file"
-    },
-    {
-      "path": "packages/nestjs-auth-apple"
-    },
-    {
-      "path": "packages/nestjs-report"
-    },
-    {
-      "path": "packages/nestjs-samples"
-    }
+    { "path": "packages/nestjs-core" },
+    { "path": "packages/nestjs-repository" },
+    { "path": "packages/nestjs-repository-typeorm" },
+    { "path": "packages/nestjs-crud" },
+    { "path": "packages/nestjs-cache" },
+    { "path": "packages/nestjs-otp" },
+    { "path": "packages/nestjs-role" },
+    { "path": "packages/nestjs-password" },
+    { "path": "packages/nestjs-user" },
+    { "path": "packages/nestjs-invitation" },
+    { "path": "packages/nestjs-federated" },
+    { "path": "packages/nestjs-authentication" },
+    { "path": "packages/nestjs-access-control" }
   ]
 }

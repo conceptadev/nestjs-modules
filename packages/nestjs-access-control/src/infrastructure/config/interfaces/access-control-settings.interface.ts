@@ -1,4 +1,4 @@
-import { AccessControl } from 'accesscontrol';
+import { type AccessControl } from 'accesscontrol';
 
 export interface AccessControlSettingsInterface {
   rules: AccessControl;

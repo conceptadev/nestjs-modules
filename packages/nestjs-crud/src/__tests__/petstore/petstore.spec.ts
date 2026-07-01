@@ -1,16 +1,20 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-import { INestApplication } from '@nestjs/common';
-import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+import { type INestApplication } from '@nestjs/common';
 import {
-  OperationObject,
-  ParameterObject,
-  SchemaObject,
-} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+  DocumentBuilder,
+  type OpenAPIObject,
+  SwaggerModule,
+} from '@nestjs/swagger';
 import { Test } from '@nestjs/testing';
 
 import { CrudModule } from '../../crud.module';
+import {
+  type OperationObject,
+  type ParameterObject,
+  type SchemaObject,
+} from '../openapi-types';
 
 import { PetController } from './controllers/pet.controller';
 import { StoreController } from './controllers/store.controller';

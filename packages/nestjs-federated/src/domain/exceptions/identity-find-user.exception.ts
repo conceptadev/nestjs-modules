@@ -1,15 +1,15 @@
 import { HttpStatus } from '@nestjs/common';
 
 import {
-  ReferenceIdInterface,
-  RuntimeException,
-  RuntimeExceptionOptions,
+  type ReferenceIdInterface,
+  type RuntimeException,
+  type RuntimeExceptionOptions,
 } from '@concepta/nestjs-core';
 
 import { FederatedException } from './federated.exception';
 
 export class IdentityFindUserException extends FederatedException {
-  context: RuntimeException['context'] & {
+  declare context: RuntimeException['context'] & {
     entityName: string;
     user: ReferenceIdInterface;
   };
@@ -29,7 +29,7 @@ export class IdentityFindUserException extends FederatedException {
     this.errorCode = 'FEDERATED_IDENTITY_FIND_USER_ERROR';
 
     this.context = {
-      ...super.context,
+      ...this.context,
       entityName,
       user,
     };

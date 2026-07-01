@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { OrderClause } from '../repository.types';
+import { type OrderClause } from '../repository.types';
 
-import { JoinClause } from './join-clause.interface';
-import { WhereClause } from './where-clause.interface';
+import { type JoinClause } from './join-clause.interface';
+import { type WhereClause } from './where-clause.interface';
 
 /**
  * Base options with optional context.

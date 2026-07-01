@@ -1,8 +1,8 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { CrudAdapter } from '../../../infrastructure/adapters/crud.adapter';
-import { CrudCommandHandlerInterface } from '../interfaces/crud-command-handler.interface';
-import { CrudCommandInterface } from '../interfaces/crud-command.interface';
+import { type CrudAdapter } from '../../../infrastructure/adapters/crud.adapter';
+import { type CrudCommandHandlerInterface } from '../interfaces/crud-command-handler.interface';
+import { type CrudCommandInterface } from '../interfaces/crud-command.interface';
 
 /**
  * Base class for CRUD command handlers.

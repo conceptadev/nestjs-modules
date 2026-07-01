@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { Invitation } from '../../../domain/aggregates/invitation';
+import { type Invitation } from '../../../domain/aggregates/invitation';
 
 export class RemoveInvitationCommand extends Command<Invitation> {
   constructor(

@@ -14,8 +14,8 @@ import {
   WhereOperator,
 } from '../../../repository/repository.types';
 import {
-  TestRoot,
-  TestRelation,
+  type TestRoot,
+  type TestRelation,
   createMinimalRootRelationSet,
 } from '../federation-test-data';
 import {

@@ -1,4 +1,4 @@
-import { Provider, Type } from '@nestjs/common';
+import { type Provider, type Type } from '@nestjs/common';
 
 /**
  * Map of classes by name for runtime access.

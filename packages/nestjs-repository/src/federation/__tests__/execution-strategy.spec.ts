@@ -1,7 +1,10 @@
 import { WhereOperator } from '../../repository/repository.types';
 import { FederationException } from '../exceptions/federation.exception';
 import { analyzeExecution } from '../execution-strategy';
-import { FederatedRelation, FederationStrategy } from '../federation.types';
+import {
+  type FederatedRelation,
+  FederationStrategy,
+} from '../federation.types';
 import { FilterAnalyzer } from '../filter-analyzer';
 
 const makeRelation = (

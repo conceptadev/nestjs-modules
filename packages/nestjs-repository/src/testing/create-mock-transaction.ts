@@ -1,12 +1,12 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 
 import { AppContextHost } from '@concepta/nestjs-core';
 
 import {
-  TransactionContextInterface,
+  type TransactionContextInterface,
   TrxCtx,
 } from '../transaction/interfaces/transaction-context.interface';
-import { TransactionScope } from '../transaction/transaction-scope';
+import { type TransactionScope } from '../transaction/transaction-scope';
 
 export interface MockTransactionHandle {
   onCommit: jest.Mock;

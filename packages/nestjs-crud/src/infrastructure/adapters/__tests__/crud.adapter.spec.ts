@@ -6,7 +6,7 @@ import { createMockRepository } from '@concepta/nestjs-repository/testing';
 import { TestCrudAdapter } from '../../../__fixtures__/crud/adapters/test-crud.adapter';
 import { mockCrudContext } from '../../../__fixtures__/crud/mocks/crud-context.mock';
 import { mockCrudParsedQuery } from '../../../__fixtures__/crud/mocks/crud-parsed-query.mock';
-import { CrudContextOptionsInterface } from '../../interceptors/interfaces/crud-context-options.interface';
+import { type CrudContextOptionsInterface } from '../../interceptors/interfaces/crud-context-options.interface';
 
 interface TestEntity {
   id: string;
@@ -330,7 +330,7 @@ describe('CrudAdapter', () => {
 
     describe('options.query.filter', () => {
       it('should convert WhereCondition[] to where conditions', () => {
-        const ctx = mockCrudContext({
+        const ctx = mockCrudContext<TestEntity>({
           options: {
             query: {
               filter: [
@@ -378,8 +378,8 @@ describe('CrudAdapter', () => {
       });
 
       it('should use query.search even when filters are present', () => {
-        const ctx = mockCrudContext({
-          query: mockCrudParsedQuery({
+        const ctx = mockCrudContext<TestEntity>({
+          query: mockCrudParsedQuery<TestEntity>({
             search: { name: { $contains: 'foo' } },
             filter: [{ field: 'id', operator: WhereOperator.EQ, value: 1 }],
           }),

@@ -1,4 +1,4 @@
-import { CrudSerializationOptionsInterface } from '../../interfaces/crud-serialization-options.interface';
+import { type CrudSerializationOptionsInterface } from '../../interfaces/crud-serialization-options.interface';
 
 export interface CrudModuleSettingsInterface {
   serialization?: CrudSerializationOptionsInterface;

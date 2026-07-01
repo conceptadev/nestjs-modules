@@ -1,4 +1,4 @@
-import { CrudBodyOptionsInterface } from './crud-body-options.interface';
+import { type CrudBodyOptionsInterface } from './crud-body-options.interface';
 
 export interface CrudBodyMetadataInterface {
   parameterIndex: number;

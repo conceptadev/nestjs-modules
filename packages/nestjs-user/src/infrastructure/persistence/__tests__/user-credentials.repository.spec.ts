@@ -1,9 +1,9 @@
-import { mock, MockProxy } from 'jest-mock-extended';
+import { mock, type MockProxy } from 'jest-mock-extended';
 
-import { RepositoryInterface } from '@concepta/nestjs-repository';
+import { type RepositoryInterface } from '@concepta/nestjs-repository';
 
 import { UserCredentials } from '../../../domain/aggregates/user-credentials';
-import { UserCredentialEntityInterface } from '../../../domain/interfaces/user-credential-entity.interface';
+import { type UserCredentialEntityInterface } from '../../../domain/interfaces/user-credential-entity.interface';
 import { UserCredentialsMapper } from '../user-credentials.mapper';
 import { UserCredentialsRepository } from '../user-credentials.repository';
 

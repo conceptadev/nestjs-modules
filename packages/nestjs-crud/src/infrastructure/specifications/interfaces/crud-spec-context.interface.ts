@@ -1,4 +1,4 @@
-import { ActionEnum, Operation } from '@concepta/nestjs-core';
+import { type ActionEnum, type Operation } from '@concepta/nestjs-core';
 
 /**
  * Minimal context interface for domain specifications.

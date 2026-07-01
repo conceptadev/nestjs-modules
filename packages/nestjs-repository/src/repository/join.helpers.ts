@@ -1,4 +1,4 @@
-import { JoinClause } from './interfaces/join-clause.interface';
+import { type JoinClause } from './interfaces/join-clause.interface';
 
 /**
  * Join clause builder — static API for constructing `JoinClause` arrays.

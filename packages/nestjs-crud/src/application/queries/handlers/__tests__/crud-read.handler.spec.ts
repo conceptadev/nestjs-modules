@@ -6,8 +6,8 @@ import { CrudReadQuery } from '../../impl/crud-read.query';
 import { CrudReadHandler } from '../crud-read.handler';
 
 import {
-  TestCrudAdapter,
-  TestEntity,
+  type TestCrudAdapter,
+  type TestEntity,
   createTestAdapter,
 } from './fixtures/query-handler-test.fixture';
 

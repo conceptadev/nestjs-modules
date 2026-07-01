@@ -2,30 +2,46 @@
   "name": "@concepta/nestjs-password",
   "version": "8.0.0-alpha.7",
   "description": "Rockets NestJS Password",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/cjs/index.d.ts",
   "license": "BSD-3-Clause",
   "publishConfig": {
     "access": "public"
   },
   "files": [
-    "dist/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/cjs/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/esm/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/cjs/package.json",
+    "dist/esm/package.json",
     "!dist/**/__tests__/**",
     "!dist/**/__fixtures__/**"
   ],
   "dependencies": {
     "@concepta/nestjs-core": "^8.0.0-alpha.7",
-    "@nestjs/common": "^11.1.9",
-    "@nestjs/config": "^4.0.2",
-    "@nestjs/core": "^11.1.9",
+    "@nestjs/common": "12.0.0-alpha.5",
+    "@nestjs/config": "12.0.0-next.0",
+    "@nestjs/core": "12.0.0-alpha.5",
     "@nestjs/cqrs": "^11.0.0",
     "@types/zxcvbn": "^4.4.4",
     "bcrypt": "^5.1.1",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.1.9",
+    "@nestjs/testing": "12.0.0-alpha.5",
     "@types/bcrypt": "^5.0.2",
     "jest-mock-extended": "^4.0.0"
+  },
+  "module": "./dist/esm/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    }
   }
 }

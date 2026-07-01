@@ -1,17 +1,17 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 import {
   OrderBy,
-  RepositoryInterface,
+  type RepositoryInterface,
   Where,
 } from '@concepta/nestjs-repository';
 
-import { UserCredentials } from '../../domain/aggregates/user-credentials';
-import { UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';
-import { UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';
+import { type UserCredentials } from '../../domain/aggregates/user-credentials';
+import { type UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';
+import { type UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';
 
-import { UserCredentialsMapper } from './user-credentials.mapper';
+import { type UserCredentialsMapper } from './user-credentials.mapper';
 
 export class UserCredentialsRepository implements UserCredentialsRepositoryInterface {
   constructor(

@@ -87,6 +87,7 @@ export { RoleExtrasInterface } from './infrastructure/config/interfaces/role-ext
 export { RoleException } from './application/exceptions/role.exception';
 // context overlay
 export { RoleContextOverlay, RoleCtx } from './gateways/role-context.overlay';
+export { RoleNamespace } from './gateways/decorators/role-namespace.decorator';
 
 export { RoleAssignmentConflictException } from './application/exceptions/role-assignment-conflict.exception';
 export { RoleAssignmentsConflictException } from './application/exceptions/role-assignments-conflict.exception';

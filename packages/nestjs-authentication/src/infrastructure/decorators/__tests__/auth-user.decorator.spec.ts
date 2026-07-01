@@ -1,7 +1,9 @@
 import { mock } from 'jest-mock-extended';
 
+import { type ArgumentsHost, type ExecutionContext } from '@nestjs/common';
 import { ROUTE_ARGS_METADATA } from '@nestjs/common/constants';
-import { ExecutionContext, HttpArgumentsHost } from '@nestjs/common/interfaces';
+
+type HttpArgumentsHost = ReturnType<ArgumentsHost['switchToHttp']>;
 
 import { AuthUserContextOverlay } from '../../../gateways/auth-user-context.overlay';
 import { AuthUser } from '../auth-user.decorator';

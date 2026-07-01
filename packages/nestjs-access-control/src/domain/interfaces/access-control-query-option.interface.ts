@@ -1,6 +1,6 @@
-import { Type } from '@nestjs/common';
+import { type Type } from '@nestjs/common';
 
-import { CanAccess } from '../policies/can-access.policy';
+import { type CanAccess } from '../policies/can-access.policy';
 
 export interface AccessControlQueryOptionInterface {
   /**

@@ -1,18 +1,18 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import { RuntimeException } from '@concepta/nestjs-core';
 
 import {
-  WhereClause,
-  WhereCompound,
-  WhereCondition,
-  WhereConditionArray,
-  WhereConditionNullary,
-  WhereConditionPair,
-  WhereConditionScalar,
+  type WhereClause,
+  type WhereCompound,
+  type WhereCondition,
+  type WhereConditionArray,
+  type WhereConditionNullary,
+  type WhereConditionPair,
+  type WhereConditionScalar,
 } from './interfaces/where-clause.interface';
 import {
-  EntityColumn,
+  type EntityColumn,
   WhereCompoundOperator,
   WhereOperator,
 } from './repository.types';

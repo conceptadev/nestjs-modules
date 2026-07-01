@@ -66,6 +66,9 @@ export {
   CacheCtx,
 } from './gateways/cache-context.overlay';
 
+// decorators
+export { CacheNamespace } from './gateways/decorators/cache-namespace.decorator';
+
 // exceptions
 export { CacheException } from './domain/exceptions/cache.exception';
 export { CacheEntityNotFoundException } from './infrastructure/exceptions/cache-entity-not-found.exception';

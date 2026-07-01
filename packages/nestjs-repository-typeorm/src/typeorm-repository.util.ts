@@ -1,24 +1,28 @@
-import { DataSource, Repository } from 'typeorm';
+import { type DataSource, type Repository } from 'typeorm';
 
-import { DynamicModule, PlainLiteralObject, Provider } from '@nestjs/common';
+import {
+  type DynamicModule,
+  type PlainLiteralObject,
+  type Provider,
+} from '@nestjs/common';
 import {
   getDataSourceToken,
   getRepositoryToken,
   TypeOrmModule,
 } from '@nestjs/typeorm';
-import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
+import { type EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 
 import { HookResolverService } from '@concepta/nestjs-core';
 import {
   getDynamicRepositoryToken,
-  RelationActionConfig,
+  type RelationActionConfig,
 } from '@concepta/nestjs-repository';
 
-import { TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface';
+import { type TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface';
 import { TypeOrmRepository } from './repository/typeorm-repository';
 import { TypeOrmTransactionFactory } from './transaction/typeorm-transaction.factory';
 import { TYPEORM_DEFAULT_DATA_SOURCE_NAME } from './typeorm-repository.constants';
-import { TypeOrmDataSourceToken } from './typeorm-repository.types';
+import { type TypeOrmDataSourceToken } from './typeorm-repository.types';
 
 /**
  * Resolve data source name from token.

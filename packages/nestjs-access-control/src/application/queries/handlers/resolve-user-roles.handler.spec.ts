@@ -1,8 +1,8 @@
 import { mock } from 'jest-mock-extended';
 
-import { ExecutionContext } from '@nestjs/common';
+import { type ExecutionContext } from '@nestjs/common';
 
-import { AccessControlServiceInterface } from '../../../domain/ports/access-control-service.interface';
+import { type AccessControlServiceInterface } from '../../../domain/ports/access-control-service.interface';
 import { ResolveUserRolesQuery } from '../impl/resolve-user-roles.query';
 
 import { ResolveUserRolesHandler } from './resolve-user-roles.handler';

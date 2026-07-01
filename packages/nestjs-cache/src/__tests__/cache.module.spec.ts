@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 
 import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../cache.constants';
 import { CacheModule } from '../cache.module';
-import { CacheRepositoryResolverInterface } from '../domain/repositories/cache-repository-resolver.interface';
+import { type CacheRepositoryResolverInterface } from '../domain/repositories/cache-repository-resolver.interface';
 import { CacheRepository } from '../infrastructure/persistence/cache.repository';
 
 import { AppModuleFixture } from './fixtures/app.module.fixture';

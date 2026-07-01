@@ -1,3 +1,3 @@
-import { ReferenceSubjectInterface } from '@concepta/nestjs-core';
+import { type ReferenceSubjectInterface } from '@concepta/nestjs-core';
 
 export interface AuthorizationPayloadInterface extends ReferenceSubjectInterface {}

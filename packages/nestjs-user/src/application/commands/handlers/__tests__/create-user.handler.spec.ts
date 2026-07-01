@@ -6,8 +6,8 @@ import {
   createMockUserRepository,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { User } from '../../../../domain/aggregates/user';
-import { UserCreatableInterface } from '../../../../domain/interfaces/user-creatable.interface';
-import { CreateUserCredentialCommand } from '../../impl/create-user-credential.command';
+import { type UserCreatableInterface } from '../../../../domain/interfaces/user-creatable.interface';
+import { type CreateUserCredentialCommand } from '../../impl/create-user-credential.command';
 import { CreateUserCommand } from '../../impl/create-user.command';
 import { CreateUserHandler } from '../create-user.handler';
 

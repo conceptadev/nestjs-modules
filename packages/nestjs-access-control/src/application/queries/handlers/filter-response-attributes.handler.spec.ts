@@ -1,14 +1,14 @@
 import { AccessControl } from 'accesscontrol';
 import { mock } from 'jest-mock-extended';
 
-import { ExecutionContext } from '@nestjs/common';
+import { type ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { QueryBus } from '@nestjs/cqrs';
+import { type QueryBus } from '@nestjs/cqrs';
 
 import { ActionEnum } from '@concepta/nestjs-core';
 
 import { ACCESS_CONTROL_MODULE_GRANT_METADATA } from '../../../access-control.constants';
-import { AccessControlSettingsInterface } from '../../../infrastructure/config/interfaces/access-control-settings.interface';
+import { type AccessControlSettingsInterface } from '../../../infrastructure/config/interfaces/access-control-settings.interface';
 import { FilterResponseAttributesQuery } from '../impl/filter-response-attributes.query';
 
 import { FilterResponseAttributesHandler } from './filter-response-attributes.handler';

@@ -1,7 +1,7 @@
 import { mock } from 'jest-mock-extended';
 
-import { JwtPort } from '../../../../domain/ports/jwt.port';
-import { UserPort } from '../../../../domain/ports/user.port';
+import { type JwtPort } from '../../../../domain/ports/jwt.port';
+import { type UserPort } from '../../../../domain/ports/user.port';
 import { AuthenticationAccessTokenException } from '../../../exceptions/authentication-access-token.exception';
 import { ValidateAndVerifyAccessTokenQuery } from '../../impl/validate-and-verify-access-token.query';
 import { ValidateAndVerifyAccessTokenHandler } from '../validate-and-verify-access-token.handler';

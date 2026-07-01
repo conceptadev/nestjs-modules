@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { Role } from '../../../domain/aggregates/role';
+import { type Role } from '../../../domain/aggregates/role';
 
 export class GetRoleQuery extends Query<Role> {
   constructor(

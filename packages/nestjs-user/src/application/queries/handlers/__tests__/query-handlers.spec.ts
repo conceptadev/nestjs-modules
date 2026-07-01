@@ -3,7 +3,7 @@ import {
   createMockUserRepository,
   toUserDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { UserRepositoryInterface } from '../../../../domain/repositories/user-repository.interface';
+import { type UserRepositoryInterface } from '../../../../domain/repositories/user-repository.interface';
 import { GetUserByEmailQuery } from '../../impl/get-user-by-email.query';
 import { GetUserBySubjectQuery } from '../../impl/get-user-by-subject.query';
 import { GetUserByUsernameQuery } from '../../impl/get-user-by-username.query';

@@ -1,4 +1,4 @@
-import { IdentityInterface } from './identity.interface';
+import { type IdentityInterface } from './identity.interface';
 
 export interface IdentityCreatableInterface extends Pick<
   IdentityInterface,

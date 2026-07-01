@@ -1,9 +1,9 @@
 import { sign } from 'jsonwebtoken';
 import supertest from 'supertest';
 
-import { INestApplication } from '@nestjs/common';
+import { type INestApplication } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 
 import { ExceptionsFilter } from '@concepta/nestjs-core';
 

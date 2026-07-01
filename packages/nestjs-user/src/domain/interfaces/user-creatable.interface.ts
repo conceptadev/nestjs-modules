@@ -1,6 +1,6 @@
-import { PasswordPlainInterface } from '@concepta/nestjs-password';
+import { type PasswordPlainInterface } from '@concepta/nestjs-password';
 
-import { UserInterface } from './user.interface';
+import { type UserInterface } from './user.interface';
 
 export interface UserCreatableInterface
   extends

@@ -1,7 +1,7 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
-import { CrudCommandInterface } from '../interfaces/crud-command.interface';
+import { type CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
+import { type CrudCommandInterface } from '../interfaces/crud-command.interface';
 
 export class CrudDeleteCommand<
   Entity extends PlainLiteralObject,

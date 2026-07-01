@@ -1,7 +1,7 @@
-import { PlainLiteralObject, Type } from '@nestjs/common';
+import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
-import { CrudValidationOptions } from '../../../crud.types';
-import { CrudParamsOptionsInterface } from '../../interfaces/crud-params-options.interface';
+import { type CrudValidationOptions } from '../../../crud.types';
+import { type CrudParamsOptionsInterface } from '../../interfaces/crud-params-options.interface';
 
 /**
  * Request configuration for CRUD operations.

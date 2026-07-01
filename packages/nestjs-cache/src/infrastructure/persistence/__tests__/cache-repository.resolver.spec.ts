@@ -1,10 +1,10 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 
-import { ModuleRef } from '@nestjs/core';
+import { type ModuleRef } from '@nestjs/core';
 
 import { CacheEntityNotFoundException } from '../../exceptions/cache-entity-not-found.exception';
 import { CacheRepositoryResolver } from '../cache-repository.resolver';
-import { CacheRepository } from '../cache.repository';
+import { type CacheRepository } from '../cache.repository';
 
 describe(CacheRepositoryResolver.name, () => {
   let resolver: CacheRepositoryResolver;

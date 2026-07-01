@@ -6,9 +6,9 @@ import {
   createMockUserRepository,
   toUserDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
-import { UserCredentials } from '../../../../domain/aggregates/user-credentials';
+import { type UserCredentials } from '../../../../domain/aggregates/user-credentials';
 import { UserNotFoundException } from '../../../exceptions/user-not-found.exception';
-import { CreateUserCredentialCommand } from '../../impl/create-user-credential.command';
+import { type CreateUserCredentialCommand } from '../../impl/create-user-credential.command';
 import { SetUserPasswordCommand } from '../../impl/set-user-password.command';
 import { SetUserPasswordHandler } from '../set-user-password.handler';
 

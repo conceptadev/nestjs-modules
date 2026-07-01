@@ -3,7 +3,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
-  PlainLiteralObject,
+  type PlainLiteralObject,
 } from '@nestjs/common';
 
 import { Operation } from '@concepta/nestjs-core';
@@ -11,7 +11,7 @@ import { Operation } from '@concepta/nestjs-core';
 import { CrudSoftDeleteHandler } from '../../../application/commands/handlers/crud-soft-delete.handler';
 import { CrudSoftDeleteCommand } from '../../../application/commands/impl/crud-soft-delete.command';
 import { CRUD_MODULE_ROUTE_ID_DEFAULT_PATH } from '../../../crud.constants';
-import { CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
+import { type CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
 import { getTransactionalDecorators } from '../../utils/get-transactional-decorators';
 import { CrudApiOperation } from '../openapi/crud-api-operation.decorator';
 import { CrudApiParam } from '../openapi/crud-api-param.decorator';

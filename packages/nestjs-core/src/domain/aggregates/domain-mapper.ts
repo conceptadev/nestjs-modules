@@ -1,10 +1,10 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceIdInterface } from '../reference/interfaces/reference-id.interface';
-import { ReferenceVersionInterface } from '../reference/interfaces/reference-version.interface';
+import { type ReferenceIdInterface } from '../reference/interfaces/reference-id.interface';
+import { type ReferenceVersionInterface } from '../reference/interfaces/reference-version.interface';
 
-import { DomainAggregate } from './domain-aggregate';
-import { AggregateMetaInterface } from './interfaces/aggregate-meta.interface';
+import { type DomainAggregate } from './domain-aggregate';
+import { type AggregateMetaInterface } from './interfaces/aggregate-meta.interface';
 
 export abstract class DomainMapper<
   Entity,

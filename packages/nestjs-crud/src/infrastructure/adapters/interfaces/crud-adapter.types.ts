@@ -1,6 +1,10 @@
-import { PlainLiteralObject, Provider, Type } from '@nestjs/common';
+import {
+  type PlainLiteralObject,
+  type Provider,
+  type Type,
+} from '@nestjs/common';
 
-import { CrudAdapter } from '../crud.adapter';
+import { type CrudAdapter } from '../crud.adapter';
 
 /**
  * Type for providing a CRUD adapter via NestJS DI.

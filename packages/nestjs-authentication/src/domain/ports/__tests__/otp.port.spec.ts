@@ -1,18 +1,18 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Command, CommandBus, Query, QueryBus } from '@nestjs/cqrs';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 
-import { AssigneeRelationInterface } from '@concepta/nestjs-core';
+import { type AssigneeRelationInterface } from '@concepta/nestjs-core';
 
 import {
   OtpPort,
-  OtpPortSettings,
-  OtpCreateOptions,
-  AuthenticationOtpCreatableInterface,
-  AuthenticationOtpInterface,
-  CreateOtpCommandInterface,
-  ValidateOtpQueryInterface,
-  ClearOtpCommandInterface,
+  type OtpPortSettings,
+  type OtpCreateOptions,
+  type AuthenticationOtpCreatableInterface,
+  type AuthenticationOtpInterface,
+  type CreateOtpCommandInterface,
+  type ValidateOtpQueryInterface,
+  type ClearOtpCommandInterface,
 } from '../otp.port';
 
 class MockCreateOtpCommand

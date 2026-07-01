@@ -1,8 +1,8 @@
-import { Provider } from '@nestjs/common';
+import { type Provider } from '@nestjs/common';
 
 import { CACHE_MODULE_SETTINGS_TOKEN } from '../../cache.constants';
 import { CacheExpirationPolicy } from '../../domain/policies/cache-expiration.policy';
-import { CacheSettingsInterface } from '../config/interfaces/cache-settings.interface';
+import { type CacheSettingsInterface } from '../config/interfaces/cache-settings.interface';
 
 export function createCacheExpirationPolicyProvider(): Provider {
   return {

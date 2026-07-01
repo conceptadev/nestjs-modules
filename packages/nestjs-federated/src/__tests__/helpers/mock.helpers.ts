@@ -6,12 +6,12 @@ import {
 } from '@concepta/nestjs-core/testing';
 import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
-import { Identity } from '../../domain/aggregates/identity';
-import { FederatedUserPort } from '../../domain/ports/federated-user.port';
-import { FederatedOAuthService } from '../../domain/services/federated-oauth.service';
+import { type Identity } from '../../domain/aggregates/identity';
+import { type FederatedUserPort } from '../../domain/ports/federated-user.port';
+import { type FederatedOAuthService } from '../../domain/services/federated-oauth.service';
 import { IdentityMapper } from '../../infrastructure/persistence/identity.mapper';
-import { IdentityRepository } from '../../infrastructure/persistence/identity.repository';
-import { IdentityEntityInterface } from '../../infrastructure/persistence/interfaces/identity-entity.interface';
+import { type IdentityRepository } from '../../infrastructure/persistence/identity.repository';
+import { type IdentityEntityInterface } from '../../infrastructure/persistence/interfaces/identity-entity.interface';
 
 export {
   createMockCommandBus,

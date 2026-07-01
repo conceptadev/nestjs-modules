@@ -1,13 +1,13 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { Operation } from '@concepta/nestjs-core';
+import { type Operation } from '@concepta/nestjs-core';
 
 import {
-  CrudRouteCommandOptionsInterface,
-  CrudRouteQueryOptionsInterface,
+  type CrudRouteCommandOptionsInterface,
+  type CrudRouteQueryOptionsInterface,
 } from '../interfaces/crud-route-ctlr-options.interface';
 
-import { CrudExtraDecoratorsInterface } from './interfaces/crud-extra-decorators.interface';
+import { type CrudExtraDecoratorsInterface } from './interfaces/crud-extra-decorators.interface';
 
 /**
  * Operation options type - intersection of base props with union of query/command options.

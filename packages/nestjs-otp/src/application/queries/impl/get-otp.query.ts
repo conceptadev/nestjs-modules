@@ -1,9 +1,9 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { Otp } from '../../../domain/aggregates/otp';
+import { type Otp } from '../../../domain/aggregates/otp';
 
 export class GetOtpQuery extends Query<Otp> {
   constructor(

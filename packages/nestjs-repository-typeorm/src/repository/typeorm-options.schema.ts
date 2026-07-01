@@ -1,15 +1,18 @@
-import { EntityTarget, FindOptionsOrder } from 'typeorm';
-import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
-import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
+import { type EntityTarget, type FindOptionsOrder } from 'typeorm';
 
-import { Type, PlainLiteralObject } from '@nestjs/common';
+import { type Type, type PlainLiteralObject } from '@nestjs/common';
 
 import {
-  OrderClause,
-  RepositoryColumnMetadataInterface,
-  RepositoryRelationMetadataInterface,
-  RelationActionConfig,
+  type OrderClause,
+  type RepositoryColumnMetadataInterface,
+  type RepositoryRelationMetadataInterface,
+  type RelationActionConfig,
 } from '@concepta/nestjs-repository';
+
+import {
+  type TypeOrmColumnMetadata,
+  type TypeOrmRelationMetadata,
+} from './typeorm-metadata.types';
 
 /**
  * Type guard that validates EntityTarget satisfies Type<Entity>.
@@ -37,7 +40,7 @@ export function buildEntity<Entity extends PlainLiteralObject>(
  * Map TypeORM column metadata to typed repository column metadata.
  */
 export function buildColumns<Entity extends PlainLiteralObject>(
-  columns: ColumnMetadata[],
+  columns: TypeOrmColumnMetadata[],
 ): RepositoryColumnMetadataInterface<Entity>[] {
   return columns.map((col) => {
     return {
@@ -58,7 +61,7 @@ export function buildColumns<Entity extends PlainLiteralObject>(
  * @param relationsConfig - optional per-relation action config from forFeature()
  */
 export function buildRelations(
-  relations: RelationMetadata[],
+  relations: TypeOrmRelationMetadata[],
   relationsConfig?: Record<string, RelationActionConfig>,
 ): RepositoryRelationMetadataInterface[] {
   const result: RepositoryRelationMetadataInterface[] = [];
@@ -87,7 +90,7 @@ export function buildRelations(
 /**
  * Determine cardinality from the perspective of the entity owning the property.
  */
-function getCardinality(rel: RelationMetadata): 'one' | 'many' {
+function getCardinality(rel: TypeOrmRelationMetadata): 'one' | 'many' {
   if (rel.isOneToMany || rel.isManyToMany) return 'many';
   return 'one';
 }
@@ -97,7 +100,7 @@ function getCardinality(rel: RelationMetadata): 'one' | 'many' {
  * Returns undefined if required metadata is unavailable.
  */
 function mapRelation(
-  rel: RelationMetadata,
+  rel: TypeOrmRelationMetadata,
 ): RepositoryRelationMetadataInterface | undefined {
   const name = rel.propertyName;
   const targetEntity = rel.inverseEntityMetadata.name;
@@ -120,7 +123,7 @@ function mapRelation(
  * joinColumns live on the current entity.
  */
 function mapOwning(
-  rel: RelationMetadata,
+  rel: TypeOrmRelationMetadata,
   name: string,
   targetEntity: string,
   cardinality: 'one' | 'many',
@@ -147,7 +150,7 @@ function mapOwning(
  * Must look at the inverse relation's joinColumns and swap from/to.
  */
 function mapNonOwning(
-  rel: RelationMetadata,
+  rel: TypeOrmRelationMetadata,
   name: string,
   targetEntity: string,
   cardinality: 'one' | 'many',
@@ -178,7 +181,7 @@ function mapNonOwning(
  * Junction table metadata provides through info.
  */
 function mapManyToMany(
-  rel: RelationMetadata,
+  rel: TypeOrmRelationMetadata,
   name: string,
   targetEntity: string,
 ): RepositoryRelationMetadataInterface | undefined {
@@ -192,7 +195,7 @@ function mapManyToMany(
  * Map M:N owning side. joinColumns/inverseJoinColumns are junction columns.
  */
 function mapManyToManyOwner(
-  rel: RelationMetadata,
+  rel: TypeOrmRelationMetadata,
   name: string,
   targetEntity: string,
 ): RepositoryRelationMetadataInterface | undefined {
@@ -228,7 +231,7 @@ function mapManyToManyOwner(
  * junction metadata, swapping source/target perspective.
  */
 function mapManyToManyNonOwner(
-  rel: RelationMetadata,
+  rel: TypeOrmRelationMetadata,
   name: string,
   targetEntity: string,
 ): RepositoryRelationMetadataInterface | undefined {
@@ -240,7 +243,7 @@ function mapManyToManyNonOwner(
 
   // From the owner's perspective: joinColumns → owner, inverseJoinColumns → us
   const theirJoinCol = inverse.joinColumns[0];
-  const ourJoinCol = inverse.inverseJoinColumns[0];
+  const ourJoinCol = inverse.inverseJoinColumns?.[0];
   if (!theirJoinCol || !ourJoinCol) return undefined;
 
   const ourRef = ourJoinCol.referencedColumn;

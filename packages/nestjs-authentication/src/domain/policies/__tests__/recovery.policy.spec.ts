@@ -1,6 +1,6 @@
 import {
   RecoveryPolicy,
-  RecoveryPolicySettingsInterface,
+  type RecoveryPolicySettingsInterface,
 } from '../recovery.policy';
 
 describe(RecoveryPolicy.name, () => {

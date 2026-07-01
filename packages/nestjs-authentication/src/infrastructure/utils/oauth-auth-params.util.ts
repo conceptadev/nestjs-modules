@@ -1,5 +1,5 @@
-import { OAuthAuthenticateOptionsInterface } from '../config/interfaces/oauth-authenticate-options.interface';
-import { OAuthParamsInterface } from '../config/interfaces/oauth-params.interface';
+import { type OAuthAuthenticateOptionsInterface } from '../config/interfaces/oauth-authenticate-options.interface';
+import { type OAuthParamsInterface } from '../config/interfaces/oauth-params.interface';
 
 /**
  * Processes OAuth authentication parameters and returns auth options

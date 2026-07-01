@@ -2,12 +2,12 @@ import { randomUUID } from 'crypto';
 
 import { mock } from 'jest-mock-extended';
 
-import { AuthorizationPayloadInterface } from '../../../../domain/interfaces/authorization-payload.interface';
+import { type AuthorizationPayloadInterface } from '../../../../domain/interfaces/authorization-payload.interface';
 import { RefreshStrategyPolicy } from '../../../../domain/policies/refresh-strategy.policy';
-import { JwtPort } from '../../../../domain/ports/jwt.port';
+import { type JwtPort } from '../../../../domain/ports/jwt.port';
 import {
-  AuthenticationUserResult,
-  UserPort,
+  type AuthenticationUserResult,
+  type UserPort,
 } from '../../../../domain/ports/user.port';
 import { RefreshUnauthorizedException } from '../exceptions/refresh-unauthorized.exception';
 import { RefreshStrategy } from '../refresh.strategy';

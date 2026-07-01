@@ -1,7 +1,7 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { OtpInterface } from '../../../domain/interfaces/otp.interface';
+import { type OtpInterface } from '../../../domain/interfaces/otp.interface';
 
 export class RemoveOtpCommand extends Command<void> {
   constructor(

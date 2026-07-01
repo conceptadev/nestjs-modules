@@ -1,4 +1,4 @@
-import { applyDecorators } from '@nestjs/common';
+import { type applyDecorators } from '@nestjs/common';
 
 import { ActionEnum } from '@concepta/nestjs-core';
 

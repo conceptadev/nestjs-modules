@@ -1,7 +1,7 @@
 import { mock } from 'jest-mock-extended';
 
 import { JwtStrategyPolicy } from '../../../../domain/policies/jwt-strategy.policy';
-import { UserPort } from '../../../../domain/ports/user.port';
+import { type UserPort } from '../../../../domain/ports/user.port';
 import { AuthenticationUserPortRequiredException } from '../../../exceptions/authentication-user-port-required.exception';
 import { ValidateTokenQuery } from '../../impl/validate-token.query';
 import { ValidateTokenHandler } from '../validate-token.handler';

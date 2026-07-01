@@ -1,6 +1,6 @@
 import { isString } from 'class-validator';
 
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 
 import { CacheException } from '../../domain/exceptions/cache.exception';
 

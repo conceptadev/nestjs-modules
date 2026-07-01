@@ -6,7 +6,7 @@ import { toCacheDomain } from '../../../__tests__/helpers/mock.helpers';
 import { Cache } from '../../../domain/aggregates/cache';
 import { CacheMapper } from '../cache.mapper';
 import { CacheRepository } from '../cache.repository';
-import { CacheEntityInterface } from '../interfaces/cache-entity.interface';
+import { type CacheEntityInterface } from '../interfaces/cache-entity.interface';
 
 const mapper = new CacheMapper();
 

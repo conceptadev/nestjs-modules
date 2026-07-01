@@ -1,8 +1,8 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { ReferenceIdInterface } from '@concepta/nestjs-core';
+import { type ReferenceIdInterface } from '@concepta/nestjs-core';
 
-import { LocalValidateUserInterface } from './local-validate-user.interface';
+import { type LocalValidateUserInterface } from './local-validate-user.interface';
 
 export interface LocalServiceInterface {
   validateUser(

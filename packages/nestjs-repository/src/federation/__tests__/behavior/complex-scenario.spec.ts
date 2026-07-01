@@ -10,7 +10,7 @@ import {
   WhereCompoundOperator,
   WhereOperator,
 } from '../../../repository/repository.types';
-import { TestRoot, TestRelation } from '../federation-test-data';
+import { type TestRoot, type TestRelation } from '../federation-test-data';
 import {
   mockTestRepo,
   mockOrchestrator,

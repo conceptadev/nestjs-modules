@@ -1,6 +1,6 @@
 import {
   RuntimeException,
-  RuntimeExceptionOptions,
+  type RuntimeExceptionOptions,
 } from '@concepta/nestjs-core';
 /**
  * Generic crud exception.
@@ -11,7 +11,7 @@ export class CrudException extends RuntimeException {
     this.errorCode = 'CRUD_ERROR';
 
     this.context = {
-      ...super.context,
+      ...this.context,
     };
   }
 }

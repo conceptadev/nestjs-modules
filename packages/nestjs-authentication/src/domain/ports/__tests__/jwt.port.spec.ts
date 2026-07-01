@@ -1,14 +1,14 @@
 import { mock } from 'jest-mock-extended';
 
-import { PlainLiteralObject } from '@nestjs/common';
-import { Command, CommandBus, Query, QueryBus } from '@nestjs/cqrs';
+import { type PlainLiteralObject } from '@nestjs/common';
+import { Command, type CommandBus, Query, type QueryBus } from '@nestjs/cqrs';
 
 import { Token } from '../../../domain/aggregates/token.aggregate';
 import {
   JwtPort,
-  JwtPortSettings,
-  JwtVerifyTokenQueryInterface,
-  SignTokenCommandInterface,
+  type JwtPortSettings,
+  type JwtVerifyTokenQueryInterface,
+  type SignTokenCommandInterface,
 } from '../jwt.port';
 
 const makeToken = (): Token =>

@@ -1,6 +1,6 @@
 import { mock } from 'jest-mock-extended';
 
-import { JwtPort } from '../../../../domain/ports/jwt.port';
+import { type JwtPort } from '../../../../domain/ports/jwt.port';
 import { createVerifyTokenCallback } from '../create-verify-token-callback.util';
 
 describe('createVerifyTokenCallback', () => {

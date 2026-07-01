@@ -1,8 +1,8 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import { OverlayRef } from '@concepta/nestjs-core';
 
-import { TransactionManager } from '../transaction-manager';
+import { type TransactionManager } from '../transaction-manager';
 
 /**
  * Context interface for the transaction overlay.

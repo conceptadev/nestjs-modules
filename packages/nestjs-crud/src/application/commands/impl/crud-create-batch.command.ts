@@ -1,10 +1,10 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { DeepPartial } from '@concepta/nestjs-core';
+import { type DeepPartial } from '@concepta/nestjs-core';
 
-import { CrudCreateBatchInterface } from '../../../infrastructure/dtos/interfaces/crud-create-batch.interface';
-import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
-import { CrudCommandInterface } from '../interfaces/crud-command.interface';
+import { type CrudCreateBatchInterface } from '../../../infrastructure/dtos/interfaces/crud-create-batch.interface';
+import { type CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
+import { type CrudCommandInterface } from '../interfaces/crud-command.interface';
 
 export class CrudCreateBatchCommand<
   Entity extends PlainLiteralObject,

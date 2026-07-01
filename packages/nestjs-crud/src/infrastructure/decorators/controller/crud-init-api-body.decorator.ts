@@ -1,11 +1,40 @@
-import { Type } from '@nestjs/common';
+import { type Type } from '@nestjs/common';
 import { MetadataScanner } from '@nestjs/core';
 import { ApiBody, ApiExtraModels } from '@nestjs/swagger';
 
 import { Operation } from '@concepta/nestjs-core';
 
 import { CrudMetaview } from '../../services/crud-metaview.service';
-import { swaggerConst } from '../../utils/swagger.helper';
+import { swagger } from '../../utils/swagger.helper';
+
+/**
+ * Discovers the Reflect metadata key that `@ApiBody()` uses to store
+ * parameter descriptors on a route handler. Rather than depending on the
+ * private `DECORATORS` constant inside nestjs/swagger (which is a string
+ * constant, not a symbol), we apply `@ApiBody` to a probe function and read
+ * back which string key it wrote — guaranteeing we use the exact same key
+ * that the decorator itself uses, with no dependency on internal APIs.
+ *
+ * Returns `undefined` when swagger is not installed.
+ */
+function discoverApiParametersKey(): string | undefined {
+  if (!swagger) return undefined;
+  // Apply @ApiBody to a probe function and observe which Reflect key it adds.
+  const probe = function probe() {};
+  const descriptor: PropertyDescriptor = {
+    value: probe,
+    writable: true,
+    enumerable: false,
+    configurable: true,
+  };
+  // Object.create(null) → any, satisfies the MethodDecorator target: Object param
+  ApiBody({ type: String })(Object.create(null), 'method', descriptor);
+  const keys: unknown[] = Reflect.getMetadataKeys(probe) ?? [];
+  // @nestjs/swagger uses a string key (e.g. 'swagger/apiParameters'); find it.
+  return keys.find((k): k is string => typeof k === 'string');
+}
+
+const API_PARAMETERS_KEY: string | undefined = discoverApiParametersKey();
 
 /**
  * \@CrudInit() api body decorator.
@@ -17,9 +46,8 @@ import { swaggerConst } from '../../utils/swagger.helper';
  */
 export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
   /* istanbul ignore if */
-  if (!swaggerConst) return;
+  if (!swagger) return;
 
-  const API_PARAMETERS = swaggerConst.DECORATORS.API_PARAMETERS;
   const reflectionService = new CrudMetaview();
   const scanner = new MetadataScanner();
   const prototype = classTarget.prototype;
@@ -54,12 +82,17 @@ export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
     // which may have type: String as a placeholder when bodyType was not yet resolved.
     // ApiBody() appends to API_PARAMETERS on descriptor.value, so clearing first
     // ensures only one body entry exists after we append the resolved one below.
-    const existingParams: unknown[] =
-      Reflect.getMetadata(API_PARAMETERS, handler) ?? [];
-    const withoutBody = existingParams.filter(
-      (p) => (p as Record<string, unknown>).in !== 'body',
-    );
-    Reflect.defineMetadata(API_PARAMETERS, withoutBody, handler);
+    if (API_PARAMETERS_KEY) {
+      const existingParams: unknown[] =
+        Reflect.getMetadata(API_PARAMETERS_KEY, handler) ?? [];
+      const withoutBody = existingParams.filter(
+        (p) =>
+          typeof p !== 'object' ||
+          p === null ||
+          Reflect.get(p, 'in') !== 'body',
+      );
+      Reflect.defineMetadata(API_PARAMETERS_KEY, withoutBody, handler);
+    }
 
     // Apply ApiBody with the resolved type — appends to the cleaned array.
     ApiBody({ type: bodyType })(prototype, methodName, descriptor);

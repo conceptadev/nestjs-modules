@@ -7,7 +7,7 @@ import {
   toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers';
 import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception';
-import { OtpSettingsInterface } from '../../../../infrastructure/config/interfaces/otp-settings.interface';
+import { type OtpSettingsInterface } from '../../../../infrastructure/config/interfaces/otp-settings.interface';
 import { ValidateOtpQuery } from '../../impl/validate-otp.query';
 import { ValidateOtpHandler } from '../validate-otp.handler';
 

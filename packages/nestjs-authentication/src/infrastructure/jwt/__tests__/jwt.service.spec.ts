@@ -2,7 +2,7 @@ import { mock } from 'jest-mock-extended';
 
 import { Token } from '../../../domain/aggregates/token.aggregate';
 import { JwtPolicy } from '../../../domain/policies/jwt.policy';
-import { NestJwtService } from '../jwt.externals';
+import { type NestJwtService } from '../jwt.externals';
 import { JwtService } from '../jwt.service';
 
 describe(JwtService, () => {

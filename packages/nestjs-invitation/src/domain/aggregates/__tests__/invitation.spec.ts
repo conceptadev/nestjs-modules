@@ -2,7 +2,7 @@ import { EventContextHost } from '@concepta/nestjs-core';
 
 import { InvitationAlreadyAcceptedException } from '../../exceptions/invitation-already-accepted.exception';
 import { InvitationRevokedException } from '../../exceptions/invitation-revoked.exception';
-import { InvitationCreatableInterface } from '../../interfaces/invitation-creatable.interface';
+import { type InvitationCreatableInterface } from '../../interfaces/invitation-creatable.interface';
 import { Invitation } from '../invitation';
 
 describe(Invitation.name, () => {

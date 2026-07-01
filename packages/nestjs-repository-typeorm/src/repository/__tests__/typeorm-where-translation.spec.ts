@@ -10,15 +10,15 @@ import {
   MoreThan,
   MoreThanOrEqual,
   Not,
-  Repository,
+  type Repository,
 } from 'typeorm';
 
 import {
-  JoinClause,
+  type JoinClause,
   Where,
-  WhereClause,
-  WhereCondition,
-  WhereOperator,
+  type WhereClause,
+  type WhereCondition,
+  type WhereOperator,
 } from '@concepta/nestjs-repository';
 
 import { TypeOrmRepository } from '../typeorm-repository';

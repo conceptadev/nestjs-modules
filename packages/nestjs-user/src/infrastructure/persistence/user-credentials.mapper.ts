@@ -1,8 +1,8 @@
 import { DomainMapper } from '@concepta/nestjs-core/aggregate';
 
 import { UserCredentials } from '../../domain/aggregates/user-credentials';
-import { UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';
-import { UserCredentialInterface } from '../../domain/interfaces/user-credential.interface';
+import { type UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';
+import { type UserCredentialInterface } from '../../domain/interfaces/user-credential.interface';
 
 export class UserCredentialsMapper extends DomainMapper<
   UserCredentialEntityInterface,

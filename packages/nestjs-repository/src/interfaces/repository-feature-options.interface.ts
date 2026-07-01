@@ -1,5 +1,5 @@
-import { RepositoryModuleInterface } from './repository-module.interface';
-import { RepositoryProviderOptions } from './repository-provider-options.interface';
+import { type RepositoryModuleInterface } from './repository-module.interface';
+import { type RepositoryProviderOptions } from './repository-provider-options.interface';
 
 /**
  * Feature module options for RepositoryModule.forFeature()

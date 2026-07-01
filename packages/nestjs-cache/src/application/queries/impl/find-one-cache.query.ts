@@ -1,7 +1,7 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Query } from '@nestjs/cqrs';
 
-import { Cache } from '../../../domain/aggregates/cache';
+import { type Cache } from '../../../domain/aggregates/cache';
 
 export class FindOneCacheQuery extends Query<Cache | null> {
   constructor(

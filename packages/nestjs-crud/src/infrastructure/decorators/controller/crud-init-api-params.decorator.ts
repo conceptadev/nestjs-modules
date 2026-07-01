@@ -1,6 +1,6 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { MetadataScanner } from '@nestjs/core';
-import { ApiParam, ApiParamOptions } from '@nestjs/swagger';
+import { ApiParam, type ApiParamOptions } from '@nestjs/swagger';
 
 import { CrudMetaview } from '../../services/crud-metaview.service';
 

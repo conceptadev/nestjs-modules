@@ -1,13 +1,13 @@
-import { Provider } from '@nestjs/common';
+import { type Provider } from '@nestjs/common';
 
 import {
   AUTHENTICATION_JWT_PORT_TOKEN,
   AUTHENTICATION_USER_PORT_TOKEN,
 } from '../../authentication.constants';
 import { RefreshStrategyPolicy } from '../../domain/policies/refresh-strategy.policy';
-import { JwtPort } from '../../domain/ports/jwt.port';
-import { UserPort } from '../../domain/ports/user.port';
-import { AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
+import { type JwtPort } from '../../domain/ports/jwt.port';
+import { type UserPort } from '../../domain/ports/user.port';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
 import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception';
 import { RefreshStrategy } from '../strategies/refresh/refresh.strategy';
 

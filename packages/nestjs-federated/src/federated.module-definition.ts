@@ -1,7 +1,7 @@
 import {
   ConfigurableModuleBuilder,
-  DynamicModule,
-  Provider,
+  type DynamicModule,
+  type Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
@@ -17,11 +17,11 @@ import {
   FEDERATED_MODULE_SETTINGS_TOKEN,
 } from './federated.constants';
 import { federatedDefaultConfig } from './infrastructure/config/federated-default.config';
-import { FederatedSettingsInterface } from './infrastructure/config/interfaces/federated-settings.interface';
+import { type FederatedSettingsInterface } from './infrastructure/config/interfaces/federated-settings.interface';
 import { IdentityMapper } from './infrastructure/persistence/identity.mapper';
 import { createIdentityRepositoryProvider } from './infrastructure/utils/create-identity-repository-provider';
-import { FederatedOptionsExtrasInterface } from './interfaces/federated-options-extras.interface';
-import { FederatedOptionsInterface } from './interfaces/federated-options.interface';
+import { type FederatedOptionsExtrasInterface } from './interfaces/federated-options-extras.interface';
+import { type FederatedOptionsInterface } from './interfaces/federated-options.interface';
 
 const RAW_OPTIONS_TOKEN = Symbol('__FEDERATED_MODULE_RAW_OPTIONS_TOKEN__');
 

@@ -1,10 +1,10 @@
-import { Provider } from '@nestjs/common';
+import { type Provider } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
 import { AUTHENTICATION_RECOVERY_NOTIFICATION_PORT_TOKEN } from '../../authentication.constants';
 import {
   RecoveryNotificationPort,
-  RecoveryNotificationPortSettings,
+  type RecoveryNotificationPortSettings,
 } from '../../domain/ports/recovery-notification.port';
 
 export function createRecoveryNotificationPortProvider(

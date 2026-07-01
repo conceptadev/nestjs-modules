@@ -1,16 +1,19 @@
 import { randomUUID } from 'crypto';
 
-import { DomainFactory, EventContextHost } from '@concepta/nestjs-core';
 import {
-  AggregateMetaInterface,
+  type DomainFactory,
+  type EventContextHost,
+} from '@concepta/nestjs-core';
+import {
+  type AggregateMetaInterface,
   DomainAggregate,
 } from '@concepta/nestjs-core/aggregate';
 
 import { TokenIssuedEvent } from '../events/token-issued.event';
 import { TokenRevokedEvent } from '../events/token-revoked.event';
 import { TokenAlreadyRevokedException } from '../exceptions/token-already-revoked.exception';
-import { TokenCreatableInterface } from '../interfaces/token-creatable.interface';
-import { TokenInterface } from '../interfaces/token.interface';
+import { type TokenCreatableInterface } from '../interfaces/token-creatable.interface';
+import { type TokenInterface } from '../interfaces/token.interface';
 
 export class Token extends DomainAggregate<TokenInterface> {
   constructor(

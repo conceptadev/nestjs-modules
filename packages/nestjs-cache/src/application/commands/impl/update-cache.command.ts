@@ -1,10 +1,10 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { ReferenceId } from '@concepta/nestjs-core';
+import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { Cache } from '../../../domain/aggregates/cache';
-import { CacheUpdatableInterface } from '../../../domain/interfaces/cache-updatable.interface';
+import { type Cache } from '../../../domain/aggregates/cache';
+import { type CacheUpdatableInterface } from '../../../domain/interfaces/cache-updatable.interface';
 
 export class UpdateCacheCommand extends Command<Cache> {
   constructor(

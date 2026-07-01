@@ -1,4 +1,4 @@
-import { ApiQueryOptions } from '@nestjs/swagger';
+import { type ApiQueryOptions } from '@nestjs/swagger';
 
 import { CRUD_MODULE_API_QUERY_METADATA } from '../../../crud.constants';
 import {

@@ -1,10 +1,10 @@
 import {
   RuntimeException,
-  RuntimeExceptionOptions,
+  type RuntimeExceptionOptions,
 } from '@concepta/nestjs-core';
 
 export class RepositoryQueryException extends RuntimeException {
-  context: RuntimeException['context'] & { entityName: string };
+  declare context: RuntimeException['context'] & { entityName: string };
 
   constructor(entityName: string, options?: RuntimeExceptionOptions) {
     super({
@@ -13,7 +13,7 @@ export class RepositoryQueryException extends RuntimeException {
       ...options,
     });
 
-    this.context = { ...super.context, entityName };
+    this.context = { ...this.context, entityName };
     this.errorCode = 'REPOSITORY_QUERY_ERROR';
   }
 }

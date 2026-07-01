@@ -1,16 +1,20 @@
-import { PlainLiteralObject, Type } from '@nestjs/common';
+import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
-import { ActionEnum, Operation, ReadOperation } from '@concepta/nestjs-core';
+import {
+  ActionEnum,
+  Operation,
+  type ReadOperation,
+} from '@concepta/nestjs-core';
 import {
   isArrayCondition,
-  WhereCondition,
-  WhereConditionArray,
+  type WhereCondition,
+  type WhereConditionArray,
 } from '@concepta/nestjs-repository';
 
-import { CrudAdapter } from '../adapters/crud.adapter';
-import { CrudAdapterProvider } from '../adapters/interfaces/crud-adapter.types';
+import { type CrudAdapter } from '../adapters/crud.adapter';
+import { type CrudAdapterProvider } from '../adapters/interfaces/crud-adapter.types';
 import { CrudDecoratorException } from '../exceptions/crud-decorator.exception';
-import { CrudControllerEntityInterface } from '../interfaces/crud-controller-entity.interface';
+import { type CrudControllerEntityInterface } from '../interfaces/crud-controller-entity.interface';
 
 /**
  * Gets the dynamic adapter token for a given name.

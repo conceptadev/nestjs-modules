@@ -1,9 +1,9 @@
-import { RuntimeException } from '@concepta/nestjs-core';
+import { type RuntimeException } from '@concepta/nestjs-core';
 
 import { CacheException } from '../../domain/exceptions/cache.exception';
 
 export class CacheEntityNotFoundException extends CacheException {
-  context: RuntimeException['context'] & {
+  declare context: RuntimeException['context'] & {
     entityName: string;
   };
 
@@ -19,7 +19,7 @@ export class CacheEntityNotFoundException extends CacheException {
     this.errorCode = 'CACHE_ENTITY_NOT_FOUND_ERROR';
 
     this.context = {
-      ...super.context,
+      ...this.context,
       entityName,
     };
   }

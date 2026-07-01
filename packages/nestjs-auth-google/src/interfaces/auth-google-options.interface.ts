@@ -1,7 +1,7 @@
-import { IssueTokenServiceInterface } from '@concepta/nestjs-authentication';
-import { ModuleOptionsSettingsInterface } from '@concepta/nestjs-common';
+import { type IssueTokenServiceInterface } from '@concepta/nestjs-authentication';
+import { type ModuleOptionsSettingsInterface } from '@concepta/nestjs-common';
 
-import { AuthGoogleSettingsInterface } from './auth-google-settings.interface';
+import { type AuthGoogleSettingsInterface } from './auth-google-settings.interface';
 
 export interface AuthGoogleOptionsInterface extends ModuleOptionsSettingsInterface<AuthGoogleSettingsInterface> {
   /**

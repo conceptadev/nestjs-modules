@@ -1,5 +1,5 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
-import { DataSource, EntityManager, QueryRunner } from 'typeorm';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
+import { type DataSource, type EntityManager, type QueryRunner } from 'typeorm';
 
 import { TypeOrmTransaction } from './typeorm-transaction';
 import { TypeOrmTransactionFactory } from './typeorm-transaction.factory';

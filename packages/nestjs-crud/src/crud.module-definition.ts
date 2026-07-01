@@ -1,7 +1,7 @@
 import {
   ConfigurableModuleBuilder,
-  DynamicModule,
-  Provider,
+  type DynamicModule,
+  type Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -13,9 +13,9 @@ import {
   CRUD_MODULE_SETTINGS_TOKEN,
 } from './crud.constants';
 import { crudDefaultConfig } from './infrastructure/config/crud-default.config';
-import { CrudModuleOptionsExtrasInterface } from './infrastructure/config/interfaces/crud-module-options-extras.interface';
-import { CrudModuleOptionsInterface } from './infrastructure/config/interfaces/crud-module-options.interface';
-import { CrudModuleSettingsInterface } from './infrastructure/config/interfaces/crud-module-settings.interface';
+import { type CrudModuleOptionsExtrasInterface } from './infrastructure/config/interfaces/crud-module-options-extras.interface';
+import { type CrudModuleOptionsInterface } from './infrastructure/config/interfaces/crud-module-options.interface';
+import { type CrudModuleSettingsInterface } from './infrastructure/config/interfaces/crud-module-settings.interface';
 import { CrudContextOverlay } from './infrastructure/interceptors/crud-context.overlay';
 import { CrudAdapterResolver } from './infrastructure/resolvers/crud-adapter.resolver';
 import { CrudOperationResolver } from './infrastructure/resolvers/crud-operation.resolver';

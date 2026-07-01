@@ -1,4 +1,4 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 
 import { EventContextHost } from '@concepta/nestjs-core';
 import {
@@ -8,14 +8,14 @@ import {
 } from '@concepta/nestjs-core/testing';
 import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
-import { RoleAssignmentEntityInterface } from '../../domain/interfaces/role-assignment-entity.interface';
-import { RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
-import { RoleAssignmentRepositoryResolver } from '../../infrastructure/persistence/role-assignment-repository.resolver';
+import { type RoleAssignmentEntityInterface } from '../../domain/interfaces/role-assignment-entity.interface';
+import { type RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
+import { type RoleAssignmentRepositoryResolver } from '../../infrastructure/persistence/role-assignment-repository.resolver';
 import { RoleAssignmentMapper } from '../../infrastructure/persistence/role-assignment.mapper';
-import { RoleAssignmentRepository } from '../../infrastructure/persistence/role-assignment.repository';
-import { RoleRepositoryResolver } from '../../infrastructure/persistence/role-repository.resolver';
+import { type RoleAssignmentRepository } from '../../infrastructure/persistence/role-assignment.repository';
+import { type RoleRepositoryResolver } from '../../infrastructure/persistence/role-repository.resolver';
 import { RoleMapper } from '../../infrastructure/persistence/role.mapper';
-import { RoleRepository } from '../../infrastructure/persistence/role.repository';
+import { type RoleRepository } from '../../infrastructure/persistence/role.repository';
 
 export const DEFAULT_ROLE_NAMESPACE = 'Role';
 

@@ -1,13 +1,19 @@
 {
   "name": "@concepta/nestjs-common",
-  "version": "8.0.0-alpha.6",
+  "version": "7.0.0-alpha.10",
   "description": "Rockets NestJS Common",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/cjs/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
     }
   },
   "license": "BSD-3-Clause",
@@ -15,7 +21,10 @@
     "access": "public"
   },
   "files": [
-    "dist/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/cjs/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/esm/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
+    "dist/cjs/package.json",
+    "dist/esm/package.json",
     "!dist/**/__tests__/**",
     "!dist/**/__fixtures__/**"
   ],
@@ -34,5 +43,6 @@
     "class-transformer": "*",
     "class-validator": "*",
     "rxjs": "^7.0.0"
-  }
+  },
+  "module": "./dist/esm/index.js"
 }

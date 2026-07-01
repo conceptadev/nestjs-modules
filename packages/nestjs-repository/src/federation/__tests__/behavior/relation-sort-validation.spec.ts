@@ -9,7 +9,7 @@
  */
 import { WhereOperator } from '../../../repository/repository.types';
 import { FederationException } from '../../exceptions/federation.exception';
-import { TestRoot, TestRelation } from '../federation-test-data';
+import { type TestRoot, type TestRelation } from '../federation-test-data';
 import {
   mockTestRepo,
   mockOrchestrator,

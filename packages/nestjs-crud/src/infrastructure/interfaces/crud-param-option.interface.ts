@@ -1,7 +1,10 @@
-import { PlainLiteralObject } from '@nestjs/common';
-import { SwaggerEnumType } from '@nestjs/swagger/dist/types/swagger-enum.type';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { EntityColumn } from '@concepta/nestjs-repository';
+import { type EntityColumn } from '@concepta/nestjs-repository';
+
+type SwaggerEnumType =
+  | (string | number | boolean)[]
+  | Record<string, string | number | boolean | object>;
 
 export interface CrudParamOptionInterface<T extends PlainLiteralObject> {
   field?: EntityColumn<T>;

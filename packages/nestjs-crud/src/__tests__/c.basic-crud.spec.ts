@@ -940,21 +940,21 @@ describe('#crud-typeorm', () => {
         @CrudBody() dto: CompanyCreateDto,
       ) {
         // Create first entity - get back the created entity with ID
-        const first = await this.crudResolver.create(context, {
+        const first = await this.crudResolver.create<CompanyEntity>(context, {
           ...dto,
           name: `${dto.name}_first`,
           domain: 'test1.com',
         });
 
         // Create second entity
-        const second = await this.crudResolver.create(context, {
+        const second = await this.crudResolver.create<CompanyEntity>(context, {
           ...dto,
           name: `${dto.name}_second`,
           domain: 'test2.com',
         });
 
         // Create third entity
-        const third = await this.crudResolver.create(context, {
+        const third = await this.crudResolver.create<CompanyEntity>(context, {
           ...dto,
           name: `${dto.name}_third`,
           domain: 'test3.com',

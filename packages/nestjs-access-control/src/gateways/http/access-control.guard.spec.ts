@@ -1,8 +1,8 @@
 import { mock } from 'jest-mock-extended';
 
-import { ExecutionContext } from '@nestjs/common';
+import { type ExecutionContext } from '@nestjs/common';
 
-import { AccessControlPort } from '../../application/ports/access-control.port';
+import { type AccessControlPort } from '../../application/ports/access-control.port';
 
 import { AccessControlGuard } from './access-control.guard';
 

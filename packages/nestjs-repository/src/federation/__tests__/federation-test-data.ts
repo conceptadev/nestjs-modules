@@ -4,7 +4,7 @@
  * Ported from nestjs-crud __tests__/crud-federation/fixtures/crud-federation-test-data.ts
  * Data shapes preserved exactly — only the import types changed.
  */
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 export interface TestRoot extends PlainLiteralObject {
   id: number;

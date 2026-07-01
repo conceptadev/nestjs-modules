@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 
 import { InvitationNotificationPort } from './domain/ports/invitation-notification.port';
 import { InvitationOtpPort } from './domain/ports/invitation-otp.port';

@@ -201,7 +201,15 @@ need to get the correct user and its roles.
 ```typescript
 import { AccessControlServiceInterface } from '@concepta/nestjs-access-control';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { User } from '../user/user.entity';
+
+function hasRoles(user: unknown): user is { roles: { name: string }[] } {
+  return (
+    typeof user === 'object' &&
+    user !== null &&
+    'roles' in user &&
+    Array.isArray((user as { roles: unknown }).roles)
+  );
+}
 
 export class ACService implements AccessControlServiceInterface {
   async getUser(context: ExecutionContext): Promise<unknown> {
@@ -212,10 +220,8 @@ export class ACService implements AccessControlServiceInterface {
   }
   async getUserRoles(context: ExecutionContext): Promise<string | string[]> {
     const user = await this.getUser(context);
-    if (!user || typeof user !== 'object') throw new UnauthorizedException();
-    const typedUser = user as User;
-    if (!typedUser.roles) throw new UnauthorizedException();
-    return typedUser.roles.map((role: { name: string }) => role.name);
+    if (!hasRoles(user)) throw new UnauthorizedException();
+    return user.roles.map((role) => role.name);
   }
 }
 ```
@@ -539,13 +545,15 @@ AccessControlModule.forRoot({
 
 ## Filtering response attributes
 
-The module ships an `AccessControlFilter` interceptor that is registered globally as `APP_INTERCEPTOR`
-by default. After a response is produced it inspects the same `@AccessControl*` grant metadata that the
-guard checked, queries the user's roles (via `ResolveUserRolesQuery`), and strips any fields the user is
-not permitted to see using the `accesscontrol` library's `permission.filter(data)` utility.
+The module ships an `AccessControlFilter` interceptor that is registered
+globally as `APP_INTERCEPTOR` by default. After a response is produced it
+inspects the same `@AccessControl*` grant metadata that the guard checked,
+queries the user's roles (via `ResolveUserRolesQuery`), and strips any fields
+the user is not permitted to see using the `accesscontrol` library's
+`permission.filter(data)` utility.
 
-> **Note:** Roles granted `any` access bypass the attribute filter entirely — `any` implies unrestricted
-> access to all fields (see [IMPORTANT](#important)).
+> **Note:** Roles granted `any` access bypass the attribute filter entirely —
+> `any` implies unrestricted access to all fields (see [IMPORTANT](#important)).
 
 The filter is enabled by default. To disable it:
 

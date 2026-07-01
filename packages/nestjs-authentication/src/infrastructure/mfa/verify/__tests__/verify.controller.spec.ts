@@ -1,8 +1,8 @@
 import { mock } from 'jest-mock-extended';
 
-import { VerifyService } from '../../../../application/services/verify/verify.service';
-import { VerifyUpdateDto } from '../dto/verify-update.dto';
-import { VerifyDto } from '../dto/verify.dto';
+import { type VerifyService } from '../../../../application/services/verify/verify.service';
+import { type VerifyUpdateDto } from '../dto/verify-update.dto';
+import { type VerifyDto } from '../dto/verify.dto';
 
 import { VerifyControllerFixture } from './fixtures/verify.controller.fixture';
 

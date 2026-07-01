@@ -1,13 +1,13 @@
-import { Provider, Type } from '@nestjs/common';
+import { type Provider, type Type } from '@nestjs/common';
 
 import {
   getDynamicRepositoryToken,
-  RepositoryInterface,
+  type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { InvitationRepositoryInterface } from '../../domain/repositories/invitation-repository.interface';
+import { type InvitationRepositoryInterface } from '../../domain/repositories/invitation-repository.interface';
 import { INVITATION_MODULE_REPOSITORY_TOKEN } from '../../invitation.constants';
-import { InvitationEntityInterface } from '../persistence/interfaces/invitation-entity.interface';
+import { type InvitationEntityInterface } from '../persistence/interfaces/invitation-entity.interface';
 import { InvitationMapper } from '../persistence/invitation.mapper';
 import { InvitationRepository } from '../persistence/invitation.repository';
 

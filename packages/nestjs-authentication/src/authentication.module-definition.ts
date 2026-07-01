@@ -1,7 +1,7 @@
 import {
   ConfigurableModuleBuilder,
-  DynamicModule,
-  Provider,
+  type DynamicModule,
+  type Provider,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -27,8 +27,8 @@ import { GuardsPolicy } from './domain/policies/guards.policy';
 import { JwtPolicy } from './domain/policies/jwt.policy';
 import { AuthUserContextOverlay } from './gateways/auth-user-context.overlay';
 import { authenticationDefaultConfig } from './infrastructure/config/authentication-default.config';
-import { AuthenticationOptionsExtrasInterface } from './infrastructure/config/interfaces/authentication-options-extras.interface';
-import { AuthenticationOptionsInterface } from './infrastructure/config/interfaces/authentication-options.interface';
+import { type AuthenticationOptionsExtrasInterface } from './infrastructure/config/interfaces/authentication-options-extras.interface';
+import { type AuthenticationOptionsInterface } from './infrastructure/config/interfaces/authentication-options.interface';
 import { NestJwtModule } from './infrastructure/jwt/jwt.externals';
 import { JwtService } from './infrastructure/jwt/jwt.service';
 import { AuthRouterGuards } from './infrastructure/router/auth-router.constants';

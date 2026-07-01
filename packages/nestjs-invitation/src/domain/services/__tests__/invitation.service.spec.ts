@@ -1,4 +1,4 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 
 import { AppContextHost } from '@concepta/nestjs-core';
 
@@ -12,8 +12,8 @@ import {
 import { InvitationNotFoundException } from '../../../application/exceptions/invitation-not-found.exception';
 import { InvitationUserUndefinedException } from '../../../application/exceptions/invitation-user-undefined.exception';
 import { Invitation } from '../../aggregates/invitation';
-import { InvitationOtpPort } from '../../ports/invitation-otp.port';
-import { InvitationUserPort } from '../../ports/invitation-user.port';
+import { type InvitationOtpPort } from '../../ports/invitation-otp.port';
+import { type InvitationUserPort } from '../../ports/invitation-user.port';
 import { InvitationService } from '../invitation.service';
 
 describe(InvitationService.name, () => {

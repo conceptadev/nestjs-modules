@@ -1,4 +1,7 @@
-import { VerifyPolicy, VerifyPolicySettingsInterface } from '../verify.policy';
+import {
+  VerifyPolicy,
+  type VerifyPolicySettingsInterface,
+} from '../verify.policy';
 
 describe(VerifyPolicy.name, () => {
   const defaultSettings: VerifyPolicySettingsInterface = {

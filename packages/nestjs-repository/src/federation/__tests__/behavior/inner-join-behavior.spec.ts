@@ -13,8 +13,8 @@ import {
 } from '../../../repository/repository.types';
 import { Where } from '../../../repository/where.helpers';
 import {
-  TestRoot,
-  TestRelation,
+  type TestRoot,
+  type TestRelation,
   createMinimalRootRelationSet,
   createFilteredDataSet,
 } from '../federation-test-data';

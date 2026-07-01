@@ -7,8 +7,8 @@ import {
   toCacheDomain,
 } from '../../../../../__tests__/helpers/mock.helpers';
 import { CreateCacheCommand } from '../../../../../application/commands/impl/create-cache.command';
-import { CacheCreatableInterface } from '../../../../../domain/interfaces/cache-creatable.interface';
-import { CacheInterface } from '../../../../../domain/interfaces/cache.interface';
+import { type CacheCreatableInterface } from '../../../../../domain/interfaces/cache-creatable.interface';
+import { type CacheInterface } from '../../../../../domain/interfaces/cache.interface';
 import { CreateCacheRequestHandler } from '../create-cache-request.handler';
 
 describe(CreateCacheRequestHandler.name, () => {

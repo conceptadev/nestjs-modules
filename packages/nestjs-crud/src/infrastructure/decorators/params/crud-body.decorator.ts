@@ -5,8 +5,8 @@ import {
 } from '../../services/crud-metadata.service';
 import { getMethodHandler } from '../../utils/crud-infra.utils';
 
-import { CrudBodyMetadataInterface } from './interfaces/crud-body-metadata.interface';
-import { CrudBodyOptionsInterface } from './interfaces/crud-body-options.interface';
+import { type CrudBodyMetadataInterface } from './interfaces/crud-body-metadata.interface';
+import { type CrudBodyOptionsInterface } from './interfaces/crud-body-options.interface';
 
 type CrudBodyDecoratorFn = (
   options?: CrudBodyOptionsInterface,
@@ -26,6 +26,7 @@ export const CrudBody = CrudMetadata.createWrappedDecorator<
   (decorator) =>
     (options?: CrudBodyOptionsInterface): ParameterDecorator =>
     (target, propertyKey, parameterIndex) => {
+      if (propertyKey === undefined) return;
       const handler = getMethodHandler(target, propertyKey);
       const previousValues =
         CrudMetadata.get<CrudBodyMetadataInterface[]>(CrudBody, handler) ?? [];

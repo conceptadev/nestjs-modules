@@ -1,4 +1,4 @@
-import { CanActivate, Type } from '@nestjs/common';
+import { type CanActivate, type Type } from '@nestjs/common';
 
 export interface AuthRouterGuardConfigInterface {
   name: string;

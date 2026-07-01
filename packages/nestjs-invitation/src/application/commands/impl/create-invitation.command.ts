@@ -1,8 +1,8 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { Invitation } from '../../../domain/aggregates/invitation';
-import { InvitationCreatableInterface } from '../../../domain/interfaces/invitation-creatable.interface';
+import { type Invitation } from '../../../domain/aggregates/invitation';
+import { type InvitationCreatableInterface } from '../../../domain/interfaces/invitation-creatable.interface';
 
 export class CreateInvitationCommand extends Command<Invitation> {
   constructor(

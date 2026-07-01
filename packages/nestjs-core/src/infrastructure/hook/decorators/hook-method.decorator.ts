@@ -1,6 +1,6 @@
 import { HOOK_METHOD_METADATA_KEY } from '../hook.constants';
-import { HookMethodMetadataInterface } from '../hook.interfaces';
-import { SpecificationInterface } from '../interfaces/specification.interface';
+import { type HookMethodMetadataInterface } from '../hook.interfaces';
+import { type SpecificationInterface } from '../interfaces/specification.interface';
 
 /**
  * Hook method key type.

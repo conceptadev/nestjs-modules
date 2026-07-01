@@ -1,9 +1,9 @@
-import { HttpException, PlainLiteralObject } from '@nestjs/common';
+import { HttpException, type PlainLiteralObject } from '@nestjs/common';
 
-import { DeepPartial } from '@concepta/nestjs-core';
+import { type DeepPartial } from '@concepta/nestjs-core';
 
 import { CrudQueryException } from '../../../infrastructure/exceptions/crud-query.exception';
-import { CrudReplaceCommand } from '../impl/crud-replace.command';
+import { type CrudReplaceCommand } from '../impl/crud-replace.command';
 
 import { CrudWithBodyCommandHandler } from './crud-with-body-command.handler';
 

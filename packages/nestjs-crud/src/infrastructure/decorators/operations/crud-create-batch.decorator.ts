@@ -1,12 +1,12 @@
-import { applyDecorators, PlainLiteralObject, Post } from '@nestjs/common';
+import { applyDecorators, type PlainLiteralObject, Post } from '@nestjs/common';
 
 import { Operation } from '@concepta/nestjs-core';
 
 import { CrudCreateBatchHandler } from '../../../application/commands/handlers/crud-create-batch.handler';
 import { CrudCreateBatchCommand } from '../../../application/commands/impl/crud-create-batch.command';
 import { CRUD_MODULE_ROUTE_CREATE_MANY_DEFAULT_PATH } from '../../../crud.constants';
-import { CrudValidationOptions } from '../../../crud.types';
-import { CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
+import { type CrudValidationOptions } from '../../../crud.types';
+import { type CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
 import { getTransactionalDecorators } from '../../utils/get-transactional-decorators';
 import { CrudApiBody } from '../openapi/crud-api-body.decorator';
 import { CrudApiOperation } from '../openapi/crud-api-operation.decorator';

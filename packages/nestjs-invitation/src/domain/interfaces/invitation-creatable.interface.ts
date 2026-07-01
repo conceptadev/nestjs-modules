@@ -1,4 +1,4 @@
-import { InvitationInterface } from './invitation.interface';
+import { type InvitationInterface } from './invitation.interface';
 
 export interface InvitationCreatableInterface
   extends

@@ -1,8 +1,8 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import {
-  WhereClause,
-  WhereCondition,
+  type WhereClause,
+  type WhereCondition,
   isWhereCondition,
   isWhereCompound,
 } from '../repository/interfaces/where-clause.interface';
@@ -12,7 +12,7 @@ import {
 } from '../repository/repository.types';
 
 import { FederationException } from './exceptions/federation.exception';
-import { FederatedRelation } from './federation.types';
+import { type FederatedRelation } from './federation.types';
 
 /**
  * Separates a WhereClause tree into root conditions and

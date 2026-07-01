@@ -1,4 +1,4 @@
-import { DataSourceOptions } from 'typeorm';
+import { type DataSourceOptions } from 'typeorm';
 
 import { TestEntityFixture } from '../entity/test.entity.fixture';
 

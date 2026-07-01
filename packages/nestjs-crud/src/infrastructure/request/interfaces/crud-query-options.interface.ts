@@ -1,12 +1,12 @@
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import {
-  EntityColumn,
-  JoinClause,
-  OrderSortKey,
+  type EntityColumn,
+  type JoinClause,
+  type OrderSortKey,
 } from '@concepta/nestjs-repository';
 
-import { QueryFilterOption } from '../query-filter-option.type';
+import { type QueryFilterOption } from '../query-filter-option.type';
 
 export interface CrudQueryOptionsInterface<T extends PlainLiteralObject> {
   allow?: EntityColumn<T>[];

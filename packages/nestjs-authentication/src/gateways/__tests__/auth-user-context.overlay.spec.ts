@@ -1,8 +1,10 @@
 import { mock } from 'jest-mock-extended';
 
-import { ExecutionContext, HttpArgumentsHost } from '@nestjs/common/interfaces';
+import { type ArgumentsHost, type ExecutionContext } from '@nestjs/common';
 
 import { getAppContext } from '@concepta/nestjs-core';
+
+type HttpArgumentsHost = ReturnType<ArgumentsHost['switchToHttp']>;
 
 import {
   AuthUserCtx,

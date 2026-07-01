@@ -1,4 +1,4 @@
-import { Injectable, Type } from '@nestjs/common';
+import { Injectable, type Type } from '@nestjs/common';
 import { MetadataScanner } from '@nestjs/core';
 
 import { createCommand } from '../../../application/utils/create-operation-classes';

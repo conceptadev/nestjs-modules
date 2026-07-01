@@ -28,8 +28,8 @@ utilities**.
 - [Context System](#context-system)
 - [Exceptions](#exceptions)
 - [Event Context](#event-context)
-- [Aggregate](#aggregate-concepta-nestjs-coreaggregate-subpath)
-- [Testing](#testing-concepta-nestjs-coretesting-subpath)
+- [Aggregate](#aggregate-conceptanestjs-coreaggregate-subpath)
+- [Testing](#testing-conceptanestjs-coretesting-subpath)
 - [API Reference](#api-reference)
 
 ## Installation
@@ -513,7 +513,7 @@ const moduleRef = await Test.createTestingModule({
 | `OrSpecification` | Returns `true` if either left or right spec is satisfied. |
 | `NotSpecification` | Negates the wrapped specification. |
 
-### Context System
+### Context System Exports
 
 | Export | Description |
 | --- | --- |
@@ -526,7 +526,7 @@ const moduleRef = await Test.createTestingModule({
 | `AppContextInterface` | Interface implemented by `AppContextHost`. |
 | `AppContextLike` | Type accepted by `AppContextHost.from()` — either an `AppContextHost` or a nullish/empty plain object. |
 
-### Exceptions
+### Exceptions Exports
 
 | Export | Description |
 | --- | --- |
@@ -539,7 +539,7 @@ const moduleRef = await Test.createTestingModule({
 | `NotAnErrorException` | Wraps a non-`Error` value (e.g. a string or object) into an `Error`. Used internally by `mapNonErrorToException`. |
 | `ExceptionsFilter` | `@Catch()` filter. Translates `RuntimeException` and `HttpException` into `{ statusCode, errorCode, message, timestamp }`. |
 
-### Event Context
+### Event Context Exports
 
 | Export | Description |
 | --- | --- |
@@ -600,7 +600,6 @@ const moduleRef = await Test.createTestingModule({
 | `mapHttpStatus` | Maps an HTTP status code to its string error-code constant. |
 | `toMilliseconds` | Converts a duration string (e.g. `'1h'`) or number to milliseconds via the `ms` library. |
 | `DeepPartial<T>` | Recursive `Partial<T>`. |
-| `LiteralObject` | `Record<string, unknown>`. |
 | `DomainFactory<Creatable, Domain>` | Interface enforcing `create` and `createWithId` static factory signatures on domain aggregate classes. |
 | `AssigneeRelationInterface` | Interface for entities that hold an `assignee` relation (`{ assignee: ReferenceIdInterface }`). |
 | `ModuleOptionsSettingsInterface<T>` | Interface for module options that include a `settings` block and optional `settingsTransform`. |

@@ -1,4 +1,4 @@
-import { OnOptions } from 'eventemitter2';
+import { type OnOptions } from 'eventemitter2';
 /**
  * Interfaces defining public options object for "listen on" style events.
  */

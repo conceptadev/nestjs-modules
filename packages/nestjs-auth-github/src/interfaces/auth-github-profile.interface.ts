@@ -1,10 +1,10 @@
 import {
-  ReferenceEmailInterface,
-  ReferenceIdInterface,
-  ReferenceUsernameInterface,
+  type ReferenceEmailInterface,
+  type ReferenceIdInterface,
+  type ReferenceUsernameInterface,
 } from '@concepta/nestjs-common';
 
-import { AuthGithubEmailsInterface } from './auth-github-emails.interface';
+import { type AuthGithubEmailsInterface } from './auth-github-emails.interface';
 
 export interface AuthGithubProfileInterface
   extends

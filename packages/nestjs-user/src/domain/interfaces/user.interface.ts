@@ -1,7 +1,7 @@
 import {
-  ReferenceActiveInterface,
-  ReferenceEmailInterface,
-  ReferenceUsernameInterface,
+  type ReferenceActiveInterface,
+  type ReferenceEmailInterface,
+  type ReferenceUsernameInterface,
 } from '@concepta/nestjs-core';
 
 export interface UserInterface

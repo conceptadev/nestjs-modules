@@ -1,7 +1,7 @@
 import { mock } from 'jest-mock-extended';
 
-import { JwtPort } from '../../../../domain/ports/jwt.port';
-import { UserPort } from '../../../../domain/ports/user.port';
+import { type JwtPort } from '../../../../domain/ports/jwt.port';
+import { type UserPort } from '../../../../domain/ports/user.port';
 import { AuthenticationRefreshTokenException } from '../../../exceptions/authentication-refresh-token.exception';
 import { ValidateAndVerifyRefreshTokenQuery } from '../../impl/validate-and-verify-refresh-token.query';
 import { ValidateAndVerifyRefreshTokenHandler } from '../validate-and-verify-refresh-token.handler';

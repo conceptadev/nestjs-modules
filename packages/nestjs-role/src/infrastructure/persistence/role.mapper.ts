@@ -1,8 +1,8 @@
 import { DomainMapper } from '@concepta/nestjs-core/aggregate';
 
 import { Role } from '../../domain/aggregates/role';
-import { RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
-import { RoleInterface } from '../../domain/interfaces/role.interface';
+import { type RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
+import { type RoleInterface } from '../../domain/interfaces/role.interface';
 
 export class RoleMapper extends DomainMapper<
   RoleEntityInterface,

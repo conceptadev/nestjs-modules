@@ -1,31 +1,31 @@
 import {
   BadRequestException,
   NotFoundException,
-  PlainLiteralObject,
-  Type,
+  type PlainLiteralObject,
+  type Type,
 } from '@nestjs/common';
 import { isObject, isUndefined } from '@nestjs/common/utils/shared.utils';
 
-import { DeepPartial } from '@concepta/nestjs-core';
+import { type DeepPartial } from '@concepta/nestjs-core';
 import {
-  EntityColumn,
+  type EntityColumn,
   isWhereCondition,
-  RepositoryFindOneOptions,
-  RepositoryFindOptions,
-  RepositoryInterface,
+  type RepositoryFindOneOptions,
+  type RepositoryFindOptions,
+  type RepositoryInterface,
   Where,
-  WhereClause,
-  WhereCondition,
+  type WhereClause,
+  type WhereCondition,
 } from '@concepta/nestjs-repository';
 
-import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
-import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';
-import { CrudContextOptionsInterface } from '../interceptors/interfaces/crud-context-options.interface';
-import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
-import { CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
+import { type CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
+import { type CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';
+import { type CrudContextOptionsInterface } from '../interceptors/interfaces/crud-context-options.interface';
+import { type CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
+import { type CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
 import { SConditionConverter } from '../request/crud-scondition.converter';
-import { CrudParsedQueryInterface } from '../request/interfaces/crud-parsed-query.interface';
-import { CrudQueryOptionsInterface } from '../request/interfaces/crud-query-options.interface';
+import { type CrudParsedQueryInterface } from '../request/interfaces/crud-parsed-query.interface';
+import { type CrudQueryOptionsInterface } from '../request/interfaces/crud-query-options.interface';
 import { queryFilterIsArray } from '../utils/crud-infra.utils';
 import { sanitizeForMessage } from '../utils/validation';
 

@@ -1,35 +1,35 @@
 import { plainToInstance } from 'class-transformer';
 
-import { PlainLiteralObject } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 import { isObject } from '@nestjs/common/utils/shared.utils';
 
 import {
   AppContextHost,
-  DeepPartial,
+  type DeepPartial,
   RuntimeException,
-  HookMethodKeyType,
-  HookResolverService,
+  type HookMethodKeyType,
+  type HookResolverService,
 } from '@concepta/nestjs-core';
 
 import { RepoCtx } from '../context/interfaces/repository-context.interface';
-import { FederationOrchestrator } from '../federation/federation-orchestrator.service';
+import { type FederationOrchestrator } from '../federation/federation-orchestrator.service';
 import { RepoPermeatorFactory } from '../hooks/repo-permeator-factory';
 import { RepoHook } from '../hooks/repository-hook.decorators';
 
-import { JoinClause } from './interfaces/join-clause.interface';
-import { RepositoryMetadataInterface } from './interfaces/repository-metadata.interface';
+import { type JoinClause } from './interfaces/join-clause.interface';
+import { type RepositoryMetadataInterface } from './interfaces/repository-metadata.interface';
 import {
-  RepositoryFindOptions,
-  RepositoryFindOneOptions,
-  RepositoryCreateOptions,
-  RepositoryUpdateOptions,
-  RepositoryUpsertOptions,
-  RepositoryDeleteOptions,
-  RepositoryRestoreOptions,
+  type RepositoryFindOptions,
+  type RepositoryFindOneOptions,
+  type RepositoryCreateOptions,
+  type RepositoryUpdateOptions,
+  type RepositoryUpsertOptions,
+  type RepositoryDeleteOptions,
+  type RepositoryRestoreOptions,
 } from './interfaces/repository-options.interface';
-import { RepositoryInterface } from './interfaces/repository.interface';
+import { type RepositoryInterface } from './interfaces/repository.interface';
 import {
-  WhereClause,
+  type WhereClause,
   isWhereCondition,
   isWhereCompound,
 } from './interfaces/where-clause.interface';

@@ -1,6 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 
-import { OtpRepositoryResolverInterface } from '../domain/repositories/otp-repository-resolver.interface';
+import { type OtpRepositoryResolverInterface } from '../domain/repositories/otp-repository-resolver.interface';
 import { OtpRepository } from '../infrastructure/persistence/otp.repository';
 import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../otp.constants';
 import { OtpModule } from '../otp.module';

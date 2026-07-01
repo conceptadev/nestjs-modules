@@ -1,7 +1,7 @@
-import { HttpException, PlainLiteralObject } from '@nestjs/common';
+import { HttpException, type PlainLiteralObject } from '@nestjs/common';
 
 import { CrudQueryException } from '../../../infrastructure/exceptions/crud-query.exception';
-import { CrudCreateBatchCommand } from '../impl/crud-create-batch.command';
+import { type CrudCreateBatchCommand } from '../impl/crud-create-batch.command';
 
 import { CrudWithBodyCommandHandler } from './crud-with-body-command.handler';
 

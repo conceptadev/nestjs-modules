@@ -1,6 +1,6 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 
-import { QueryBus } from '@nestjs/cqrs';
+import { type QueryBus } from '@nestjs/cqrs';
 
 /**
  * Create a mock QueryBus for unit testing.

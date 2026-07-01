@@ -1,4 +1,4 @@
-import { OAuthParamsInterface } from '../../config/interfaces/oauth-params.interface';
+import { type OAuthParamsInterface } from '../../config/interfaces/oauth-params.interface';
 import { processOAuthParams } from '../oauth-auth-params.util';
 
 describe('processOAuthParams', () => {

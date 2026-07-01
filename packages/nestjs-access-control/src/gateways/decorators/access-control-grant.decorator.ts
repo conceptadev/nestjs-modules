@@ -1,7 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
 
 import { ACCESS_CONTROL_MODULE_GRANT_METADATA } from '../../access-control.constants';
-import { AccessControlGrantOptionInterface } from '../../domain/interfaces/access-control-grant-option.interface';
+import { type AccessControlGrantOptionInterface } from '../../domain/interfaces/access-control-grant-option.interface';
 
 /**
  * Define access control grants required for this route.

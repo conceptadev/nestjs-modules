@@ -1,5 +1,5 @@
 import { CRUD_MODULE_ROUTE_SERIALIZATION_METADATA } from '../../../crud.constants';
-import { CrudSerializationOptionsInterface } from '../../interfaces/crud-serialization-options.interface';
+import { type CrudSerializationOptionsInterface } from '../../interfaces/crud-serialization-options.interface';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,

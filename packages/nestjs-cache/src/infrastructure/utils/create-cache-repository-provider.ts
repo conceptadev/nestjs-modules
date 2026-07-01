@@ -1,15 +1,15 @@
-import { Provider, Type } from '@nestjs/common';
+import { type Provider, type Type } from '@nestjs/common';
 
 import {
   getDynamicRepositoryToken,
-  RepositoryInterface,
+  type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
 import { CACHE_CUSTOM_REPOSITORY_TOKEN } from '../../cache.constants';
-import { CacheRepositoryInterface } from '../../domain/repositories/cache-repository.interface';
+import { type CacheRepositoryInterface } from '../../domain/repositories/cache-repository.interface';
 import { CacheMapper } from '../persistence/cache.mapper';
 import { CacheRepository } from '../persistence/cache.repository';
-import { CacheEntityInterface } from '../persistence/interfaces/cache-entity.interface';
+import { type CacheEntityInterface } from '../persistence/interfaces/cache-entity.interface';
 
 export function getDynamicCacheRepositoryToken(entityKey: string): string {
   return `CACHE_REPOSITORY_${entityKey.toUpperCase()}`;

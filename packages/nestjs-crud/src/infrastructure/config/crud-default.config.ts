@@ -5,7 +5,7 @@ import {
   CRUD_MODULE_DEFAULT_TRANSFORM_OPTIONS,
 } from '../../crud.constants';
 
-import { CrudModuleSettingsInterface } from './interfaces/crud-module-settings.interface';
+import { type CrudModuleSettingsInterface } from './interfaces/crud-module-settings.interface';
 
 /**
  * Default configuration for crud.

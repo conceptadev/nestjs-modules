@@ -1,6 +1,6 @@
-import { ReferenceIdInterface } from '@concepta/nestjs-core';
+import { type ReferenceIdInterface } from '@concepta/nestjs-core';
 
-import { RoleRelationInterface } from './role-relation.interface';
+import { type RoleRelationInterface } from './role-relation.interface';
 
 export interface RoleAssigneesInterface<
   T extends ReferenceIdInterface & RoleRelationInterface =

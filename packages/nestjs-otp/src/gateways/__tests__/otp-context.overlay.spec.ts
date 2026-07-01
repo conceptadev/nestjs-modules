@@ -1,7 +1,7 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 
-import { ExecutionContext } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { type ExecutionContext } from '@nestjs/common';
+import { type Reflector } from '@nestjs/core';
 
 import { getAppContext } from '@concepta/nestjs-core';
 

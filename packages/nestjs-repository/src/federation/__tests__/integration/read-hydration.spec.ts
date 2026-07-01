@@ -15,9 +15,9 @@
  */
 import { WhereOperator } from '../../../repository/repository.types';
 import {
-  TestRoot,
-  TestRelation,
-  TestProfile,
+  type TestRoot,
+  type TestRelation,
+  type TestProfile,
   createSingleEntitySet,
   createMinimalRootRelationSet,
   createMultiRelationSet,

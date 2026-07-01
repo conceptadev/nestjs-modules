@@ -1,11 +1,11 @@
-import { Provider } from '@nestjs/common';
+import { type Provider } from '@nestjs/common';
 
 import { JwtStrategyPolicy } from '../../domain/policies/jwt-strategy.policy';
 import {
   authenticationDefaultConfig,
-  AuthenticationModuleDefaultsInterface,
+  type AuthenticationModuleDefaultsInterface,
 } from '../config/authentication-default.config';
-import { AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
 
 export function createJwtStrategyPolicyProvider(
   rawOptionsToken: symbol,

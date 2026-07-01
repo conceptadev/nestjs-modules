@@ -1,4 +1,4 @@
-import { SpecificationInterface } from '@concepta/nestjs-core';
+import { type SpecificationInterface } from '@concepta/nestjs-core';
 
 import { EntitySpecification } from './entity.specification';
 

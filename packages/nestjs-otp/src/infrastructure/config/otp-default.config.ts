@@ -4,7 +4,7 @@ import { OTP_MODULE_DEFAULT_SETTINGS_TOKEN } from '../../otp.constants';
 import { uuidGeneratorUtil } from '../utils/uuid-generator.util';
 import { uuidValidatorUtil } from '../utils/uuid-validator.util';
 
-import { OtpSettingsInterface } from './interfaces/otp-settings.interface';
+import { type OtpSettingsInterface } from './interfaces/otp-settings.interface';
 
 /**
  * Default configuration for Otp module.

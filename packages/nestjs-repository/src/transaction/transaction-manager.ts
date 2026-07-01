@@ -1,8 +1,8 @@
 import { Logger } from '@nestjs/common';
 
-import { TransactionManagerInterface } from './interfaces/transaction-manager.interface';
-import { TransactionInterface } from './interfaces/transaction.interface';
-import { TransactionFactoryRegistry } from './transaction-factory-registry';
+import { type TransactionManagerInterface } from './interfaces/transaction-manager.interface';
+import { type TransactionInterface } from './interfaces/transaction.interface';
+import { type TransactionFactoryRegistry } from './transaction-factory-registry';
 
 /**
  * Runtime manager holding active transactions.
