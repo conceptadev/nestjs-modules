@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "strict": true,
+    "isolatedModules": true,
     "removeComments": false,
     "baseUrl": ".",
     "paths": {

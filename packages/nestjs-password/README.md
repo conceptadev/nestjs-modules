@@ -7,7 +7,7 @@ checking via four domain services and a configurable policy.
 ## Project
 
 [![NPM Latest](https://img.shields.io/npm/v/@concepta/nestjs-password)](https://www.npmjs.com/package/@concepta/nestjs-password)
-[![NPM Downloads](https://img.shields.io/npm/dw/@conceptadev/nestjs-password)](https://www.npmjs.com/package/@concepta/nestjs-password)
+[![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-password)](https://www.npmjs.com/package/@concepta/nestjs-password)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
 [![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
@@ -47,7 +47,7 @@ yarn add @concepta/nestjs-password
 ### Synchronous
 
 ```ts
-import { PasswordModule } from '@concepta/nestjs-password';
+import { PasswordModule, PasswordStrengthEnum } from '@concepta/nestjs-password';
 
 @Module({
   imports: [
@@ -65,6 +65,8 @@ export class AppModule {}
 ### Asynchronous
 
 ```ts
+import { PasswordModule, PasswordStrengthEnum } from '@concepta/nestjs-password';
+
 @Module({
   imports: [
     PasswordModule.registerAsync({
@@ -188,8 +190,8 @@ import { CommandBus } from '@nestjs/cqrs';
 import {
   CreatePasswordCommand,
   ValidatePasswordCommand,
+  PasswordStorageInterface,
 } from '@concepta/nestjs-password';
-import { PasswordStorageInterface } from '@concepta/nestjs-core';
 
 // Create a hashed password
 const storage = await this.commandBus.execute<

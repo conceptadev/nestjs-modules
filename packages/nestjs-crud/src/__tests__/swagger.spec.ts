@@ -7,13 +7,11 @@ import {
   type OpenAPIObject,
   SwaggerModule,
 } from '@nestjs/swagger';
-import {
-  type OperationObject,
-  type ParameterObject,
-} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { Test } from '@nestjs/testing';
 
 import { CrudModule } from '../crud.module';
+
+import { type OperationObject, type ParameterObject } from './openapi-types';
 
 import { PhotoPaginatedDtoFixture } from '../__fixtures__/photo/dto/photo-paginated.dto.fixture';
 import { PhotoDtoFixture } from '../__fixtures__/photo/dto/photo.dto.fixture';

@@ -1,10 +1,15 @@
 import { AccessControl } from 'accesscontrol';
 import { mock } from 'jest-mock-extended';
 
-import { Controller } from '@nestjs/common';
-import { ExecutionContext, HttpArgumentsHost } from '@nestjs/common/interfaces';
+import {
+  type ArgumentsHost,
+  Controller,
+  type ExecutionContext,
+} from '@nestjs/common';
 
-import { ActionEnum } from '@concepta/nestjs-common';
+type HttpArgumentsHost = ReturnType<ArgumentsHost['switchToHttp']>;
+
+import { ActionEnum } from '@concepta/nestjs-core';
 
 import { AccessControlReadOne } from '../gateways/decorators/access-control-read-one.decorator';
 

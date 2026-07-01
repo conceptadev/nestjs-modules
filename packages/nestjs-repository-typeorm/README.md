@@ -35,12 +35,10 @@ yarn add @concepta/nestjs-repository-typeorm
 
 | Package | Notes |
 | --- | --- |
-| `@concepta/nestjs-core` | Core interfaces and utilities |
-| `@concepta/nestjs-core` | Hook system for repository lifecycle events |
+| `@concepta/nestjs-core` | Core interfaces, utilities, and hook system |
 | `@concepta/nestjs-repository` | Abstract repository layer (`RepositoryAdapter`) |
 | `@nestjs/common` | NestJS core |
 | `@nestjs/typeorm` | TypeORM integration for NestJS |
-| `zod` | Schema validation for find options |
 
 ### Peer Dependencies
 
@@ -385,26 +383,14 @@ export class OrderEntity extends CommonPostgresEntity {
 This gives `OrderEntity` the `id`, `dateCreated`, `dateUpdated`,
 `dateDeleted`, and `version` fields automatically.
 
-### Domain-Specific Entities
-
-The module exports pre-built entities for common domain models. Each has
-Postgres and SQLite variants:
-
-- Org: `OrgPostgresEntity`, `OrgSqliteEntity`
-- Org Member: `OrgMemberPostgresEntity`, `OrgMemberSqliteEntity`
-- Org Profile: `OrgProfilePostgresEntity`, `OrgProfileSqliteEntity`
-- Report: `ReportPostgresEntity`, `ReportSqliteEntity`
-- File: `FilePostgresEntity`, `FileSqliteEntity`
-
 ## Exceptions
 
-| Exception | Description |
-| --- | --- |
-| `TypeOrmEntityNameException` | Entity name cannot be resolved from TypeORM repository metadata |
-| `RepositoryQueryException` | Repository query error (wraps original error) |
+| Exception | Package | Description |
+| --- | --- | --- |
+| `RepositoryQueryException` | `@concepta/nestjs-repository` | Repository query error (wraps original error) |
 
 ## Entry Points
 
 | Import Path | Contents |
 | --- | --- |
-| `@concepta/nestjs-repository-typeorm` | `TypeOrmRepositoryModule`, `TypeOrmRepository`, `TypeOrmTransaction`, `TypeOrmTransactionFactory`, base entities (Postgres + SQLite), exceptions |
+| `@concepta/nestjs-repository-typeorm` | `TypeOrmRepositoryModule`, `TypeOrmRepository`, `TypeOrmProviderOptionsInterface`, `TypeOrmTransaction`, `TypeOrmTransactionFactory`, `AuditPostgresEntity`, `AuditSqlLiteEntity`, `CommonPostgresEntity`, `CommonSqliteEntity` |

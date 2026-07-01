@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { CqrsModule, QueryBus } from '@nestjs/cqrs';
 
-import { createSettingsProvider } from '@concepta/nestjs-common';
+import { createSettingsProvider } from '@concepta/nestjs-core';
 
 import {
   ACCESS_CONTROL_MODULE_SETTINGS_TOKEN,

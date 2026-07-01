@@ -8,19 +8,11 @@ export const swagger = safeRequire('@nestjs/swagger', () =>
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   require('@nestjs/swagger'),
 );
-export const swaggerConst = safeRequire('@nestjs/swagger/dist/constants', () =>
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require('@nestjs/swagger/dist/constants'),
-);
-export const swaggerPkgJson = safeRequire('@nestjs/swagger/package.json', () =>
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require('@nestjs/swagger/package.json'),
-);
 
 export class Swagger {
   static createQueryParamsMeta(operation: Operation.List | Operation.Read) {
     /* istanbul ignore if */
-    if (!swaggerConst) {
+    if (!swagger) {
       return [];
     }
 
@@ -37,219 +29,105 @@ export class Swagger {
       cache,
       includeDeleted,
     } = Swagger.getQueryParamsNames();
-    const oldVersion = Swagger.getSwaggerVersion() < 4;
     const docsLink = `<a href="https://www.npmjs.com/package/@concepta/nestjs-crud#query-string-parameters" target="_blank">Docs</a>`;
 
-    const fieldsMetaBase = {
+    const fieldsMeta = {
       name: fields,
       description: `Selects resource fields. ${docsLink}`,
       required: false,
       in: 'query',
+      schema: { type: 'array', items: { type: 'string' } },
+      style: 'form',
+      explode: false,
     };
-    const fieldsMeta = oldVersion
-      ? /* istanbul ignore next */ {
-          ...fieldsMetaBase,
-          type: 'array',
-          items: {
-            type: 'string',
-          },
-          collectionFormat: 'csv',
-        }
-      : {
-          ...fieldsMetaBase,
-          schema: {
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          style: 'form',
-          explode: false,
-        };
 
-    const searchMetaBase = {
+    const searchMeta = {
       name: search,
       description: `Adds search condition. ${docsLink}`,
       required: false,
       in: 'query',
+      schema: { type: 'string' },
     };
-    const searchMeta = oldVersion
-      ? /* istanbul ignore next */ { ...searchMetaBase, type: 'string' }
-      : { ...searchMetaBase, schema: { type: 'string' } };
 
-    const filterMetaBase = {
+    const filterMeta = {
       name: filter,
       description: `Adds filter condition. ${docsLink}`,
       required: false,
       in: 'query',
+      schema: { type: 'array', items: { type: 'string' } },
+      style: 'form',
+      explode: true,
     };
-    const filterMeta = oldVersion
-      ? /* istanbul ignore next */ {
-          ...filterMetaBase,
-          items: {
-            type: 'string',
-          },
-          type: 'array',
-          collectionFormat: 'multi',
-        }
-      : {
-          ...filterMetaBase,
-          schema: {
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          style: 'form',
-          explode: true,
-        };
 
-    const orMetaBase = {
+    const orMeta = {
       name: or,
       description: `Adds OR condition. ${docsLink}`,
       required: false,
       in: 'query',
+      schema: { type: 'array', items: { type: 'string' } },
+      style: 'form',
+      explode: true,
     };
-    const orMeta = oldVersion
-      ? /* istanbul ignore next */ {
-          ...orMetaBase,
-          items: {
-            type: 'string',
-          },
-          type: 'array',
-          collectionFormat: 'multi',
-        }
-      : {
-          ...orMetaBase,
-          schema: {
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          style: 'form',
-          explode: true,
-        };
 
-    const sortMetaBase = {
+    const sortMeta = {
       name: sort,
       description: `Adds sort by field. ${docsLink}`,
       required: false,
       in: 'query',
+      schema: { type: 'array', items: { type: 'string' } },
+      style: 'form',
+      explode: true,
     };
-    const sortMeta = oldVersion
-      ? /* istanbul ignore next */ {
-          ...sortMetaBase,
-          items: {
-            type: 'string',
-          },
-          type: 'array',
-          collectionFormat: 'multi',
-        }
-      : {
-          ...sortMetaBase,
-          schema: {
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          style: 'form',
-          explode: true,
-        };
 
-    const joinMetaBase = {
+    const joinMeta = {
       name: join,
       description: `Adds relational resources. ${docsLink}`,
       required: false,
       in: 'query',
+      schema: { type: 'array', items: { type: 'string' } },
+      style: 'form',
+      explode: true,
     };
-    const joinMeta = oldVersion
-      ? /* istanbul ignore next */ {
-          ...joinMetaBase,
-          items: {
-            type: 'string',
-          },
-          type: 'array',
-          collectionFormat: 'multi',
-        }
-      : {
-          ...joinMetaBase,
-          schema: {
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          style: 'form',
-          explode: true,
-        };
 
-    const limitMetaBase = {
+    const limitMeta = {
       name: limit,
       description: `Limit amount of resources. ${docsLink}`,
       required: false,
       in: 'query',
+      schema: { type: 'integer' },
     };
-    const limitMeta = oldVersion
-      ? /* istanbul ignore next */ { ...limitMetaBase, type: 'integer' }
-      : { ...limitMetaBase, schema: { type: 'integer' } };
 
-    const offsetMetaBase = {
+    const offsetMeta = {
       name: offset,
       description: `Offset amount of resources. ${docsLink}`,
       required: false,
       in: 'query',
+      schema: { type: 'integer' },
     };
-    const offsetMeta = oldVersion
-      ? /* istanbul ignore next */ { ...offsetMetaBase, type: 'integer' }
-      : { ...offsetMetaBase, schema: { type: 'integer' } };
 
-    const pageMetaBase = {
+    const pageMeta = {
       name: page,
       description: `Page portion of resources. ${docsLink}`,
       required: false,
       in: 'query',
+      schema: { type: 'integer' },
     };
-    const pageMeta = oldVersion
-      ? /* istanbul ignore next */ { ...pageMetaBase, type: 'integer' }
-      : { ...pageMetaBase, schema: { type: 'integer' } };
 
-    const cacheMetaBase = {
+    const cacheMeta = {
       name: cache,
       description: `Reset cache (if was enabled). ${docsLink}`,
       required: false,
       in: 'query',
+      schema: { type: 'integer', minimum: 0, maximum: 1 },
     };
-    const cacheMeta = oldVersion
-      ? /* istanbul ignore next */ {
-          ...cacheMetaBase,
-          type: 'integer',
-          minimum: 0,
-          maximum: 1,
-        }
-      : {
-          ...cacheMetaBase,
-          schema: { type: 'integer', minimum: 0, maximum: 1 },
-        };
 
-    const includeDeletedMetaBase = {
+    const includeDeletedMeta = {
       name: includeDeleted,
       description: `Include deleted. ${docsLink}`,
       required: false,
       in: 'query',
+      schema: { type: 'integer', minimum: 0, maximum: 1 },
     };
-    const includeDeletedMeta = oldVersion
-      ? /* istanbul ignore next */ {
-          ...includeDeletedMetaBase,
-          type: 'integer',
-          minimum: 0,
-          maximum: 1,
-        }
-      : {
-          ...includeDeletedMetaBase,
-          schema: { type: 'integer', minimum: 0, maximum: 1 },
-        };
 
     switch (operation) {
       case Operation.List:
@@ -298,11 +176,5 @@ export class Swagger {
       cache: name('cache'),
       includeDeleted: name('includeDeleted'),
     };
-  }
-
-  private static getSwaggerVersion(): number {
-    if (!swaggerPkgJson) return 3;
-    const major = parseInt(swaggerPkgJson.version.split('.')[0], 10);
-    return isNaN(major) ? 3 : major;
   }
 }

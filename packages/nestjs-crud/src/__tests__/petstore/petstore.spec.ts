@@ -7,14 +7,14 @@ import {
   type OpenAPIObject,
   SwaggerModule,
 } from '@nestjs/swagger';
+import { Test } from '@nestjs/testing';
+
+import { CrudModule } from '../../crud.module';
 import {
   type OperationObject,
   type ParameterObject,
   type SchemaObject,
-} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
-import { Test } from '@nestjs/testing';
-
-import { CrudModule } from '../../crud.module';
+} from '../openapi-types';
 
 import { PetController } from './controllers/pet.controller';
 import { StoreController } from './controllers/store.controller';

@@ -40,9 +40,8 @@ yarn add @concepta/nestjs-crud
 
 | Package | Notes |
 | --- | --- |
-| `@concepta/nestjs-core` | Core interfaces and utilities |
+| `@concepta/nestjs-core` | Core interfaces, utilities, and hook system |
 | `@concepta/nestjs-repository` | Repository abstraction layer |
-| `@concepta/nestjs-core` | Hook system integration |
 | `@nestjs/common` | NestJS core |
 | `@nestjs/core` | Module reference and reflection |
 | `@nestjs/swagger` | OpenAPI decorator support |
@@ -603,7 +602,7 @@ via `CrudQueryParser`.
 
 ### Multiple Filters
 
-```
+```text
 GET /photos?filter[0]=status||$eq||active&filter[1]=views||$gt||100
 ```
 
@@ -611,7 +610,7 @@ GET /photos?filter[0]=status||$eq||active&filter[1]=views||$gt||100
 
 Use dot notation to filter by related entity fields:
 
-```
+```text
 GET /photos?filter=author.name||$eq||Alice
 ```
 

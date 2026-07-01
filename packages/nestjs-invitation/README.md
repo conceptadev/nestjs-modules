@@ -6,7 +6,7 @@ event-driven lifecycle management.
 ## Project
 
 [![NPM Latest](https://img.shields.io/npm/v/@concepta/nestjs-invitation)](https://www.npmjs.com/package/@concepta/nestjs-invitation)
-[![NPM Downloads](https://img.shields.io/npm/dw/@conceptadev/nestjs-invitation)](https://www.npmjs.com/package/@concepta/nestjs-invitation)
+[![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-invitation)](https://www.npmjs.com/package/@concepta/nestjs-invitation)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
 [![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
@@ -33,6 +33,7 @@ event-driven lifecycle management.
 ## Provided Features
 
 ### Invitation Lifecycle
+
 - Create invitation by user ID (with explicit code)
 - Create invitation by email address (auto-generates code, resolves user)
 - Send/resend invitation email (with OTP passcode generation)
@@ -41,6 +42,7 @@ event-driven lifecycle management.
 - Remove (hard delete) an invitation
 
 ### OTP Integration
+
 - Auto-create OTP on invitation send
 - Consume OTP on acceptance (single-use)
 - Clear all OTPs for a user+category on revocation
@@ -50,19 +52,24 @@ event-driven lifecycle management.
 - Optional rate limiting (rateSeconds + rateThreshold)
 
 ### Email Delivery
+
 - Send invitation email with passcode and expiration
 - Send acceptance confirmation email
 - Handlebars template support with configurable templates
 - Configurable sender address and base URL
 
 ### User Resolution
+
 - Look up user by ID
 - Look up user by email address
 
 ### Event-Driven Architecture
+
 - `InvitationCreatedEvent` -- fired on creation
-- `InvitationDispatchedEvent` -- fired when email should be sent (carries OTP metadata)
-- `InvitationAcceptedEvent` -- fired on acceptance (carries optional payload for downstream listeners)
+- `InvitationDispatchedEvent` -- fired when email should be sent
+  (carries OTP metadata)
+- `InvitationAcceptedEvent` -- fired on acceptance
+  (carries optional payload for downstream listeners)
 - `InvitationRevokedEvent` -- fired on revocation
 - `InvitationRemovedEvent` -- fired on deletion
 - Auto-send email on dispatch via `InvitationDispatchedListener`
@@ -70,10 +77,12 @@ event-driven lifecycle management.
 - Auto-clear OTPs on revocation via `InvitationRevokedListener`
 
 ### Auto-Revocation
+
 - On acceptance: automatically revoke all sibling invitations (same user+category)
 - On revocation: automatically clear associated OTPs
 
-### HTTP Gateway
+### HTTP Gateway Overview
+
 - Create invitation endpoint (by user ID)
 - Create invitation endpoint (by email)
 - Send/resend invitation endpoint
@@ -83,6 +92,7 @@ event-driven lifecycle management.
 - Read single invitation
 
 ### Repository
+
 - Get invitation by ID
 - Find invitation by code
 - Find all invitations by user+category
@@ -91,10 +101,12 @@ event-driven lifecycle management.
 - Batch remove invitations
 - Domain-to-persistence mapping via `InvitationMapper`
 
-### Seeding
+### Seeding Overview
+
 - `InvitationFactory` for generating test invitation entities
 
 ### Configurable Settings
+
 - Email: sender address, base URL, invitation template, accepted template
 - OTP: namespace, type, expiration, clear-on-create, rate limiting
 
@@ -270,6 +282,7 @@ commands/queries through the NestJS CQRS bus.
 ### InvitationOtpPort
 
 Settings:
+
 ```ts
 interface InvitationOtpPortSettings {
   createCommand: Type<CreateOtpCommandInterface>;
@@ -289,6 +302,7 @@ interface InvitationOtpPortSettings {
 ### InvitationUserPort
 
 Settings:
+
 ```ts
 interface InvitationUserPortSettings {
   getByIdQuery: Type<GetUserByIdQueryInterface>;
@@ -301,7 +315,8 @@ interface InvitationUserPortSettings {
 | `getById` | `(ctx, userId)` | Fetch user by ID |
 | `getByEmail` | `(ctx, email)` | Fetch user by email |
 
-Returns `InvitationUserResult = (ReferenceIdInterface & InvitationUserInterface) | null`.
+Returns
+`InvitationUserResult = (ReferenceIdInterface & InvitationUserInterface) | null`.
 
 ### InvitationNotificationPort
 
@@ -311,6 +326,7 @@ decides the transport (email, SMS, push, etc.) and resolves any address/template
 config from its own module settings.
 
 Settings:
+
 ```ts
 interface InvitationNotificationPortSettings {
   sendInvitationCommand: Type<SendInvitationNotificationCommandInterface>;
@@ -319,6 +335,7 @@ interface InvitationNotificationPortSettings {
 ```
 
 Command interfaces (transport-agnostic — no email fields):
+
 ```ts
 interface SendInvitationNotificationCommandInterface {
   ctx: PlainLiteralObject;
@@ -352,7 +369,6 @@ Behavioral configuration for OTP handling.
 | `clearOtpOnCreate` | `boolean` | Clear existing OTPs before creating |
 | `rateSeconds` | `number` | Rate limit window in seconds |
 | `rateThreshold` | `number` | Max creations in rate window |
-
 
 ## Commands
 
@@ -548,12 +564,9 @@ export class InvitationFeatureModule {}
 
 An `InvitationFactory` is available for test seeding:
 
-```ts
-import { InvitationFactory } from '@concepta/nestjs-invitation';
-```
-
-The factory generates random `code` and `category` values using `crypto.randomUUID()`
-and `faker.person.jobType()`.
+The `InvitationFactory` class is available for test seeding in the package's
+`src/seeding/invitation.factory.ts` source. It generates random `code` and
+`category` values using `crypto.randomUUID()` and `faker.person.jobType()`.
 
 ## Default Configuration
 

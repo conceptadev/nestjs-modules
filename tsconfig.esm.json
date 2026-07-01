@@ -1,7 +1,6 @@
 {
   "files": [],
   "references": [
-    { "path": "packages/nestjs-common/tsconfig.esm.json" },
     { "path": "packages/nestjs-core/tsconfig.esm.json" },
     { "path": "packages/nestjs-repository/tsconfig.esm.json" },
     { "path": "packages/nestjs-repository-typeorm/tsconfig.esm.json" },

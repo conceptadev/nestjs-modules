@@ -4,14 +4,24 @@
   "license": "BSD-3-Clause",
   "private": true,
   "engines": {
-    "node": ">=20.0.0",
+    "node": ">=22.12.0",
     "yarn": ">=4.0.0"
   },
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
-  },
+  "workspaces": [
+    "packages/nestjs-core",
+    "packages/nestjs-repository",
+    "packages/nestjs-repository-typeorm",
+    "packages/nestjs-crud",
+    "packages/nestjs-cache",
+    "packages/nestjs-otp",
+    "packages/nestjs-role",
+    "packages/nestjs-password",
+    "packages/nestjs-user",
+    "packages/nestjs-invitation",
+    "packages/nestjs-federated",
+    "packages/nestjs-authentication",
+    "packages/nestjs-access-control"
+  ],
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
@@ -19,9 +29,10 @@
     "@concepta/prettier-config": "2.0.0-alpha.4",
     "@darraghor/eslint-plugin-nestjs-typed": "^6.9.3",
     "@eslint/js": "^9.39.1",
-    "@nestjs/cli": "^11.0.10",
-    "@nestjs/schematics": "^11.0.9",
-    "@nestjs/testing": "^11.1.9",
+    "@nestjs/cli": "12.0.0-alpha.6",
+    "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/schematics": "12.0.0-alpha.9",
+    "@nestjs/testing": "12.0.0-alpha.5",
     "@types/express": "^4.17.21",
     "@types/jest": "^27.5.2",
     "@types/node": "^20.19.25",
@@ -62,7 +73,7 @@
   "scripts": {
     "postinstall": "husky install",
     "clean": "./node_modules/.bin/rimraf packages/*/dist packages/*/tsconfig*.tsbuildinfo docs",
-    "build:cjs": "./node_modules/.bin/tsc -b ./packages/nestjs-common/ ./packages/nestjs-core/ ./packages/nestjs-repository ./packages/nestjs-repository-typeorm/ ./packages/nestjs-crud/ ./packages/nestjs-otp/ ./packages/nestjs-cache/ ./packages/nestjs-role ./packages/nestjs-password ./packages/nestjs-user/ ./packages/nestjs-invitation/ ./packages/nestjs-federated/ ./packages/nestjs-authentication/ ./packages/nestjs-access-control/",
+    "build:cjs": "./node_modules/.bin/tsc -b ./packages/nestjs-core/ ./packages/nestjs-repository ./packages/nestjs-repository-typeorm/ ./packages/nestjs-crud/ ./packages/nestjs-otp/ ./packages/nestjs-cache/ ./packages/nestjs-role ./packages/nestjs-password ./packages/nestjs-user/ ./packages/nestjs-invitation/ ./packages/nestjs-federated/ ./packages/nestjs-authentication/ ./packages/nestjs-access-control/",
     "build:esm": "./node_modules/.bin/tsc -b ./tsconfig.esm.json && node ./scripts/add-esm-extensions.cjs",
     "build": "yarn build:cjs && yarn build:esm && node ./scripts/inject-pkg-type.cjs",
     "prepublish": "yarn clean && yarn build",
@@ -76,7 +87,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:ci": "yarn test:cov --ci --reporters=default --reporters=jest-junit",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./jest.config-e2e.json --testTimeout 30000",
     "test:all": "yarn test && yarn test:e2e",
     "smoke:cjs": "node ./scripts/smoke-test-cjs.cjs",

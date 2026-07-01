@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 
-import { ActionEnum } from '@concepta/nestjs-common';
+import { ActionEnum } from '@concepta/nestjs-core';
 
 import { ACCESS_CONTROL_MODULE_GRANT_METADATA } from '../../access-control.constants';
 

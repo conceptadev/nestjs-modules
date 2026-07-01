@@ -1,13 +1,17 @@
 import { AccessControl } from 'accesscontrol';
 import { mock } from 'jest-mock-extended';
 
-import { Controller, ExecutionContext, Injectable } from '@nestjs/common';
-import { HttpArgumentsHost } from '@nestjs/common/interfaces';
+import {
+  type ArgumentsHost,
+  Controller,
+  ExecutionContext,
+  Injectable,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { QueryBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ActionEnum } from '@concepta/nestjs-common';
+import { ActionEnum } from '@concepta/nestjs-core';
 
 import {
   ACCESS_CONTROL_MODULE_QUERY_METADATA,
@@ -30,6 +34,8 @@ import { AccessControlService } from '../../../infrastructure/services/access-co
 import { CheckAccessQuery } from '../impl/check-access.query';
 
 import { CheckAccessHandler } from './check-access.handler';
+
+type HttpArgumentsHost = ReturnType<ArgumentsHost['switchToHttp']>;
 
 describe(CheckAccessHandler.name, () => {
   const resourceNoAccess = 'protected_resource_no_access';

@@ -19,10 +19,10 @@
   "dependencies": {
     "@concepta/nestjs-core": "^8.0.0-alpha.7",
     "@concepta/nestjs-repository": "8.0.0-alpha.7",
-    "@nestjs/common": "^11.1.9",
-    "@nestjs/config": "^4.0.2",
-    "@nestjs/core": "^11.1.9",
-    "@nestjs/swagger": "11.2.2",
+    "@nestjs/common": "12.0.0-alpha.5",
+    "@nestjs/config": "12.0.0-next.0",
+    "@nestjs/core": "12.0.0-alpha.5",
+    "@nestjs/swagger": "12.0.0-alpha.2",
     "deepmerge": "^3.2.0",
     "qs": "^6.14.0"
   },
@@ -31,7 +31,7 @@
     "@concepta/typeorm-seeding": "^4.0.0",
     "@faker-js/faker": "^8.4.1",
     "@nestjs/cqrs": "^11.0.0",
-    "@nestjs/testing": "^11.1.9",
+    "@nestjs/testing": "12.0.0-alpha.5",
     "@nestjs/typeorm": "^11.0.0",
     "jest-extended": "^7.0.0",
     "jest-mock-extended": "^4.0.0",

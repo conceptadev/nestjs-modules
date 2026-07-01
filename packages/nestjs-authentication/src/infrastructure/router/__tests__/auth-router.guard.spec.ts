@@ -1,7 +1,10 @@
 import { mock } from 'jest-mock-extended';
 
-import { type ExecutionContext, type CanActivate } from '@nestjs/common';
-import { type HttpArgumentsHost } from '@nestjs/common/interfaces';
+import {
+  type ArgumentsHost,
+  type CanActivate,
+  type ExecutionContext,
+} from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 
 import { AuthRouterGuards } from '../auth-router.constants';
@@ -11,6 +14,8 @@ import { AuthRouterConfigNotAvailableException } from '../exceptions/auth-router
 import { AuthRouterGuardInvalidException } from '../exceptions/auth-router-guard-invalid.exception';
 import { AuthRouterProviderMissingException } from '../exceptions/auth-router-provider-missing.exception';
 import { AuthRouterProviderNotSupportedException } from '../exceptions/auth-router-provider-not-supported.exception';
+
+type HttpArgumentsHost = ReturnType<ArgumentsHost['switchToHttp']>;
 
 // Mock guard classes for testing
 class MockSuccessGuard implements CanActivate {

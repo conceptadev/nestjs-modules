@@ -42,7 +42,6 @@ yarn add @concepta/nestjs-user
 | `@concepta/nestjs-core` | Core interfaces, event context, and utilities |
 | `@concepta/nestjs-repository` | Repository abstraction and transaction scope |
 | `@concepta/nestjs-password` | Password hashing and validation |
-| `@concepta/nestjs-event` | Event dispatch/listener utilities |
 | `@nestjs/cqrs` | CQRS command/query/event bus |
 | `@nestjs/swagger` | OpenAPI decorator support |
 

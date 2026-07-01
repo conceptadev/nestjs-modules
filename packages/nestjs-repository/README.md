@@ -40,8 +40,7 @@ yarn add @concepta/nestjs-repository
 
 | Package | Notes |
 | --- | --- |
-| `@concepta/nestjs-core` | Core interfaces and utilities |
-| `@concepta/nestjs-core` | Hook system for repository lifecycle events |
+| `@concepta/nestjs-core` | Core interfaces, hook system, and utilities |
 | `@nestjs/common` | NestJS core |
 | `@nestjs/core` | Reflector for metadata |
 
@@ -494,7 +493,7 @@ The `OrderBy` helper builds ORM-agnostic
 `OrderClause` arrays that `RepositoryAdapter` implementations translate
 into driver-specific sort options.
 
-### Static API
+### Static OrderBy API
 
 Pass the entity type as a generic parameter on each call:
 
@@ -515,7 +514,7 @@ const users = await userRepo.find(
 );
 ```
 
-### Typed Builder API
+### Typed OrderBy Builder API
 
 Bind the entity type once with `OrderBy.for<Entity>()`. All subsequent calls
 type-check field names against the entity:
@@ -553,7 +552,7 @@ const users = await userRepo.findAndCount({
 | `asc(field)` | Ascending sort |
 | `desc(field)` | Descending sort |
 
-### Utility Methods
+### OrderBy Utility Methods
 
 | Method | Description |
 | --- | --- |
@@ -637,7 +636,7 @@ export class OrderService {
       await inventoryRepo.update(order.itemId, { reserved: true });
 
       // Register post-commit callback
-      trx.onCommit(ctx, () => {
+      trx.trx.onCommit(() => {
         // Send confirmation email after successful commit
       });
 
@@ -681,8 +680,8 @@ export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
 
       await orderRepo.save(ctx, order);
 
-      trx.onCommit(ctx, () => order.commit());     // publish domain events
-      trx.onRollback(ctx, () => order.uncommit());  // discard domain events
+      trx.trx.onCommit(() => order.commit());     // publish domain events
+      trx.trx.onRollback(() => order.uncommit());  // discard domain events
 
       return order;
     });
@@ -870,9 +869,9 @@ export class AuditHook {
 Use specifications to restrict a hook to specific entities:
 
 ```ts
-import { Spec } from '@concepta/nestjs-core';
+import { RepoHook, RepoSpec, AfterCreate } from '@concepta/nestjs-repository';
 
-@RepoHook(Spec.entity('User'))
+@RepoHook(RepoSpec.isEntity('User'))
 export class UserOnlyHook {
   @AfterCreate()
   notifyUserCreated(result, ctx) {
@@ -939,6 +938,7 @@ root entity and each relation instead of using SQL JOINs. Results are
 hydrated together transparently.
 
 This is useful when:
+
 - JOINs produce expensive Cartesian products
 - Relations live in different datasources
 - Precise pagination control is needed (JOINs inflate row counts)

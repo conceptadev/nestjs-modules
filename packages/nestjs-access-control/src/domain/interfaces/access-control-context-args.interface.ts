@@ -2,9 +2,8 @@ import { type AccessControl, type IQueryInfo } from 'accesscontrol';
 
 import { type ExecutionContext } from '@nestjs/common';
 
-import { type ReferenceUserInterface } from '@concepta/nestjs-common';
-
-export interface AccessControlContextArgsInterface extends ReferenceUserInterface<unknown> {
+export interface AccessControlContextArgsInterface {
+  user: unknown;
   request: unknown;
   query: IQueryInfo;
   accessControl: AccessControl;
