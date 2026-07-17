@@ -12,6 +12,9 @@ export {
   CrudControllerClassOptionsInterface,
   CrudControllerOptionsInterface,
 } from './infrastructure/interfaces/crud-controller-options.interface';
+export type { CrudRequestConfig } from './infrastructure/request/interfaces/crud-request-config.interface';
+export type { CrudResponseConfig } from './infrastructure/request/interfaces/crud-response-config.interface';
+export type { CrudParamOptionInterface } from './infrastructure/interfaces/crud-param-option.interface';
 
 export { CrudAdapter } from './infrastructure/adapters/crud.adapter';
 
@@ -139,3 +142,10 @@ export { CrudReplaceHandler } from './application/commands/handlers/crud-replace
 export { CrudDeleteHandler } from './application/commands/handlers/crud-delete.handler';
 export { CrudSoftDeleteHandler } from './application/commands/handlers/crud-soft-delete.handler';
 export { CrudRestoreHandler } from './application/commands/handlers/crud-restore.handler';
+
+// Base handler classes (decorator names `CrudCommandHandler` / `CrudQueryHandler`
+// are already used above — export bases under distinct aliases for consumers).
+export { CrudCommandHandler as CrudCommandHandlerBase } from './application/commands/handlers/crud-command.handler';
+export { CrudQueryHandler as CrudQueryHandlerBase } from './application/queries/handlers/crud-query.handler';
+export type { CrudCommandInterface } from './application/commands/interfaces/crud-command.interface';
+export type { CrudQueryInterface } from './application/queries/interfaces/crud-query.interface';
