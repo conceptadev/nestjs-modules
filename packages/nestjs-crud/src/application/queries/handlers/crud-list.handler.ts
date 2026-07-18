@@ -4,11 +4,11 @@ import { type CrudResponsePaginatedInterface } from '../../../infrastructure/dto
 import { CrudQueryException } from '../../../infrastructure/exceptions/crud-query.exception.js';
 import { type CrudListQuery } from '../impl/crud-list.query.js';
 
-import { CrudQueryHandler } from './crud-query.handler.js';
+import { CrudQueryBaseHandler } from './crud-query-base.handler.js';
 
 export class CrudListHandler<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-> extends CrudQueryHandler<Entity> {
+> extends CrudQueryBaseHandler<Entity> {
   async execute(
     query: CrudListQuery<Entity>,
   ): Promise<CrudResponsePaginatedInterface<Entity>> {

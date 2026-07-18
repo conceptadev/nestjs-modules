@@ -12,7 +12,7 @@ import {
   getDynamicAdapterToken,
 } from '../../infrastructure/utils/crud-infra.utils.js';
 import { CrudCommandHandlerInterface } from '../commands/interfaces/crud-command-handler.interface.js';
-import { CrudQueryHandler } from '../queries/handlers/crud-query.handler.js';
+import { CrudQueryBaseHandler } from '../queries/handlers/crud-query-base.handler.js';
 
 interface CreateHandlerOptionsBase extends CrudControllerEntityInterface {
   /** Method name for unique class naming */
@@ -25,7 +25,7 @@ interface CreateQueryHandlerOptions<
   Entity extends PlainLiteralObject,
 > extends CreateHandlerOptionsBase {
   /** Base handler class to extend */
-  baseClass: Type<CrudQueryHandler<Entity>>;
+  baseClass: Type<CrudQueryBaseHandler<Entity>>;
   /** Query class for handler registration */
   queryClass: Type;
 }
@@ -46,7 +46,7 @@ interface CreateCommandHandlerOptions<
  */
 export function createQueryHandler<Entity extends PlainLiteralObject>(
   options: CreateQueryHandlerOptions<Entity>,
-): Type<CrudQueryHandler<Entity>> {
+): Type<CrudQueryBaseHandler<Entity>> {
   const {
     entity,
     methodName,

@@ -12,7 +12,7 @@ import { type CrudQueryInterface } from '../interfaces/crud-query.interface.js';
  * This class does NOT implement IQueryHandler directly. The resolver
  * applies the `@QueryHandler` decorator if CQRS is being used.
  */
-export class CrudQueryHandler<
+export class CrudQueryBaseHandler<
   Entity extends PlainLiteralObject = PlainLiteralObject,
 > implements CrudQueryHandlerInterface<Entity> {
   constructor(readonly crudAdapter: CrudAdapter<Entity>) {}

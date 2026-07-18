@@ -12,6 +12,9 @@ export {
   CrudControllerClassOptionsInterface,
   CrudControllerOptionsInterface,
 } from './infrastructure/interfaces/crud-controller-options.interface.js';
+export type { CrudRequestConfig } from './infrastructure/request/interfaces/crud-request-config.interface.js';
+export type { CrudResponseConfig } from './infrastructure/request/interfaces/crud-response-config.interface.js';
+export type { CrudParamOptionInterface } from './infrastructure/interfaces/crud-param-option.interface.js';
 
 export { CrudAdapter } from './infrastructure/adapters/crud.adapter.js';
 
@@ -139,3 +142,9 @@ export { CrudReplaceHandler } from './application/commands/handlers/crud-replace
 export { CrudDeleteHandler } from './application/commands/handlers/crud-delete.handler.js';
 export { CrudSoftDeleteHandler } from './application/commands/handlers/crud-soft-delete.handler.js';
 export { CrudRestoreHandler } from './application/commands/handlers/crud-restore.handler.js';
+
+// Base handler classes for consumers to extend when writing custom handlers.
+export { CrudCommandBaseHandler } from './application/commands/handlers/crud-command-base.handler.js';
+export { CrudQueryBaseHandler } from './application/queries/handlers/crud-query-base.handler.js';
+export type { CrudCommandInterface } from './application/commands/interfaces/crud-command.interface.js';
+export type { CrudQueryInterface } from './application/queries/interfaces/crud-query.interface.js';

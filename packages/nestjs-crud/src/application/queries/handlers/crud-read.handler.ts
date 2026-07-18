@@ -3,11 +3,11 @@ import { HttpException, type PlainLiteralObject } from '@nestjs/common';
 import { CrudQueryException } from '../../../infrastructure/exceptions/crud-query.exception.js';
 import { type CrudReadQuery } from '../impl/crud-read.query.js';
 
-import { CrudQueryHandler } from './crud-query.handler.js';
+import { CrudQueryBaseHandler } from './crud-query-base.handler.js';
 
 export class CrudReadHandler<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-> extends CrudQueryHandler<Entity> {
+> extends CrudQueryBaseHandler<Entity> {
   async execute(query: CrudReadQuery<Entity>): Promise<Entity> {
     const { context } = query;
 

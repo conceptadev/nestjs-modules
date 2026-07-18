@@ -5,12 +5,12 @@ import { type DeepPartial } from '@concepta/nestjs-core';
 import { type CrudAdapter } from '../../../infrastructure/adapters/crud.adapter.js';
 import { type CrudWithBodyCommand } from '../impl/crud-with-body.command.js';
 
-import { CrudCommandHandler } from './crud-command.handler.js';
+import { CrudCommandBaseHandler } from './crud-command-base.handler.js';
 
 export class CrudWithBodyCommandHandler<
   Entity extends PlainLiteralObject = PlainLiteralObject,
   DTO extends DeepPartial<Entity> = DeepPartial<Entity>,
-> extends CrudCommandHandler<Entity> {
+> extends CrudCommandBaseHandler<Entity> {
   constructor(readonly crudAdapter: CrudAdapter<Entity>) {
     super(crudAdapter);
   }

@@ -10,7 +10,7 @@ import { type CrudCommandInterface } from '../interfaces/crud-command.interface.
  * This class does NOT implement ICommandHandler directly. The resolver
  * applies the `@CommandHandler` decorator if CQRS is being used.
  */
-export class CrudCommandHandler<
+export class CrudCommandBaseHandler<
   Entity extends PlainLiteralObject = PlainLiteralObject,
 > implements CrudCommandHandlerInterface<Entity> {
   constructor(readonly crudAdapter: CrudAdapter<Entity>) {}

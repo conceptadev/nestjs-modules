@@ -3,11 +3,11 @@ import { HttpException, type PlainLiteralObject } from '@nestjs/common';
 import { CrudQueryException } from '../../../infrastructure/exceptions/crud-query.exception.js';
 import { type CrudSoftDeleteCommand } from '../impl/crud-soft-delete.command.js';
 
-import { CrudCommandHandler } from './crud-command.handler.js';
+import { CrudCommandBaseHandler } from './crud-command-base.handler.js';
 
 export class CrudSoftDeleteHandler<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-> extends CrudCommandHandler<Entity> {
+> extends CrudCommandBaseHandler<Entity> {
   async execute(
     command: CrudSoftDeleteCommand<Entity>,
   ): Promise<Entity | null> {
