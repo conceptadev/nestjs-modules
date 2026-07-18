@@ -1,14 +1,20 @@
 import { PlainLiteralObject, Provider } from '@nestjs/common';
-import { Command, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
+import {
+  Command,
+  CommandBus,
+  CommandHandler,
+  ICommandHandler,
+} from '@nestjs/cqrs';
 
 import { ReferenceId, ReferenceIdInterface } from '@concepta/nestjs-core';
 
+import { AUTHENTICATION_PASSWORD_PORT_TOKEN } from '../../../authentication.constants.js';
 import {
+  PasswordPort,
   PasswordPortSettings,
   SetPasswordCommandInterface,
   ValidatePasswordCommandInterface,
 } from '../../../domain/ports/password.port.js';
-import { createPasswordPortProvider } from '../../../infrastructure/utils/create-password-port-provider.js';
 
 // ── Mock commands ──
 
@@ -73,5 +79,10 @@ export const mockPasswordPortHandlers = [
 export function createMockPasswordPortProvider(
   settings: PasswordPortSettings = mockPasswordPortSettings,
 ): Provider {
-  return createPasswordPortProvider(settings);
+  return {
+    provide: AUTHENTICATION_PASSWORD_PORT_TOKEN,
+    inject: [CommandBus],
+    useFactory: (commandBus: CommandBus) =>
+      new PasswordPort(settings, commandBus),
+  };
 }

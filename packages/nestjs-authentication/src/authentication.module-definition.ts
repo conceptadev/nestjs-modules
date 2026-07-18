@@ -38,10 +38,7 @@ import { createAuthRouterGuardsProviders } from './infrastructure/utils/create-a
 import { createGuardsPolicyProvider } from './infrastructure/utils/create-guards-policy-provider.js';
 import { createJwtAppGuardProvider } from './infrastructure/utils/create-jwt-app-guard-provider.js';
 import { createJwtPolicyProvider } from './infrastructure/utils/create-jwt-policy-provider.js';
-import {
-  createJwtPortProvider,
-  DEFAULT_JWT_PORT_SETTINGS,
-} from './infrastructure/utils/create-jwt-port-provider.js';
+import { createJwtPortProvider } from './infrastructure/utils/create-jwt-port-provider.js';
 import { createJwtStrategyPolicyProvider } from './infrastructure/utils/create-jwt-strategy-policy-provider.js';
 import { createJwtStrategyProvider } from './infrastructure/utils/create-jwt-strategy-provider.js';
 import { createLocalStrategyPolicyProvider } from './infrastructure/utils/create-local-strategy-policy-provider.js';
@@ -54,10 +51,7 @@ import { createRecoveryPolicyProvider } from './infrastructure/utils/create-reco
 import { createRecoveryServiceProvider } from './infrastructure/utils/create-recovery-service-provider.js';
 import { createRefreshStrategyPolicyProvider } from './infrastructure/utils/create-refresh-strategy-policy-provider.js';
 import { createRefreshStrategyProvider } from './infrastructure/utils/create-refresh-strategy-provider.js';
-import {
-  createTokenPortProvider,
-  DEFAULT_TOKEN_PORT_SETTINGS,
-} from './infrastructure/utils/create-token-port-provider.js';
+import { createTokenPortProvider } from './infrastructure/utils/create-token-port-provider.js';
 import { createUserPortProvider } from './infrastructure/utils/create-user-port-provider.js';
 import { createVerifyNotificationPortProvider } from './infrastructure/utils/create-verify-notification-port-provider.js';
 import { createVerifyPolicyProvider } from './infrastructure/utils/create-verify-policy-provider.js';
@@ -146,14 +140,13 @@ export function createAuthenticationExports(
 }
 
 export function createAuthenticationProviders(options: {
-  overrides?: AuthenticationOptions;
   providers?: Provider[];
   extras?: AuthenticationOptionsExtrasInterface;
 }): Provider[] {
   return [
     ...(options.providers ?? []),
-    // Port providers (from options.ports config)
-    ...createAuthenticationPortProviders(options.overrides),
+    // Port providers (from options.ports config, resolved at DI time)
+    ...createAuthenticationPortProviders(),
     // JWT infrastructure
     JwtService,
     // Policies (always registered with defaults)
@@ -200,32 +193,14 @@ export function createAuthenticationProviders(options: {
   ];
 }
 
-export function createAuthenticationPortProviders(
-  options?: AuthenticationOptions,
-): Provider[] {
-  const defaultedProviders: Provider[] = [
-    createJwtPortProvider({
-      ...DEFAULT_JWT_PORT_SETTINGS,
-      ...options?.ports?.jwt,
-    }),
-    createTokenPortProvider({
-      ...DEFAULT_TOKEN_PORT_SETTINGS,
-      ...options?.ports?.token,
-    }),
-  ];
-
-  if (!options?.ports) {
-    return defaultedProviders;
-  }
-
-  const { ports } = options;
-
+export function createAuthenticationPortProviders(): Provider[] {
   return [
-    ...defaultedProviders,
-    createUserPortProvider(ports.user),
-    createPasswordPortProvider(ports.password),
-    createOtpPortProvider(ports.otp),
-    createRecoveryNotificationPortProvider(ports.recoveryNotification),
-    createVerifyNotificationPortProvider(ports.verifyNotification),
+    createJwtPortProvider(RAW_OPTIONS_TOKEN),
+    createTokenPortProvider(RAW_OPTIONS_TOKEN),
+    createUserPortProvider(RAW_OPTIONS_TOKEN),
+    createPasswordPortProvider(RAW_OPTIONS_TOKEN),
+    createOtpPortProvider(RAW_OPTIONS_TOKEN),
+    createRecoveryNotificationPortProvider(RAW_OPTIONS_TOKEN),
+    createVerifyNotificationPortProvider(RAW_OPTIONS_TOKEN),
   ];
 }

@@ -7,14 +7,29 @@ import {
   Module,
   ModuleMetadata,
 } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { GlobalModuleFixture } from './__tests__/fixtures/global.module.fixture.js';
-import { AUTHENTICATION_JWT_PORT_TOKEN } from './authentication.constants.js';
+import { mockPasswordPortSettings } from './__tests__/fixtures/ports/mock-password-port.provider.js';
+import { mockUserPortSettings } from './__tests__/fixtures/ports/mock-user-port.provider.js';
+import {
+  stubOtpPortSettings,
+  stubRecoveryNotificationPortSettings,
+  stubVerifyNotificationPortSettings,
+} from './__tests__/fixtures/ports/stub-unused-ports.fixture.js';
+import { LocalService } from './application/services/local/local.service.js';
+import {
+  AUTHENTICATION_JWT_PORT_TOKEN,
+  AUTHENTICATION_PASSWORD_PORT_TOKEN,
+  AUTHENTICATION_USER_PORT_TOKEN,
+} from './authentication.constants.js';
 import { AuthenticationModule } from './authentication.module.js';
 import { Token } from './domain/aggregates/token.aggregate.js';
 import { JwtPolicy } from './domain/policies/jwt.policy.js';
 import { JwtPort } from './domain/ports/jwt.port.js';
+import { PasswordPort } from './domain/ports/password.port.js';
+import { UserPort } from './domain/ports/user.port.js';
 import { JwtService } from './infrastructure/jwt/jwt.service.js';
 
 describe(AuthenticationModule, () => {
@@ -46,6 +61,83 @@ describe(AuthenticationModule, () => {
     it('module should be loaded', async () => {
       commonVars();
       commonTests();
+    });
+  });
+
+  describe('AuthenticationModule.forRoot with ports.user/ports.password (local strategy)', () => {
+    beforeEach(async () => {
+      testModule = await Test.createTestingModule({
+        imports: [
+          CqrsModule,
+          AuthenticationModule.forRoot({
+            settings: {
+              strategies: {
+                local: {},
+              },
+            },
+            ports: {
+              user: mockUserPortSettings,
+              password: mockPasswordPortSettings,
+              otp: stubOtpPortSettings,
+              recoveryNotification: stubRecoveryNotificationPortSettings,
+              verifyNotification: stubVerifyNotificationPortSettings,
+            },
+          }),
+        ],
+      }).compile();
+    });
+
+    it('resolves UserPort and PasswordPort from ports config instead of null', () => {
+      expect(testModule.get(AUTHENTICATION_USER_PORT_TOKEN)).toBeInstanceOf(
+        UserPort,
+      );
+      expect(testModule.get(AUTHENTICATION_PASSWORD_PORT_TOKEN)).toBeInstanceOf(
+        PasswordPort,
+      );
+    });
+
+    it('does not throw AuthenticationFeatureConfigException for local strategy', () => {
+      expect(testModule.get(LocalService)).toBeInstanceOf(LocalService);
+    });
+  });
+
+  describe('AuthenticationModule.forRootAsync with ports.user/ports.password (local strategy)', () => {
+    beforeEach(async () => {
+      testModule = await Test.createTestingModule({
+        imports: [
+          CqrsModule,
+          AuthenticationModule.forRootAsync({
+            inject: [],
+            useFactory: () => ({
+              settings: {
+                strategies: {
+                  local: {},
+                },
+              },
+              ports: {
+                user: mockUserPortSettings,
+                password: mockPasswordPortSettings,
+                otp: stubOtpPortSettings,
+                recoveryNotification: stubRecoveryNotificationPortSettings,
+                verifyNotification: stubVerifyNotificationPortSettings,
+              },
+            }),
+          }),
+        ],
+      }).compile();
+    });
+
+    it('resolves UserPort and PasswordPort from an async ports factory instead of null', () => {
+      expect(testModule.get(AUTHENTICATION_USER_PORT_TOKEN)).toBeInstanceOf(
+        UserPort,
+      );
+      expect(testModule.get(AUTHENTICATION_PASSWORD_PORT_TOKEN)).toBeInstanceOf(
+        PasswordPort,
+      );
+    });
+
+    it('does not throw AuthenticationFeatureConfigException for local strategy', () => {
+      expect(testModule.get(LocalService)).toBeInstanceOf(LocalService);
     });
   });
 

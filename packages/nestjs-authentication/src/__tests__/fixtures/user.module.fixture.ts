@@ -1,10 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { CqrsModule, QueryHandler } from '@nestjs/cqrs';
 
-import { AUTHENTICATION_USER_PORT_TOKEN } from '../../authentication.constants.js';
-
 import {
-  createMockUserPortProvider,
   MockGetUserByIdHandler,
   MockGetUserByEmailHandler,
   MockGetUserByUsernameHandler,
@@ -24,17 +21,18 @@ class GetUserBySubjectHandler {
   }
 }
 
+// AUTHENTICATION_USER_PORT_TOKEN is provided by AuthenticationModule itself
+// via `ports.user` (see AppModuleFixture) — this module only supplies the
+// CQRS handlers that UserPort dispatches to.
 @Global()
 @Module({
   imports: [CqrsModule],
   providers: [
-    createMockUserPortProvider(),
     MockGetUserByIdHandler,
     GetUserBySubjectHandler,
     MockGetUserByUsernameHandler,
     MockGetUserByEmailHandler,
     MockUpdateUserHandler,
   ],
-  exports: [AUTHENTICATION_USER_PORT_TOKEN],
 })
 export class UserModuleFixture {}

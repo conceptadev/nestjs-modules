@@ -1,11 +1,13 @@
 import { PlainLiteralObject, Provider } from '@nestjs/common';
 import {
   Command,
-  IQueryHandler,
-  QueryHandler,
-  ICommandHandler,
+  CommandBus,
   CommandHandler,
+  ICommandHandler,
+  IQueryHandler,
   Query,
+  QueryBus,
+  QueryHandler,
 } from '@nestjs/cqrs';
 
 import {
@@ -14,6 +16,7 @@ import {
   ReferenceSubject,
 } from '@concepta/nestjs-core';
 
+import { AUTHENTICATION_USER_PORT_TOKEN } from '../../../authentication.constants.js';
 import {
   AuthenticationUserInterface,
   AuthenticationUserResult,
@@ -22,9 +25,9 @@ import {
   GetUserBySubjectQueryInterface,
   GetUserByUsernameQueryInterface,
   UpdateUserCommandInterface,
+  UserPort,
   UserPortSettings,
 } from '../../../domain/ports/user.port.js';
-import { createUserPortProvider } from '../../../infrastructure/utils/create-user-port-provider.js';
 
 // ── Mock queries/commands ──
 
@@ -161,5 +164,10 @@ export const mockUserPortHandlers = [
 export function createMockUserPortProvider(
   settings: UserPortSettings = mockUserPortSettings,
 ): Provider {
-  return createUserPortProvider(settings);
+  return {
+    provide: AUTHENTICATION_USER_PORT_TOKEN,
+    inject: [QueryBus, CommandBus],
+    useFactory: (queryBus: QueryBus, commandBus: CommandBus) =>
+      new UserPort(settings, queryBus, commandBus),
+  };
 }

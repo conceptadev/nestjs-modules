@@ -1,6 +1,13 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
+import { mockPasswordPortSettings } from '../../../../../__tests__/fixtures/ports/mock-password-port.provider.js';
+import { mockUserPortSettings } from '../../../../../__tests__/fixtures/ports/mock-user-port.provider.js';
+import {
+  stubOtpPortSettings,
+  stubRecoveryNotificationPortSettings,
+  stubVerifyNotificationPortSettings,
+} from '../../../../../__tests__/fixtures/ports/stub-unused-ports.fixture.js';
 import { AuthenticationModule } from '../../../../../authentication.module.js';
 
 import { UserModuleFixture } from './user.module.fixture.js';
@@ -26,6 +33,13 @@ import { UserModuleFixture } from './user.module.fixture.js';
           local: {},
           refresh: {},
         },
+      },
+      ports: {
+        user: mockUserPortSettings,
+        password: mockPasswordPortSettings,
+        otp: stubOtpPortSettings,
+        recoveryNotification: stubRecoveryNotificationPortSettings,
+        verifyNotification: stubVerifyNotificationPortSettings,
       },
     }),
     UserModuleFixture,

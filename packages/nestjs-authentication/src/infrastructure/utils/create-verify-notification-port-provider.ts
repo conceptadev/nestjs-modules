@@ -2,18 +2,24 @@ import { type Provider } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
 import { AUTHENTICATION_VERIFY_NOTIFICATION_PORT_TOKEN } from '../../authentication.constants.js';
-import {
-  VerifyNotificationPort,
-  type VerifyNotificationPortSettings,
-} from '../../domain/ports/verify-notification.port.js';
+import { VerifyNotificationPort } from '../../domain/ports/verify-notification.port.js';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface.js';
 
 export function createVerifyNotificationPortProvider(
-  portSettings: VerifyNotificationPortSettings,
+  rawOptionsToken: symbol,
 ): Provider {
   return {
     provide: AUTHENTICATION_VERIFY_NOTIFICATION_PORT_TOKEN,
-    inject: [CommandBus],
-    useFactory: (commandBus: CommandBus) =>
-      new VerifyNotificationPort(portSettings, commandBus),
+    inject: [rawOptionsToken, CommandBus],
+    useFactory: (
+      options: AuthenticationOptionsInterface,
+      commandBus: CommandBus,
+    ) =>
+      options.ports?.verifyNotification
+        ? new VerifyNotificationPort(
+            options.ports.verifyNotification,
+            commandBus,
+          )
+        : null,
   };
 }

@@ -310,9 +310,10 @@ import { passwordHandlers } from './user/password.handlers';
           validateCommand: ValidatePasswordCommand,
           setPasswordCommand: SetPasswordCommand,
         },
-        // otp, recoveryNotification, verifyNotification are required
-        // when ports is provided — supply stubs or real implementations
-        // depending on whether you enable settings.mfa.recovery / .verify
+        // user, password, otp, recoveryNotification, verifyNotification are
+        // all required together once ports is provided (jwt/token are the
+        // only optional pair, defaulting if omitted) — supply stubs or real
+        // implementations depending on whether you enable settings.mfa.recovery / .verify
         otp: { ... },
         recoveryNotification: { ... },
         verifyNotification: { ... },
@@ -761,12 +762,14 @@ settings: {
 ### Port Settings
 
 Ports connect the module's domain layer to your application's CQRS handlers.
-When `ports` is provided, all required fields must be supplied:
+`jwt` and `token` are optional and fall back to built-in defaults; once `ports`
+is provided, `user`, `password`, `otp`, `recoveryNotification` and
+`verifyNotification` are all required together:
 
 ```typescript
 ports: {
   jwt?: JwtPortSettings;                        // optional; defaults are used if omitted
-  token: TokenPortSettings;                     // required
+  token?: TokenPortSettings;                    // optional; defaults are used if omitted
   user: UserPortSettings;                       // required
   password: PasswordPortSettings;               // required
   otp: OtpPortSettings;                         // required

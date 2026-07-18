@@ -11,6 +11,7 @@ import {
   TokenPort,
   type TokenPortSettings,
 } from '../../domain/ports/token.port.js';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface.js';
 
 export const DEFAULT_TOKEN_PORT_SETTINGS: TokenPortSettings = {
   issueAccessTokenCommand: IssueAccessTokenCommand,
@@ -20,13 +21,19 @@ export const DEFAULT_TOKEN_PORT_SETTINGS: TokenPortSettings = {
   validateTokenQuery: ValidateTokenQuery,
 };
 
-export function createTokenPortProvider(
-  portSettings: TokenPortSettings,
-): Provider {
+export function createTokenPortProvider(rawOptionsToken: symbol): Provider {
   return {
     provide: AUTHENTICATION_TOKEN_PORT_TOKEN,
-    inject: [CommandBus, QueryBus],
-    useFactory: (commandBus: CommandBus, queryBus: QueryBus) =>
-      new TokenPort(portSettings, commandBus, queryBus),
+    inject: [rawOptionsToken, CommandBus, QueryBus],
+    useFactory: (
+      options: AuthenticationOptionsInterface,
+      commandBus: CommandBus,
+      queryBus: QueryBus,
+    ) =>
+      new TokenPort(
+        { ...DEFAULT_TOKEN_PORT_SETTINGS, ...options.ports?.token },
+        commandBus,
+        queryBus,
+      ),
   };
 }
