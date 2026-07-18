@@ -7,14 +7,14 @@ import {
   type ApiResponseOptions,
 } from '@nestjs/swagger';
 
-import { type CrudCommandHandlerInterface } from '../../application/commands/interfaces/crud-command-handler.interface';
-import { type CrudCommandInterface } from '../../application/commands/interfaces/crud-command.interface';
-import { type CrudQueryHandlerInterface } from '../../application/queries/interfaces/crud-query-handler.interface';
-import { type CrudQueryInterface } from '../../application/queries/interfaces/crud-query.interface';
-import { type CrudRequestConfig } from '../request/interfaces/crud-request-config.interface';
-import { type CrudResponseConfig } from '../request/interfaces/crud-response-config.interface';
+import { type CrudCommandHandlerInterface } from '../../application/commands/interfaces/crud-command-handler.interface.js';
+import { type CrudCommandInterface } from '../../application/commands/interfaces/crud-command.interface.js';
+import { type CrudQueryHandlerInterface } from '../../application/queries/interfaces/crud-query-handler.interface.js';
+import { type CrudQueryInterface } from '../../application/queries/interfaces/crud-query.interface.js';
+import { type CrudRequestConfig } from '../request/interfaces/crud-request-config.interface.js';
+import { type CrudResponseConfig } from '../request/interfaces/crud-response-config.interface.js';
 
-import { type CrudTransactionalInterface } from './crud-transactional.interface';
+import { type CrudTransactionalInterface } from './crud-transactional.interface.js';
 
 interface CrudRouteCtlrOptionsInterface<T extends PlainLiteralObject> {
   path?: string | string[];

@@ -1,4 +1,4 @@
-import { InvitationException } from '../../domain/exceptions/invitation.exception';
+import { InvitationException } from '../../domain/exceptions/invitation.exception.js';
 
 export function assertInvitationCode(value: unknown): asserts value is string {
   if (typeof value !== 'string' || value.trim() === '') {

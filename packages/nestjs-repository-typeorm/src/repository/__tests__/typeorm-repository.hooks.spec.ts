@@ -91,12 +91,12 @@ import {
 } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
-import { ormConfig } from '../../__fixtures__/repository/config/ormconfig.fixture';
-import { TEST_ENTITY_TOKEN } from '../../__fixtures__/repository/config/test.constants.fixture';
-import { TestEntityFixture } from '../../__fixtures__/repository/entity/test.entity.fixture';
-import { TestFactoryFixture } from '../../__fixtures__/repository/factory/test.factory.fixture';
-import { TypeOrmRepositoryModule } from '../../typeorm-repository.module';
-import { TypeOrmRepository } from '../typeorm-repository';
+import { ormConfig } from '../../__fixtures__/repository/config/ormconfig.fixture.js';
+import { TEST_ENTITY_TOKEN } from '../../__fixtures__/repository/config/test.constants.fixture.js';
+import { TestEntityFixture } from '../../__fixtures__/repository/entity/test.entity.fixture.js';
+import { TestFactoryFixture } from '../../__fixtures__/repository/factory/test.factory.fixture.js';
+import { TypeOrmRepositoryModule } from '../../typeorm-repository.module.js';
+import { TypeOrmRepository } from '../typeorm-repository.js';
 
 // =============================================================================
 // Comprehensive Hook Interface - All Repository Hooks

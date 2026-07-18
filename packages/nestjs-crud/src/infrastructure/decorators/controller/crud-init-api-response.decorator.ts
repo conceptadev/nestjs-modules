@@ -1,7 +1,7 @@
 import { MetadataScanner } from '@nestjs/core';
 
-import { CrudMetaview } from '../../services/crud-metaview.service';
-import { applyApiResponse } from '../util/apply-api-response.decorator';
+import { CrudMetaview } from '../../services/crud-metaview.service.js';
+import { applyApiResponse } from '../util/apply-api-response.decorator.js';
 
 /**
  * CRUD init api response decorator.

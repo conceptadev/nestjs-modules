@@ -1,6 +1,6 @@
-import { HOOK_METHOD_METADATA_KEY } from '../hook.constants';
-import { type HookMethodMetadataInterface } from '../hook.interfaces';
-import { type SpecificationInterface } from '../interfaces/specification.interface';
+import { HOOK_METHOD_METADATA_KEY } from '../hook.constants.js';
+import { type HookMethodMetadataInterface } from '../hook.interfaces.js';
+import { type SpecificationInterface } from '../interfaces/specification.interface.js';
 
 /**
  * Hook method key type.

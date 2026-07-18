@@ -13,12 +13,12 @@ import {
 import { type CrudContextInterface, CrudCtx } from '@concepta/nestjs-crud';
 import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
-import { type Cache } from '../../domain/aggregates/cache';
-import { CacheCtx } from '../../gateways/cache-context.overlay';
-import { type CacheRepositoryResolver } from '../../infrastructure/persistence/cache-repository.resolver';
-import { CacheMapper } from '../../infrastructure/persistence/cache.mapper';
-import { type CacheRepository } from '../../infrastructure/persistence/cache.repository';
-import { type CacheEntityInterface } from '../../infrastructure/persistence/interfaces/cache-entity.interface';
+import { type Cache } from '../../domain/aggregates/cache.js';
+import { CacheCtx } from '../../gateways/cache-context.overlay.js';
+import { type CacheRepositoryResolver } from '../../infrastructure/persistence/cache-repository.resolver.js';
+import { CacheMapper } from '../../infrastructure/persistence/cache.mapper.js';
+import { type CacheRepository } from '../../infrastructure/persistence/cache.repository.js';
+import { type CacheEntityInterface } from '../../infrastructure/persistence/interfaces/cache-entity.interface.js';
 
 export const DEFAULT_CACHE_NAMESPACE = 'UserCache';
 

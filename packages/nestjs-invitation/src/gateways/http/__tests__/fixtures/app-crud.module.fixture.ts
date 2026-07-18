@@ -24,35 +24,35 @@ import {
   UserModule,
 } from '@concepta/nestjs-user';
 
-import { InvitationInterface } from '../../../../domain/interfaces/invitation.interface';
-import { InvitationCreateDto } from '../../../../infrastructure/dtos/invitation-create.dto';
-import { InvitationPaginatedDto } from '../../../../infrastructure/dtos/invitation-paginated.dto';
-import { InvitationDto } from '../../../../infrastructure/dtos/invitation.dto';
-import { INVITATION_MODULE_DEFAULT_ENTITY_KEY } from '../../../../invitation.constants';
-import { InvitationModule } from '../../../../invitation.module';
-import { AcceptInvitationRequestHandler } from '../../commands/handlers/accept-invitation-request.handler';
-import { CreateInvitationRequestHandler } from '../../commands/handlers/create-invitation-request.handler';
-import { DeleteInvitationRequestHandler } from '../../commands/handlers/delete-invitation-request.handler';
-import { CreateInvitationRequest } from '../../commands/impl/create-invitation.request';
-import { DeleteInvitationRequest } from '../../commands/impl/delete-invitation.request';
-import { ListInvitationsRequestHandler } from '../../queries/handlers/list-invitations-request.handler';
-import { ReadInvitationRequestHandler } from '../../queries/handlers/read-invitation-request.handler';
-import { ListInvitationsRequest } from '../../queries/impl/list-invitations.request';
-import { ReadInvitationRequest } from '../../queries/impl/read-invitation.request';
+import { InvitationInterface } from '../../../../domain/interfaces/invitation.interface.js';
+import { InvitationCreateDto } from '../../../../infrastructure/dtos/invitation-create.dto.js';
+import { InvitationPaginatedDto } from '../../../../infrastructure/dtos/invitation-paginated.dto.js';
+import { InvitationDto } from '../../../../infrastructure/dtos/invitation.dto.js';
+import { INVITATION_MODULE_DEFAULT_ENTITY_KEY } from '../../../../invitation.constants.js';
+import { InvitationModule } from '../../../../invitation.module.js';
+import { AcceptInvitationRequestHandler } from '../../commands/handlers/accept-invitation-request.handler.js';
+import { CreateInvitationRequestHandler } from '../../commands/handlers/create-invitation-request.handler.js';
+import { DeleteInvitationRequestHandler } from '../../commands/handlers/delete-invitation-request.handler.js';
+import { CreateInvitationRequest } from '../../commands/impl/create-invitation.request.js';
+import { DeleteInvitationRequest } from '../../commands/impl/delete-invitation.request.js';
+import { ListInvitationsRequestHandler } from '../../queries/handlers/list-invitations-request.handler.js';
+import { ReadInvitationRequestHandler } from '../../queries/handlers/read-invitation-request.handler.js';
+import { ListInvitationsRequest } from '../../queries/impl/list-invitations.request.js';
+import { ReadInvitationRequest } from '../../queries/impl/read-invitation.request.js';
 
-import { InvitationEntityFixture } from './entities/invitation.entity.fixture';
-import { UserCredentialEntityFixture } from './entities/user-credential.entity.fixture';
-import { UserOtpEntityFixture } from './entities/user-otp.entity.fixture';
-import { UserEntityFixture } from './entities/user.entity.fixture';
-import { InvitationAcceptanceController } from './invitation-acceptance.controller';
+import { InvitationEntityFixture } from './entities/invitation.entity.fixture.js';
+import { UserCredentialEntityFixture } from './entities/user-credential.entity.fixture.js';
+import { UserOtpEntityFixture } from './entities/user-otp.entity.fixture.js';
+import { UserEntityFixture } from './entities/user.entity.fixture.js';
+import { InvitationAcceptanceController } from './invitation-acceptance.controller.js';
 import {
   NoopSendInvitationNotificationCommand,
   NoopSendAcceptedNotificationCommand,
-} from './notification/noop-notification.command';
+} from './notification/noop-notification.command.js';
 import {
   NoopSendInvitationNotificationHandler,
   NoopSendAcceptedNotificationHandler,
-} from './notification/noop-notification.handler';
+} from './notification/noop-notification.handler.js';
 
 const USER_ENTITY_KEY = 'user';
 const USER_CREDENTIALS_ENTITY_KEY = 'user-credentials';

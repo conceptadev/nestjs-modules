@@ -4,11 +4,11 @@ import { type MockProxy, mock } from 'vitest-mock-extended';
 
 import { type CommandBus } from '@nestjs/cqrs';
 
-import { IssueAuthenticatedResponseCommand } from '../../../../application/commands/impl/issue-authenticated-response.command';
-import { type AuthenticatedResponseInterface } from '../../../../domain/interfaces/authenticated-response.interface';
-import { type AuthenticatedUserInterface } from '../../../../domain/interfaces/authenticated-user.interface';
+import { IssueAuthenticatedResponseCommand } from '../../../../application/commands/impl/issue-authenticated-response.command.js';
+import { type AuthenticatedResponseInterface } from '../../../../domain/interfaces/authenticated-response.interface.js';
+import { type AuthenticatedUserInterface } from '../../../../domain/interfaces/authenticated-user.interface.js';
 
-import { LocalControllerFixture } from './fixtures/local.controller.fixture';
+import { LocalControllerFixture } from './fixtures/local.controller.fixture.js';
 
 describe(LocalControllerFixture, () => {
   const accessToken = 'accessToken';

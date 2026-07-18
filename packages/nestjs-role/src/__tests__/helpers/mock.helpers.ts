@@ -8,14 +8,14 @@ import {
 } from '@concepta/nestjs-core/testing';
 import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
-import { type RoleAssignmentEntityInterface } from '../../domain/interfaces/role-assignment-entity.interface';
-import { type RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
-import { type RoleAssignmentRepositoryResolver } from '../../infrastructure/persistence/role-assignment-repository.resolver';
-import { RoleAssignmentMapper } from '../../infrastructure/persistence/role-assignment.mapper';
-import { type RoleAssignmentRepository } from '../../infrastructure/persistence/role-assignment.repository';
-import { type RoleRepositoryResolver } from '../../infrastructure/persistence/role-repository.resolver';
-import { RoleMapper } from '../../infrastructure/persistence/role.mapper';
-import { type RoleRepository } from '../../infrastructure/persistence/role.repository';
+import { type RoleAssignmentEntityInterface } from '../../domain/interfaces/role-assignment-entity.interface.js';
+import { type RoleEntityInterface } from '../../domain/interfaces/role-entity.interface.js';
+import { type RoleAssignmentRepositoryResolver } from '../../infrastructure/persistence/role-assignment-repository.resolver.js';
+import { RoleAssignmentMapper } from '../../infrastructure/persistence/role-assignment.mapper.js';
+import { type RoleAssignmentRepository } from '../../infrastructure/persistence/role-assignment.repository.js';
+import { type RoleRepositoryResolver } from '../../infrastructure/persistence/role-repository.resolver.js';
+import { RoleMapper } from '../../infrastructure/persistence/role.mapper.js';
+import { type RoleRepository } from '../../infrastructure/persistence/role.repository.js';
 
 export const DEFAULT_ROLE_NAMESPACE = 'Role';
 

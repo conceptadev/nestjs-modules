@@ -6,9 +6,9 @@ import {
   createMockCacheContext,
   createMockCacheEntity,
   toCacheDomain,
-} from '../../../../../__tests__/helpers/mock.helpers';
-import { type CacheInterface } from '../../../../../domain/interfaces/cache.interface';
-import { DeleteCacheRequestHandler } from '../delete-cache-request.handler';
+} from '../../../../../__tests__/helpers/mock.helpers.js';
+import { type CacheInterface } from '../../../../../domain/interfaces/cache.interface.js';
+import { DeleteCacheRequestHandler } from '../delete-cache-request.handler.js';
 
 describe(DeleteCacheRequestHandler.name, () => {
   let commandBus: ReturnType<typeof createMockCommandBus>;

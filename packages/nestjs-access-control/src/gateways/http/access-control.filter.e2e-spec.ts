@@ -11,12 +11,12 @@ import { Reflector } from '@nestjs/core';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ACCESS_CONTROL_MODULE_SETTINGS_TOKEN } from '../../access-control.constants';
-import { AccessControlModule } from '../../access-control.module';
-import { AccessControlServiceInterface } from '../../domain/ports/access-control-service.interface';
-import { AccessControlOptionsInterface } from '../../infrastructure/config/interfaces/access-control-options.interface';
-import { AccessControlService } from '../../infrastructure/services/access-control.service';
-import { AccessControlReadOne } from '../decorators/access-control-read-one.decorator';
+import { ACCESS_CONTROL_MODULE_SETTINGS_TOKEN } from '../../access-control.constants.js';
+import { AccessControlModule } from '../../access-control.module.js';
+import { AccessControlServiceInterface } from '../../domain/ports/access-control-service.interface.js';
+import { AccessControlOptionsInterface } from '../../infrastructure/config/interfaces/access-control-options.interface.js';
+import { AccessControlService } from '../../infrastructure/services/access-control.service.js';
+import { AccessControlReadOne } from '../decorators/access-control-read-one.decorator.js';
 
 describe('AccessControlFilter', () => {
   const resourceGetAll = 'resource_get_all';

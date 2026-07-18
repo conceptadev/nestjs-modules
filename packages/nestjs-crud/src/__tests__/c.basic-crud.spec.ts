@@ -11,58 +11,58 @@ import { ExceptionsFilter, Ctx } from '@concepta/nestjs-core';
 import { RepositoryModule, Transactional } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
-import { CrudCreateBatchHandler } from '../application/commands/handlers/crud-create-batch.handler';
-import { CrudCreateHandler } from '../application/commands/handlers/crud-create.handler';
-import { CrudDeleteHandler } from '../application/commands/handlers/crud-delete.handler';
-import { CrudReplaceHandler } from '../application/commands/handlers/crud-replace.handler';
-import { CrudRestoreHandler } from '../application/commands/handlers/crud-restore.handler';
-import { CrudSoftDeleteHandler } from '../application/commands/handlers/crud-soft-delete.handler';
-import { CrudUpdateHandler } from '../application/commands/handlers/crud-update.handler';
-import { CrudListHandler } from '../application/queries/handlers/crud-list.handler';
-import { CrudReadHandler } from '../application/queries/handlers/crud-read.handler';
+import { CrudCreateBatchHandler } from '../application/commands/handlers/crud-create-batch.handler.js';
+import { CrudCreateHandler } from '../application/commands/handlers/crud-create.handler.js';
+import { CrudDeleteHandler } from '../application/commands/handlers/crud-delete.handler.js';
+import { CrudReplaceHandler } from '../application/commands/handlers/crud-replace.handler.js';
+import { CrudRestoreHandler } from '../application/commands/handlers/crud-restore.handler.js';
+import { CrudSoftDeleteHandler } from '../application/commands/handlers/crud-soft-delete.handler.js';
+import { CrudUpdateHandler } from '../application/commands/handlers/crud-update.handler.js';
+import { CrudListHandler } from '../application/queries/handlers/crud-list.handler.js';
+import { CrudReadHandler } from '../application/queries/handlers/crud-read.handler.js';
 import {
   createCommandHandler,
   createQueryHandler,
-} from '../application/utils/create-operation-handlers';
-import { CrudModule } from '../crud.module';
-import { CrudAdapter } from '../infrastructure/adapters/crud.adapter';
-import { CrudController } from '../infrastructure/decorators/controller/crud-controller.decorator';
-import { CrudCreateBatch } from '../infrastructure/decorators/operations/crud-create-batch.decorator';
-import { CrudCreate } from '../infrastructure/decorators/operations/crud-create.decorator';
-import { CrudDelete } from '../infrastructure/decorators/operations/crud-delete.decorator';
-import { CrudList } from '../infrastructure/decorators/operations/crud-list.decorator';
-import { CrudRead } from '../infrastructure/decorators/operations/crud-read.decorator';
-import { CrudReplace } from '../infrastructure/decorators/operations/crud-replace.decorator';
-import { CrudRestore } from '../infrastructure/decorators/operations/crud-restore.decorator';
-import { CrudSoftDelete } from '../infrastructure/decorators/operations/crud-soft-delete.decorator';
-import { CrudUpdate } from '../infrastructure/decorators/operations/crud-update.decorator';
-import { CrudBody } from '../infrastructure/decorators/params/crud-body.decorator';
-import { CrudLimit } from '../infrastructure/decorators/routes/crud-limit.decorator';
-import { CrudCtx } from '../infrastructure/interceptors/crud-context.overlay';
-import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/crud-context.interface';
-import { CrudQueryBuilder } from '../infrastructure/request/crud-query.builder';
-import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver';
-import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface';
-import { createCrudAdapterProvider } from '../infrastructure/utils/create-crud-adapter-provider';
+} from '../application/utils/create-operation-handlers.js';
+import { CrudModule } from '../crud.module.js';
+import { CrudAdapter } from '../infrastructure/adapters/crud.adapter.js';
+import { CrudController } from '../infrastructure/decorators/controller/crud-controller.decorator.js';
+import { CrudCreateBatch } from '../infrastructure/decorators/operations/crud-create-batch.decorator.js';
+import { CrudCreate } from '../infrastructure/decorators/operations/crud-create.decorator.js';
+import { CrudDelete } from '../infrastructure/decorators/operations/crud-delete.decorator.js';
+import { CrudList } from '../infrastructure/decorators/operations/crud-list.decorator.js';
+import { CrudRead } from '../infrastructure/decorators/operations/crud-read.decorator.js';
+import { CrudReplace } from '../infrastructure/decorators/operations/crud-replace.decorator.js';
+import { CrudRestore } from '../infrastructure/decorators/operations/crud-restore.decorator.js';
+import { CrudSoftDelete } from '../infrastructure/decorators/operations/crud-soft-delete.decorator.js';
+import { CrudUpdate } from '../infrastructure/decorators/operations/crud-update.decorator.js';
+import { CrudBody } from '../infrastructure/decorators/params/crud-body.decorator.js';
+import { CrudLimit } from '../infrastructure/decorators/routes/crud-limit.decorator.js';
+import { CrudCtx } from '../infrastructure/interceptors/crud-context.overlay.js';
+import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/crud-context.interface.js';
+import { CrudQueryBuilder } from '../infrastructure/request/crud-query.builder.js';
+import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver.js';
+import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface.js';
+import { createCrudAdapterProvider } from '../infrastructure/utils/create-crud-adapter-provider.js';
 
-import { createCrudOperationClasses } from '../__fixtures__/crud/create-crud-operation-classes.fixture';
+import { createCrudOperationClasses } from '../__fixtures__/crud/create-crud-operation-classes.fixture.js';
 import {
   CRUD_TEST_COMPANY_ENTITY_NAME,
   CRUD_TEST_DEVICE_ENTITY_NAME,
-} from '../__fixtures__/crud-test.constants';
-import { CompanyEntity } from '../__fixtures__/typeorm/company/company.entity';
-import { CompanyCreateBatchDto } from '../__fixtures__/typeorm/company/dto/company-create-batch.dto';
-import { CompanyCreateDto } from '../__fixtures__/typeorm/company/dto/company-create.dto';
-import { CompanyPaginatedDto } from '../__fixtures__/typeorm/company/dto/company-paginated.dto';
-import { CompanyUpdateDto } from '../__fixtures__/typeorm/company/dto/company-update.dto';
-import { CompanyDto } from '../__fixtures__/typeorm/company/dto/company.dto';
-import { DeviceEntity } from '../__fixtures__/typeorm/device/device.entity';
-import { DeviceCreateDto } from '../__fixtures__/typeorm/device/dto/device-create.dto';
-import { DeviceDto } from '../__fixtures__/typeorm/device/dto/device.dto';
-import { ormSqliteConfig } from '../__fixtures__/typeorm/orm.sqlite.config';
-import { ProjectEntity } from '../__fixtures__/typeorm/project/project.entity';
-import { Seeds } from '../__fixtures__/typeorm/seeds';
-import { UserEntity } from '../__fixtures__/typeorm/users/user.entity';
+} from '../__fixtures__/crud-test.constants.js';
+import { CompanyEntity } from '../__fixtures__/typeorm/company/company.entity.js';
+import { CompanyCreateBatchDto } from '../__fixtures__/typeorm/company/dto/company-create-batch.dto.js';
+import { CompanyCreateDto } from '../__fixtures__/typeorm/company/dto/company-create.dto.js';
+import { CompanyPaginatedDto } from '../__fixtures__/typeorm/company/dto/company-paginated.dto.js';
+import { CompanyUpdateDto } from '../__fixtures__/typeorm/company/dto/company-update.dto.js';
+import { CompanyDto } from '../__fixtures__/typeorm/company/dto/company.dto.js';
+import { DeviceEntity } from '../__fixtures__/typeorm/device/device.entity.js';
+import { DeviceCreateDto } from '../__fixtures__/typeorm/device/dto/device-create.dto.js';
+import { DeviceDto } from '../__fixtures__/typeorm/device/dto/device.dto.js';
+import { ormSqliteConfig } from '../__fixtures__/typeorm/orm.sqlite.config.js';
+import { ProjectEntity } from '../__fixtures__/typeorm/project/project.entity.js';
+import { Seeds } from '../__fixtures__/typeorm/seeds.js';
+import { UserEntity } from '../__fixtures__/typeorm/users/user.entity.js';
 
 // Create entity-specific operation classes
 const CompanyOps = createCrudOperationClasses<CompanyEntity>(

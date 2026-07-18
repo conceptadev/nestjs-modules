@@ -1,6 +1,6 @@
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { AuthRouterException } from './auth-router.exception';
+import { AuthRouterException } from './auth-router.exception.js';
 
 export class AuthRouterProviderMissingException extends AuthRouterException {
   constructor(options?: RuntimeExceptionOptions) {

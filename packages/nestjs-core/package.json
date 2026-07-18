@@ -2,38 +2,21 @@
   "name": "@concepta/nestjs-core",
   "version": "8.0.0-alpha.7",
   "description": "Rockets App - Core framework module for Rockets applications",
-  "main": "./dist/cjs/index.js",
-  "types": "./dist/cjs/index.d.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/index.d.ts",
-        "default": "./dist/cjs/index.js"
-      }
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./aggregate": {
-      "import": {
-        "types": "./dist/esm/index-aggregate.d.ts",
-        "default": "./dist/esm/index-aggregate.js"
-      },
-      "require": {
-        "types": "./dist/cjs/index-aggregate.d.ts",
-        "default": "./dist/cjs/index-aggregate.js"
-      }
+      "types": "./dist/index-aggregate.d.ts",
+      "default": "./dist/index-aggregate.js"
     },
     "./testing": {
-      "import": {
-        "types": "./dist/esm/testing.d.ts",
-        "default": "./dist/esm/testing.js"
-      },
-      "require": {
-        "types": "./dist/cjs/testing.d.ts",
-        "default": "./dist/cjs/testing.js"
-      }
+      "types": "./dist/testing.d.ts",
+      "default": "./dist/testing.js"
     }
   },
   "license": "BSD-3-Clause",
@@ -41,10 +24,7 @@
     "access": "public"
   },
   "files": [
-    "dist/cjs/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
-    "dist/esm/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
-    "dist/cjs/package.json",
-    "dist/esm/package.json",
+    "dist/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
     "!dist/**/__tests__/**",
     "!dist/**/__fixtures__/**"
   ],
@@ -72,6 +52,5 @@
     "@nestjs/cqrs": {
       "optional": true
     }
-  },
-  "module": "./dist/esm/index.js"
+  }
 }

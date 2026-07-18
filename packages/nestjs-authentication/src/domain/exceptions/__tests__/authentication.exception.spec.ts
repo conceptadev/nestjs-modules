@@ -1,6 +1,6 @@
 import { RuntimeException } from '@concepta/nestjs-core';
 
-import { AuthenticationException } from '../authentication.exception';
+import { AuthenticationException } from '../authentication.exception.js';
 
 describe(AuthenticationException.name, () => {
   it('should extend RuntimeException', () => {

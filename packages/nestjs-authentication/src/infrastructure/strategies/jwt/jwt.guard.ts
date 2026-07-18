@@ -3,11 +3,11 @@ import { Reflector } from '@nestjs/core';
 
 import { ReferenceIdInterface } from '@concepta/nestjs-core';
 
-import { GuardsPolicy } from '../../../domain/policies/guards.policy';
-import { AuthGuard } from '../../auth.guard';
+import { GuardsPolicy } from '../../../domain/policies/guards.policy.js';
+import { AuthGuard } from '../../auth.guard.js';
 
-import { JwtUnauthorizedException } from './exceptions/jwt-unauthorized.exception';
-import { JWT_STRATEGY_NAME } from './jwt.constants';
+import { JwtUnauthorizedException } from './exceptions/jwt-unauthorized.exception.js';
+import { JWT_STRATEGY_NAME } from './jwt.constants.js';
 
 @Injectable()
 export class JwtGuard extends AuthGuard(JWT_STRATEGY_NAME, {

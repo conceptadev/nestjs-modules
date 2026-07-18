@@ -9,16 +9,16 @@ import {
 } from '@nestjs/swagger';
 import { Test } from '@nestjs/testing';
 
-import { CrudModule } from '../../crud.module';
+import { CrudModule } from '../../crud.module.js';
 import {
   type OperationObject,
   type ParameterObject,
   type SchemaObject,
-} from '../openapi-types';
+} from '../openapi-types.js';
 
-import { PetController } from './controllers/pet.controller';
-import { StoreController } from './controllers/store.controller';
-import { UserController } from './controllers/user.controller';
+import { PetController } from './controllers/pet.controller.js';
+import { StoreController } from './controllers/store.controller.js';
+import { UserController } from './controllers/user.controller.js';
 
 const ARTIFACT_DIR = join(__dirname, '../__artifacts__');
 

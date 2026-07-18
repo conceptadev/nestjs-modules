@@ -24,7 +24,7 @@ import {
   GetCacheHandler,
   FindOneCacheHandler,
   FindCachesByAssigneeHandler,
-} from '../index';
+} from '../index.js';
 
 describe('index', () => {
   it('should export CacheModule', () => {

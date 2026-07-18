@@ -9,15 +9,15 @@ import {
   getAppContext,
 } from '@concepta/nestjs-core';
 
-import { LocalServiceInterface } from '../../../application/services/local/interfaces/local-service.interface';
-import { LocalService } from '../../../application/services/local/local.service';
-import { LocalStrategyPolicy } from '../../../domain/policies/local-strategy.policy';
-import { PassportStrategyFactory } from '../../passport/passport-strategy.factory';
+import { LocalServiceInterface } from '../../../application/services/local/interfaces/local-service.interface.js';
+import { LocalService } from '../../../application/services/local/local.service.js';
+import { LocalStrategyPolicy } from '../../../domain/policies/local-strategy.policy.js';
+import { PassportStrategyFactory } from '../../passport/passport-strategy.factory.js';
 
-import { LocalInvalidCredentialsException } from './exceptions/local-invalid-credentials.exception';
-import { LocalInvalidLoginDataException } from './exceptions/local-invalid-login-data.exception';
-import { LocalException } from './exceptions/local.exception';
-import { LOCAL_STRATEGY_NAME } from './local.constants';
+import { LocalInvalidCredentialsException } from './exceptions/local-invalid-credentials.exception.js';
+import { LocalInvalidLoginDataException } from './exceptions/local-invalid-login-data.exception.js';
+import { LocalException } from './exceptions/local.exception.js';
+import { LOCAL_STRATEGY_NAME } from './local.constants.js';
 
 /**
  * Define the Local strategy using passport.

@@ -3,12 +3,12 @@ import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { UserCredentials } from '../../../domain/aggregates/user-credentials';
-import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface';
-import { USER_REPOSITORY_TOKEN } from '../../../user.constants';
-import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
-import { CreateUserCredentialCommand } from '../impl/create-user-credential.command';
-import { SetUserPasswordCommand } from '../impl/set-user-password.command';
+import { UserCredentials } from '../../../domain/aggregates/user-credentials.js';
+import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface.js';
+import { USER_REPOSITORY_TOKEN } from '../../../user.constants.js';
+import { UserNotFoundException } from '../../exceptions/user-not-found.exception.js';
+import { CreateUserCredentialCommand } from '../impl/create-user-credential.command.js';
+import { SetUserPasswordCommand } from '../impl/set-user-password.command.js';
 
 @CommandHandler(SetUserPasswordCommand)
 export class SetUserPasswordHandler implements ICommandHandler<

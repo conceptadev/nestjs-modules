@@ -6,18 +6,18 @@ import {
   HOOK_METHOD_METADATA_KEY,
   HOOK_METHODS_CACHE_KEY,
   SPECIFICATION_METADATA_KEY,
-} from '../hook.constants';
+} from '../hook.constants.js';
 import {
   type HookDecoratorOptions,
   type HookMethodMapInterface,
   type HookMethodMetadataInterface,
   type HookMetadataInterface,
-} from '../hook.interfaces';
-import { type SpecificationInterface } from '../interfaces/specification.interface';
-import { Spec } from '../specification/spec.factory';
+} from '../hook.interfaces.js';
+import { type SpecificationInterface } from '../interfaces/specification.interface.js';
+import { Spec } from '../specification/spec.factory.js';
 
-import { type HookMethodKeyType } from './hook-method.decorator';
-import { Specification } from './specification.decorator';
+import { type HookMethodKeyType } from './hook-method.decorator.js';
+import { Specification } from './specification.decorator.js';
 
 const metadataScanner = new MetadataScanner();
 

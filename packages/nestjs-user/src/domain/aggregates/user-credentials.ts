@@ -6,10 +6,10 @@ import {
 } from '@concepta/nestjs-core';
 import { DomainAggregate } from '@concepta/nestjs-core/aggregate';
 
-import { UserCredentialsCreatedEvent } from '../events/user-credentials-created.event';
-import { UserCredentialsDeactivatedEvent } from '../events/user-credentials-deactivated.event';
-import { type UserCredentialCreatableInterface } from '../interfaces/user-credential-creatable.interface';
-import { type UserCredentialInterface } from '../interfaces/user-credential.interface';
+import { UserCredentialsCreatedEvent } from '../events/user-credentials-created.event.js';
+import { UserCredentialsDeactivatedEvent } from '../events/user-credentials-deactivated.event.js';
+import { type UserCredentialCreatableInterface } from '../interfaces/user-credential-creatable.interface.js';
+import { type UserCredentialInterface } from '../interfaces/user-credential.interface.js';
 
 export class UserCredentials extends DomainAggregate<UserCredentialInterface> {
   get userId() {

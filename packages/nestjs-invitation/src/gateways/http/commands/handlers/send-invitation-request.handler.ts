@@ -1,8 +1,8 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { SendInvitationCommand } from '../../../../application/commands/impl/send-invitation.command';
-import { assertInvitationId } from '../../../../application/utils/assert-invitation-id.util';
-import { SendInvitationRequest } from '../impl/send-invitation.request';
+import { SendInvitationCommand } from '../../../../application/commands/impl/send-invitation.command.js';
+import { assertInvitationId } from '../../../../application/utils/assert-invitation-id.util.js';
+import { SendInvitationRequest } from '../impl/send-invitation.request.js';
 
 @CommandHandler(SendInvitationRequest)
 export class SendInvitationRequestHandler implements ICommandHandler<SendInvitationRequest> {

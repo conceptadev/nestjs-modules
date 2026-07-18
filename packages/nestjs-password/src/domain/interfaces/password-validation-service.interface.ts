@@ -1,4 +1,4 @@
-import { type PasswordValidateOptionsInterface } from './password-validate-options.interface';
+import { type PasswordValidateOptionsInterface } from './password-validate-options.interface.js';
 
 /**
  * Password Storage Validation Interface

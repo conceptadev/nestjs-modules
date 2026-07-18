@@ -1,7 +1,7 @@
 import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
-import { type CrudCommandInterface } from '../commands/interfaces/crud-command.interface';
-import { type CrudQueryInterface } from '../queries/interfaces/crud-query.interface';
+import { type CrudCommandInterface } from '../commands/interfaces/crud-command.interface.js';
+import { type CrudQueryInterface } from '../queries/interfaces/crud-query.interface.js';
 
 /**
  * Creates a new class extending the base class with a prefixed name.

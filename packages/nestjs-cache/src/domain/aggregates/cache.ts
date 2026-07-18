@@ -9,13 +9,13 @@ import {
   DomainAggregate,
 } from '@concepta/nestjs-core/aggregate';
 
-import { CacheCreatedEvent } from '../events/cache-created.event';
-import { CacheExtendedEvent } from '../events/cache-extended.event';
-import { CacheReplacedEvent } from '../events/cache-replaced.event';
-import { CacheUpdatedEvent } from '../events/cache-updated.event';
-import { type CacheEventHeaderInterface } from '../events/interfaces/cache-event-header.interface';
-import { type CacheCreatableInterface } from '../interfaces/cache-creatable.interface';
-import { type CacheInterface } from '../interfaces/cache.interface';
+import { CacheCreatedEvent } from '../events/cache-created.event.js';
+import { CacheExtendedEvent } from '../events/cache-extended.event.js';
+import { CacheReplacedEvent } from '../events/cache-replaced.event.js';
+import { CacheUpdatedEvent } from '../events/cache-updated.event.js';
+import { type CacheEventHeaderInterface } from '../events/interfaces/cache-event-header.interface.js';
+import { type CacheCreatableInterface } from '../interfaces/cache-creatable.interface.js';
+import { type CacheInterface } from '../interfaces/cache.interface.js';
 
 export class Cache extends DomainAggregate<CacheInterface> {
   constructor(

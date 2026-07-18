@@ -1,7 +1,7 @@
 import {
   ERROR_CODE_HTTP_UNKNOWN,
   HTTP_ERROR_CODE,
-} from '../constants/error-codes.constants';
+} from '../constants/error-codes.constants.js';
 
 /**
  * Map http status to error codes.

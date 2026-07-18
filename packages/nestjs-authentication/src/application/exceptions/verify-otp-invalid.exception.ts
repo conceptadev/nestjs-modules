@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { VerifyException } from '../../infrastructure/mfa/verify/exceptions/verify.exception';
+import { VerifyException } from '../../infrastructure/mfa/verify/exceptions/verify.exception.js';
 
 export class VerifyOtpInvalidException extends VerifyException {
   constructor(options?: RuntimeExceptionOptions) {

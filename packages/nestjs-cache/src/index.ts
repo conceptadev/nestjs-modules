@@ -1,76 +1,76 @@
-export { CacheModule } from './cache.module';
+export { CacheModule } from './cache.module.js';
 
 // domain interfaces
-export { CacheInterface } from './domain/interfaces/cache.interface';
-export { CacheCreatableInterface } from './domain/interfaces/cache-creatable.interface';
-export { CacheUpdatableInterface } from './domain/interfaces/cache-updatable.interface';
+export { CacheInterface } from './domain/interfaces/cache.interface.js';
+export { CacheCreatableInterface } from './domain/interfaces/cache-creatable.interface.js';
+export { CacheUpdatableInterface } from './domain/interfaces/cache-updatable.interface.js';
 
 // domain object
-export { Cache } from './domain/aggregates/cache';
+export { Cache } from './domain/aggregates/cache.js';
 
 // policies
 export {
   CacheExpirationPolicy,
   CacheExpirationSettings,
-} from './domain/policies/cache-expiration.policy';
+} from './domain/policies/cache-expiration.policy.js';
 
 // repositories
-export { CacheRepository } from './infrastructure/persistence/cache.repository';
-export { CacheRepositoryResolver } from './infrastructure/persistence/cache-repository.resolver';
-export { CacheRepositoryInterface } from './domain/repositories/cache-repository.interface';
-export { CacheRepositoryResolverInterface } from './domain/repositories/cache-repository-resolver.interface';
+export { CacheRepository } from './infrastructure/persistence/cache.repository.js';
+export { CacheRepositoryResolver } from './infrastructure/persistence/cache-repository.resolver.js';
+export { CacheRepositoryInterface } from './domain/repositories/cache-repository.interface.js';
+export { CacheRepositoryResolverInterface } from './domain/repositories/cache-repository-resolver.interface.js';
 
 // interfaces
-export { CacheExtrasInterface } from './infrastructure/config/interfaces/cache-extras.interface';
+export { CacheExtrasInterface } from './infrastructure/config/interfaces/cache-extras.interface.js';
 
 // dto
-export { CacheCreateDto } from './infrastructure/dtos/cache-create.dto';
-export { CacheUpdateDto } from './infrastructure/dtos/cache-update.dto';
-export { CacheDto } from './infrastructure/dtos/cache.dto';
+export { CacheCreateDto } from './infrastructure/dtos/cache-create.dto.js';
+export { CacheUpdateDto } from './infrastructure/dtos/cache-update.dto.js';
+export { CacheDto } from './infrastructure/dtos/cache.dto.js';
 
 // domain commands
-export { UpsertCacheCommand } from './application/commands/impl/upsert-cache.command';
-export { ClearCachesByAssigneeCommand } from './application/commands/impl/clear-caches-by-assignee.command';
-export { CreateCacheCommand } from './application/commands/impl/create-cache.command';
-export { UpdateCacheCommand } from './application/commands/impl/update-cache.command';
-export { RemoveCacheCommand } from './application/commands/impl/remove-cache.command';
-export { ReplaceCacheCommand } from './application/commands/impl/replace-cache.command';
-export { ArchiveCacheCommand } from './application/commands/impl/archive-cache.command';
+export { UpsertCacheCommand } from './application/commands/impl/upsert-cache.command.js';
+export { ClearCachesByAssigneeCommand } from './application/commands/impl/clear-caches-by-assignee.command.js';
+export { CreateCacheCommand } from './application/commands/impl/create-cache.command.js';
+export { UpdateCacheCommand } from './application/commands/impl/update-cache.command.js';
+export { RemoveCacheCommand } from './application/commands/impl/remove-cache.command.js';
+export { ReplaceCacheCommand } from './application/commands/impl/replace-cache.command.js';
+export { ArchiveCacheCommand } from './application/commands/impl/archive-cache.command.js';
 
 // domain events
-export { CacheCreatedEvent } from './domain/events/cache-created.event';
-export { CacheUpdatedEvent } from './domain/events/cache-updated.event';
-export { CacheReplacedEvent } from './domain/events/cache-replaced.event';
-export { CacheExtendedEvent } from './domain/events/cache-extended.event';
+export { CacheCreatedEvent } from './domain/events/cache-created.event.js';
+export { CacheUpdatedEvent } from './domain/events/cache-updated.event.js';
+export { CacheReplacedEvent } from './domain/events/cache-replaced.event.js';
+export { CacheExtendedEvent } from './domain/events/cache-extended.event.js';
 
 // domain queries
-export { GetCacheQuery } from './application/queries/impl/get-cache.query';
-export { FindOneCacheQuery } from './application/queries/impl/find-one-cache.query';
-export { FindCachesByAssigneeQuery } from './application/queries/impl/find-caches-by-assignee.query';
+export { GetCacheQuery } from './application/queries/impl/get-cache.query.js';
+export { FindOneCacheQuery } from './application/queries/impl/find-one-cache.query.js';
+export { FindCachesByAssigneeQuery } from './application/queries/impl/find-caches-by-assignee.query.js';
 
 // domain handlers
-export { UpsertCacheHandler } from './application/commands/handlers/upsert-cache.handler';
-export { ClearCachesByAssigneeHandler } from './application/commands/handlers/clear-caches-by-assignee.handler';
-export { CreateCacheHandler } from './application/commands/handlers/create-cache.handler';
-export { UpdateCacheHandler } from './application/commands/handlers/update-cache.handler';
-export { RemoveCacheHandler } from './application/commands/handlers/remove-cache.handler';
-export { ReplaceCacheHandler } from './application/commands/handlers/replace-cache.handler';
-export { ArchiveCacheHandler } from './application/commands/handlers/archive-cache.handler';
-export { GetCacheHandler } from './application/queries/handlers/get-cache.handler';
-export { FindOneCacheHandler } from './application/queries/handlers/find-one-cache.handler';
-export { FindCachesByAssigneeHandler } from './application/queries/handlers/find-caches-by-assignee.handler';
+export { UpsertCacheHandler } from './application/commands/handlers/upsert-cache.handler.js';
+export { ClearCachesByAssigneeHandler } from './application/commands/handlers/clear-caches-by-assignee.handler.js';
+export { CreateCacheHandler } from './application/commands/handlers/create-cache.handler.js';
+export { UpdateCacheHandler } from './application/commands/handlers/update-cache.handler.js';
+export { RemoveCacheHandler } from './application/commands/handlers/remove-cache.handler.js';
+export { ReplaceCacheHandler } from './application/commands/handlers/replace-cache.handler.js';
+export { ArchiveCacheHandler } from './application/commands/handlers/archive-cache.handler.js';
+export { GetCacheHandler } from './application/queries/handlers/get-cache.handler.js';
+export { FindOneCacheHandler } from './application/queries/handlers/find-one-cache.handler.js';
+export { FindCachesByAssigneeHandler } from './application/queries/handlers/find-caches-by-assignee.handler.js';
 
 // context overlay
 export {
   CacheContextOverlay,
   CacheCtx,
-} from './gateways/cache-context.overlay';
+} from './gateways/cache-context.overlay.js';
 
 // decorators
-export { CacheNamespace } from './gateways/decorators/cache-namespace.decorator';
+export { CacheNamespace } from './gateways/decorators/cache-namespace.decorator.js';
 
 // exceptions
-export { CacheException } from './domain/exceptions/cache.exception';
-export { CacheEntityNotFoundException } from './infrastructure/exceptions/cache-entity-not-found.exception';
-export { CacheInvalidExpiredDateException } from './domain/exceptions/cache-invalid-expired-date.exception';
-export { CacheNotFoundException } from './application/exceptions/cache-not-found.exception';
+export { CacheException } from './domain/exceptions/cache.exception.js';
+export { CacheEntityNotFoundException } from './infrastructure/exceptions/cache-entity-not-found.exception.js';
+export { CacheInvalidExpiredDateException } from './domain/exceptions/cache-invalid-expired-date.exception.js';
+export { CacheNotFoundException } from './application/exceptions/cache-not-found.exception.js';

@@ -7,21 +7,21 @@ import {
 
 import { AppContextHost } from '@concepta/nestjs-core';
 
-import { TransactionRequiredException } from '../exceptions/transaction-required.exception';
-import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception';
-import { RepositoryModuleOptionsInterface } from '../interfaces/repository-module-options.interface';
-import { PropagationBehavior } from '../interfaces/transactional-options.interface';
-import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants';
+import { TransactionRequiredException } from '../exceptions/transaction-required.exception.js';
+import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception.js';
+import { RepositoryModuleOptionsInterface } from '../interfaces/repository-module-options.interface.js';
+import { PropagationBehavior } from '../interfaces/transactional-options.interface.js';
+import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants.js';
 
 import {
   TransactionContextInterface,
   TrxCtx,
-} from './interfaces/transaction-context.interface';
+} from './interfaces/transaction-context.interface.js';
 import {
   TransactionFactoryRegistry,
   TRANSACTION_FACTORY_REGISTRY,
-} from './transaction-factory-registry';
-import { TransactionManager } from './transaction-manager';
+} from './transaction-factory-registry.js';
+import { TransactionManager } from './transaction-manager.js';
 
 const DEFAULT_TIMEOUT = 30000;
 

@@ -7,14 +7,14 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { IssueAuthenticatedResponseCommand } from '../../../../../application/commands/impl/issue-authenticated-response.command';
-import { AuthenticatedResponseInterface } from '../../../../../domain/interfaces/authenticated-response.interface';
-import { AuthenticatedUserInterface } from '../../../../../domain/interfaces/authenticated-user.interface';
-import { AuthPublic } from '../../../../decorators/auth-public.decorator';
-import { AuthUser } from '../../../../decorators/auth-user.decorator';
-import { AuthenticationResponseDto } from '../../../../dtos/authenticated-response.dto';
-import { LocalLoginDto } from '../../dto/local-login.dto';
-import { LocalGuard } from '../../local.guard';
+import { IssueAuthenticatedResponseCommand } from '../../../../../application/commands/impl/issue-authenticated-response.command.js';
+import { AuthenticatedResponseInterface } from '../../../../../domain/interfaces/authenticated-response.interface.js';
+import { AuthenticatedUserInterface } from '../../../../../domain/interfaces/authenticated-user.interface.js';
+import { AuthPublic } from '../../../../decorators/auth-public.decorator.js';
+import { AuthUser } from '../../../../decorators/auth-user.decorator.js';
+import { AuthenticationResponseDto } from '../../../../dtos/authenticated-response.dto.js';
+import { LocalLoginDto } from '../../dto/local-login.dto.js';
+import { LocalGuard } from '../../local.guard.js';
 
 /**
  * Auth Local controller

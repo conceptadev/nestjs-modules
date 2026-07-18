@@ -1,6 +1,6 @@
-import { mockRelationMetadata } from '../../__fixtures__/repository/mock/relation-metadata.mock';
-import { mockTypeOrmRepository } from '../../__fixtures__/repository/mock/typeorm-repository.mock';
-import { buildRelations } from '../typeorm-options.schema';
+import { mockRelationMetadata } from '../../__fixtures__/repository/mock/relation-metadata.mock.js';
+import { mockTypeOrmRepository } from '../../__fixtures__/repository/mock/typeorm-repository.mock.js';
+import { buildRelations } from '../typeorm-options.schema.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // buildRelations — pure function, mocked RelationMetadata

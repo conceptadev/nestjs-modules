@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { RemoveUserCommand } from '../../../../application/commands/impl/remove-user.command';
-import { assertUserId } from '../../../../application/utils/assert-user-id.util';
-import { User } from '../../../../domain/aggregates/user';
-import { DeleteUserRequest } from '../impl/delete-user.request';
+import { RemoveUserCommand } from '../../../../application/commands/impl/remove-user.command.js';
+import { assertUserId } from '../../../../application/utils/assert-user-id.util.js';
+import { User } from '../../../../domain/aggregates/user.js';
+import { DeleteUserRequest } from '../impl/delete-user.request.js';
 
 @Injectable()
 export class DeleteUserRequestHandler {

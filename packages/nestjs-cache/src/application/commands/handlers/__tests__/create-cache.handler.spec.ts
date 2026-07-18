@@ -4,11 +4,11 @@ import {
   createMockTransaction,
   createMockEventPublisher,
   DEFAULT_CACHE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Cache } from '../../../../domain/aggregates/cache';
-import { CacheExpirationPolicy } from '../../../../domain/policies/cache-expiration.policy';
-import { CreateCacheCommand } from '../../impl/create-cache.command';
-import { CreateCacheHandler } from '../create-cache.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Cache } from '../../../../domain/aggregates/cache.js';
+import { CacheExpirationPolicy } from '../../../../domain/policies/cache-expiration.policy.js';
+import { CreateCacheCommand } from '../../impl/create-cache.command.js';
+import { CreateCacheHandler } from '../create-cache.handler.js';
 
 describe(CreateCacheHandler.name, () => {
   const ctx = {};

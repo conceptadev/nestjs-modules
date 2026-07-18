@@ -1,8 +1,8 @@
 import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
-import { UserPasswordHistoryViolationException } from '../../exceptions/user-password-history-violation.exception';
-import { type UserPasswordPort } from '../../ports/user-password.port';
-import { UserCredentialsCollection } from '../user-credentials.collection';
+import { UserPasswordHistoryViolationException } from '../../exceptions/user-password-history-violation.exception.js';
+import { type UserPasswordPort } from '../../ports/user-password.port.js';
+import { UserCredentialsCollection } from '../user-credentials.collection.js';
 
 describe(UserCredentialsCollection.name, () => {
   const entries = [

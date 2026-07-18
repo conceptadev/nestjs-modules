@@ -4,10 +4,10 @@ import {
   createMockRepositoryResolver,
   createMockTransaction,
   DEFAULT_OTP_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { OtpHistoryCleanupService } from '../../../../domain/services/otp-history-cleanup.service';
-import { ClearOtpHistoryCommand } from '../../impl/clear-otp-history.command';
-import { ClearOtpHistoryHandler } from '../clear-otp-history.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { OtpHistoryCleanupService } from '../../../../domain/services/otp-history-cleanup.service.js';
+import { ClearOtpHistoryCommand } from '../../impl/clear-otp-history.command.js';
+import { ClearOtpHistoryHandler } from '../clear-otp-history.handler.js';
 
 describe(ClearOtpHistoryHandler.name, () => {
   let handler: ClearOtpHistoryHandler;

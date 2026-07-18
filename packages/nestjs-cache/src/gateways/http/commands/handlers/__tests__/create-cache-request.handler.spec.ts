@@ -5,11 +5,11 @@ import {
   createMockCacheContext,
   createMockCacheEntity,
   toCacheDomain,
-} from '../../../../../__tests__/helpers/mock.helpers';
-import { CreateCacheCommand } from '../../../../../application/commands/impl/create-cache.command';
-import { type CacheCreatableInterface } from '../../../../../domain/interfaces/cache-creatable.interface';
-import { type CacheInterface } from '../../../../../domain/interfaces/cache.interface';
-import { CreateCacheRequestHandler } from '../create-cache-request.handler';
+} from '../../../../../__tests__/helpers/mock.helpers.js';
+import { CreateCacheCommand } from '../../../../../application/commands/impl/create-cache.command.js';
+import { type CacheCreatableInterface } from '../../../../../domain/interfaces/cache-creatable.interface.js';
+import { type CacheInterface } from '../../../../../domain/interfaces/cache.interface.js';
+import { CreateCacheRequestHandler } from '../create-cache-request.handler.js';
 
 describe(CreateCacheRequestHandler.name, () => {
   let commandBus: ReturnType<typeof createMockCommandBus>;

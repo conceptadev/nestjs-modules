@@ -2,7 +2,7 @@ import { type PlainLiteralObject } from '@nestjs/common';
 import { MetadataScanner } from '@nestjs/core';
 import { ApiParam, type ApiParamOptions } from '@nestjs/swagger';
 
-import { CrudMetaview } from '../../services/crud-metaview.service';
+import { CrudMetaview } from '../../services/crud-metaview.service.js';
 
 /**
  * Crud initialize open api params decorator.

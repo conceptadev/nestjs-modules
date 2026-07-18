@@ -1,14 +1,14 @@
 import { Module, DynamicModule } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
-import { RepositoryDuplicateKeyException } from '../exceptions/repository-duplicate-key.exception';
-import { RepositoryModule } from '../repository.module';
-import { getDynamicRepositoryToken } from '../utils/get-dynamic-repository-token';
+import { RepositoryDuplicateKeyException } from '../exceptions/repository-duplicate-key.exception.js';
+import { RepositoryModule } from '../repository.module.js';
+import { getDynamicRepositoryToken } from '../utils/get-dynamic-repository-token.js';
 
 import {
   REPOSITORY_REGISTRY,
   RepositoryRegistryService,
-} from './repository-registry.service';
+} from './repository-registry.service.js';
 
 // Mock entity classes
 class UserEntity {}

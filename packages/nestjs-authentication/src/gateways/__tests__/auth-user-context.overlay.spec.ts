@@ -9,7 +9,7 @@ type HttpArgumentsHost = ReturnType<ArgumentsHost['switchToHttp']>;
 import {
   AuthUserCtx,
   AuthUserContextOverlay,
-} from '../auth-user-context.overlay';
+} from '../auth-user-context.overlay.js';
 
 const makeCtx = (request: object): ExecutionContext => {
   const httpArgsHost = mock<HttpArgumentsHost>();

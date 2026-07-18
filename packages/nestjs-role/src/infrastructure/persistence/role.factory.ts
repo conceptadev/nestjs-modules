@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Factory } from '@concepta/typeorm-seeding';
 
-import { type RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
+import { type RoleEntityInterface } from '../../domain/interfaces/role-entity.interface.js';
 
 /**
  * Role factory

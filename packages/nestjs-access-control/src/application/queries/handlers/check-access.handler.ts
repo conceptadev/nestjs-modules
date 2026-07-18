@@ -8,18 +8,18 @@ import {
   ACCESS_CONTROL_MODULE_GRANT_METADATA,
   ACCESS_CONTROL_MODULE_QUERY_METADATA,
   ACCESS_CONTROL_MODULE_SETTINGS_TOKEN,
-} from '../../../access-control.constants';
-import { AccessControlContext } from '../../../domain/access-control.context';
-import { PossessionEnum } from '../../../domain/enums/possession.enum';
-import { AccessControllerException } from '../../../domain/exceptions/access-controller.exception';
-import { AccessControlGrantOptionInterface } from '../../../domain/interfaces/access-control-grant-option.interface';
-import { AccessControlQueryOptionInterface } from '../../../domain/interfaces/access-control-query-option.interface';
-import { CanAccess } from '../../../domain/policies/can-access.policy';
-import { AccessControlServiceInterface } from '../../../domain/ports/access-control-service.interface';
-import { AccessControlSettingsInterface } from '../../../infrastructure/config/interfaces/access-control-settings.interface';
-import { AccessControlService } from '../../../infrastructure/services/access-control.service';
-import { CheckAccessQuery } from '../impl/check-access.query';
-import { ResolveUserRolesQuery } from '../impl/resolve-user-roles.query';
+} from '../../../access-control.constants.js';
+import { AccessControlContext } from '../../../domain/access-control.context.js';
+import { PossessionEnum } from '../../../domain/enums/possession.enum.js';
+import { AccessControllerException } from '../../../domain/exceptions/access-controller.exception.js';
+import { AccessControlGrantOptionInterface } from '../../../domain/interfaces/access-control-grant-option.interface.js';
+import { AccessControlQueryOptionInterface } from '../../../domain/interfaces/access-control-query-option.interface.js';
+import { CanAccess } from '../../../domain/policies/can-access.policy.js';
+import { AccessControlServiceInterface } from '../../../domain/ports/access-control-service.interface.js';
+import { AccessControlSettingsInterface } from '../../../infrastructure/config/interfaces/access-control-settings.interface.js';
+import { AccessControlService } from '../../../infrastructure/services/access-control.service.js';
+import { CheckAccessQuery } from '../impl/check-access.query.js';
+import { ResolveUserRolesQuery } from '../impl/resolve-user-roles.query.js';
 
 @QueryHandler(CheckAccessQuery)
 export class CheckAccessHandler implements IQueryHandler<

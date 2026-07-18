@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { OtpException } from './otp.exception';
+import { OtpException } from './otp.exception.js';
 
 export class OtpLimitReachedException extends OtpException {
   constructor(options?: RuntimeExceptionOptions) {

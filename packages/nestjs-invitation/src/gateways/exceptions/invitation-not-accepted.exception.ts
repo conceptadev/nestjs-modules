@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { InvitationException } from '../../domain/exceptions/invitation.exception';
+import { InvitationException } from '../../domain/exceptions/invitation.exception.js';
 
 /**
  * Thrown when an invitation acceptance fails.

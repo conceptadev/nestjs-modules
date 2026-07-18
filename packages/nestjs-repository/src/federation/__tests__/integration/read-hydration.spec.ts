@@ -13,7 +13,7 @@
  *
  * Ported from nestjs-crud __tests__/crud-federation/integration/read-hydration.spec.ts
  */
-import { WhereOperator } from '../../../repository/repository.types';
+import { WhereOperator } from '../../../repository/repository.types.js';
 import {
   type TestRoot,
   type TestRelation,
@@ -21,13 +21,13 @@ import {
   createSingleEntitySet,
   createMinimalRootRelationSet,
   createMultiRelationSet,
-} from '../federation-test-data';
+} from '../federation-test-data.js';
 import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToOneRelation,
   mockOneToManyRelation,
-} from '../fixtures/federation-orchestrator.mock';
+} from '../fixtures/federation-orchestrator.mock.js';
 
 describe('FederationOrchestrator - Integration: Read Hydration', () => {
   describe('no relations', () => {

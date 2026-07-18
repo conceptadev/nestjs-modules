@@ -1,10 +1,10 @@
 import { mock } from 'vitest-mock-extended';
 
-import { JwtStrategyPolicy } from '../../../../domain/policies/jwt-strategy.policy';
-import { type UserPort } from '../../../../domain/ports/user.port';
-import { AuthenticationUserPortRequiredException } from '../../../exceptions/authentication-user-port-required.exception';
-import { ValidateTokenQuery } from '../../impl/validate-token.query';
-import { ValidateTokenHandler } from '../validate-token.handler';
+import { JwtStrategyPolicy } from '../../../../domain/policies/jwt-strategy.policy.js';
+import { type UserPort } from '../../../../domain/ports/user.port.js';
+import { AuthenticationUserPortRequiredException } from '../../../exceptions/authentication-user-port-required.exception.js';
+import { ValidateTokenQuery } from '../../impl/validate-token.query.js';
+import { ValidateTokenHandler } from '../validate-token.handler.js';
 
 describe(ValidateTokenHandler.name, () => {
   const payload = { sub: 'user-1' };

@@ -3,9 +3,9 @@ import { AppContextHost } from '@concepta/nestjs-core';
 import {
   createMockTxScope,
   createMockUserCredentialsService,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { UpdateUserCredentialCommand } from '../../impl/update-user-credential.command';
-import { UpdateUserCredentialHandler } from '../update-user-credential.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { UpdateUserCredentialCommand } from '../../impl/update-user-credential.command.js';
+import { UpdateUserCredentialHandler } from '../update-user-credential.handler.js';
 
 describe(UpdateUserCredentialHandler.name, () => {
   const userCredentialsService = createMockUserCredentialsService();

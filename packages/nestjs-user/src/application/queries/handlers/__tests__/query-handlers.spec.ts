@@ -4,16 +4,16 @@ import {
   createMockUserEntity,
   createMockUserRepository,
   toUserDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { type UserRepositoryInterface } from '../../../../domain/repositories/user-repository.interface';
-import { GetUserByEmailQuery } from '../../impl/get-user-by-email.query';
-import { GetUserBySubjectQuery } from '../../impl/get-user-by-subject.query';
-import { GetUserByUsernameQuery } from '../../impl/get-user-by-username.query';
-import { GetUserQuery } from '../../impl/get-user.query';
-import { GetUserByEmailHandler } from '../get-user-by-email.handler';
-import { GetUserBySubjectHandler } from '../get-user-by-subject.handler';
-import { GetUserByUsernameHandler } from '../get-user-by-username.handler';
-import { GetUserHandler } from '../get-user.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { type UserRepositoryInterface } from '../../../../domain/repositories/user-repository.interface.js';
+import { GetUserByEmailQuery } from '../../impl/get-user-by-email.query.js';
+import { GetUserBySubjectQuery } from '../../impl/get-user-by-subject.query.js';
+import { GetUserByUsernameQuery } from '../../impl/get-user-by-username.query.js';
+import { GetUserQuery } from '../../impl/get-user.query.js';
+import { GetUserByEmailHandler } from '../get-user-by-email.handler.js';
+import { GetUserBySubjectHandler } from '../get-user-by-subject.handler.js';
+import { GetUserByUsernameHandler } from '../get-user-by-username.handler.js';
+import { GetUserHandler } from '../get-user.handler.js';
 
 const mockUser = toUserDomain(createMockUserEntity());
 

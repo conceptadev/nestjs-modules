@@ -1,10 +1,10 @@
-import { PasswordStrengthEnum } from '../enum/password-strength.enum';
+import { PasswordStrengthEnum } from '../enum/password-strength.enum.js';
 import {
   PasswordPolicy,
   type PasswordPolicySettings,
-} from '../policies/password.policy';
+} from '../policies/password.policy.js';
 
-import { PasswordStrengthService } from './password-strength.service';
+import { PasswordStrengthService } from './password-strength.service.js';
 
 const PASSWORD_NONE = 'password';
 const PASSWORD_WEAK = 'A12345678';

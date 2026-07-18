@@ -2,10 +2,10 @@ import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
 import { EventContextHost } from '@concepta/nestjs-core';
 
-import { type InvitationEventPayloadInterface } from '../../../domain/events/interfaces/invitation-event-payload.interface';
-import { InvitationDispatchedEvent } from '../../../domain/events/invitation-dispatched.event';
-import { type InvitationNotificationPort } from '../../../domain/ports/invitation-notification.port';
-import { InvitationDispatchedListener } from '../invitation-dispatched.listener';
+import { type InvitationEventPayloadInterface } from '../../../domain/events/interfaces/invitation-event-payload.interface.js';
+import { InvitationDispatchedEvent } from '../../../domain/events/invitation-dispatched.event.js';
+import { type InvitationNotificationPort } from '../../../domain/ports/invitation-notification.port.js';
+import { InvitationDispatchedListener } from '../invitation-dispatched.listener.js';
 
 describe(InvitationDispatchedListener.name, () => {
   let listener: InvitationDispatchedListener;

@@ -1,4 +1,4 @@
-import { type TokenType } from './token.interface';
+import { type TokenType } from './token.interface.js';
 
 export interface TokenCreatableInterface {
   sub: string;

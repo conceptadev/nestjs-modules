@@ -5,8 +5,8 @@ import { ROUTE_ARGS_METADATA } from '@nestjs/common/constants';
 
 type HttpArgumentsHost = ReturnType<ArgumentsHost['switchToHttp']>;
 
-import { AuthUserContextOverlay } from '../../../gateways/auth-user-context.overlay';
-import { AuthUser } from '../auth-user.decorator';
+import { AuthUserContextOverlay } from '../../../gateways/auth-user-context.overlay.js';
+import { AuthUser } from '../auth-user.decorator.js';
 
 type ParamFactory = (data: unknown, ctx: ExecutionContext) => unknown;
 

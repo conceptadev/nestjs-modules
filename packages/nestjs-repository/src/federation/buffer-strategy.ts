@@ -1,4 +1,4 @@
-import { FEDERATION_MAX_BUFFER_SIZE } from './federation.constants';
+import { FEDERATION_MAX_BUFFER_SIZE } from './federation.constants.js';
 
 /**
  * Manages offset-based pagination for iterative constraint discovery.

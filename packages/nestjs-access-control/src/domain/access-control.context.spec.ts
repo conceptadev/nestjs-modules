@@ -11,10 +11,10 @@ type HttpArgumentsHost = ReturnType<ArgumentsHost['switchToHttp']>;
 
 import { ActionEnum } from '@concepta/nestjs-core';
 
-import { AccessControlReadOne } from '../gateways/decorators/access-control-read-one.decorator';
+import { AccessControlReadOne } from '../gateways/decorators/access-control-read-one.decorator.js';
 
-import { AccessControlContext } from './access-control.context';
-import { PossessionEnum } from './enums/possession.enum';
+import { AccessControlContext } from './access-control.context.js';
+import { PossessionEnum } from './enums/possession.enum.js';
 
 describe(AccessControlContext.name, () => {
   it('should return expected values', () => {

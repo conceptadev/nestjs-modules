@@ -2,9 +2,9 @@ import { type PlainLiteralObject } from '@nestjs/common';
 
 import { type DeepPartial } from '@concepta/nestjs-core';
 
-import { type CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
+import { type CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface.js';
 
-import { CrudWithBodyCommand } from './crud-with-body.command';
+import { CrudWithBodyCommand } from './crud-with-body.command.js';
 
 export class CrudUpdateCommand<
   Entity extends PlainLiteralObject,

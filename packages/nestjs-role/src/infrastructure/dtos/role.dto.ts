@@ -5,7 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { DomainAggregateDto } from '@concepta/nestjs-core/aggregate';
 
-import { RoleInterface } from '../../domain/interfaces/role.interface';
+import { RoleInterface } from '../../domain/interfaces/role.interface.js';
 
 @Exclude()
 export class RoleDto extends DomainAggregateDto implements RoleInterface {

@@ -2,7 +2,7 @@ import {
   type MutateOperations,
   type ReadOperations,
   type WriteOperations,
-} from '../enums/operation.enum';
+} from '../enums/operation.enum.js';
 
 export type ExceptionContext = Record<string, unknown> & {
   originalError?: unknown;

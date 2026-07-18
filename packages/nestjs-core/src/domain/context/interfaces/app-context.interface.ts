@@ -1,7 +1,7 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type OverlayRef } from '../overlay-ref';
-import { type RefsToMethods } from '../refs-to-methods.type';
+import { type OverlayRef } from '../overlay-ref.js';
+import { type RefsToMethods } from '../refs-to-methods.type.js';
 
 export interface AppContextInterface {
   defineOverlay<Name extends string, Props extends PlainLiteralObject>(

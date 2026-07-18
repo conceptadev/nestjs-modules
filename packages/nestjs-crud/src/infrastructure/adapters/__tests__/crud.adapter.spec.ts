@@ -3,10 +3,10 @@ import { BadRequestException } from '@nestjs/common';
 import { Where, WhereOperator } from '@concepta/nestjs-repository';
 import { createMockRepository } from '@concepta/nestjs-repository/testing';
 
-import { TestCrudAdapter } from '../../../__fixtures__/crud/adapters/test-crud.adapter';
-import { mockCrudContext } from '../../../__fixtures__/crud/mocks/crud-context.mock';
-import { mockCrudParsedQuery } from '../../../__fixtures__/crud/mocks/crud-parsed-query.mock';
-import { type CrudContextOptionsInterface } from '../../interceptors/interfaces/crud-context-options.interface';
+import { TestCrudAdapter } from '../../../__fixtures__/crud/adapters/test-crud.adapter.js';
+import { mockCrudContext } from '../../../__fixtures__/crud/mocks/crud-context.mock.js';
+import { mockCrudParsedQuery } from '../../../__fixtures__/crud/mocks/crud-parsed-query.mock.js';
+import { type CrudContextOptionsInterface } from '../../interceptors/interfaces/crud-context-options.interface.js';
 
 interface TestEntity {
   id: string;

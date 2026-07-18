@@ -2,10 +2,10 @@ import { type PlainLiteralObject } from '@nestjs/common';
 
 import { type DeepPartial } from '@concepta/nestjs-core';
 
-import { type CrudAdapter } from '../../../infrastructure/adapters/crud.adapter';
-import { type CrudWithBodyCommand } from '../impl/crud-with-body.command';
+import { type CrudAdapter } from '../../../infrastructure/adapters/crud.adapter.js';
+import { type CrudWithBodyCommand } from '../impl/crud-with-body.command.js';
 
-import { CrudCommandHandler } from './crud-command.handler';
+import { CrudCommandHandler } from './crud-command.handler.js';
 
 export class CrudWithBodyCommandHandler<
   Entity extends PlainLiteralObject = PlainLiteralObject,

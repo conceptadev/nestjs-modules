@@ -9,17 +9,17 @@ import {
   type WhereConditionScalar,
 } from '@concepta/nestjs-repository';
 
-import { type CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
+import { type CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface.js';
 import {
   hasValue,
   isDateString,
   isStringFull,
   sanitizeForMessage,
-} from '../utils/validation';
+} from '../utils/validation.js';
 
-import { CrudQueryBuilder } from './crud-query.builder';
-import { COND_OPERATOR_FACTORY, type SCondition } from './crud-query.types';
-import { splitSortString } from './crud-query.utils';
+import { CrudQueryBuilder } from './crud-query.builder.js';
+import { COND_OPERATOR_FACTORY, type SCondition } from './crud-query.types.js';
+import { splitSortString } from './crud-query.utils.js';
 import {
   validateComparisonOperator,
   validateCondition,
@@ -27,10 +27,10 @@ import {
   validateParamOption,
   validateSort,
   validateUUID,
-} from './crud-query.validator';
-import { CrudQueryParserException } from './exceptions/crud-query-parser.exception';
-import { type CrudParsedQueryInterface } from './interfaces/crud-parsed-query.interface';
-import { type CrudQueryBuilderOptionsInterface } from './interfaces/crud-query-builder-options.interface';
+} from './crud-query.validator.js';
+import { CrudQueryParserException } from './exceptions/crud-query-parser.exception.js';
+import { type CrudParsedQueryInterface } from './interfaces/crud-parsed-query.interface.js';
+import { type CrudQueryBuilderOptionsInterface } from './interfaces/crud-query-builder-options.interface.js';
 
 export class CrudQueryParser<
   Entity extends PlainLiteralObject,

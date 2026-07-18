@@ -1,8 +1,8 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type RelationAction } from '../repository.types';
+import { type RelationAction } from '../repository.types.js';
 
-import { type WhereCondition } from './where-clause.interface';
+import { type WhereCondition } from './where-clause.interface.js';
 
 /**
  * ORM-agnostic relation metadata for repository introspection.

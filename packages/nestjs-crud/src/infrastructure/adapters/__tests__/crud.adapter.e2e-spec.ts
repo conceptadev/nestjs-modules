@@ -23,13 +23,13 @@ import {
   TypeOrmRepositoryModule,
 } from '@concepta/nestjs-repository-typeorm';
 
-import { mockCrudParsedQuery } from '../../../__fixtures__/crud/mocks/crud-parsed-query.mock';
-import { CompanyEntity } from '../../../__fixtures__/typeorm/company/company.entity';
-import { ProjectEntity } from '../../../__fixtures__/typeorm/project/project.entity';
-import { UserEntity } from '../../../__fixtures__/typeorm/users/user.entity';
-import { CrudCtx } from '../../interceptors/crud-context.overlay';
-import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface';
-import { CrudAdapter } from '../crud.adapter';
+import { mockCrudParsedQuery } from '../../../__fixtures__/crud/mocks/crud-parsed-query.mock.js';
+import { CompanyEntity } from '../../../__fixtures__/typeorm/company/company.entity.js';
+import { ProjectEntity } from '../../../__fixtures__/typeorm/project/project.entity.js';
+import { UserEntity } from '../../../__fixtures__/typeorm/users/user.entity.js';
+import { CrudCtx } from '../../interceptors/crud-context.overlay.js';
+import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface.js';
+import { CrudAdapter } from '../crud.adapter.js';
 
 // ─── Entity ─────────────────────────────────────────────────────────────────
 

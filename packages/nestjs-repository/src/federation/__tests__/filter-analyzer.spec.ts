@@ -1,10 +1,10 @@
 import {
   WhereCompoundOperator,
   WhereOperator,
-} from '../../repository/repository.types';
-import { FederationException } from '../exceptions/federation.exception';
-import { type FederatedRelation } from '../federation.types';
-import { FilterAnalyzer } from '../filter-analyzer';
+} from '../../repository/repository.types.js';
+import { FederationException } from '../exceptions/federation.exception.js';
+import { type FederatedRelation } from '../federation.types.js';
+import { FilterAnalyzer } from '../filter-analyzer.js';
 
 const makeRelation = (
   overrides: Partial<FederatedRelation> & { name: string },

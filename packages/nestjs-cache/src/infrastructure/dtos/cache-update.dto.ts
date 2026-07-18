@@ -2,9 +2,9 @@ import { Exclude } from 'class-transformer';
 
 import { PickType } from '@nestjs/swagger';
 
-import { CacheUpdatableInterface } from '../../domain/interfaces/cache-updatable.interface';
+import { CacheUpdatableInterface } from '../../domain/interfaces/cache-updatable.interface.js';
 
-import { CacheDto } from './cache.dto';
+import { CacheDto } from './cache.dto.js';
 
 /**
  * Cache Update DTO

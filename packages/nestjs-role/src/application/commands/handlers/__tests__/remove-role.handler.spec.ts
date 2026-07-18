@@ -7,10 +7,10 @@ import {
   createMockRoleEntity,
   toRoleDomain,
   DEFAULT_ROLE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { RoleNotFoundException } from '../../../exceptions/role-not-found.exception';
-import { RemoveRoleCommand } from '../../impl/remove-role.command';
-import { RemoveRoleHandler } from '../remove-role.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { RoleNotFoundException } from '../../../exceptions/role-not-found.exception.js';
+import { RemoveRoleCommand } from '../../impl/remove-role.command.js';
+import { RemoveRoleHandler } from '../remove-role.handler.js';
 
 describe(RemoveRoleHandler.name, () => {
   const ctx = {};

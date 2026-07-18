@@ -4,9 +4,9 @@ import {
   createMockCacheEntity,
   toCacheDomain,
   DEFAULT_CACHE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { FindOneCacheQuery } from '../../impl/find-one-cache.query';
-import { FindOneCacheHandler } from '../find-one-cache.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { FindOneCacheQuery } from '../../impl/find-one-cache.query.js';
+import { FindOneCacheHandler } from '../find-one-cache.handler.js';
 
 describe(FindOneCacheHandler.name, () => {
   const ctx = {};

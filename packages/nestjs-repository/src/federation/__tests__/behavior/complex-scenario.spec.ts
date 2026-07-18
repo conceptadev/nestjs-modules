@@ -9,13 +9,13 @@
 import {
   WhereCompoundOperator,
   WhereOperator,
-} from '../../../repository/repository.types';
-import { type TestRoot, type TestRelation } from '../federation-test-data';
+} from '../../../repository/repository.types.js';
+import { type TestRoot, type TestRelation } from '../federation-test-data.js';
 import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
-} from '../fixtures/federation-orchestrator.mock';
+} from '../fixtures/federation-orchestrator.mock.js';
 
 describe('FederationOrchestrator - Complex Scenarios', () => {
   describe('Sparse data iteration', () => {

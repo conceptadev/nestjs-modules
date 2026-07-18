@@ -1,8 +1,8 @@
 import { type Mock } from 'vitest';
 
-import { type TransactionInterface } from './interfaces/transaction.interface';
-import { TransactionFactoryRegistry } from './transaction-factory-registry';
-import { TransactionManager } from './transaction-manager';
+import { type TransactionInterface } from './interfaces/transaction.interface.js';
+import { TransactionFactoryRegistry } from './transaction-factory-registry.js';
+import { TransactionManager } from './transaction-manager.js';
 
 describe(TransactionManager.name, () => {
   let manager: TransactionManager;

@@ -10,16 +10,16 @@ import {
   type TransactionContextInterface,
 } from '@concepta/nestjs-repository';
 
-import { type User } from '../../domain/aggregates/user';
-import { type UserCredentials } from '../../domain/aggregates/user-credentials';
-import { type UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';
-import { type UserEntityInterface } from '../../domain/interfaces/user-entity.interface';
-import { type UserPasswordPort } from '../../domain/ports/user-password.port';
-import { type UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';
-import { type UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
-import { type UserCredentialsService } from '../../domain/services/user-credentials.service';
-import { UserCredentialsMapper } from '../../infrastructure/persistence/user-credentials.mapper';
-import { UserMapper } from '../../infrastructure/persistence/user.mapper';
+import { type UserCredentials } from '../../domain/aggregates/user-credentials.js';
+import { type User } from '../../domain/aggregates/user.js';
+import { type UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface.js';
+import { type UserEntityInterface } from '../../domain/interfaces/user-entity.interface.js';
+import { type UserPasswordPort } from '../../domain/ports/user-password.port.js';
+import { type UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface.js';
+import { type UserRepositoryInterface } from '../../domain/repositories/user-repository.interface.js';
+import { type UserCredentialsService } from '../../domain/services/user-credentials.service.js';
+import { UserCredentialsMapper } from '../../infrastructure/persistence/user-credentials.mapper.js';
+import { UserMapper } from '../../infrastructure/persistence/user.mapper.js';
 
 export function createMockTxScope(): DeepMockProxy<TransactionScope> {
   const trxHandle = {

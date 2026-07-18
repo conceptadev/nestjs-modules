@@ -1,7 +1,7 @@
 import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 import { Command, CommandBus, Query, QueryBus } from '@nestjs/cqrs';
 
-import { AuthorizationPayloadInterface } from '../interfaces/authorization-payload.interface';
+import { AuthorizationPayloadInterface } from '../interfaces/authorization-payload.interface.js';
 
 export interface IssueTokenCommandInterface extends Command<string> {
   ctx: PlainLiteralObject;

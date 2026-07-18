@@ -1,7 +1,7 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 import { AggregateRoot } from '@nestjs/cqrs';
 
-import { type AggregateMetaInterface } from './interfaces/aggregate-meta.interface';
+import { type AggregateMetaInterface } from './interfaces/aggregate-meta.interface.js';
 
 export abstract class DomainAggregate<
   T extends PlainLiteralObject,

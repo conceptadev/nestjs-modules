@@ -1,7 +1,7 @@
-import { ValidatePasswordHistoryCommand } from '../../impl/validate-password-history.command';
-import { ValidatePasswordHistoryHandler } from '../validate-password-history.handler';
+import { ValidatePasswordHistoryCommand } from '../../impl/validate-password-history.command.js';
+import { ValidatePasswordHistoryHandler } from '../validate-password-history.handler.js';
 
-import { createMockCreationService } from './mock.helpers';
+import { createMockCreationService } from './mock.helpers.js';
 
 describe(ValidatePasswordHistoryHandler.name, () => {
   it('should delegate to PasswordCreationService.validateHistory', async () => {

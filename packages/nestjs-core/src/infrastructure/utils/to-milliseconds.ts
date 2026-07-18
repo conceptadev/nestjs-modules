@@ -2,7 +2,7 @@ import ms from 'ms';
 
 import { HttpStatus } from '@nestjs/common';
 
-import { RuntimeException } from '../../domain/exceptions/runtime.exception';
+import { RuntimeException } from '../../domain/exceptions/runtime.exception.js';
 
 /**
  * Converts a time string value to milliseconds using the ms library.

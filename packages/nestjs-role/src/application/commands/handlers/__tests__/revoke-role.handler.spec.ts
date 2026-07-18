@@ -8,9 +8,9 @@ import {
   createMockRoleAssignmentEntity,
   toRoleAssignmentDomain,
   DEFAULT_ROLE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { RevokeRoleCommand } from '../../impl/revoke-role.command';
-import { RevokeRoleHandler } from '../revoke-role.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { RevokeRoleCommand } from '../../impl/revoke-role.command.js';
+import { RevokeRoleHandler } from '../revoke-role.handler.js';
 
 describe(RevokeRoleHandler.name, () => {
   const ctx = {};

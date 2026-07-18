@@ -4,11 +4,11 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { EventContextHost } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { RoleAssignment } from '../../../domain/aggregates/role-assignment';
-import { RoleAssignmentRepositoryResolverInterface } from '../../../domain/repositories/role-assignment-repository-resolver.interface';
-import { ROLE_ASSIGNMENT_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants';
-import { RoleAssignmentsConflictException } from '../../exceptions/role-assignments-conflict.exception';
-import { AssignRolesCommand } from '../impl/assign-roles.command';
+import { RoleAssignment } from '../../../domain/aggregates/role-assignment.js';
+import { RoleAssignmentRepositoryResolverInterface } from '../../../domain/repositories/role-assignment-repository-resolver.interface.js';
+import { ROLE_ASSIGNMENT_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants.js';
+import { RoleAssignmentsConflictException } from '../../exceptions/role-assignments-conflict.exception.js';
+import { AssignRolesCommand } from '../impl/assign-roles.command.js';
 
 @CommandHandler(AssignRolesCommand)
 export class AssignRolesHandler implements ICommandHandler<AssignRolesCommand> {

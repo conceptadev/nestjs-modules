@@ -1,6 +1,6 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type OverlayRef } from './overlay-ref';
+import { type OverlayRef } from './overlay-ref.js';
 
 export type RefsToMethods<
   R extends OverlayRef<string, PlainLiteralObject, unknown[]>,

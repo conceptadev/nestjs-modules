@@ -4,7 +4,7 @@ import {
   UserAsyncOptions,
   UserModuleClass,
   UserOptions,
-} from './user.module-definition';
+} from './user.module-definition.js';
 
 type UserRegistrationOptions = Omit<UserOptions, 'global'>;
 type UserAsyncRegistrationOptions = Omit<UserAsyncOptions, 'global'>;

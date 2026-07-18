@@ -4,10 +4,10 @@ import {
   createMockTransaction,
   createMockEventPublisher,
   DEFAULT_ROLE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { RoleAssignmentConflictException } from '../../../exceptions/role-assignment-conflict.exception';
-import { AssignRoleCommand } from '../../impl/assign-role.command';
-import { AssignRoleHandler } from '../assign-role.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { RoleAssignmentConflictException } from '../../../exceptions/role-assignment-conflict.exception.js';
+import { AssignRoleCommand } from '../../impl/assign-role.command.js';
+import { AssignRoleHandler } from '../assign-role.handler.js';
 
 describe(AssignRoleHandler.name, () => {
   const ctx = {};

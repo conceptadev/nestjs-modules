@@ -1,4 +1,4 @@
-import { uuidValidatorUtil } from '../uuid-validator.util';
+import { uuidValidatorUtil } from '../uuid-validator.util.js';
 
 describe(uuidValidatorUtil.name, () => {
   it('should return true when both strings match', () => {

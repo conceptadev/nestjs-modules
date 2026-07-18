@@ -23,8 +23,8 @@ import {
   GetUserByUsernameQueryInterface,
   UpdateUserCommandInterface,
   UserPortSettings,
-} from '../../../domain/ports/user.port';
-import { createUserPortProvider } from '../../../infrastructure/utils/create-user-port-provider';
+} from '../../../domain/ports/user.port.js';
+import { createUserPortProvider } from '../../../infrastructure/utils/create-user-port-provider.js';
 
 // ── Mock queries/commands ──
 

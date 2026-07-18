@@ -2,15 +2,15 @@ import { randomUUID } from 'crypto';
 
 import { mock } from 'vitest-mock-extended';
 
-import { type AuthorizationPayloadInterface } from '../../../../domain/interfaces/authorization-payload.interface';
-import { RefreshStrategyPolicy } from '../../../../domain/policies/refresh-strategy.policy';
-import { type JwtPort } from '../../../../domain/ports/jwt.port';
+import { type AuthorizationPayloadInterface } from '../../../../domain/interfaces/authorization-payload.interface.js';
+import { RefreshStrategyPolicy } from '../../../../domain/policies/refresh-strategy.policy.js';
+import { type JwtPort } from '../../../../domain/ports/jwt.port.js';
 import {
   type AuthenticationUserResult,
   type UserPort,
-} from '../../../../domain/ports/user.port';
-import { RefreshUnauthorizedException } from '../exceptions/refresh-unauthorized.exception';
-import { RefreshStrategy } from '../refresh.strategy';
+} from '../../../../domain/ports/user.port.js';
+import { RefreshUnauthorizedException } from '../exceptions/refresh-unauthorized.exception.js';
+import { RefreshStrategy } from '../refresh.strategy.js';
 
 describe(RefreshStrategy, () => {
   const USERNAME = 'username';

@@ -2,7 +2,7 @@ import { type PlainLiteralObject } from '@nestjs/common';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { type RoleAssignment } from '../aggregates/role-assignment';
+import { type RoleAssignment } from '../aggregates/role-assignment.js';
 
 export interface RoleAssignmentRepositoryInterface {
   get(ctx: PlainLiteralObject, id: ReferenceId): Promise<RoleAssignment | null>;

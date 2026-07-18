@@ -1,12 +1,12 @@
 import { DynamicModule, Module } from '@nestjs/common';
 
-import { createRoleAssignmentRepositoryProvider } from './infrastructure/utils/create-role-assignment-repository-provider';
-import { createRoleRepositoryProvider } from './infrastructure/utils/create-role-repository-provider';
+import { createRoleAssignmentRepositoryProvider } from './infrastructure/utils/create-role-assignment-repository-provider.js';
+import { createRoleRepositoryProvider } from './infrastructure/utils/create-role-repository-provider.js';
 import {
   RoleCoreAsyncOptions,
   RoleCoreModuleClass,
   RoleCoreOptions,
-} from './role-core.module-definition';
+} from './role-core.module-definition.js';
 
 type RoleOptions = Omit<RoleCoreOptions, 'global'>;
 type RoleAsyncOptions = Omit<RoleCoreAsyncOptions, 'global'>;

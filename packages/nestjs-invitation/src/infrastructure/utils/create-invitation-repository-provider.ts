@@ -5,11 +5,11 @@ import {
   type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { type InvitationRepositoryInterface } from '../../domain/repositories/invitation-repository.interface';
-import { INVITATION_MODULE_REPOSITORY_TOKEN } from '../../invitation.constants';
-import { type InvitationEntityInterface } from '../persistence/interfaces/invitation-entity.interface';
-import { InvitationMapper } from '../persistence/invitation.mapper';
-import { InvitationRepository } from '../persistence/invitation.repository';
+import { type InvitationRepositoryInterface } from '../../domain/repositories/invitation-repository.interface.js';
+import { INVITATION_MODULE_REPOSITORY_TOKEN } from '../../invitation.constants.js';
+import { type InvitationEntityInterface } from '../persistence/interfaces/invitation-entity.interface.js';
+import { InvitationMapper } from '../persistence/invitation.mapper.js';
+import { InvitationRepository } from '../persistence/invitation.repository.js';
 
 export function createInvitationRepositoryProvider(
   entityKey: string,

@@ -3,7 +3,7 @@ import { Column, Unique } from 'typeorm';
 import { ReferenceId } from '@concepta/nestjs-core';
 import { CommonPostgresEntity } from '@concepta/nestjs-repository-typeorm';
 
-import { CacheInterface } from '../../../domain/interfaces/cache.interface';
+import { CacheInterface } from '../../../domain/interfaces/cache.interface.js';
 
 /**
  * Cache Postgres Entity

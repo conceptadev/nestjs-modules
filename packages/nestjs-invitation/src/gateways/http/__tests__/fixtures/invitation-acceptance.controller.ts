@@ -9,11 +9,11 @@ import {
   CrudUpdate,
 } from '@concepta/nestjs-crud';
 
-import { InvitationAcceptableInterface } from '../../../../domain/interfaces/invitation-acceptable.interface';
-import { InvitationAcceptDto } from '../../../../infrastructure/dtos/invitation-accept.dto';
-import { INVITATION_MODULE_DEFAULT_ENTITY_KEY } from '../../../../invitation.constants';
-import { AcceptInvitationRequestHandler } from '../../commands/handlers/accept-invitation-request.handler';
-import { AcceptInvitationRequest } from '../../commands/impl/accept-invitation.request';
+import { InvitationAcceptableInterface } from '../../../../domain/interfaces/invitation-acceptable.interface.js';
+import { InvitationAcceptDto } from '../../../../infrastructure/dtos/invitation-accept.dto.js';
+import { INVITATION_MODULE_DEFAULT_ENTITY_KEY } from '../../../../invitation.constants.js';
+import { AcceptInvitationRequestHandler } from '../../commands/handlers/accept-invitation-request.handler.js';
+import { AcceptInvitationRequest } from '../../commands/impl/accept-invitation.request.js';
 
 @CrudController({
   path: 'invitation-acceptance',

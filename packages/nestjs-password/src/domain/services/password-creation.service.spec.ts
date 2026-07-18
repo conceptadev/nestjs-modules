@@ -1,16 +1,16 @@
-import { PasswordStrengthEnum } from '../enum/password-strength.enum';
-import { PasswordNotStrongException } from '../exceptions/password-not-strong.exception';
-import { PasswordUsedRecentlyException } from '../exceptions/password-used-recently.exception';
-import { type PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
+import { PasswordStrengthEnum } from '../enum/password-strength.enum.js';
+import { PasswordNotStrongException } from '../exceptions/password-not-strong.exception.js';
+import { PasswordUsedRecentlyException } from '../exceptions/password-used-recently.exception.js';
+import { type PasswordStorageInterface } from '../password/interfaces/password-storage.interface.js';
 import {
   PasswordPolicy,
   type PasswordPolicySettings,
-} from '../policies/password.policy';
+} from '../policies/password.policy.js';
 
-import { PasswordCreationService } from './password-creation.service';
-import { PasswordStorageService } from './password-storage.service';
-import { PasswordStrengthService } from './password-strength.service';
-import { PasswordValidationService } from './password-validation.service';
+import { PasswordCreationService } from './password-creation.service.js';
+import { PasswordStorageService } from './password-storage.service.js';
+import { PasswordStrengthService } from './password-strength.service.js';
+import { PasswordValidationService } from './password-validation.service.js';
 
 describe(PasswordCreationService, () => {
   let policySettings: PasswordPolicySettings;

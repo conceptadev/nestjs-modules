@@ -6,7 +6,7 @@ import { type ReferenceId } from '@concepta/nestjs-core';
 import {
   type Role,
   type RoleCreateProps,
-} from '../../../domain/aggregates/role';
+} from '../../../domain/aggregates/role.js';
 
 export class UpdateRoleCommand extends Command<Role> {
   constructor(

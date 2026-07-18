@@ -2,7 +2,7 @@ import { Strategy } from 'passport-strategy';
 
 import { PassportStrategy } from '@nestjs/passport';
 
-import { PassportStrategyFactory } from '../passport-strategy.factory';
+import { PassportStrategyFactory } from '../passport-strategy.factory.js';
 
 vi.mock('@nestjs/passport', () => ({
   PassportStrategy: vi.fn().mockImplementation((strategy, name) => ({

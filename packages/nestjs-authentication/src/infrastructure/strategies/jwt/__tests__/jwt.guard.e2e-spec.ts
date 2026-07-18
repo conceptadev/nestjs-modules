@@ -7,9 +7,9 @@ import { Test, type TestingModule } from '@nestjs/testing';
 
 import { ExceptionsFilter } from '@concepta/nestjs-core';
 
-import { FIXTURE_USER } from '../../../../__tests__/fixtures/user.module.fixture';
+import { FIXTURE_USER } from '../../../../__tests__/fixtures/user.module.fixture.js';
 
-import { AppModuleFixture } from './fixtures/app.module.fixture';
+import { AppModuleFixture } from './fixtures/app.module.fixture.js';
 
 describe('JwtGuard (e2e)', () => {
   let app: INestApplication;

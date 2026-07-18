@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { RemoveInvitationCommand } from '../../../../application/commands/impl/remove-invitation.command';
-import { assertInvitationId } from '../../../../application/utils/assert-invitation-id.util';
-import { DeleteInvitationRequest } from '../impl/delete-invitation.request';
+import { RemoveInvitationCommand } from '../../../../application/commands/impl/remove-invitation.command.js';
+import { assertInvitationId } from '../../../../application/utils/assert-invitation-id.util.js';
+import { DeleteInvitationRequest } from '../impl/delete-invitation.request.js';
 
 @Injectable()
 export class DeleteInvitationRequestHandler {

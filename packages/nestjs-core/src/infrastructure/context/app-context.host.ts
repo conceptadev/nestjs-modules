@@ -1,11 +1,11 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type AppContextLike } from '../../domain/context/app-context-like.type';
-import { type AppContextInterface } from '../../domain/context/interfaces/app-context.interface';
-import { type OverlayRef } from '../../domain/context/overlay-ref';
-import { type RefsToMethods } from '../../domain/context/refs-to-methods.type';
+import { type AppContextLike } from '../../domain/context/app-context-like.type.js';
+import { type AppContextInterface } from '../../domain/context/interfaces/app-context.interface.js';
+import { type OverlayRef } from '../../domain/context/overlay-ref.js';
+import { type RefsToMethods } from '../../domain/context/refs-to-methods.type.js';
 
-import { OverlayNotDefinedException } from './exceptions/overlay-not-defined.exception';
+import { OverlayNotDefinedException } from './exceptions/overlay-not-defined.exception.js';
 
 /**
  * Symbol key used to store the context on the request object.

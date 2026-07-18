@@ -4,16 +4,16 @@ import { EventPublisher } from '@nestjs/cqrs';
 import { EventContextHost, NotAnErrorException } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { FEDERATED_MODULE_IDENTITY_REPOSITORY_TOKEN } from '../../federated.constants';
-import { FederatedCredentialsInterface } from '../../interfaces/federated-credentials.interface';
-import { Identity } from '../aggregates/identity';
-import { IdentityCreateUserException } from '../exceptions/identity-create-user.exception';
-import { IdentityFindUserException } from '../exceptions/identity-find-user.exception';
-import { IdentityUserRelationshipException } from '../exceptions/identity-user-relationship.exception';
-import { FederatedUserPort } from '../ports/federated-user.port';
-import { IdentityRepositoryInterface } from '../repositories/identity-repository.interface';
+import { FEDERATED_MODULE_IDENTITY_REPOSITORY_TOKEN } from '../../federated.constants.js';
+import { FederatedCredentialsInterface } from '../../interfaces/federated-credentials.interface.js';
+import { Identity } from '../aggregates/identity.js';
+import { IdentityCreateUserException } from '../exceptions/identity-create-user.exception.js';
+import { IdentityFindUserException } from '../exceptions/identity-find-user.exception.js';
+import { IdentityUserRelationshipException } from '../exceptions/identity-user-relationship.exception.js';
+import { FederatedUserPort } from '../ports/federated-user.port.js';
+import { IdentityRepositoryInterface } from '../repositories/identity-repository.interface.js';
 
-import { FederatedOAuthServiceInterface } from './federated-oauth-service.interface';
+import { FederatedOAuthServiceInterface } from './federated-oauth-service.interface.js';
 
 @Injectable()
 export class FederatedOAuthService implements FederatedOAuthServiceInterface {

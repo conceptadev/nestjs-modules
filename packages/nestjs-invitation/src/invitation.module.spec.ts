@@ -1,12 +1,12 @@
 import { Test, type TestingModule } from '@nestjs/testing';
 
-import { InvitationNotificationPort } from './domain/ports/invitation-notification.port';
-import { InvitationOtpPort } from './domain/ports/invitation-otp.port';
-import { InvitationUserPort } from './domain/ports/invitation-user.port';
-import { InvitationService } from './domain/services/invitation.service';
-import { AppCrudModuleFixture } from './gateways/http/__tests__/fixtures/app-crud.module.fixture';
-import { InvitationMapper } from './infrastructure/persistence/invitation.mapper';
-import { InvitationModule } from './invitation.module';
+import { InvitationNotificationPort } from './domain/ports/invitation-notification.port.js';
+import { InvitationOtpPort } from './domain/ports/invitation-otp.port.js';
+import { InvitationUserPort } from './domain/ports/invitation-user.port.js';
+import { InvitationService } from './domain/services/invitation.service.js';
+import { AppCrudModuleFixture } from './gateways/http/__tests__/fixtures/app-crud.module.fixture.js';
+import { InvitationMapper } from './infrastructure/persistence/invitation.mapper.js';
+import { InvitationModule } from './invitation.module.js';
 
 describe(InvitationModule.name, () => {
   let testModule: TestingModule;

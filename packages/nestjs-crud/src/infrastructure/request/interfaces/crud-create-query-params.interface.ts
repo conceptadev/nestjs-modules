@@ -8,7 +8,7 @@ import {
   type WhereConditionArr,
 } from '@concepta/nestjs-repository';
 
-import { type SCondition } from '../crud-query.types';
+import { type SCondition } from '../crud-query.types.js';
 
 export interface CrudCreateQueryParamsInterface<
   T extends PlainLiteralObject = PlainLiteralObject,

@@ -1,7 +1,7 @@
-import { ValidateCurrentPasswordCommand } from '../../impl/validate-current-password.command';
-import { ValidateCurrentPasswordHandler } from '../validate-current-password.handler';
+import { ValidateCurrentPasswordCommand } from '../../impl/validate-current-password.command.js';
+import { ValidateCurrentPasswordHandler } from '../validate-current-password.handler.js';
 
-import { createMockCreationService } from './mock.helpers';
+import { createMockCreationService } from './mock.helpers.js';
 
 describe(ValidateCurrentPasswordHandler.name, () => {
   it('should delegate to PasswordCreationService.validateCurrent', async () => {

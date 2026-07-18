@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { CreateInvitationByEmailCommand } from '../../../../application/commands/impl/create-invitation-by-email.command';
-import { Invitation } from '../../../../domain/aggregates/invitation';
-import { CreateInvitationByEmailRequest } from '../impl/create-invitation-by-email.request';
+import { CreateInvitationByEmailCommand } from '../../../../application/commands/impl/create-invitation-by-email.command.js';
+import { Invitation } from '../../../../domain/aggregates/invitation.js';
+import { CreateInvitationByEmailRequest } from '../impl/create-invitation-by-email.request.js';
 
 @Injectable()
 export class CreateInvitationByEmailRequestHandler {

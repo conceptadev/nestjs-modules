@@ -2,29 +2,29 @@ import { Inject } from '@nestjs/common';
 
 import { Ctx } from '@concepta/nestjs-core';
 
-import { CrudController } from '../../infrastructure/decorators/controller/crud-controller.decorator';
-import { CrudCreateBatch } from '../../infrastructure/decorators/operations/crud-create-batch.decorator';
-import { CrudCreate } from '../../infrastructure/decorators/operations/crud-create.decorator';
-import { CrudDelete } from '../../infrastructure/decorators/operations/crud-delete.decorator';
-import { CrudList } from '../../infrastructure/decorators/operations/crud-list.decorator';
-import { CrudRead } from '../../infrastructure/decorators/operations/crud-read.decorator';
-import { CrudReplace } from '../../infrastructure/decorators/operations/crud-replace.decorator';
-import { CrudRestore } from '../../infrastructure/decorators/operations/crud-restore.decorator';
-import { CrudSoftDelete } from '../../infrastructure/decorators/operations/crud-soft-delete.decorator';
-import { CrudUpdate } from '../../infrastructure/decorators/operations/crud-update.decorator';
-import { CrudBody } from '../../infrastructure/decorators/params/crud-body.decorator';
-import { CrudCtx } from '../../infrastructure/interceptors/crud-context.overlay';
-import { CrudContextInterface } from '../../infrastructure/interceptors/interfaces/crud-context.interface';
-import { CrudAdapterResolver } from '../../infrastructure/resolvers/crud-adapter.resolver';
-import { CrudResolverInterface } from '../../infrastructure/resolvers/interfaces/crud-resolver.interface';
-import { ConfigurableCrudBuilder } from '../../infrastructure/utils/configurable-crud.builder';
-import { CRUD_TEST_PHOTO_CCB_CUSTOM_ENTITY_NAME } from '../crud-test.constants';
-import { PhotoCreateBatchDtoFixture } from '../photo/dto/photo-create-batch.dto.fixture';
-import { PhotoCreateDtoFixture } from '../photo/dto/photo-create.dto.fixture';
-import { PhotoPaginatedDtoFixture } from '../photo/dto/photo-paginated.dto.fixture';
-import { PhotoUpdateDtoFixture } from '../photo/dto/photo-update.dto.fixture';
-import { PhotoDtoFixture } from '../photo/dto/photo.dto.fixture';
-import { PhotoEntityInterfaceFixture } from '../photo/interfaces/photo-entity.interface.fixture';
+import { CrudController } from '../../infrastructure/decorators/controller/crud-controller.decorator.js';
+import { CrudCreateBatch } from '../../infrastructure/decorators/operations/crud-create-batch.decorator.js';
+import { CrudCreate } from '../../infrastructure/decorators/operations/crud-create.decorator.js';
+import { CrudDelete } from '../../infrastructure/decorators/operations/crud-delete.decorator.js';
+import { CrudList } from '../../infrastructure/decorators/operations/crud-list.decorator.js';
+import { CrudRead } from '../../infrastructure/decorators/operations/crud-read.decorator.js';
+import { CrudReplace } from '../../infrastructure/decorators/operations/crud-replace.decorator.js';
+import { CrudRestore } from '../../infrastructure/decorators/operations/crud-restore.decorator.js';
+import { CrudSoftDelete } from '../../infrastructure/decorators/operations/crud-soft-delete.decorator.js';
+import { CrudUpdate } from '../../infrastructure/decorators/operations/crud-update.decorator.js';
+import { CrudBody } from '../../infrastructure/decorators/params/crud-body.decorator.js';
+import { CrudCtx } from '../../infrastructure/interceptors/crud-context.overlay.js';
+import { CrudContextInterface } from '../../infrastructure/interceptors/interfaces/crud-context.interface.js';
+import { CrudAdapterResolver } from '../../infrastructure/resolvers/crud-adapter.resolver.js';
+import { CrudResolverInterface } from '../../infrastructure/resolvers/interfaces/crud-resolver.interface.js';
+import { ConfigurableCrudBuilder } from '../../infrastructure/utils/configurable-crud.builder.js';
+import { CRUD_TEST_PHOTO_CCB_CUSTOM_ENTITY_NAME } from '../crud-test.constants.js';
+import { PhotoCreateBatchDtoFixture } from '../photo/dto/photo-create-batch.dto.fixture.js';
+import { PhotoCreateDtoFixture } from '../photo/dto/photo-create.dto.fixture.js';
+import { PhotoPaginatedDtoFixture } from '../photo/dto/photo-paginated.dto.fixture.js';
+import { PhotoUpdateDtoFixture } from '../photo/dto/photo-update.dto.fixture.js';
+import { PhotoDtoFixture } from '../photo/dto/photo.dto.fixture.js';
+import { PhotoEntityInterfaceFixture } from '../photo/interfaces/photo-entity.interface.fixture.js';
 
 @CrudController({
   path: 'photo',

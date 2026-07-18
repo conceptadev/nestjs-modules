@@ -4,7 +4,7 @@ import {
   type Type,
 } from '@nestjs/common';
 
-import { type CrudAdapter } from '../crud.adapter';
+import { type CrudAdapter } from '../crud.adapter.js';
 
 /**
  * Type for providing a CRUD adapter via NestJS DI.

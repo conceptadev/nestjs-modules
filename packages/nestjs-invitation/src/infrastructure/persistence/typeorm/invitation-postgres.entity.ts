@@ -5,7 +5,7 @@ import { PlainLiteralObject } from '@nestjs/common';
 import { ReferenceActive, ReferenceId } from '@concepta/nestjs-core';
 import { CommonPostgresEntity } from '@concepta/nestjs-repository-typeorm';
 
-import { InvitationEntityInterface } from '../interfaces/invitation-entity.interface';
+import { InvitationEntityInterface } from '../interfaces/invitation-entity.interface.js';
 
 export abstract class InvitationPostgresEntity
   extends CommonPostgresEntity

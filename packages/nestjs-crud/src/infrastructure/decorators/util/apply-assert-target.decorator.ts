@@ -1,5 +1,5 @@
-import { CrudDecoratorException } from '../../exceptions/crud-decorator.exception';
-import { CrudMetadataLookupTarget } from '../../services/crud-metadata.service';
+import { CrudDecoratorException } from '../../exceptions/crud-decorator.exception.js';
+import { CrudMetadataLookupTarget } from '../../services/crud-metadata.service.js';
 
 /**
  * A decorator function that can be applied to methods, classes, or parameters.

@@ -8,7 +8,7 @@ import {
   ReferenceUsernameInterface,
 } from '@concepta/nestjs-core';
 
-import { FederatedCredentialsInterface } from '../../interfaces/federated-credentials.interface';
+import { FederatedCredentialsInterface } from '../../interfaces/federated-credentials.interface.js';
 
 export type FederatedUserResult = FederatedCredentialsInterface | null;
 

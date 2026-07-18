@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { TransactionFactoryInterface } from '../interfaces/transaction-factory.interface';
+import { TransactionFactoryInterface } from '../interfaces/transaction-factory.interface.js';
 
 export const TRANSACTION_FACTORY_REGISTRY = Symbol(
   'TransactionFactoryRegistry',

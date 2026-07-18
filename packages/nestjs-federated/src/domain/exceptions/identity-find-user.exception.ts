@@ -6,7 +6,7 @@ import {
   type RuntimeExceptionOptions,
 } from '@concepta/nestjs-core';
 
-import { FederatedException } from './federated.exception';
+import { FederatedException } from './federated.exception.js';
 
 export class IdentityFindUserException extends FederatedException {
   declare context: RuntimeException['context'] & {

@@ -1,6 +1,6 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { CompositeSpecification } from '../composite-specification';
+import { CompositeSpecification } from '../composite-specification.js';
 
 /**
  * Specification that always returns true.

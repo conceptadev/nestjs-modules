@@ -3,7 +3,7 @@ import { Command } from '@nestjs/cqrs';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { type UserCredentials } from '../../../domain/aggregates/user-credentials';
+import { type UserCredentials } from '../../../domain/aggregates/user-credentials.js';
 
 export class SetUserPasswordCommand extends Command<UserCredentials> {
   constructor(

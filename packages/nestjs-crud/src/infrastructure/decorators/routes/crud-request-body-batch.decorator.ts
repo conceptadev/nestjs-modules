@@ -1,10 +1,10 @@
 import { type Type } from '@nestjs/common';
 
-import { CRUD_MODULE_REQUEST_BODY_BATCH_METADATA } from '../../../crud.constants';
+import { CRUD_MODULE_REQUEST_BODY_BATCH_METADATA } from '../../../crud.constants.js';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,
-} from '../../services/crud-metadata.service';
+} from '../../services/crud-metadata.service.js';
 
 /**
  * Set the expected body DTO type for batch mutations (createBatch).

@@ -5,9 +5,9 @@ import {
   createMockTransaction,
   DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { RemoveOtpCommand } from '../../impl/remove-otp.command';
-import { RemoveOtpHandler } from '../remove-otp.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { RemoveOtpCommand } from '../../impl/remove-otp.command.js';
+import { RemoveOtpHandler } from '../remove-otp.handler.js';
 
 describe(RemoveOtpHandler.name, () => {
   let handler: RemoveOtpHandler;

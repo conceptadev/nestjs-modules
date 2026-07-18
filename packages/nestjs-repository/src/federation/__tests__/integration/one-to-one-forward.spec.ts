@@ -10,18 +10,18 @@
  *
  * Ported from nestjs-crud __tests__/crud-federation/integration/one-to-one-forward.spec.ts
  */
-import { WhereOperator } from '../../../repository/repository.types';
+import { WhereOperator } from '../../../repository/repository.types.js';
 import {
   type TestRoot,
   type TestProfile,
   type TestSettings,
   createMultiRelationSet,
-} from '../federation-test-data';
+} from '../federation-test-data.js';
 import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToOneRelation,
-} from '../fixtures/federation-orchestrator.mock';
+} from '../fixtures/federation-orchestrator.mock.js';
 
 describe('FederationOrchestrator - Integration: One-to-One Forward', () => {
   describe('Root with existing related entity', () => {

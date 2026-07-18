@@ -3,9 +3,9 @@ import { registerAs } from '@nestjs/config';
 import {
   USER_MODULE_DEFAULT_SETTINGS_TOKEN,
   USER_MODULE_USER_PASSWORD_REUSE_AFTER_DAYS_DEFAULT,
-} from '../../user.constants';
+} from '../../user.constants.js';
 
-import { type UserSettingsInterface } from './interfaces/user-settings.interface';
+import { type UserSettingsInterface } from './interfaces/user-settings.interface.js';
 
 export const userDefaultConfig = registerAs(
   USER_MODULE_DEFAULT_SETTINGS_TOKEN,

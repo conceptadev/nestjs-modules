@@ -47,14 +47,14 @@ import {
   WhereOperator,
 } from '@concepta/nestjs-repository';
 
-import { TypeOrmEntityNameException } from '../exceptions/typeorm-entity-name.exception';
+import { TypeOrmEntityNameException } from '../exceptions/typeorm-entity-name.exception.js';
 
 import {
   buildEntity,
   buildColumns,
   buildOrder,
   buildRelations,
-} from './typeorm-options.schema';
+} from './typeorm-options.schema.js';
 
 /**
  * Options for constructing a TypeOrmRepository.

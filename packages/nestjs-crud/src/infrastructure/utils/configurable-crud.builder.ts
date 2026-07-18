@@ -12,54 +12,54 @@ import {
   TransactionalOptions,
 } from '@concepta/nestjs-repository';
 
-import { ConfigurableCrudOptionsTransformer } from '../../crud.types';
-import { CrudAdapter } from '../adapters/crud.adapter';
-import { CrudController } from '../decorators/controller/crud-controller.decorator';
-import { CrudInit } from '../decorators/controller/crud-init.decorator';
-import { CrudCreateBatch } from '../decorators/operations/crud-create-batch.decorator';
-import { CrudCreate } from '../decorators/operations/crud-create.decorator';
-import { CrudDelete } from '../decorators/operations/crud-delete.decorator';
-import { CrudList } from '../decorators/operations/crud-list.decorator';
-import { CrudRead } from '../decorators/operations/crud-read.decorator';
-import { CrudReplace } from '../decorators/operations/crud-replace.decorator';
-import { CrudRestore } from '../decorators/operations/crud-restore.decorator';
-import { CrudSoftDelete } from '../decorators/operations/crud-soft-delete.decorator';
-import { CrudUpdate } from '../decorators/operations/crud-update.decorator';
-import { CrudBody } from '../decorators/params/crud-body.decorator';
-import { CrudCommandHandler } from '../decorators/routes/crud-command-handler.decorator';
-import { CrudQueryHandler } from '../decorators/routes/crud-query-handler.decorator';
-import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
-import { CrudCtx } from '../interceptors/crud-context.overlay';
-import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
+import { ConfigurableCrudOptionsTransformer } from '../../crud.types.js';
+import { CrudAdapter } from '../adapters/crud.adapter.js';
+import { CrudController } from '../decorators/controller/crud-controller.decorator.js';
+import { CrudInit } from '../decorators/controller/crud-init.decorator.js';
+import { CrudCreateBatch } from '../decorators/operations/crud-create-batch.decorator.js';
+import { CrudCreate } from '../decorators/operations/crud-create.decorator.js';
+import { CrudDelete } from '../decorators/operations/crud-delete.decorator.js';
+import { CrudList } from '../decorators/operations/crud-list.decorator.js';
+import { CrudRead } from '../decorators/operations/crud-read.decorator.js';
+import { CrudReplace } from '../decorators/operations/crud-replace.decorator.js';
+import { CrudRestore } from '../decorators/operations/crud-restore.decorator.js';
+import { CrudSoftDelete } from '../decorators/operations/crud-soft-delete.decorator.js';
+import { CrudUpdate } from '../decorators/operations/crud-update.decorator.js';
+import { CrudBody } from '../decorators/params/crud-body.decorator.js';
+import { CrudCommandHandler } from '../decorators/routes/crud-command-handler.decorator.js';
+import { CrudQueryHandler } from '../decorators/routes/crud-query-handler.decorator.js';
+import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface.js';
+import { CrudCtx } from '../interceptors/crud-context.overlay.js';
+import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface.js';
 import {
   CrudControllerClassOptionsInterface,
   CrudControllerOptionsInterface,
-} from '../interfaces/crud-controller-options.interface';
+} from '../interfaces/crud-controller-options.interface.js';
 import {
   CrudRouteCommandOptionsInterface,
   CrudRouteQueryOptionsInterface,
-} from '../interfaces/crud-route-ctlr-options.interface';
-import { CrudAdapterResolver } from '../resolvers/crud-adapter.resolver';
-import { CrudResolverInterface } from '../resolvers/interfaces/crud-resolver.interface';
-import { CrudMetaview } from '../services/crud-metaview.service';
+} from '../interfaces/crud-route-ctlr-options.interface.js';
+import { CrudAdapterResolver } from '../resolvers/crud-adapter.resolver.js';
+import { CrudResolverInterface } from '../resolvers/interfaces/crud-resolver.interface.js';
+import { CrudMetaview } from '../services/crud-metaview.service.js';
 
-import { createCrudAdapterProvider } from './create-crud-adapter-provider';
+import { createCrudAdapterProvider } from './create-crud-adapter-provider.js';
 import {
   isBodyOperation,
   isReadOperation,
   getControllerName,
   isAdapterType,
-} from './crud-infra.utils';
-import { CrudOperationOptions } from './crud-operation-options.type';
+} from './crud-infra.utils.js';
+import { CrudOperationOptions } from './crud-operation-options.type.js';
 import {
   ConfigurableCrudClassesMap,
   ConfigurableCrudHost,
-} from './interfaces/configurable-crud-host.interface';
+} from './interfaces/configurable-crud-host.interface.js';
 import {
   ConfigurableCrudGeneratedOptions,
   ConfigurableCrudHybridOptions,
   ConfigurableCrudOptions,
-} from './interfaces/configurable-crud-options.interface';
+} from './interfaces/configurable-crud-options.interface.js';
 
 export class ConfigurableCrudBuilder<
   Entity extends PlainLiteralObject,

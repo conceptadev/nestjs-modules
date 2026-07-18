@@ -1,8 +1,8 @@
-import { type PasswordStorageInterface } from '../../../../domain/password/interfaces/password-storage.interface';
-import { CreatePasswordCommand } from '../../impl/create-password.command';
-import { CreatePasswordHandler } from '../create-password.handler';
+import { type PasswordStorageInterface } from '../../../../domain/password/interfaces/password-storage.interface.js';
+import { CreatePasswordCommand } from '../../impl/create-password.command.js';
+import { CreatePasswordHandler } from '../create-password.handler.js';
 
-import { createMockCreationService } from './mock.helpers';
+import { createMockCreationService } from './mock.helpers.js';
 
 describe(CreatePasswordHandler.name, () => {
   it('should delegate to PasswordCreationService.create', async () => {

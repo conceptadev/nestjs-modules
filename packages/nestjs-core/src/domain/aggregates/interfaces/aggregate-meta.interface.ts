@@ -1,4 +1,4 @@
-import { type AuditInterface } from '../../audit/interfaces/audit.interface';
+import { type AuditInterface } from '../../audit/interfaces/audit.interface.js';
 
 /**
  * Metadata tracked by domain aggregates.

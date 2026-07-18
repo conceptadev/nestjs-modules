@@ -1,7 +1,7 @@
 import { createMockCommandBus } from '@concepta/nestjs-core/testing';
 
-import { SendInvitationRequest } from '../../impl/send-invitation.request';
-import { SendInvitationRequestHandler } from '../send-invitation-request.handler';
+import { SendInvitationRequest } from '../../impl/send-invitation.request.js';
+import { SendInvitationRequestHandler } from '../send-invitation-request.handler.js';
 
 describe(SendInvitationRequestHandler.name, () => {
   let commandBus: ReturnType<typeof createMockCommandBus>;

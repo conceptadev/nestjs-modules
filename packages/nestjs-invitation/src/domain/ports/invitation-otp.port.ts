@@ -4,7 +4,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { AssigneeRelationInterface, ReferenceId } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { InvitationOtpPolicy } from '../policies/invitation-otp.policy';
+import { InvitationOtpPolicy } from '../policies/invitation-otp.policy.js';
 
 export interface InvitationOtpCreatableInterface {
   category: string;

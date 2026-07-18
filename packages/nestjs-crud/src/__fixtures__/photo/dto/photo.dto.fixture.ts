@@ -10,7 +10,7 @@ import {
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { PhotoEntityInterfaceFixture } from '../interfaces/photo-entity.interface.fixture';
+import { PhotoEntityInterfaceFixture } from '../interfaces/photo-entity.interface.fixture.js';
 
 @Exclude()
 export class PhotoDtoFixture implements PhotoEntityInterfaceFixture {

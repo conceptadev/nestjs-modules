@@ -14,30 +14,30 @@ import {
 } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
-import { CrudUpdateHandler } from '../application/commands/handlers/crud-update.handler';
-import { CrudListHandler } from '../application/queries/handlers/crud-list.handler';
-import { CrudListQuery } from '../application/queries/impl/crud-list.query';
-import { CrudModule } from '../crud.module';
-import { CrudAdapter } from '../infrastructure/adapters/crud.adapter';
-import { CrudController } from '../infrastructure/decorators/controller/crud-controller.decorator';
-import { CrudCreate } from '../infrastructure/decorators/operations/crud-create.decorator';
-import { CrudList } from '../infrastructure/decorators/operations/crud-list.decorator';
-import { CrudRead } from '../infrastructure/decorators/operations/crud-read.decorator';
-import { CrudUpdate } from '../infrastructure/decorators/operations/crud-update.decorator';
-import { CrudCtx } from '../infrastructure/interceptors/crud-context.overlay';
-import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/crud-context.interface';
-import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver';
-import { CrudOperationResolver } from '../infrastructure/resolvers/crud-operation.resolver';
-import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface';
-import { CrudMetaview } from '../infrastructure/services/crud-metaview.service';
-import { getDynamicAdapterToken } from '../infrastructure/utils/crud-infra.utils';
+import { CrudUpdateHandler } from '../application/commands/handlers/crud-update.handler.js';
+import { CrudListHandler } from '../application/queries/handlers/crud-list.handler.js';
+import { CrudListQuery } from '../application/queries/impl/crud-list.query.js';
+import { CrudModule } from '../crud.module.js';
+import { CrudAdapter } from '../infrastructure/adapters/crud.adapter.js';
+import { CrudController } from '../infrastructure/decorators/controller/crud-controller.decorator.js';
+import { CrudCreate } from '../infrastructure/decorators/operations/crud-create.decorator.js';
+import { CrudList } from '../infrastructure/decorators/operations/crud-list.decorator.js';
+import { CrudRead } from '../infrastructure/decorators/operations/crud-read.decorator.js';
+import { CrudUpdate } from '../infrastructure/decorators/operations/crud-update.decorator.js';
+import { CrudCtx } from '../infrastructure/interceptors/crud-context.overlay.js';
+import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/crud-context.interface.js';
+import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver.js';
+import { CrudOperationResolver } from '../infrastructure/resolvers/crud-operation.resolver.js';
+import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface.js';
+import { CrudMetaview } from '../infrastructure/services/crud-metaview.service.js';
+import { getDynamicAdapterToken } from '../infrastructure/utils/crud-infra.utils.js';
 
-import { CRUD_TEST_COMPANY_ENTITY_NAME } from '../__fixtures__/crud-test.constants';
-import { CompanyEntity } from '../__fixtures__/typeorm/company/company.entity';
-import { CompanyPaginatedDto } from '../__fixtures__/typeorm/company/dto/company-paginated.dto';
-import { CompanyDto } from '../__fixtures__/typeorm/company/dto/company.dto';
-import { ormSqliteConfig } from '../__fixtures__/typeorm/orm.sqlite.config';
-import { Seeds } from '../__fixtures__/typeorm/seeds';
+import { CRUD_TEST_COMPANY_ENTITY_NAME } from '../__fixtures__/crud-test.constants.js';
+import { CompanyEntity } from '../__fixtures__/typeorm/company/company.entity.js';
+import { CompanyPaginatedDto } from '../__fixtures__/typeorm/company/dto/company-paginated.dto.js';
+import { CompanyDto } from '../__fixtures__/typeorm/company/dto/company.dto.js';
+import { ormSqliteConfig } from '../__fixtures__/typeorm/orm.sqlite.config.js';
+import { Seeds } from '../__fixtures__/typeorm/seeds.js';
 
 describe('CrudModule.forFeature', () => {
   /**

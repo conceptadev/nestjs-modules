@@ -1,6 +1,6 @@
 import { ExtractJwt } from 'passport-jwt';
 
-import { RefreshStrategyPolicy } from '../refresh-strategy.policy';
+import { RefreshStrategyPolicy } from '../refresh-strategy.policy.js';
 
 describe(RefreshStrategyPolicy.name, () => {
   it('should default jwtFromRequest to undefined', () => {

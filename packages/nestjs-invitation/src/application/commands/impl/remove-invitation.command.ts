@@ -3,7 +3,7 @@ import { Command } from '@nestjs/cqrs';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { type Invitation } from '../../../domain/aggregates/invitation';
+import { type Invitation } from '../../../domain/aggregates/invitation.js';
 
 export class RemoveInvitationCommand extends Command<Invitation> {
   constructor(

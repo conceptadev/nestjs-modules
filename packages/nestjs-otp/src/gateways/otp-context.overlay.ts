@@ -10,8 +10,8 @@ import {
 import {
   OTP_NAMESPACE_KEY,
   OtpNamespaceOptions,
-} from './decorators/otp-namespace.decorator';
-import { OtpContextInterface } from './interfaces/otp-context.interface';
+} from './decorators/otp-namespace.decorator.js';
+import { OtpContextInterface } from './interfaces/otp-context.interface.js';
 
 export const OtpCtx = new OverlayRef<'withOtp', OtpContextInterface>('withOtp');
 

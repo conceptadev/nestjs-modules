@@ -1,7 +1,7 @@
-import { type TransactionFactoryInterface } from '../interfaces/transaction-factory.interface';
+import { type TransactionFactoryInterface } from '../interfaces/transaction-factory.interface.js';
 
-import { type TransactionInterface } from './interfaces/transaction.interface';
-import { TransactionFactoryRegistry } from './transaction-factory-registry';
+import { type TransactionInterface } from './interfaces/transaction.interface.js';
+import { TransactionFactoryRegistry } from './transaction-factory-registry.js';
 
 describe(TransactionFactoryRegistry.name, () => {
   let registry: TransactionFactoryRegistry;

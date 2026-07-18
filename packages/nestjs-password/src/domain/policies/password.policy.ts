@@ -1,4 +1,4 @@
-import { PasswordStrengthEnum } from '../enum/password-strength.enum';
+import { PasswordStrengthEnum } from '../enum/password-strength.enum.js';
 
 export interface PasswordPolicySettings {
   minPasswordStrength?: PasswordStrengthEnum;

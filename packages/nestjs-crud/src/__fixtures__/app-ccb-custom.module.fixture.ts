@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 
 import { RepositoryModule } from '@concepta/nestjs-repository';
 
-import { CrudModule } from '../crud.module';
+import { CrudModule } from '../crud.module.js';
 
-import { PhotoCcbCustomModuleFixture } from './photo-ccb-custom/photo-ccb-custom.module.fixture';
+import { PhotoCcbCustomModuleFixture } from './photo-ccb-custom/photo-ccb-custom.module.fixture.js';
 
 @Module({
   imports: [

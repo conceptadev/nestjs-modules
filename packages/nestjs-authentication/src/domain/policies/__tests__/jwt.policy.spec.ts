@@ -1,6 +1,6 @@
 import { type MockInstance } from 'vitest';
 
-import { JwtPolicy } from '../jwt.policy';
+import { JwtPolicy } from '../jwt.policy.js';
 
 describe(JwtPolicy.name, () => {
   let emitWarningSpy: MockInstance<typeof process.emitWarning>;

@@ -3,7 +3,7 @@ import { Query } from '@nestjs/cqrs';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { type Cache } from '../../../domain/aggregates/cache';
+import { type Cache } from '../../../domain/aggregates/cache.js';
 
 export class GetCacheQuery extends Query<Cache> {
   constructor(

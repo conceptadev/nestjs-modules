@@ -1,6 +1,6 @@
-import { Possession } from 'accesscontrol/lib/enums';
+import { Possession } from 'accesscontrol/lib/enums/index.js';
 
-import { PossessionEnum } from './possession.enum';
+import { PossessionEnum } from './possession.enum.js';
 
 describe('Access control possession enumeration', () => {
   it('should match specification', () => {

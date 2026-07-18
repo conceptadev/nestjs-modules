@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { JwtService } from '../../../infrastructure/jwt/jwt.service';
-import { JwtVerifyRefreshTokenQuery } from '../impl/jwt-verify-refresh-token.query';
+import { JwtService } from '../../../infrastructure/jwt/jwt.service.js';
+import { JwtVerifyRefreshTokenQuery } from '../impl/jwt-verify-refresh-token.query.js';
 
 @QueryHandler(JwtVerifyRefreshTokenQuery)
 export class JwtVerifyRefreshTokenHandler implements IQueryHandler<

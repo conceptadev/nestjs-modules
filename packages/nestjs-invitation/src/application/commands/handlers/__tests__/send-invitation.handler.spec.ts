@@ -1,6 +1,6 @@
-import { createMockInvitationService } from '../../../../__tests__/helpers/mock.helpers';
-import { SendInvitationCommand } from '../../impl/send-invitation.command';
-import { SendInvitationHandler } from '../send-invitation.handler';
+import { createMockInvitationService } from '../../../../__tests__/helpers/mock.helpers.js';
+import { SendInvitationCommand } from '../../impl/send-invitation.command.js';
+import { SendInvitationHandler } from '../send-invitation.handler.js';
 
 describe(SendInvitationHandler.name, () => {
   const ctx = {};

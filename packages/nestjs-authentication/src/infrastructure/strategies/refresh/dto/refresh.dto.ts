@@ -3,7 +3,7 @@ import { IsJWT } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { AuthenticationRefreshInterface } from '../../../../domain/interfaces/authentication-refresh.interface';
+import { AuthenticationRefreshInterface } from '../../../../domain/interfaces/authentication-refresh.interface.js';
 
 @Exclude()
 export class RefreshDto implements AuthenticationRefreshInterface {

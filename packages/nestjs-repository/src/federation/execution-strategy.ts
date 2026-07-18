@@ -1,14 +1,17 @@
 import {
   type OrderClause,
   type OrderSortKey,
-} from '../repository/repository.types';
+} from '../repository/repository.types.js';
 
-import { FederationException } from './exceptions/federation.exception';
-import { type FederatedRelation, FederationStrategy } from './federation.types';
-import { type FilterAnalyzer } from './filter-analyzer';
-import { type ExecutionAnalysis } from './interfaces/execution-analysis.interface';
+import { FederationException } from './exceptions/federation.exception.js';
+import {
+  type FederatedRelation,
+  FederationStrategy,
+} from './federation.types.js';
+import { type FilterAnalyzer } from './filter-analyzer.js';
+import { type ExecutionAnalysis } from './interfaces/execution-analysis.interface.js';
 
-export { ExecutionAnalysis } from './interfaces/execution-analysis.interface';
+export { ExecutionAnalysis } from './interfaces/execution-analysis.interface.js';
 
 /**
  * Analyze the query to determine execution strategy and separate

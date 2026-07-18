@@ -7,13 +7,13 @@ import {
 } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 
-import { AuthRouterGuards } from '../auth-router.constants';
-import { AuthRouterGuard } from '../auth-router.guard';
-import { AuthRouterAuthenticationFailedException } from '../exceptions/auth-router-authentication-failed.exception';
-import { AuthRouterConfigNotAvailableException } from '../exceptions/auth-router-config-not-available.exception';
-import { AuthRouterGuardInvalidException } from '../exceptions/auth-router-guard-invalid.exception';
-import { AuthRouterProviderMissingException } from '../exceptions/auth-router-provider-missing.exception';
-import { AuthRouterProviderNotSupportedException } from '../exceptions/auth-router-provider-not-supported.exception';
+import { AuthRouterGuards } from '../auth-router.constants.js';
+import { AuthRouterGuard } from '../auth-router.guard.js';
+import { AuthRouterAuthenticationFailedException } from '../exceptions/auth-router-authentication-failed.exception.js';
+import { AuthRouterConfigNotAvailableException } from '../exceptions/auth-router-config-not-available.exception.js';
+import { AuthRouterGuardInvalidException } from '../exceptions/auth-router-guard-invalid.exception.js';
+import { AuthRouterProviderMissingException } from '../exceptions/auth-router-provider-missing.exception.js';
+import { AuthRouterProviderNotSupportedException } from '../exceptions/auth-router-provider-not-supported.exception.js';
 
 type HttpArgumentsHost = ReturnType<ArgumentsHost['switchToHttp']>;
 

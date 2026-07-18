@@ -1,7 +1,7 @@
 import { type ReferenceActiveInterface } from '@concepta/nestjs-core';
 import { type PasswordStorageInterface } from '@concepta/nestjs-password';
 
-import { type UserOwnableInterface } from './user-ownable.interface';
+import { type UserOwnableInterface } from './user-ownable.interface.js';
 
 export interface UserCredentialInterface
   extends

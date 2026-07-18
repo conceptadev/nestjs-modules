@@ -1,7 +1,7 @@
 import { Expose, Type } from 'class-transformer';
 
-import { CompanyDto } from '../../company/dto/company.dto';
-import { UserProfileDto } from '../../user-profile/dto/user-profile.dto';
+import { CompanyDto } from '../../company/dto/company.dto.js';
+import { UserProfileDto } from '../../user-profile/dto/user-profile.dto.js';
 
 export class UserDto {
   @Expose()

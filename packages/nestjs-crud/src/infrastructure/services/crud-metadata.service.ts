@@ -9,7 +9,7 @@ import {
   Reflector,
 } from '@nestjs/core';
 
-import { applyAssertTarget } from '../decorators/util/apply-assert-target.decorator';
+import { applyAssertTarget } from '../decorators/util/apply-assert-target.decorator.js';
 
 /**
  * Metadata target type for reflection operations.

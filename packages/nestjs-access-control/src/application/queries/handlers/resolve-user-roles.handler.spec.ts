@@ -2,10 +2,10 @@ import { mock } from 'vitest-mock-extended';
 
 import { type ExecutionContext } from '@nestjs/common';
 
-import { type AccessControlServiceInterface } from '../../../domain/ports/access-control-service.interface';
-import { ResolveUserRolesQuery } from '../impl/resolve-user-roles.query';
+import { type AccessControlServiceInterface } from '../../../domain/ports/access-control-service.interface.js';
+import { ResolveUserRolesQuery } from '../impl/resolve-user-roles.query.js';
 
-import { ResolveUserRolesHandler } from './resolve-user-roles.handler';
+import { ResolveUserRolesHandler } from './resolve-user-roles.handler.js';
 
 describe(ResolveUserRolesHandler.name, () => {
   it('delegates to AccessControlService.getUserRoles with the execution context', async () => {

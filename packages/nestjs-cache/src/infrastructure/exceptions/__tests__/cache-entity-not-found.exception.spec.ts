@@ -1,4 +1,4 @@
-import { CacheEntityNotFoundException } from '../cache-entity-not-found.exception';
+import { CacheEntityNotFoundException } from '../cache-entity-not-found.exception.js';
 
 describe(CacheEntityNotFoundException.name, () => {
   it('should create an instance of EntityNotFoundException', () => {

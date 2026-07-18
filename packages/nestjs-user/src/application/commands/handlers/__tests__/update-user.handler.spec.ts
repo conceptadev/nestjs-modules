@@ -4,11 +4,11 @@ import {
   createMockUserEntity,
   createMockUserRepository,
   toUserDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { User } from '../../../../domain/aggregates/user';
-import { UserNotFoundException } from '../../../exceptions/user-not-found.exception';
-import { UpdateUserCommand } from '../../impl/update-user.command';
-import { UpdateUserHandler } from '../update-user.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { User } from '../../../../domain/aggregates/user.js';
+import { UserNotFoundException } from '../../../exceptions/user-not-found.exception.js';
+import { UpdateUserCommand } from '../../impl/update-user.command.js';
+import { UpdateUserHandler } from '../update-user.handler.js';
 
 describe(UpdateUserHandler.name, () => {
   const userRepository = createMockUserRepository();

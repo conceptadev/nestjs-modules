@@ -6,10 +6,10 @@ import {
   createMockRoleEntity,
   toRoleDomain,
   DEFAULT_ROLE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Role } from '../../../../domain/aggregates/role';
-import { ReplaceRoleCommand } from '../../impl/replace-role.command';
-import { ReplaceRoleHandler } from '../replace-role.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Role } from '../../../../domain/aggregates/role.js';
+import { ReplaceRoleCommand } from '../../impl/replace-role.command.js';
+import { ReplaceRoleHandler } from '../replace-role.handler.js';
 
 describe(ReplaceRoleHandler.name, () => {
   const ctx = {};

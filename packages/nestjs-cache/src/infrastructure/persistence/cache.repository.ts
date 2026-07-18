@@ -3,11 +3,11 @@ import { type PlainLiteralObject } from '@nestjs/common';
 import { type ReferenceId } from '@concepta/nestjs-core';
 import { type RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
-import { type Cache } from '../../domain/aggregates/cache';
-import { type CacheRepositoryInterface } from '../../domain/repositories/cache-repository.interface';
+import { type Cache } from '../../domain/aggregates/cache.js';
+import { type CacheRepositoryInterface } from '../../domain/repositories/cache-repository.interface.js';
 
-import { type CacheMapper } from './cache.mapper';
-import { type CacheEntityInterface } from './interfaces/cache-entity.interface';
+import { type CacheMapper } from './cache.mapper.js';
+import { type CacheEntityInterface } from './interfaces/cache-entity.interface.js';
 
 export class CacheRepository implements CacheRepositoryInterface {
   constructor(

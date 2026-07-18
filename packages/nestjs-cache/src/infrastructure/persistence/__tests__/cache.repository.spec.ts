@@ -2,11 +2,11 @@ import { AppContextHost } from '@concepta/nestjs-core';
 import { Where } from '@concepta/nestjs-repository';
 import { createMockRepository } from '@concepta/nestjs-repository/testing';
 
-import { toCacheDomain } from '../../../__tests__/helpers/mock.helpers';
-import { Cache } from '../../../domain/aggregates/cache';
-import { CacheMapper } from '../cache.mapper';
-import { CacheRepository } from '../cache.repository';
-import { type CacheEntityInterface } from '../interfaces/cache-entity.interface';
+import { toCacheDomain } from '../../../__tests__/helpers/mock.helpers.js';
+import { Cache } from '../../../domain/aggregates/cache.js';
+import { CacheMapper } from '../cache.mapper.js';
+import { CacheRepository } from '../cache.repository.js';
+import { type CacheEntityInterface } from '../interfaces/cache-entity.interface.js';
 
 const mapper = new CacheMapper();
 

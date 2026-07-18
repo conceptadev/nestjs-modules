@@ -1,17 +1,17 @@
 import { type Provider } from '@nestjs/common';
 
-import { VerifyService } from '../../application/services/verify/verify.service';
+import { VerifyService } from '../../application/services/verify/verify.service.js';
 import {
   AUTHENTICATION_OTP_PORT_TOKEN,
   AUTHENTICATION_USER_PORT_TOKEN,
   AUTHENTICATION_VERIFY_NOTIFICATION_PORT_TOKEN,
-} from '../../authentication.constants';
-import { VerifyPolicy } from '../../domain/policies/verify.policy';
-import { type OtpPort } from '../../domain/ports/otp.port';
-import { type UserPort } from '../../domain/ports/user.port';
-import { type VerifyNotificationPort } from '../../domain/ports/verify-notification.port';
-import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
-import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception';
+} from '../../authentication.constants.js';
+import { VerifyPolicy } from '../../domain/policies/verify.policy.js';
+import { type OtpPort } from '../../domain/ports/otp.port.js';
+import { type UserPort } from '../../domain/ports/user.port.js';
+import { type VerifyNotificationPort } from '../../domain/ports/verify-notification.port.js';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface.js';
+import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception.js';
 
 export function createVerifyServiceProvider(rawOptionsToken: symbol): Provider {
   return {

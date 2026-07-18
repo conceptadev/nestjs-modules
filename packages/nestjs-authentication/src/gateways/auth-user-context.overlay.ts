@@ -6,9 +6,9 @@ import {
   OverlayRef,
 } from '@concepta/nestjs-core';
 
-import { AuthenticatedUserInterface } from '../domain/interfaces/authenticated-user.interface';
+import { AuthenticatedUserInterface } from '../domain/interfaces/authenticated-user.interface.js';
 
-import { AuthUserContextInterface } from './interfaces/auth-user-context.interface';
+import { AuthUserContextInterface } from './interfaces/auth-user-context.interface.js';
 
 export const AuthUserCtx = new OverlayRef<
   'withAuthUser',

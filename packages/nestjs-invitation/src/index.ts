@@ -1,100 +1,100 @@
-export { InvitationModule } from './invitation.module';
+export { InvitationModule } from './invitation.module.js';
 
 // aggregate
-export { Invitation } from './domain/aggregates/invitation';
+export { Invitation } from './domain/aggregates/invitation.js';
 
 // commands
-export { CreateInvitationCommand } from './application/commands/impl/create-invitation.command';
-export { CreateInvitationByEmailCommand } from './application/commands/impl/create-invitation-by-email.command';
-export { SendInvitationCommand } from './application/commands/impl/send-invitation.command';
-export { AcceptInvitationCommand } from './application/commands/impl/accept-invitation.command';
-export { RevokeInvitationsCommand } from './application/commands/impl/revoke-invitations.command';
-export { RemoveInvitationCommand } from './application/commands/impl/remove-invitation.command';
+export { CreateInvitationCommand } from './application/commands/impl/create-invitation.command.js';
+export { CreateInvitationByEmailCommand } from './application/commands/impl/create-invitation-by-email.command.js';
+export { SendInvitationCommand } from './application/commands/impl/send-invitation.command.js';
+export { AcceptInvitationCommand } from './application/commands/impl/accept-invitation.command.js';
+export { RevokeInvitationsCommand } from './application/commands/impl/revoke-invitations.command.js';
+export { RemoveInvitationCommand } from './application/commands/impl/remove-invitation.command.js';
 
 // queries
-export { GetInvitationQuery } from './application/queries/impl/get-invitation.query';
-export { FindInvitationByCodeQuery } from './application/queries/impl/find-invitation-by-code.query';
+export { GetInvitationQuery } from './application/queries/impl/get-invitation.query.js';
+export { FindInvitationByCodeQuery } from './application/queries/impl/find-invitation-by-code.query.js';
 
 // events
-export { InvitationCreatedEvent } from './domain/events/invitation-created.event';
-export { InvitationRemovedEvent } from './domain/events/invitation-removed.event';
-export { InvitationRevokedEvent } from './domain/events/invitation-revoked.event';
-export { InvitationAcceptedEvent } from './domain/events/invitation-accepted.event';
-export { InvitationDispatchedEvent } from './domain/events/invitation-dispatched.event';
-export { InvitationDispatchedMetadataInterface } from './domain/events/interfaces/invitation-dispatched-metadata.interface';
-export { InvitationEventPayloadInterface } from './domain/events/interfaces/invitation-event-payload.interface';
+export { InvitationCreatedEvent } from './domain/events/invitation-created.event.js';
+export { InvitationRemovedEvent } from './domain/events/invitation-removed.event.js';
+export { InvitationRevokedEvent } from './domain/events/invitation-revoked.event.js';
+export { InvitationAcceptedEvent } from './domain/events/invitation-accepted.event.js';
+export { InvitationDispatchedEvent } from './domain/events/invitation-dispatched.event.js';
+export { InvitationDispatchedMetadataInterface } from './domain/events/interfaces/invitation-dispatched-metadata.interface.js';
+export { InvitationEventPayloadInterface } from './domain/events/interfaces/invitation-event-payload.interface.js';
 
 // policies
-export { InvitationOtpPolicy } from './domain/policies/invitation-otp.policy';
+export { InvitationOtpPolicy } from './domain/policies/invitation-otp.policy.js';
 
 // ports
-export { InvitationOtpPort } from './domain/ports/invitation-otp.port';
+export { InvitationOtpPort } from './domain/ports/invitation-otp.port.js';
 export {
   InvitationOtpPortSettings,
   CreateOtpCommandInterface,
   ConsumeOtpCommandInterface,
   ClearOtpsCommandInterface,
   ValidateOtpQueryInterface,
-} from './domain/ports/invitation-otp.port';
-export { InvitationUserPort } from './domain/ports/invitation-user.port';
+} from './domain/ports/invitation-otp.port.js';
+export { InvitationUserPort } from './domain/ports/invitation-user.port.js';
 export {
   InvitationUserPortSettings,
   GetUserByIdQueryInterface,
   GetUserByEmailQueryInterface,
   InvitationUserResult,
-} from './domain/ports/invitation-user.port';
-export { InvitationNotificationPort } from './domain/ports/invitation-notification.port';
+} from './domain/ports/invitation-user.port.js';
+export { InvitationNotificationPort } from './domain/ports/invitation-notification.port.js';
 export {
   InvitationNotificationPortSettings,
   SendInvitationNotificationCommandInterface,
   SendAcceptedNotificationCommandInterface,
-} from './domain/ports/invitation-notification.port';
-export { InvitationPortsInterface } from './interfaces/options/invitation-options.interface';
+} from './domain/ports/invitation-notification.port.js';
+export { InvitationPortsInterface } from './interfaces/options/invitation-options.interface.js';
 
 // repository
-export { InvitationRepository } from './infrastructure/persistence/invitation.repository';
-export { InvitationMapper } from './infrastructure/persistence/invitation.mapper';
-export { InvitationEntityInterface } from './infrastructure/persistence/interfaces/invitation-entity.interface';
+export { InvitationRepository } from './infrastructure/persistence/invitation.repository.js';
+export { InvitationMapper } from './infrastructure/persistence/invitation.mapper.js';
+export { InvitationEntityInterface } from './infrastructure/persistence/interfaces/invitation-entity.interface.js';
 
 // domain interfaces
-export { InvitationInterface } from './domain/interfaces/invitation.interface';
-export { InvitationUserInterface } from './domain/interfaces/invitation-user.interface';
-export { InvitationCreatableInterface } from './domain/interfaces/invitation-creatable.interface';
-export { InvitationCreatableByEmailInterface } from './domain/interfaces/invitation-creatable-by-email.interface';
-export { InvitationAcceptableInterface } from './domain/interfaces/invitation-acceptable.interface';
-export { InvitationOtpSettingsInterface } from './domain/interfaces/invitation-otp-settings.interface';
-export { InvitationSettingsInterface } from './interfaces/options/invitation-settings.interface';
-export { InvitationOptionsInterface } from './interfaces/options/invitation-options.interface';
+export { InvitationInterface } from './domain/interfaces/invitation.interface.js';
+export { InvitationUserInterface } from './domain/interfaces/invitation-user.interface.js';
+export { InvitationCreatableInterface } from './domain/interfaces/invitation-creatable.interface.js';
+export { InvitationCreatableByEmailInterface } from './domain/interfaces/invitation-creatable-by-email.interface.js';
+export { InvitationAcceptableInterface } from './domain/interfaces/invitation-acceptable.interface.js';
+export { InvitationOtpSettingsInterface } from './domain/interfaces/invitation-otp-settings.interface.js';
+export { InvitationSettingsInterface } from './interfaces/options/invitation-settings.interface.js';
+export { InvitationOptionsInterface } from './interfaces/options/invitation-options.interface.js';
 
 // DTOs
-export { InvitationDto } from './infrastructure/dtos/invitation.dto';
-export { InvitationPaginatedDto } from './infrastructure/dtos/invitation-paginated.dto';
-export { InvitationCreateDto } from './infrastructure/dtos/invitation-create.dto';
-export { InvitationCreateByEmailDto } from './infrastructure/dtos/invitation-create-by-email.dto';
-export { InvitationAcceptDto } from './infrastructure/dtos/invitation-accept.dto';
+export { InvitationDto } from './infrastructure/dtos/invitation.dto.js';
+export { InvitationPaginatedDto } from './infrastructure/dtos/invitation-paginated.dto.js';
+export { InvitationCreateDto } from './infrastructure/dtos/invitation-create.dto.js';
+export { InvitationCreateByEmailDto } from './infrastructure/dtos/invitation-create-by-email.dto.js';
+export { InvitationAcceptDto } from './infrastructure/dtos/invitation-accept.dto.js';
 
 // exceptions
-export { InvitationException } from './domain/exceptions/invitation.exception';
-export { InvitationAlreadyAcceptedException } from './domain/exceptions/invitation-already-accepted.exception';
-export { InvitationRevokedException } from './domain/exceptions/invitation-revoked.exception';
-export { InvitationUserUndefinedException } from './application/exceptions/invitation-user-undefined.exception';
-export { InvitationNotAcceptedException } from './gateways/exceptions/invitation-not-accepted.exception';
-export { InvitationNotFoundException } from './application/exceptions/invitation-not-found.exception';
+export { InvitationException } from './domain/exceptions/invitation.exception.js';
+export { InvitationAlreadyAcceptedException } from './domain/exceptions/invitation-already-accepted.exception.js';
+export { InvitationRevokedException } from './domain/exceptions/invitation-revoked.exception.js';
+export { InvitationUserUndefinedException } from './application/exceptions/invitation-user-undefined.exception.js';
+export { InvitationNotAcceptedException } from './gateways/exceptions/invitation-not-accepted.exception.js';
+export { InvitationNotFoundException } from './application/exceptions/invitation-not-found.exception.js';
 
 // gateway commands
-export { CreateInvitationRequest } from './gateways/http/commands/impl/create-invitation.request';
-export { CreateInvitationRequestHandler } from './gateways/http/commands/handlers/create-invitation-request.handler';
-export { DeleteInvitationRequest } from './gateways/http/commands/impl/delete-invitation.request';
-export { DeleteInvitationRequestHandler } from './gateways/http/commands/handlers/delete-invitation-request.handler';
-export { AcceptInvitationRequest } from './gateways/http/commands/impl/accept-invitation.request';
-export { AcceptInvitationRequestHandler } from './gateways/http/commands/handlers/accept-invitation-request.handler';
-export { SendInvitationRequest } from './gateways/http/commands/impl/send-invitation.request';
-export { SendInvitationRequestHandler } from './gateways/http/commands/handlers/send-invitation-request.handler';
-export { CreateInvitationByEmailRequest } from './gateways/http/commands/impl/create-invitation-by-email.request';
-export { CreateInvitationByEmailRequestHandler } from './gateways/http/commands/handlers/create-invitation-by-email-request.handler';
+export { CreateInvitationRequest } from './gateways/http/commands/impl/create-invitation.request.js';
+export { CreateInvitationRequestHandler } from './gateways/http/commands/handlers/create-invitation-request.handler.js';
+export { DeleteInvitationRequest } from './gateways/http/commands/impl/delete-invitation.request.js';
+export { DeleteInvitationRequestHandler } from './gateways/http/commands/handlers/delete-invitation-request.handler.js';
+export { AcceptInvitationRequest } from './gateways/http/commands/impl/accept-invitation.request.js';
+export { AcceptInvitationRequestHandler } from './gateways/http/commands/handlers/accept-invitation-request.handler.js';
+export { SendInvitationRequest } from './gateways/http/commands/impl/send-invitation.request.js';
+export { SendInvitationRequestHandler } from './gateways/http/commands/handlers/send-invitation-request.handler.js';
+export { CreateInvitationByEmailRequest } from './gateways/http/commands/impl/create-invitation-by-email.request.js';
+export { CreateInvitationByEmailRequestHandler } from './gateways/http/commands/handlers/create-invitation-by-email-request.handler.js';
 
 // gateway queries
-export { ListInvitationsRequest } from './gateways/http/queries/impl/list-invitations.request';
-export { ListInvitationsRequestHandler } from './gateways/http/queries/handlers/list-invitations-request.handler';
-export { ReadInvitationRequest } from './gateways/http/queries/impl/read-invitation.request';
-export { ReadInvitationRequestHandler } from './gateways/http/queries/handlers/read-invitation-request.handler';
+export { ListInvitationsRequest } from './gateways/http/queries/impl/list-invitations.request.js';
+export { ListInvitationsRequestHandler } from './gateways/http/queries/handlers/list-invitations-request.handler.js';
+export { ReadInvitationRequest } from './gateways/http/queries/impl/read-invitation.request.js';
+export { ReadInvitationRequestHandler } from './gateways/http/queries/handlers/read-invitation-request.handler.js';

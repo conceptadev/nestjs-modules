@@ -8,7 +8,7 @@ import {
   WhereOperator,
   type WherePairOperator,
   type WhereScalarOperator,
-} from '../repository.types';
+} from '../repository.types.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // WhereCondition variants — discriminated union on `operator`

@@ -3,7 +3,7 @@ import { Command, CommandBus } from '@nestjs/cqrs';
 
 import { ReferenceEmail } from '@concepta/nestjs-core';
 
-import { AuthenticationEmailException } from '../exceptions/authentication-email.exception';
+import { AuthenticationEmailException } from '../exceptions/authentication-email.exception.js';
 
 export interface SendVerifyNotificationCommandInterface extends Command<void> {
   ctx: PlainLiteralObject;

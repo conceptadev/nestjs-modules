@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { RecoveryException } from './recovery.exception';
+import { RecoveryException } from './recovery.exception.js';
 
 export class RecoveryOtpInvalidException extends RecoveryException {
   constructor(options?: RuntimeExceptionOptions) {

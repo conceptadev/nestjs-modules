@@ -1,17 +1,17 @@
 import { Injectable, type Type } from '@nestjs/common';
 import { MetadataScanner } from '@nestjs/core';
 
-import { createCommand } from '../../../application/utils/create-operation-classes';
-import { createCommandHandler } from '../../../application/utils/create-operation-handlers';
-import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver';
-import { CrudMetaview } from '../../services/crud-metaview.service';
+import { createCommand } from '../../../application/utils/create-operation-classes.js';
+import { createCommandHandler } from '../../../application/utils/create-operation-handlers.js';
+import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver.js';
+import { CrudMetaview } from '../../services/crud-metaview.service.js';
 import {
   hasExplicitConstructor,
   getControllerName,
-} from '../../utils/crud-infra.utils';
-import { CrudCommandHandler } from '../routes/crud-command-handler.decorator';
-import { CrudCommand } from '../routes/crud-command.decorator';
-import { applyConstructorInjection } from '../util/apply-constructor-injection.decorator';
+} from '../../utils/crud-infra.utils.js';
+import { CrudCommandHandler } from '../routes/crud-command-handler.decorator.js';
+import { CrudCommand } from '../routes/crud-command.decorator.js';
+import { applyConstructorInjection } from '../util/apply-constructor-injection.decorator.js';
 
 /**
  * Resolves command and command handler options for controller methods that have an operation.

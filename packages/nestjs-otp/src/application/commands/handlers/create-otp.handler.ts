@@ -7,19 +7,19 @@ import {
   TransactionScope,
 } from '@concepta/nestjs-repository';
 
-import { Otp } from '../../../domain/aggregates/otp';
-import { OtpLimitReachedException } from '../../../domain/exceptions/otp-limit-reached.exception';
-import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception';
-import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
-import { OtpRepositoryInterface } from '../../../domain/repositories/otp-repository.interface';
-import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface';
-import { OtpCreateDto } from '../../../infrastructure/dtos/otp-create.dto';
+import { Otp } from '../../../domain/aggregates/otp.js';
+import { OtpLimitReachedException } from '../../../domain/exceptions/otp-limit-reached.exception.js';
+import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception.js';
+import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface.js';
+import { OtpRepositoryInterface } from '../../../domain/repositories/otp-repository.interface.js';
+import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface.js';
+import { OtpCreateDto } from '../../../infrastructure/dtos/otp-create.dto.js';
 import {
   OTP_MODULE_SETTINGS_TOKEN,
   OTP_REPOSITORY_RESOLVER_TOKEN,
-} from '../../../otp.constants';
-import { validateOtpDto } from '../../utils/validate-otp-dto.util';
-import { CreateOtpCommand } from '../impl/create-otp.command';
+} from '../../../otp.constants.js';
+import { validateOtpDto } from '../../utils/validate-otp-dto.util.js';
+import { CreateOtpCommand } from '../impl/create-otp.command.js';
 
 @CommandHandler(CreateOtpCommand)
 export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {

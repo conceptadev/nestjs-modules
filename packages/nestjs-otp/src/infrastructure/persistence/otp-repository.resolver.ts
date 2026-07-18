@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
-import { OtpRepositoryResolverInterface } from '../../domain/repositories/otp-repository-resolver.interface';
-import { OtpRepositoryInterface } from '../../domain/repositories/otp-repository.interface';
-import { OtpEntityNotFoundException } from '../exceptions/otp-entity-not-found.exception';
-import { getDynamicOtpRepositoryToken } from '../utils/create-otp-repository-provider';
+import { OtpRepositoryResolverInterface } from '../../domain/repositories/otp-repository-resolver.interface.js';
+import { OtpRepositoryInterface } from '../../domain/repositories/otp-repository.interface.js';
+import { OtpEntityNotFoundException } from '../exceptions/otp-entity-not-found.exception.js';
+import { getDynamicOtpRepositoryToken } from '../utils/create-otp-repository-provider.js';
 
 @Injectable()
 export class OtpRepositoryResolver implements OtpRepositoryResolverInterface {

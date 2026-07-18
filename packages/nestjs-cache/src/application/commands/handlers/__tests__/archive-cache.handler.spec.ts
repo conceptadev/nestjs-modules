@@ -5,10 +5,10 @@ import {
   createMockCacheEntity,
   toCacheDomain,
   DEFAULT_CACHE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Cache } from '../../../../domain/aggregates/cache';
-import { ArchiveCacheCommand } from '../../impl/archive-cache.command';
-import { ArchiveCacheHandler } from '../archive-cache.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Cache } from '../../../../domain/aggregates/cache.js';
+import { ArchiveCacheCommand } from '../../impl/archive-cache.command.js';
+import { ArchiveCacheHandler } from '../archive-cache.handler.js';
 
 describe(ArchiveCacheHandler.name, () => {
   const ctx = {};

@@ -1,10 +1,10 @@
 import { mock } from 'vitest-mock-extended';
 
-import { type JwtPort } from '../../../../domain/ports/jwt.port';
-import { type UserPort } from '../../../../domain/ports/user.port';
-import { AuthenticationRefreshTokenException } from '../../../exceptions/authentication-refresh-token.exception';
-import { ValidateAndVerifyRefreshTokenQuery } from '../../impl/validate-and-verify-refresh-token.query';
-import { ValidateAndVerifyRefreshTokenHandler } from '../validate-and-verify-refresh-token.handler';
+import { type JwtPort } from '../../../../domain/ports/jwt.port.js';
+import { type UserPort } from '../../../../domain/ports/user.port.js';
+import { AuthenticationRefreshTokenException } from '../../../exceptions/authentication-refresh-token.exception.js';
+import { ValidateAndVerifyRefreshTokenQuery } from '../../impl/validate-and-verify-refresh-token.query.js';
+import { ValidateAndVerifyRefreshTokenHandler } from '../validate-and-verify-refresh-token.handler.js';
 
 describe(ValidateAndVerifyRefreshTokenHandler.name, () => {
   const token = 'refresh-token';

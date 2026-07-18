@@ -10,7 +10,7 @@ import {
   getRepositoryToken,
   TypeOrmModule,
 } from '@nestjs/typeorm';
-import { type EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
+import { type EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type.js';
 
 import { HookResolverService } from '@concepta/nestjs-core';
 import {
@@ -18,11 +18,11 @@ import {
   type RelationActionConfig,
 } from '@concepta/nestjs-repository';
 
-import { type TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface';
-import { TypeOrmRepository } from './repository/typeorm-repository';
-import { TypeOrmTransactionFactory } from './transaction/typeorm-transaction.factory';
-import { TYPEORM_DEFAULT_DATA_SOURCE_NAME } from './typeorm-repository.constants';
-import { type TypeOrmDataSourceToken } from './typeorm-repository.types';
+import { type TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface.js';
+import { TypeOrmRepository } from './repository/typeorm-repository.js';
+import { TypeOrmTransactionFactory } from './transaction/typeorm-transaction.factory.js';
+import { TYPEORM_DEFAULT_DATA_SOURCE_NAME } from './typeorm-repository.constants.js';
+import { type TypeOrmDataSourceToken } from './typeorm-repository.types.js';
 
 /**
  * Resolve data source name from token.

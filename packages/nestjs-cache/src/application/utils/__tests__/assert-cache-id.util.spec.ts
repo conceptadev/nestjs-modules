@@ -1,5 +1,5 @@
-import { CacheException } from '../../../domain/exceptions/cache.exception';
-import { assertCacheId } from '../assert-cache-id.util';
+import { CacheException } from '../../../domain/exceptions/cache.exception.js';
+import { assertCacheId } from '../assert-cache-id.util.js';
 
 describe('assertCacheId', () => {
   it('should not throw for a valid string', () => {

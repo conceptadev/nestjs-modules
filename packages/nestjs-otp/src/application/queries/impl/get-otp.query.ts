@@ -3,7 +3,7 @@ import { Query } from '@nestjs/cqrs';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { type Otp } from '../../../domain/aggregates/otp';
+import { type Otp } from '../../../domain/aggregates/otp.js';
 
 export class GetOtpQuery extends Query<Otp> {
   constructor(

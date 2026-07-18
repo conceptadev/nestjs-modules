@@ -5,17 +5,17 @@ import { ReferenceIdInterface, getAppContext } from '@concepta/nestjs-core';
 import {
   AUTHENTICATION_JWT_PORT_TOKEN,
   AUTHENTICATION_USER_PORT_TOKEN,
-} from '../../../authentication.constants';
-import { AuthorizationPayloadInterface } from '../../../domain/interfaces/authorization-payload.interface';
-import { JwtStrategyPolicy } from '../../../domain/policies/jwt-strategy.policy';
-import { JwtPort } from '../../../domain/ports/jwt.port';
-import { UserPort } from '../../../domain/ports/user.port';
-import { JwtPassportStrategy } from '../../passport/jwt-passport.strategy';
-import { PassportStrategyFactory } from '../../passport/passport-strategy.factory';
-import { createVerifyTokenCallback } from '../../passport/utils/create-verify-token-callback.util';
+} from '../../../authentication.constants.js';
+import { AuthorizationPayloadInterface } from '../../../domain/interfaces/authorization-payload.interface.js';
+import { JwtStrategyPolicy } from '../../../domain/policies/jwt-strategy.policy.js';
+import { JwtPort } from '../../../domain/ports/jwt.port.js';
+import { UserPort } from '../../../domain/ports/user.port.js';
+import { JwtPassportStrategy } from '../../passport/jwt-passport.strategy.js';
+import { PassportStrategyFactory } from '../../passport/passport-strategy.factory.js';
+import { createVerifyTokenCallback } from '../../passport/utils/create-verify-token-callback.util.js';
 
-import { JwtUnauthorizedException } from './exceptions/jwt-unauthorized.exception';
-import { JWT_STRATEGY_NAME } from './jwt.constants';
+import { JwtUnauthorizedException } from './exceptions/jwt-unauthorized.exception.js';
+import { JWT_STRATEGY_NAME } from './jwt.constants.js';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategyFactory<JwtPassportStrategy>(

@@ -5,15 +5,15 @@ import { ReferenceIdInterface } from '@concepta/nestjs-core';
 import {
   AUTHENTICATION_PASSWORD_PORT_TOKEN,
   AUTHENTICATION_USER_PORT_TOKEN,
-} from '../../../authentication.constants';
-import { PasswordPort } from '../../../domain/ports/password.port';
-import { UserPort } from '../../../domain/ports/user.port';
-import { LocalInvalidPasswordException } from '../../exceptions/local-invalid-password.exception';
-import { LocalUserInactiveException } from '../../exceptions/local-user-inactive.exception';
-import { LocalUsernameNotFoundException } from '../../exceptions/local-username-not-found.exception';
+} from '../../../authentication.constants.js';
+import { PasswordPort } from '../../../domain/ports/password.port.js';
+import { UserPort } from '../../../domain/ports/user.port.js';
+import { LocalInvalidPasswordException } from '../../exceptions/local-invalid-password.exception.js';
+import { LocalUserInactiveException } from '../../exceptions/local-user-inactive.exception.js';
+import { LocalUsernameNotFoundException } from '../../exceptions/local-username-not-found.exception.js';
 
-import { LocalServiceInterface } from './interfaces/local-service.interface';
-import { LocalValidateUserInterface } from './interfaces/local-validate-user.interface';
+import { LocalServiceInterface } from './interfaces/local-service.interface.js';
+import { LocalValidateUserInterface } from './interfaces/local-validate-user.interface.js';
 
 @Injectable()
 export class LocalService implements LocalServiceInterface {

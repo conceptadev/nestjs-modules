@@ -2,7 +2,7 @@ import { vi, type Mocked } from 'vitest';
 
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type RepositoryInterface } from '../repository/interfaces/repository.interface';
+import { type RepositoryInterface } from '../repository/interfaces/repository.interface.js';
 
 /**
  * Create a Vitest-mocked RepositoryInterface for unit testing.

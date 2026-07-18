@@ -3,10 +3,10 @@ import { type PlainLiteralObject } from '@nestjs/common';
 import {
   type CrudControllerClassOptionsInterface,
   type CrudControllerOptionsInterface,
-} from '../../interfaces/crud-controller-options.interface';
-import { type CrudOperationOptions } from '../crud-operation-options.type';
+} from '../../interfaces/crud-controller-options.interface.js';
+import { type CrudOperationOptions } from '../crud-operation-options.type.js';
 
-import { type CrudExtraDecoratorsInterface } from './crud-extra-decorators.interface';
+import { type CrudExtraDecoratorsInterface } from './crud-extra-decorators.interface.js';
 
 /**
  * Options for pre-decorated controller class.

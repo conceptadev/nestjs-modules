@@ -1,14 +1,14 @@
 import { type PasswordUpdateInterface } from '@concepta/nestjs-password';
 
-import { type UserCreatableInterface } from '../../../../domain/interfaces/user-creatable.interface';
-import { type UserUpdatableInterface } from '../../../../domain/interfaces/user-updatable.interface';
-import { CreateUserCredentialCommand } from '../create-user-credential.command';
-import { CreateUserCommand } from '../create-user.command';
-import { RemoveUserCommand } from '../remove-user.command';
-import { SetUserPasswordCommand } from '../set-user-password.command';
-import { UpdateUserCredentialCommand } from '../update-user-credential.command';
-import { UpdateUserPasswordCommand } from '../update-user-password.command';
-import { UpdateUserCommand } from '../update-user.command';
+import { type UserCreatableInterface } from '../../../../domain/interfaces/user-creatable.interface.js';
+import { type UserUpdatableInterface } from '../../../../domain/interfaces/user-updatable.interface.js';
+import { CreateUserCredentialCommand } from '../create-user-credential.command.js';
+import { CreateUserCommand } from '../create-user.command.js';
+import { RemoveUserCommand } from '../remove-user.command.js';
+import { SetUserPasswordCommand } from '../set-user-password.command.js';
+import { UpdateUserCredentialCommand } from '../update-user-credential.command.js';
+import { UpdateUserPasswordCommand } from '../update-user-password.command.js';
+import { UpdateUserCommand } from '../update-user.command.js';
 
 describe(CreateUserCommand.name, () => {
   it('should store ctx and dto', () => {

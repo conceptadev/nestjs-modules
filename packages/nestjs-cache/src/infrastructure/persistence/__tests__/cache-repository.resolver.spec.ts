@@ -2,9 +2,9 @@ import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
 import { type ModuleRef } from '@nestjs/core';
 
-import { CacheEntityNotFoundException } from '../../exceptions/cache-entity-not-found.exception';
-import { CacheRepositoryResolver } from '../cache-repository.resolver';
-import { type CacheRepository } from '../cache.repository';
+import { CacheEntityNotFoundException } from '../../exceptions/cache-entity-not-found.exception.js';
+import { CacheRepositoryResolver } from '../cache-repository.resolver.js';
+import { type CacheRepository } from '../cache.repository.js';
 
 describe(CacheRepositoryResolver.name, () => {
   let resolver: CacheRepositoryResolver;

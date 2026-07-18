@@ -9,30 +9,30 @@ import { CqrsModule } from '@nestjs/cqrs';
 
 import { createSettingsProvider } from '@concepta/nestjs-core';
 
-import { ArchiveCacheHandler } from './application/commands/handlers/archive-cache.handler';
-import { ClearCachesByAssigneeHandler } from './application/commands/handlers/clear-caches-by-assignee.handler';
-import { CreateCacheHandler } from './application/commands/handlers/create-cache.handler';
-import { RemoveCacheHandler } from './application/commands/handlers/remove-cache.handler';
-import { ReplaceCacheHandler } from './application/commands/handlers/replace-cache.handler';
-import { UpdateCacheHandler } from './application/commands/handlers/update-cache.handler';
-import { UpsertCacheHandler } from './application/commands/handlers/upsert-cache.handler';
-import { FindCachesByAssigneeHandler } from './application/queries/handlers/find-caches-by-assignee.handler';
-import { FindOneCacheHandler } from './application/queries/handlers/find-one-cache.handler';
-import { GetCacheHandler } from './application/queries/handlers/get-cache.handler';
+import { ArchiveCacheHandler } from './application/commands/handlers/archive-cache.handler.js';
+import { ClearCachesByAssigneeHandler } from './application/commands/handlers/clear-caches-by-assignee.handler.js';
+import { CreateCacheHandler } from './application/commands/handlers/create-cache.handler.js';
+import { RemoveCacheHandler } from './application/commands/handlers/remove-cache.handler.js';
+import { ReplaceCacheHandler } from './application/commands/handlers/replace-cache.handler.js';
+import { UpdateCacheHandler } from './application/commands/handlers/update-cache.handler.js';
+import { UpsertCacheHandler } from './application/commands/handlers/upsert-cache.handler.js';
+import { FindCachesByAssigneeHandler } from './application/queries/handlers/find-caches-by-assignee.handler.js';
+import { FindOneCacheHandler } from './application/queries/handlers/find-one-cache.handler.js';
+import { GetCacheHandler } from './application/queries/handlers/get-cache.handler.js';
 import {
   CACHE_CUSTOM_REPOSITORY_TOKEN,
   CACHE_MODULE_SETTINGS_TOKEN,
   CACHE_REPOSITORY_RESOLVER_TOKEN,
-} from './cache.constants';
-import { CacheExpirationPolicy } from './domain/policies/cache-expiration.policy';
-import { CacheContextOverlay } from './gateways/cache-context.overlay';
-import { cacheDefaultConfig } from './infrastructure/config/cache-default.config';
-import { type CacheExtrasInterface } from './infrastructure/config/interfaces/cache-extras.interface';
-import { type CacheOptionsInterface } from './infrastructure/config/interfaces/cache-options.interface';
-import { type CacheSettingsInterface } from './infrastructure/config/interfaces/cache-settings.interface';
-import { CacheRepositoryResolver } from './infrastructure/persistence/cache-repository.resolver';
-import { CacheMapper } from './infrastructure/persistence/cache.mapper';
-import { createCacheExpirationPolicyProvider } from './infrastructure/utils/create-cache-expiration-policy-provider';
+} from './cache.constants.js';
+import { CacheExpirationPolicy } from './domain/policies/cache-expiration.policy.js';
+import { CacheContextOverlay } from './gateways/cache-context.overlay.js';
+import { cacheDefaultConfig } from './infrastructure/config/cache-default.config.js';
+import { type CacheExtrasInterface } from './infrastructure/config/interfaces/cache-extras.interface.js';
+import { type CacheOptionsInterface } from './infrastructure/config/interfaces/cache-options.interface.js';
+import { type CacheSettingsInterface } from './infrastructure/config/interfaces/cache-settings.interface.js';
+import { CacheRepositoryResolver } from './infrastructure/persistence/cache-repository.resolver.js';
+import { CacheMapper } from './infrastructure/persistence/cache.mapper.js';
+import { createCacheExpirationPolicyProvider } from './infrastructure/utils/create-cache-expiration-policy-provider.js';
 
 const RAW_OPTIONS_TOKEN = Symbol('__CACHE_MODULE_RAW_OPTIONS_TOKEN__');
 

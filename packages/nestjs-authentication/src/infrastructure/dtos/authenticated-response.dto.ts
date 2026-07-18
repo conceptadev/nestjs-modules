@@ -2,7 +2,7 @@ import { Exclude, Expose } from 'class-transformer';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { AuthenticatedResponseInterface } from '../../domain/interfaces/authenticated-response.interface';
+import { AuthenticatedResponseInterface } from '../../domain/interfaces/authenticated-response.interface.js';
 
 @Exclude()
 export class AuthenticationResponseDto implements AuthenticatedResponseInterface {

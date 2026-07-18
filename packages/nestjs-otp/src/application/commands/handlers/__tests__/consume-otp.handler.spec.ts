@@ -9,11 +9,11 @@ import {
   createMockTransaction,
   DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception';
-import { type OtpSettingsInterface } from '../../../../infrastructure/config/interfaces/otp-settings.interface';
-import { ConsumeOtpCommand } from '../../impl/consume-otp.command';
-import { ConsumeOtpHandler } from '../consume-otp.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception.js';
+import { type OtpSettingsInterface } from '../../../../infrastructure/config/interfaces/otp-settings.interface.js';
+import { ConsumeOtpCommand } from '../../impl/consume-otp.command.js';
+import { ConsumeOtpHandler } from '../consume-otp.handler.js';
 
 describe(ConsumeOtpHandler.name, () => {
   let handler: ConsumeOtpHandler;

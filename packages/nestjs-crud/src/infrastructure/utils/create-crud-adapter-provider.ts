@@ -9,9 +9,9 @@ import {
   type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { type CrudAdapter } from '../adapters/crud.adapter';
+import { type CrudAdapter } from '../adapters/crud.adapter.js';
 
-import { getDynamicAdapterToken } from './crud-infra.utils';
+import { getDynamicAdapterToken } from './crud-infra.utils.js';
 
 /**
  * Configuration for creating a CRUD adapter provider

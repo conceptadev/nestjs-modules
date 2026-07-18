@@ -4,10 +4,10 @@ import { type ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard as PassportAuthGuard } from '@nestjs/passport';
 
-import { GuardsPolicy } from '../../../../domain/policies/guards.policy';
-import { RefreshUnauthorizedException } from '../exceptions/refresh-unauthorized.exception';
-import { REFRESH_STRATEGY_NAME } from '../refresh.constants';
-import { RefreshGuard } from '../refresh.guard';
+import { GuardsPolicy } from '../../../../domain/policies/guards.policy.js';
+import { RefreshUnauthorizedException } from '../exceptions/refresh-unauthorized.exception.js';
+import { REFRESH_STRATEGY_NAME } from '../refresh.constants.js';
+import { RefreshGuard } from '../refresh.guard.js';
 
 vi.mock('@nestjs/passport', () => ({
   AuthGuard: vi.fn().mockImplementation(() => vi.fn()),

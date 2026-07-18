@@ -1,11 +1,11 @@
 import { mock } from 'vitest-mock-extended';
 
-import { RecoveryPolicy } from '../../../../domain/policies/recovery.policy';
-import { type OtpPort } from '../../../../domain/ports/otp.port';
-import { type PasswordPort } from '../../../../domain/ports/password.port';
-import { type RecoveryNotificationPort } from '../../../../domain/ports/recovery-notification.port';
-import { type UserPort } from '../../../../domain/ports/user.port';
-import { RecoveryService } from '../recovery.service';
+import { RecoveryPolicy } from '../../../../domain/policies/recovery.policy.js';
+import { type OtpPort } from '../../../../domain/ports/otp.port.js';
+import { type PasswordPort } from '../../../../domain/ports/password.port.js';
+import { type RecoveryNotificationPort } from '../../../../domain/ports/recovery-notification.port.js';
+import { type UserPort } from '../../../../domain/ports/user.port.js';
+import { RecoveryService } from '../recovery.service.js';
 
 describe(RecoveryService, () => {
   const UserFixture = {

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { GuardsPolicy } from '../../../domain/policies/guards.policy';
-import { AuthGuard } from '../../auth.guard';
+import { GuardsPolicy } from '../../../domain/policies/guards.policy.js';
+import { AuthGuard } from '../../auth.guard.js';
 
-import { RefreshUnauthorizedException } from './exceptions/refresh-unauthorized.exception';
-import { REFRESH_STRATEGY_NAME } from './refresh.constants';
+import { RefreshUnauthorizedException } from './exceptions/refresh-unauthorized.exception.js';
+import { REFRESH_STRATEGY_NAME } from './refresh.constants.js';
 
 @Injectable()
 export class RefreshGuard extends AuthGuard(REFRESH_STRATEGY_NAME, {

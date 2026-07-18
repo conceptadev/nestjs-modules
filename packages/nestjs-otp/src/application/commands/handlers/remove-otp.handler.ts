@@ -3,9 +3,9 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
-import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../../otp.constants';
-import { RemoveOtpCommand } from '../impl/remove-otp.command';
+import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface.js';
+import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../../otp.constants.js';
+import { RemoveOtpCommand } from '../impl/remove-otp.command.js';
 
 @CommandHandler(RemoveOtpCommand)
 export class RemoveOtpHandler implements ICommandHandler<RemoveOtpCommand> {

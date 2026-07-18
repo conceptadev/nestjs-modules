@@ -1,11 +1,11 @@
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { Role } from '../../../domain/aggregates/role';
-import { RoleRepositoryResolverInterface } from '../../../domain/repositories/role-repository-resolver.interface';
-import { ROLE_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants';
-import { RoleNotFoundException } from '../../exceptions/role-not-found.exception';
-import { GetRoleQuery } from '../impl/get-role.query';
+import { Role } from '../../../domain/aggregates/role.js';
+import { RoleRepositoryResolverInterface } from '../../../domain/repositories/role-repository-resolver.interface.js';
+import { ROLE_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants.js';
+import { RoleNotFoundException } from '../../exceptions/role-not-found.exception.js';
+import { GetRoleQuery } from '../impl/get-role.query.js';
 
 @QueryHandler(GetRoleQuery)
 export class GetRoleHandler implements IQueryHandler<GetRoleQuery> {

@@ -1,10 +1,10 @@
-import { CrudQueryException } from '../../../../infrastructure/exceptions/crud-query.exception';
-import { CrudQueryHandler } from '../crud-query.handler';
+import { CrudQueryException } from '../../../../infrastructure/exceptions/crud-query.exception.js';
+import { CrudQueryHandler } from '../crud-query.handler.js';
 
 import {
   type TestCrudAdapter,
   createTestAdapter,
-} from './fixtures/query-handler-test.fixture';
+} from './fixtures/query-handler-test.fixture.js';
 
 describe('CrudQueryHandler', () => {
   let adapter: TestCrudAdapter;

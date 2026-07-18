@@ -4,7 +4,7 @@ import {
   type ReferenceVersionInterface,
 } from '@concepta/nestjs-core';
 
-import { type OtpInterface } from '../../../domain/interfaces/otp.interface';
+import { type OtpInterface } from '../../../domain/interfaces/otp.interface.js';
 
 export interface OtpEntityInterface
   extends

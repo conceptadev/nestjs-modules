@@ -1,6 +1,6 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
+import { type CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface.js';
 
 /**
  * Interface for CRUD command class instances.

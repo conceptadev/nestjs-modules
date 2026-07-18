@@ -3,11 +3,11 @@ import { IsNumber, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { AuditInterface } from '../../domain/audit/interfaces/audit.interface';
-import { ReferenceIdInterface } from '../../domain/reference/interfaces/reference-id.interface';
-import { ReferenceVersionInterface } from '../../domain/reference/interfaces/reference-version.interface';
+import { AuditInterface } from '../../domain/audit/interfaces/audit.interface.js';
+import { ReferenceIdInterface } from '../../domain/reference/interfaces/reference-id.interface.js';
+import { ReferenceVersionInterface } from '../../domain/reference/interfaces/reference-version.interface.js';
 
-import { AuditDto } from './audit.dto';
+import { AuditDto } from './audit.dto.js';
 
 @Exclude()
 export class DomainAggregateDto

@@ -1,4 +1,4 @@
-import { type PasswordStrengthEnum } from '../../../domain/enum/password-strength.enum';
+import { type PasswordStrengthEnum } from '../../../domain/enum/password-strength.enum.js';
 
 /**
  * Password module settings interface

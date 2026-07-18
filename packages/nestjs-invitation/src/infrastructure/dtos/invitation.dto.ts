@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { DomainAggregateDto } from '@concepta/nestjs-core/aggregate';
 
-import { InvitationInterface } from '../../domain/interfaces/invitation.interface';
+import { InvitationInterface } from '../../domain/interfaces/invitation.interface.js';
 
 @Exclude()
 export class InvitationDto

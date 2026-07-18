@@ -7,18 +7,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { AppContextHost } from '@concepta/nestjs-core';
 
-import { TransactionFactoryInterface } from '../interfaces/transaction-factory.interface';
-import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants';
+import { TransactionFactoryInterface } from '../interfaces/transaction-factory.interface.js';
+import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants.js';
 
-import { TransactionInterface } from './interfaces/transaction.interface';
+import { TransactionInterface } from './interfaces/transaction.interface.js';
 import {
   TransactionFactoryRegistry,
   TRANSACTION_FACTORY_REGISTRY,
-} from './transaction-factory-registry';
-import { TransactionManager } from './transaction-manager';
-import { TransactionScope } from './transaction-scope';
-import { TransactionalRunner } from './transactional-runner';
-import { Transactional } from './transactional.decorator';
+} from './transaction-factory-registry.js';
+import { TransactionManager } from './transaction-manager.js';
+import { TransactionScope } from './transaction-scope.js';
+import { TransactionalRunner } from './transactional-runner.js';
+import { Transactional } from './transactional.decorator.js';
 
 describe(TransactionalRunner.name, () => {
   let runner: TransactionalRunner;

@@ -10,12 +10,12 @@ import {
   AUTHENTICATION_PASSWORD_PORT_TOKEN,
   AUTHENTICATION_RECOVERY_NOTIFICATION_PORT_TOKEN,
   AUTHENTICATION_USER_PORT_TOKEN,
-} from '../../../authentication.constants';
-import { RecoveryPolicy } from '../../../domain/policies/recovery.policy';
-import { OtpPort } from '../../../domain/ports/otp.port';
-import { PasswordPort } from '../../../domain/ports/password.port';
-import { RecoveryNotificationPort } from '../../../domain/ports/recovery-notification.port';
-import { UserPort } from '../../../domain/ports/user.port';
+} from '../../../authentication.constants.js';
+import { RecoveryPolicy } from '../../../domain/policies/recovery.policy.js';
+import { OtpPort } from '../../../domain/ports/otp.port.js';
+import { PasswordPort } from '../../../domain/ports/password.port.js';
+import { RecoveryNotificationPort } from '../../../domain/ports/recovery-notification.port.js';
+import { UserPort } from '../../../domain/ports/user.port.js';
 
 @Injectable()
 export class RecoveryService {

@@ -3,20 +3,20 @@ import { Module, DynamicModule, Provider } from '@nestjs/common';
 import {
   FEDERATION_ORCHESTRATOR,
   FederationOrchestrator,
-} from './federation/federation-orchestrator.service';
-import { RepositoryFeatureOptions } from './interfaces/repository-feature-options.interface';
-import { DynamicRepositoryModule } from './interfaces/repository-module.interface';
-import { RepositoryAdapter } from './repository/repository-adapter';
-import { RepositoryModuleClass } from './repository.module-definition';
+} from './federation/federation-orchestrator.service.js';
+import { RepositoryFeatureOptions } from './interfaces/repository-feature-options.interface.js';
+import { DynamicRepositoryModule } from './interfaces/repository-module.interface.js';
+import { RepositoryAdapter } from './repository/repository-adapter.js';
+import { RepositoryModuleClass } from './repository.module-definition.js';
 import {
   RepositoryRegistryService,
   REPOSITORY_REGISTRY,
-} from './services/repository-registry.service';
+} from './services/repository-registry.service.js';
 import {
   TransactionFactoryRegistry,
   TRANSACTION_FACTORY_REGISTRY,
-} from './transaction/transaction-factory-registry';
-import { getDynamicRepositoryToken } from './utils/get-dynamic-repository-token';
+} from './transaction/transaction-factory-registry.js';
+import { getDynamicRepositoryToken } from './utils/get-dynamic-repository-token.js';
 
 /**
  * Repository module providing data access abstraction with transaction support.

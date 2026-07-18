@@ -1,8 +1,8 @@
-import { CRUD_MODULE_ROUTE_RETURN_RESTORED_METADATA } from '../../../crud.constants';
+import { CRUD_MODULE_ROUTE_RETURN_RESTORED_METADATA } from '../../../crud.constants.js';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,
-} from '../../services/crud-metadata.service';
+} from '../../services/crud-metadata.service.js';
 
 /**
  * CRUD return restored route decorator.

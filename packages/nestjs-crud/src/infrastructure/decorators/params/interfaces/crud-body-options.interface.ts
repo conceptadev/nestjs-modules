@@ -4,7 +4,7 @@ import {
   type Type,
 } from '@nestjs/common';
 
-import { type CrudValidationOptions } from '../../../../crud.types';
+import { type CrudValidationOptions } from '../../../../crud.types.js';
 
 export interface CrudBodyOptionsInterface<
   T extends PlainLiteralObject = PlainLiteralObject,

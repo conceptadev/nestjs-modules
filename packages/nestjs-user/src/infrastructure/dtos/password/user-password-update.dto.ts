@@ -5,7 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { PasswordPlainCurrentInterface } from '@concepta/nestjs-password';
 
-import { UserPasswordDto } from './user-password.dto';
+import { UserPasswordDto } from './user-password.dto.js';
 
 @Exclude()
 export class UserPasswordUpdateDto

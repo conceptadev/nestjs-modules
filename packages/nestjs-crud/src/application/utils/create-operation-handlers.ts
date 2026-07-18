@@ -1,18 +1,18 @@
 import { Inject, Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 
-import { CrudAdapter } from '../../infrastructure/adapters/crud.adapter';
-import { CrudControllerEntityInterface } from '../../infrastructure/interfaces/crud-controller-entity.interface';
-import { CrudAdapterResolver } from '../../infrastructure/resolvers/crud-adapter.resolver';
+import { CrudAdapter } from '../../infrastructure/adapters/crud.adapter.js';
+import { CrudControllerEntityInterface } from '../../infrastructure/interfaces/crud-controller-entity.interface.js';
+import { CrudAdapterResolver } from '../../infrastructure/resolvers/crud-adapter.resolver.js';
 import {
   CrudResolverInterface,
   CrudResolverStatic,
-} from '../../infrastructure/resolvers/interfaces/crud-resolver.interface';
+} from '../../infrastructure/resolvers/interfaces/crud-resolver.interface.js';
 import {
   getControllerName,
   getDynamicAdapterToken,
-} from '../../infrastructure/utils/crud-infra.utils';
-import { CrudCommandHandlerInterface } from '../commands/interfaces/crud-command-handler.interface';
-import { CrudQueryHandler } from '../queries/handlers/crud-query.handler';
+} from '../../infrastructure/utils/crud-infra.utils.js';
+import { CrudCommandHandlerInterface } from '../commands/interfaces/crud-command-handler.interface.js';
+import { CrudQueryHandler } from '../queries/handlers/crud-query.handler.js';
 
 interface CreateHandlerOptionsBase extends CrudControllerEntityInterface {
   /** Method name for unique class naming */

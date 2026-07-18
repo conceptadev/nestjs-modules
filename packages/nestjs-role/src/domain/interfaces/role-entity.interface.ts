@@ -4,7 +4,7 @@ import {
   type ReferenceVersionInterface,
 } from '@concepta/nestjs-core';
 
-import { type RoleInterface } from './role.interface';
+import { type RoleInterface } from './role.interface.js';
 
 export interface RoleEntityInterface
   extends

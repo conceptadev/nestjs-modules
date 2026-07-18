@@ -9,13 +9,13 @@ import {
   createMockTransaction,
   createMockIdentityEntity,
   toIdentityDomain,
-} from '../../__tests__/helpers/mock.helpers';
-import { type FederatedCredentialsInterface } from '../../interfaces/federated-credentials.interface';
-import { IdentityCreateUserException } from '../exceptions/identity-create-user.exception';
-import { IdentityFindUserException } from '../exceptions/identity-find-user.exception';
-import { IdentityUserRelationshipException } from '../exceptions/identity-user-relationship.exception';
+} from '../../__tests__/helpers/mock.helpers.js';
+import { type FederatedCredentialsInterface } from '../../interfaces/federated-credentials.interface.js';
+import { IdentityCreateUserException } from '../exceptions/identity-create-user.exception.js';
+import { IdentityFindUserException } from '../exceptions/identity-find-user.exception.js';
+import { IdentityUserRelationshipException } from '../exceptions/identity-user-relationship.exception.js';
 
-import { FederatedOAuthService } from './federated-oauth.service';
+import { FederatedOAuthService } from './federated-oauth.service.js';
 
 describe(FederatedOAuthService, () => {
   let service: FederatedOAuthService;

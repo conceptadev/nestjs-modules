@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { CqrsModule, QueryHandler } from '@nestjs/cqrs';
 
-import { AUTHENTICATION_USER_PORT_TOKEN } from '../../authentication.constants';
+import { AUTHENTICATION_USER_PORT_TOKEN } from '../../authentication.constants.js';
 
 import {
   createMockUserPortProvider,
@@ -10,7 +10,7 @@ import {
   MockGetUserByUsernameHandler,
   MockGetUserBySubjectQuery,
   MockUpdateUserHandler,
-} from './ports/mock-user-port.provider';
+} from './ports/mock-user-port.provider.js';
 
 export const FIXTURE_USER = {
   id: 'fixture-user-id',

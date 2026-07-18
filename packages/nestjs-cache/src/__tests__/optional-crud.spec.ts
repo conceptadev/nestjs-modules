@@ -12,7 +12,7 @@ import {
   ReplaceCacheRequestHandler,
   ListCachesRequestHandler,
   ReadCacheRequestHandler,
-} from '../optional-crud';
+} from '../optional-crud.js';
 
 describe('optional-crud', () => {
   it('should export CachePaginatedDto', () => {

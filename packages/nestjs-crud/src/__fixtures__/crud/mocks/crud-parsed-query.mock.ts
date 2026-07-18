@@ -1,6 +1,6 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type CrudParsedQueryInterface } from '../../../infrastructure/request/interfaces/crud-parsed-query.interface';
+import { type CrudParsedQueryInterface } from '../../../infrastructure/request/interfaces/crud-parsed-query.interface.js';
 
 export function mockCrudParsedQuery<T extends PlainLiteralObject>(
   overrides: Partial<CrudParsedQueryInterface<T>> = {},

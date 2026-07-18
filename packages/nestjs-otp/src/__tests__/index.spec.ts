@@ -1,4 +1,4 @@
-import { OtpModule, OtpCreateDto, Otp } from '../index';
+import { OtpModule, OtpCreateDto, Otp } from '../index.js';
 
 describe('index', () => {
   it('should be an instance of Function', () => {

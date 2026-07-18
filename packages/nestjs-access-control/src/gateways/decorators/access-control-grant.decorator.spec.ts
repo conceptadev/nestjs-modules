@@ -2,9 +2,9 @@ import { Controller } from '@nestjs/common';
 
 import { ActionEnum } from '@concepta/nestjs-core';
 
-import { ACCESS_CONTROL_MODULE_GRANT_METADATA } from '../../access-control.constants';
+import { ACCESS_CONTROL_MODULE_GRANT_METADATA } from '../../access-control.constants.js';
 
-import { AccessControlGrant } from './access-control-grant.decorator';
+import { AccessControlGrant } from './access-control-grant.decorator.js';
 
 describe('@AccessControlGrant', () => {
   const resource = 'a_protected_resource';

@@ -12,24 +12,24 @@ import { createSettingsProvider } from '@concepta/nestjs-core';
 import {
   ACCESS_CONTROL_MODULE_SETTINGS_TOKEN,
   ACCESS_CONTROL_PORT_TOKEN,
-} from './access-control.constants';
+} from './access-control.constants.js';
 import {
   AccessControlPort,
   type AccessControlPortSettings,
-} from './application/ports/access-control.port';
-import { CheckAccessHandler } from './application/queries/handlers/check-access.handler';
-import { FilterResponseAttributesHandler } from './application/queries/handlers/filter-response-attributes.handler';
-import { ResolveUserRolesHandler } from './application/queries/handlers/resolve-user-roles.handler';
-import { CheckAccessQuery } from './application/queries/impl/check-access.query';
-import { FilterResponseAttributesQuery } from './application/queries/impl/filter-response-attributes.query';
-import { ResolveUserRolesQuery } from './application/queries/impl/resolve-user-roles.query';
-import { AccessControlFilter } from './gateways/http/access-control.filter';
-import { AccessControlGuard } from './gateways/http/access-control.guard';
-import { accessControlDefaultConfig } from './infrastructure/config/access-control-default.config';
-import { type AccessControlOptionsExtrasInterface } from './infrastructure/config/interfaces/access-control-options-extras.interface';
-import { type AccessControlOptionsInterface } from './infrastructure/config/interfaces/access-control-options.interface';
-import { type AccessControlSettingsInterface } from './infrastructure/config/interfaces/access-control-settings.interface';
-import { AccessControlService } from './infrastructure/services/access-control.service';
+} from './application/ports/access-control.port.js';
+import { CheckAccessHandler } from './application/queries/handlers/check-access.handler.js';
+import { FilterResponseAttributesHandler } from './application/queries/handlers/filter-response-attributes.handler.js';
+import { ResolveUserRolesHandler } from './application/queries/handlers/resolve-user-roles.handler.js';
+import { CheckAccessQuery } from './application/queries/impl/check-access.query.js';
+import { FilterResponseAttributesQuery } from './application/queries/impl/filter-response-attributes.query.js';
+import { ResolveUserRolesQuery } from './application/queries/impl/resolve-user-roles.query.js';
+import { AccessControlFilter } from './gateways/http/access-control.filter.js';
+import { AccessControlGuard } from './gateways/http/access-control.guard.js';
+import { accessControlDefaultConfig } from './infrastructure/config/access-control-default.config.js';
+import { type AccessControlOptionsExtrasInterface } from './infrastructure/config/interfaces/access-control-options-extras.interface.js';
+import { type AccessControlOptionsInterface } from './infrastructure/config/interfaces/access-control-options.interface.js';
+import { type AccessControlSettingsInterface } from './infrastructure/config/interfaces/access-control-settings.interface.js';
+import { AccessControlService } from './infrastructure/services/access-control.service.js';
 
 const RAW_OPTIONS_TOKEN = Symbol('__ACCESS_CONTROL_MODULE_RAW_OPTIONS_TOKEN__');
 

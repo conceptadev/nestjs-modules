@@ -1,8 +1,8 @@
-import { CRUD_MODULE_RESOLVER_METADATA } from '../../../crud.constants';
+import { CRUD_MODULE_RESOLVER_METADATA } from '../../../crud.constants.js';
 import {
   CrudMetadata,
   CrudMetadataLookupTarget,
-} from '../../services/crud-metadata.service';
+} from '../../services/crud-metadata.service.js';
 
 /**
  * Set the resolver for a controller.

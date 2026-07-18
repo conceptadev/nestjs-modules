@@ -4,7 +4,7 @@ import { IsObject, IsOptional, IsString } from 'class-validator';
 import { PlainLiteralObject } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { InvitationAcceptableInterface } from '../../domain/interfaces/invitation-acceptable.interface';
+import { InvitationAcceptableInterface } from '../../domain/interfaces/invitation-acceptable.interface.js';
 
 export class InvitationAcceptDto implements InvitationAcceptableInterface {
   @Expose()

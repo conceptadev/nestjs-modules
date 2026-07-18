@@ -3,15 +3,15 @@ import { isObject } from '@nestjs/common/utils/shared.utils';
 
 import { Where, type WhereClause } from '@concepta/nestjs-repository';
 
-import { sanitizeForMessage } from '../utils/validation';
+import { sanitizeForMessage } from '../utils/validation.js';
 
 import {
   COND_OPERATOR_FACTORY,
   CondOperator,
   type SCondition,
   type SFieldOperator,
-} from './crud-query.types';
-import { COMPARISON_OPERATORS } from './crud-query.validator';
+} from './crud-query.types.js';
+import { COMPARISON_OPERATORS } from './crud-query.validator.js';
 
 /**
  * Converts SCondition search trees (from ?s= JSON query param)

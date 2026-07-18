@@ -1,9 +1,9 @@
 import { Inject, PlainLiteralObject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { AUTHENTICATION_JWT_PORT_TOKEN } from '../../../authentication.constants';
-import { JwtPort } from '../../../domain/ports/jwt.port';
-import { VerifyRefreshTokenQuery } from '../impl/verify-refresh-token.query';
+import { AUTHENTICATION_JWT_PORT_TOKEN } from '../../../authentication.constants.js';
+import { JwtPort } from '../../../domain/ports/jwt.port.js';
+import { VerifyRefreshTokenQuery } from '../impl/verify-refresh-token.query.js';
 
 @QueryHandler(VerifyRefreshTokenQuery)
 export class VerifyRefreshTokenHandler implements IQueryHandler<

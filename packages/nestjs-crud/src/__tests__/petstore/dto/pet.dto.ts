@@ -10,8 +10,8 @@ import {
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { Category } from './category.dto';
-import { Tag } from './tag.dto';
+import { Category } from './category.dto.js';
+import { Tag } from './tag.dto.js';
 
 @Exclude()
 export class Pet {

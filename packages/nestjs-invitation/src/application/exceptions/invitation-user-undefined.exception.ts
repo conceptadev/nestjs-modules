@@ -1,6 +1,6 @@
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { InvitationException } from '../../domain/exceptions/invitation.exception';
+import { InvitationException } from '../../domain/exceptions/invitation.exception.js';
 
 /**
  * Thrown when a user cannot be resolved from the user port.

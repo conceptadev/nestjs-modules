@@ -6,7 +6,7 @@ import {
   type ReferenceUsername,
 } from '@concepta/nestjs-core';
 
-import { type User } from '../aggregates/user';
+import { type User } from '../aggregates/user.js';
 
 export interface UserRepositoryInterface {
   get(ctx: PlainLiteralObject, id: ReferenceId): Promise<User | null>;

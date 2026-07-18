@@ -5,13 +5,13 @@ import {
   DynamicRepositoryModule,
 } from '@concepta/nestjs-repository';
 
-import { TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface';
+import { TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface.js';
 import {
   createTypeOrmProvider,
   getTypeOrmImports,
   createTransactionFactoryDescriptor,
   resolveDataSourceName,
-} from './typeorm-repository.util';
+} from './typeorm-repository.util.js';
 
 /**
  * TypeORM Repository module providing data access with transaction support.

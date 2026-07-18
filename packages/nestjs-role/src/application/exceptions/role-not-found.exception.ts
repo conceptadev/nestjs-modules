@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import { type RuntimeException } from '@concepta/nestjs-core';
 
-import { RoleException } from './role.exception';
+import { RoleException } from './role.exception.js';
 
 export class RoleNotFoundException extends RoleException {
   declare context: RuntimeException['context'] & {

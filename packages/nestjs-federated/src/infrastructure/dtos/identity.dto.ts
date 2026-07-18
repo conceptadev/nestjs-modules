@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ReferenceIdDto, ReferenceIdInterface } from '@concepta/nestjs-core';
 import { DomainAggregateDto } from '@concepta/nestjs-core/aggregate';
 
-import { IdentityInterface } from '../../domain/interfaces/identity.interface';
+import { IdentityInterface } from '../../domain/interfaces/identity.interface.js';
 
 @Exclude()
 export class IdentityDto

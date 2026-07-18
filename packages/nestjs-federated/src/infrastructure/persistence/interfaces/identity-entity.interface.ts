@@ -4,7 +4,7 @@ import {
   type ReferenceVersionInterface,
 } from '@concepta/nestjs-core';
 
-import { type IdentityInterface } from '../../../domain/interfaces/identity.interface';
+import { type IdentityInterface } from '../../../domain/interfaces/identity.interface.js';
 
 export interface IdentityEntityInterface
   extends

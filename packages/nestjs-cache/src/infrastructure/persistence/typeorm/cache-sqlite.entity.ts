@@ -3,7 +3,7 @@ import { Column, Unique } from 'typeorm';
 import { ReferenceId } from '@concepta/nestjs-core';
 import { CommonSqliteEntity } from '@concepta/nestjs-repository-typeorm';
 
-import { CacheInterface } from '../../../domain/interfaces/cache.interface';
+import { CacheInterface } from '../../../domain/interfaces/cache.interface.js';
 
 /**
  * Cache Sqlite Entity

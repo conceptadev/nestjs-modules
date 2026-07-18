@@ -10,8 +10,8 @@ import {
   validateParamOption,
   validateSort,
   validateUUID,
-} from '../crud-query.validator';
-import { CrudQueryValidatorException } from '../exceptions/crud-query-validator.exception';
+} from '../crud-query.validator.js';
+import { CrudQueryValidatorException } from '../exceptions/crud-query-validator.exception.js';
 
 describe('#request-query', () => {
   describe('#validator', () => {

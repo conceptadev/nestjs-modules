@@ -1,7 +1,7 @@
 import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { InvitationEventPayloadInterface } from '../events/interfaces/invitation-event-payload.interface';
+import { InvitationEventPayloadInterface } from '../events/interfaces/invitation-event-payload.interface.js';
 
 export interface SendInvitationNotificationCommandInterface {
   ctx: PlainLiteralObject;

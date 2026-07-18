@@ -3,10 +3,10 @@ import { CqrsModule } from '@nestjs/cqrs';
 
 import { RepositoryModule } from '@concepta/nestjs-repository';
 
-import { CrudModule } from '../crud.module';
-import { CrudCqrsResolver } from '../infrastructure/resolvers/crud-cqrs.resolver';
+import { CrudModule } from '../crud.module.js';
+import { CrudCqrsResolver } from '../infrastructure/resolvers/crud-cqrs.resolver.js';
 
-import { PhotoCcbModuleFixture } from './photo-ccb/photo-ccb.module.fixture';
+import { PhotoCcbModuleFixture } from './photo-ccb/photo-ccb.module.fixture.js';
 
 @Module({
   imports: [

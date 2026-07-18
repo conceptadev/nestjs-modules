@@ -1,8 +1,8 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { type Otp } from '../../../domain/aggregates/otp';
-import { type OtpCreatableInterface } from '../../../domain/interfaces/otp-creatable.interface';
+import { type Otp } from '../../../domain/aggregates/otp.js';
+import { type OtpCreatableInterface } from '../../../domain/interfaces/otp-creatable.interface.js';
 
 interface CreateOtpCommandOptions {
   duplicateStrategy?: 'ALLOW' | 'DEACTIVATE';

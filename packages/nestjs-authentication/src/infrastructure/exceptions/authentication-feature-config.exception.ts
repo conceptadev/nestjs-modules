@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { AuthenticationException } from '../../domain/exceptions/authentication.exception';
+import { AuthenticationException } from '../../domain/exceptions/authentication.exception.js';
 
 /**
  * Exception thrown when a feature is configured but required ports are missing.

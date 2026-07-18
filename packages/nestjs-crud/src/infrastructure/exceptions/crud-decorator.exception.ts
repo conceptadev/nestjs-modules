@@ -1,6 +1,6 @@
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { CrudException } from './crud.exception';
+import { CrudException } from './crud.exception.js';
 
 export class CrudDecoratorException extends CrudException {
   constructor(options?: RuntimeExceptionOptions) {

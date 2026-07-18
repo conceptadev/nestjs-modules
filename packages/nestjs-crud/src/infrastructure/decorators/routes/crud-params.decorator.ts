@@ -1,11 +1,11 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { CRUD_MODULE_ROUTE_PARAMS_METADATA } from '../../../crud.constants';
-import { type CrudParamsOptionsInterface } from '../../interfaces/crud-params-options.interface';
+import { CRUD_MODULE_ROUTE_PARAMS_METADATA } from '../../../crud.constants.js';
+import { type CrudParamsOptionsInterface } from '../../interfaces/crud-params-options.interface.js';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,
-} from '../../services/crud-metadata.service';
+} from '../../services/crud-metadata.service.js';
 
 /**
  * CRUD Params route decorator.

@@ -1,6 +1,6 @@
 import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
-import { type SpecificationInterface } from './interfaces/specification.interface';
+import { type SpecificationInterface } from './interfaces/specification.interface.js';
 
 /**
  * Normalized hook configuration with hook class and optional specification.

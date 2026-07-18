@@ -3,8 +3,8 @@ import { ArrayNotEmpty, IsArray, ValidateNested } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { CrudInvalidMutationDto } from './crud-invalid-mutation.dto';
-import { CrudCreateBatchInterface } from './interfaces/crud-create-batch.interface';
+import { CrudInvalidMutationDto } from './crud-invalid-mutation.dto.js';
+import { CrudCreateBatchInterface } from './interfaces/crud-create-batch.interface.js';
 
 @Exclude()
 export class CrudCreateBatchDto<T> implements CrudCreateBatchInterface<T> {

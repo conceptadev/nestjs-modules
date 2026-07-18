@@ -1,13 +1,13 @@
 import { Operation } from '@concepta/nestjs-core';
 
-import { ConfigurableCrudBuilder } from '../../infrastructure/utils/configurable-crud.builder';
-import { CRUD_TEST_PHOTO_CCB_ENTITY_NAME } from '../crud-test.constants';
-import { PhotoCreateBatchDtoFixture } from '../photo/dto/photo-create-batch.dto.fixture';
-import { PhotoCreateDtoFixture } from '../photo/dto/photo-create.dto.fixture';
-import { PhotoPaginatedDtoFixture } from '../photo/dto/photo-paginated.dto.fixture';
-import { PhotoUpdateDtoFixture } from '../photo/dto/photo-update.dto.fixture';
-import { PhotoDtoFixture } from '../photo/dto/photo.dto.fixture';
-import { type PhotoEntityInterfaceFixture } from '../photo/interfaces/photo-entity.interface.fixture';
+import { ConfigurableCrudBuilder } from '../../infrastructure/utils/configurable-crud.builder.js';
+import { CRUD_TEST_PHOTO_CCB_ENTITY_NAME } from '../crud-test.constants.js';
+import { PhotoCreateBatchDtoFixture } from '../photo/dto/photo-create-batch.dto.fixture.js';
+import { PhotoCreateDtoFixture } from '../photo/dto/photo-create.dto.fixture.js';
+import { PhotoPaginatedDtoFixture } from '../photo/dto/photo-paginated.dto.fixture.js';
+import { PhotoUpdateDtoFixture } from '../photo/dto/photo-update.dto.fixture.js';
+import { PhotoDtoFixture } from '../photo/dto/photo.dto.fixture.js';
+import { type PhotoEntityInterfaceFixture } from '../photo/interfaces/photo-entity.interface.fixture.js';
 
 const crudBuilder = new ConfigurableCrudBuilder<PhotoEntityInterfaceFixture>({
   controller: {

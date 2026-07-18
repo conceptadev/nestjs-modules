@@ -7,7 +7,7 @@ import {
   TransactionFactoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { TypeOrmTransaction } from './typeorm-transaction';
+import { TypeOrmTransaction } from './typeorm-transaction.js';
 
 /**
  * Factory for creating TypeORM transactions.

@@ -4,7 +4,7 @@ import { Command } from '@nestjs/cqrs';
 import {
   type Role,
   type RoleCreateProps,
-} from '../../../domain/aggregates/role';
+} from '../../../domain/aggregates/role.js';
 
 export class CreateRoleCommand extends Command<Role> {
   constructor(

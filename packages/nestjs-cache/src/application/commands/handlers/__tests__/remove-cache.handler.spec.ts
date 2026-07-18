@@ -5,10 +5,10 @@ import {
   createMockCacheEntity,
   toCacheDomain,
   DEFAULT_CACHE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Cache } from '../../../../domain/aggregates/cache';
-import { RemoveCacheCommand } from '../../impl/remove-cache.command';
-import { RemoveCacheHandler } from '../remove-cache.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Cache } from '../../../../domain/aggregates/cache.js';
+import { RemoveCacheCommand } from '../../impl/remove-cache.command.js';
+import { RemoveCacheHandler } from '../remove-cache.handler.js';
 
 describe(RemoveCacheHandler.name, () => {
   const ctx = {};

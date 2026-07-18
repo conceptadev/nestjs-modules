@@ -3,11 +3,11 @@ import supertest from 'supertest';
 import { type INestApplication, type CanActivate } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 
-import { AuthenticationModule } from '../../../authentication.module';
-import { AuthRouterGuards } from '../auth-router.constants';
+import { AuthenticationModule } from '../../../authentication.module.js';
+import { AuthRouterGuards } from '../auth-router.constants.js';
 
-import { AuthRouterFixtureGuard } from './fixtures/router-guards.fixture';
-import { RouterControllerFixture } from './fixtures/router.controller.fixture';
+import { AuthRouterFixtureGuard } from './fixtures/router-guards.fixture.js';
+import { RouterControllerFixture } from './fixtures/router.controller.fixture.js';
 
 describe('RouterController (e2e)', () => {
   let app: INestApplication;

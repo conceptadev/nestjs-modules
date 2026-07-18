@@ -3,7 +3,7 @@ import { Command } from '@nestjs/cqrs';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { type Cache } from '../../../domain/aggregates/cache';
+import { type Cache } from '../../../domain/aggregates/cache.js';
 
 export class RemoveCacheCommand extends Command<Cache> {
   constructor(

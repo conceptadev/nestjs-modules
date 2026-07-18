@@ -7,12 +7,12 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { ExceptionsFilter } from '@concepta/nestjs-core';
 import { PasswordValidationService } from '@concepta/nestjs-password';
 
-import { LocalService } from '../../../../application/services/local/local.service';
-import { LocalInvalidCredentialsException } from '../exceptions/local-invalid-credentials.exception';
+import { LocalService } from '../../../../application/services/local/local.service.js';
+import { LocalInvalidCredentialsException } from '../exceptions/local-invalid-credentials.exception.js';
 
-import { AppModuleFixture } from './fixtures/app.module.fixture';
-import { LOGIN_SUCCESS } from './fixtures/constants';
-import { LocalControllerFixture } from './fixtures/local.controller.fixture';
+import { AppModuleFixture } from './fixtures/app.module.fixture.js';
+import { LOGIN_SUCCESS } from './fixtures/constants.js';
+import { LocalControllerFixture } from './fixtures/local.controller.fixture.js';
 
 describe('AuthLocalController (e2e)', () => {
   let app: INestApplication;

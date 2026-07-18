@@ -1,9 +1,9 @@
-import { createMockEventContext } from '../../../__tests__/helpers/mock.helpers';
-import { type OtpEntityInterface } from '../../../infrastructure/persistence/interfaces/otp-entity.interface';
-import { OtpMapper } from '../../../infrastructure/persistence/otp.mapper';
-import { OtpCreatedEvent } from '../../events/otp-created.event';
-import { OtpDeactivatedEvent } from '../../events/otp-deactivated.event';
-import { Otp, type OtpCreateProps } from '../otp';
+import { createMockEventContext } from '../../../__tests__/helpers/mock.helpers.js';
+import { type OtpEntityInterface } from '../../../infrastructure/persistence/interfaces/otp-entity.interface.js';
+import { OtpMapper } from '../../../infrastructure/persistence/otp.mapper.js';
+import { OtpCreatedEvent } from '../../events/otp-created.event.js';
+import { OtpDeactivatedEvent } from '../../events/otp-deactivated.event.js';
+import { Otp, type OtpCreateProps } from '../otp.js';
 
 const otpMapper = new OtpMapper();
 

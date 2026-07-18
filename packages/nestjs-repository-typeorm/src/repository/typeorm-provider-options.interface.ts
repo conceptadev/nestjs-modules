@@ -4,7 +4,7 @@ import { type PlainLiteralObject } from '@nestjs/common';
 
 import { type RepositoryProviderOptions } from '@concepta/nestjs-repository';
 
-import { type TypeOrmDataSourceToken } from '../typeorm-repository.types';
+import { type TypeOrmDataSourceToken } from '../typeorm-repository.types.js';
 
 /**
  * TypeORM-specific provider options.

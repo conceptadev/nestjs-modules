@@ -2,7 +2,7 @@ import { type PlainLiteralObject } from '@nestjs/common';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { type Otp } from '../aggregates/otp';
+import { type Otp } from '../aggregates/otp.js';
 
 export interface OtpRepositoryInterface {
   get(ctx: PlainLiteralObject, id: ReferenceId): Promise<Otp | null>;

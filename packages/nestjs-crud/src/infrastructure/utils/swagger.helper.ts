@@ -1,13 +1,10 @@
+import * as swagger from '@nestjs/swagger';
+
 import { Operation } from '@concepta/nestjs-core';
 
-import { CrudQueryBuilder } from '../request/crud-query.builder';
+import { CrudQueryBuilder } from '../request/crud-query.builder.js';
 
-import { safeRequire } from './crud-infra.utils';
-
-export const swagger = safeRequire('@nestjs/swagger', () =>
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require('@nestjs/swagger'),
-);
+export { swagger };
 
 export class Swagger {
   static createQueryParamsMeta(operation: Operation.List | Operation.Read) {

@@ -6,12 +6,12 @@
  *
  * Ported from nestjs-crud __tests__/crud-federation/behavior/no-relations.spec.ts
  */
-import { WhereOperator } from '../../../repository/repository.types';
-import { type TestRoot, type TestRelation } from '../federation-test-data';
+import { WhereOperator } from '../../../repository/repository.types.js';
+import { type TestRoot, type TestRelation } from '../federation-test-data.js';
 import {
   mockTestRepo,
   mockOrchestrator,
-} from '../fixtures/federation-orchestrator.mock';
+} from '../fixtures/federation-orchestrator.mock.js';
 
 describe('FederationOrchestrator - No Relations Query', () => {
   it('should pass through root request unchanged when no joins are requested', async () => {

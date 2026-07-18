@@ -8,9 +8,9 @@ import {
   Spec,
 } from '@concepta/nestjs-core';
 
-import { ActionSpecification } from './action.specification';
-import { type CrudSpecContextInterface } from './interfaces/crud-spec-context.interface';
-import { OperationSpecification } from './operation.specification';
+import { ActionSpecification } from './action.specification.js';
+import { type CrudSpecContextInterface } from './interfaces/crud-spec-context.interface.js';
+import { OperationSpecification } from './operation.specification.js';
 
 /**
  * Factory for creating CRUD-specific specifications.

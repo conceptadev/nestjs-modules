@@ -5,11 +5,11 @@ import {
   createMockOtpSettings,
   createMockRepositoryResolver,
   createMockTransaction,
-} from '../../../__tests__/helpers/mock.helpers';
-import { OtpCreatedEvent } from '../../../domain/events/otp-created.event';
-import { OtpHistoryCleanupService } from '../../../domain/services/otp-history-cleanup.service';
-import { type OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface';
-import { OtpHistoryCleanupListener } from '../otp-history-cleanup.listener';
+} from '../../../__tests__/helpers/mock.helpers.js';
+import { OtpCreatedEvent } from '../../../domain/events/otp-created.event.js';
+import { OtpHistoryCleanupService } from '../../../domain/services/otp-history-cleanup.service.js';
+import { type OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface.js';
+import { OtpHistoryCleanupListener } from '../otp-history-cleanup.listener.js';
 
 describe(OtpHistoryCleanupListener.name, () => {
   let listener: OtpHistoryCleanupListener;

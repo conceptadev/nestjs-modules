@@ -3,12 +3,12 @@ import { IsDate, IsOptional } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { AuditInterface } from '../../domain/audit/interfaces/audit.interface';
+import { AuditInterface } from '../../domain/audit/interfaces/audit.interface.js';
 import {
   AuditDateCreated,
   AuditDateDeleted,
   AuditDateUpdated,
-} from '../../domain/audit/interfaces/audit.types';
+} from '../../domain/audit/interfaces/audit.types.js';
 
 /**
  * Audit DTO

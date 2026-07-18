@@ -4,9 +4,9 @@ import {
   CrudAsyncOptions,
   CrudModuleClass,
   CrudOptions,
-} from './crud.module-definition';
-import { CrudModuleForFeatureOptionsInterface } from './infrastructure/config/interfaces/crud-module-for-feature-options.interface';
-import { ConfigurableCrudBuilder } from './infrastructure/utils/configurable-crud.builder';
+} from './crud.module-definition.js';
+import { CrudModuleForFeatureOptionsInterface } from './infrastructure/config/interfaces/crud-module-for-feature-options.interface.js';
+import { ConfigurableCrudBuilder } from './infrastructure/utils/configurable-crud.builder.js';
 
 @Module({})
 export class CrudModule extends CrudModuleClass {

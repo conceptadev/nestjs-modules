@@ -3,8 +3,8 @@ import { Command } from '@nestjs/cqrs';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { type Cache } from '../../../domain/aggregates/cache';
-import { type CacheUpdatableInterface } from '../../../domain/interfaces/cache-updatable.interface';
+import { type Cache } from '../../../domain/aggregates/cache.js';
+import { type CacheUpdatableInterface } from '../../../domain/interfaces/cache-updatable.interface.js';
 
 export class UpdateCacheCommand extends Command<Cache> {
   constructor(

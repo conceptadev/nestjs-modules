@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { AuthenticationModule } from '../../authentication.module';
+import { AuthenticationModule } from '../../authentication.module.js';
 
 @Module({
   imports: [

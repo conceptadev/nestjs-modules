@@ -6,12 +6,12 @@ import {
 } from '@concepta/nestjs-core';
 import { DomainAggregate } from '@concepta/nestjs-core/aggregate';
 
-import { UserCreatedEvent } from '../events/user-created.event';
-import { UserRemovedEvent } from '../events/user-removed.event';
-import { UserUpdatedEvent } from '../events/user-updated.event';
-import { type UserCreatableInterface } from '../interfaces/user-creatable.interface';
-import { type UserUpdatableInterface } from '../interfaces/user-updatable.interface';
-import { type UserInterface } from '../interfaces/user.interface';
+import { UserCreatedEvent } from '../events/user-created.event.js';
+import { UserRemovedEvent } from '../events/user-removed.event.js';
+import { UserUpdatedEvent } from '../events/user-updated.event.js';
+import { type UserCreatableInterface } from '../interfaces/user-creatable.interface.js';
+import { type UserUpdatableInterface } from '../interfaces/user-updatable.interface.js';
+import { type UserInterface } from '../interfaces/user.interface.js';
 
 export class User extends DomainAggregate<UserInterface> {
   get email() {

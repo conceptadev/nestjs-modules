@@ -9,11 +9,11 @@ import {
   DomainAggregate,
 } from '@concepta/nestjs-core/aggregate';
 
-import { TokenIssuedEvent } from '../events/token-issued.event';
-import { TokenRevokedEvent } from '../events/token-revoked.event';
-import { TokenAlreadyRevokedException } from '../exceptions/token-already-revoked.exception';
-import { type TokenCreatableInterface } from '../interfaces/token-creatable.interface';
-import { type TokenInterface } from '../interfaces/token.interface';
+import { TokenIssuedEvent } from '../events/token-issued.event.js';
+import { TokenRevokedEvent } from '../events/token-revoked.event.js';
+import { TokenAlreadyRevokedException } from '../exceptions/token-already-revoked.exception.js';
+import { type TokenCreatableInterface } from '../interfaces/token-creatable.interface.js';
+import { type TokenInterface } from '../interfaces/token.interface.js';
 
 export class Token extends DomainAggregate<TokenInterface> {
   constructor(

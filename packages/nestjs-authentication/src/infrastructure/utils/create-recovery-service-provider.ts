@@ -1,19 +1,19 @@
 import { type Provider } from '@nestjs/common';
 
-import { RecoveryService } from '../../application/services/recovery/recovery.service';
+import { RecoveryService } from '../../application/services/recovery/recovery.service.js';
 import {
   AUTHENTICATION_OTP_PORT_TOKEN,
   AUTHENTICATION_USER_PORT_TOKEN,
   AUTHENTICATION_PASSWORD_PORT_TOKEN,
   AUTHENTICATION_RECOVERY_NOTIFICATION_PORT_TOKEN,
-} from '../../authentication.constants';
-import { RecoveryPolicy } from '../../domain/policies/recovery.policy';
-import { type OtpPort } from '../../domain/ports/otp.port';
-import { type PasswordPort } from '../../domain/ports/password.port';
-import { type RecoveryNotificationPort } from '../../domain/ports/recovery-notification.port';
-import { type UserPort } from '../../domain/ports/user.port';
-import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
-import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception';
+} from '../../authentication.constants.js';
+import { RecoveryPolicy } from '../../domain/policies/recovery.policy.js';
+import { type OtpPort } from '../../domain/ports/otp.port.js';
+import { type PasswordPort } from '../../domain/ports/password.port.js';
+import { type RecoveryNotificationPort } from '../../domain/ports/recovery-notification.port.js';
+import { type UserPort } from '../../domain/ports/user.port.js';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface.js';
+import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception.js';
 
 export function createRecoveryServiceProvider(
   rawOptionsToken: symbol,

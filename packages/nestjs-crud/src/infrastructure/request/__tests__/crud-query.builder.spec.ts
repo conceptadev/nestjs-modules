@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CrudQueryBuilder } from '../crud-query.builder';
-import { CrudQueryValidatorException } from '../exceptions/crud-query-validator.exception';
-import { type CrudQueryBuilderOptionsInterface } from '../interfaces/crud-query-builder-options.interface';
+import { CrudQueryBuilder } from '../crud-query.builder.js';
+import { CrudQueryValidatorException } from '../exceptions/crud-query-validator.exception.js';
+import { type CrudQueryBuilderOptionsInterface } from '../interfaces/crud-query-builder-options.interface.js';
 
 const defaultOptions = { ...(CrudQueryBuilder as any)._options };
 

@@ -1,4 +1,4 @@
-import { type AuditVersion } from './audit.types';
+import { type AuditVersion } from './audit.types.js';
 
 /**
  * The latest version of the data.

@@ -3,11 +3,11 @@ import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface';
-import { USER_REPOSITORY_TOKEN } from '../../../user.constants';
-import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
-import { UpdateUserCredentialCommand } from '../impl/update-user-credential.command';
-import { UpdateUserPasswordCommand } from '../impl/update-user-password.command';
+import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface.js';
+import { USER_REPOSITORY_TOKEN } from '../../../user.constants.js';
+import { UserNotFoundException } from '../../exceptions/user-not-found.exception.js';
+import { UpdateUserCredentialCommand } from '../impl/update-user-credential.command.js';
+import { UpdateUserPasswordCommand } from '../impl/update-user-password.command.js';
 
 @CommandHandler(UpdateUserPasswordCommand)
 export class UpdateUserPasswordHandler implements ICommandHandler<

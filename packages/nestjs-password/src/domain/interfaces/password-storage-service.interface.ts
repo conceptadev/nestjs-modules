@@ -1,7 +1,7 @@
-import { type PasswordPlainInterface } from '../password/interfaces/password-plain.interface';
-import { type PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
+import { type PasswordPlainInterface } from '../password/interfaces/password-plain.interface.js';
+import { type PasswordStorageInterface } from '../password/interfaces/password-storage.interface.js';
 
-import { type PasswordHashObjectOptionsInterface } from './password-hash-object-options.interface';
+import { type PasswordHashObjectOptionsInterface } from './password-hash-object-options.interface.js';
 
 /**
  * Password Storage Service Interface

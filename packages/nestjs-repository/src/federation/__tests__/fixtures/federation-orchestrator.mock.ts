@@ -3,13 +3,13 @@ import { vi, type Mocked, type Mock } from 'vitest';
 import { type PlainLiteralObject } from '@nestjs/common';
 import { type ModuleRef } from '@nestjs/core';
 
-import { type RepositoryRelationMetadataInterface } from '../../../repository/interfaces/repository-relation-metadata.interface';
-import { type RepositoryInterface } from '../../../repository/interfaces/repository.interface';
-import { RepositoryRegistryService } from '../../../services/repository-registry.service';
-import { createMockRepository } from '../../../testing/create-mock-repository';
-import { getDynamicRepositoryToken } from '../../../utils/get-dynamic-repository-token';
-import { FederationOrchestrator } from '../../federation-orchestrator.service';
-import { type FederatedRelation } from '../../federation.types';
+import { type RepositoryRelationMetadataInterface } from '../../../repository/interfaces/repository-relation-metadata.interface.js';
+import { type RepositoryInterface } from '../../../repository/interfaces/repository.interface.js';
+import { RepositoryRegistryService } from '../../../services/repository-registry.service.js';
+import { createMockRepository } from '../../../testing/create-mock-repository.js';
+import { getDynamicRepositoryToken } from '../../../utils/get-dynamic-repository-token.js';
+import { FederationOrchestrator } from '../../federation-orchestrator.service.js';
+import { type FederatedRelation } from '../../federation.types.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types

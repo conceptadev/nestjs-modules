@@ -5,11 +5,11 @@ import {
   type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { type RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
-import { type RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface';
-import { ROLE_CUSTOM_REPOSITORY_TOKEN } from '../../role.constants';
-import { RoleMapper } from '../persistence/role.mapper';
-import { RoleRepository } from '../persistence/role.repository';
+import { type RoleEntityInterface } from '../../domain/interfaces/role-entity.interface.js';
+import { type RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface.js';
+import { ROLE_CUSTOM_REPOSITORY_TOKEN } from '../../role.constants.js';
+import { RoleMapper } from '../persistence/role.mapper.js';
+import { RoleRepository } from '../persistence/role.repository.js';
 
 /**
  * Generates a dynamic repository token for a given Role entity key.

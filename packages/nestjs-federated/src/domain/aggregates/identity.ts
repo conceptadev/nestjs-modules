@@ -10,9 +10,9 @@ import {
   DomainAggregate,
 } from '@concepta/nestjs-core/aggregate';
 
-import { IdentityCreatedEvent } from '../events/identity-created.event';
-import { type IdentityCreatableInterface } from '../interfaces/identity-creatable.interface';
-import { type IdentityInterface } from '../interfaces/identity.interface';
+import { IdentityCreatedEvent } from '../events/identity-created.event.js';
+import { type IdentityCreatableInterface } from '../interfaces/identity-creatable.interface.js';
+import { type IdentityInterface } from '../interfaces/identity.interface.js';
 
 export class Identity extends DomainAggregate<IdentityInterface> {
   constructor(

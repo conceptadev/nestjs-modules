@@ -1,10 +1,10 @@
 import { type Operation } from '@concepta/nestjs-core';
 
-import { CRUD_MODULE_ROUTE_OPERATION_METADATA } from '../../../crud.constants';
+import { CRUD_MODULE_ROUTE_OPERATION_METADATA } from '../../../crud.constants.js';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,
-} from '../../services/crud-metadata.service';
+} from '../../services/crud-metadata.service.js';
 
 /**
  * CRUD operation route decorator.

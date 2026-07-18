@@ -4,11 +4,11 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import {
   AUTHENTICATION_JWT_PORT_TOKEN,
   AUTHENTICATION_USER_PORT_TOKEN,
-} from '../../../authentication.constants';
-import { JwtPort } from '../../../domain/ports/jwt.port';
-import { UserPort } from '../../../domain/ports/user.port';
-import { AuthenticationAccessTokenException } from '../../exceptions/authentication-access-token.exception';
-import { ValidateAndVerifyAccessTokenQuery } from '../impl/validate-and-verify-access-token.query';
+} from '../../../authentication.constants.js';
+import { JwtPort } from '../../../domain/ports/jwt.port.js';
+import { UserPort } from '../../../domain/ports/user.port.js';
+import { AuthenticationAccessTokenException } from '../../exceptions/authentication-access-token.exception.js';
+import { ValidateAndVerifyAccessTokenQuery } from '../impl/validate-and-verify-access-token.query.js';
 
 @QueryHandler(ValidateAndVerifyAccessTokenQuery)
 export class ValidateAndVerifyAccessTokenHandler implements IQueryHandler<

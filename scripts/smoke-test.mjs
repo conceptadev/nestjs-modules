@@ -1,14 +1,14 @@
 /**
  * Smoke test: validates that each v8 package's ESM build loads correctly.
  *
- * Loads directly from each package's dist/esm/ directory to test our actual
+ * Loads directly from each package's dist/ directory to test our actual
  * build output, bypassing node_modules workspace resolution.
  *
  * Checks:
- *  1. dist/esm/package.json has {"type":"module"}
- *  2. exports map: all import.default (.js) and import.types (.d.ts) files exist on disk
- *  3. Relative imports in dist/esm/index.js have .js extensions
- *  4. import(dist/esm/index.js) loads and the expected Module class is a function
+ *  1. package.json has {"type":"module"}
+ *  2. exports map: all default (.js) and types (.d.ts) files exist on disk
+ *  3. Relative imports in dist/index.js have .js extensions
+ *  4. import(dist/index.js) loads and the expected Module class is a function
  *  5. Each subpath entry (./aggregate, ./optional/crud, etc.) loads without error
  */
 import { readFileSync, existsSync } from 'fs';
@@ -37,40 +37,33 @@ const PACKAGES = [
 let passed = 0;
 let failed = 0;
 
-process.stdout.write('smoke-test-esm: validating ESM build\n\n');
+process.stdout.write('smoke-test: validating ESM build\n\n');
 
 for (const { dir, export: exportName } of PACKAGES) {
   const pkgDir = join(ROOT, 'packages', dir);
-  const esmDir = join(pkgDir, 'dist', 'esm');
-  const indexPath = join(esmDir, 'index.js');
+  const distDir = join(pkgDir, 'dist');
+  const indexPath = join(distDir, 'index.js');
 
   // 1. Type marker
-  const markerPath = join(esmDir, 'package.json');
-  if (!existsSync(markerPath)) {
-    process.stdout.write(`  FAIL  ${dir} — dist/esm/package.json missing (run yarn build first)\n`);
-    failed++;
-    continue;
-  }
-  const marker = JSON.parse(readFileSync(markerPath, 'utf8'));
-  if (marker.type !== 'module') {
-    process.stdout.write(`  FAIL  ${dir} — dist/esm/package.json has type "${marker.type}", expected "module"\n`);
+  const pkg = JSON.parse(readFileSync(join(pkgDir, 'package.json'), 'utf8'));
+  if (pkg.type !== 'module') {
+    process.stdout.write(`  FAIL  ${dir} — package.json has type "${pkg.type}", expected "module"\n`);
     failed++;
     continue;
   }
 
-  // 2. Walk exports map: verify all import.default (.js) and import.types (.d.ts) files exist on disk
-  const pkg = JSON.parse(readFileSync(join(pkgDir, 'package.json'), 'utf8'));
+  // 2. Walk exports map: verify all default (.js) and types (.d.ts) files exist on disk
   let mapOk = true;
   for (const [subpath, entry] of Object.entries(pkg.exports ?? {})) {
-    const jsFile = entry?.import?.default;
-    const dtsFile = entry?.import?.types;
+    const jsFile = entry?.default;
+    const dtsFile = entry?.types;
     if (jsFile && !existsSync(join(pkgDir, jsFile))) {
-      process.stdout.write(`  FAIL  ${dir} — exports["${subpath}"].import.default not on disk: ${jsFile}\n`);
+      process.stdout.write(`  FAIL  ${dir} — exports["${subpath}"].default not on disk (run yarn build first): ${jsFile}\n`);
       failed++;
       mapOk = false;
     }
     if (dtsFile && !existsSync(join(pkgDir, dtsFile))) {
-      process.stdout.write(`  FAIL  ${dir} — exports["${subpath}"].import.types not on disk: ${dtsFile}\n`);
+      process.stdout.write(`  FAIL  ${dir} — exports["${subpath}"].types not on disk: ${dtsFile}\n`);
       failed++;
       mapOk = false;
     }
@@ -85,7 +78,7 @@ for (const { dir, export: exportName } of PACKAGES) {
     );
     if (bare.length > 0) {
       process.stdout.write(
-        `  FAIL  ${dir} — dist/esm/index.js has extensionless imports: ${bare.slice(0, 2).join(', ')}\n`,
+        `  FAIL  ${dir} — dist/index.js has extensionless imports: ${bare.slice(0, 2).join(', ')}\n`,
       );
       failed++;
       continue;
@@ -114,7 +107,7 @@ for (const { dir, export: exportName } of PACKAGES) {
   // loading is skipped here.
   for (const [subpath, entry] of Object.entries(pkg.exports ?? {})) {
     if (subpath === '.' || subpath === './testing') continue;
-    const jsFile = entry?.import?.default;
+    const jsFile = entry?.default;
     if (!jsFile) continue;
     try {
       await import(pathToFileURL(join(pkgDir, jsFile)).href);

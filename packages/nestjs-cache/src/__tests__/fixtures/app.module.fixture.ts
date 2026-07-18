@@ -6,10 +6,10 @@ import { ExceptionsFilter } from '@concepta/nestjs-core';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
-import { CacheModule } from '../../cache.module';
+import { CacheModule } from '../../cache.module.js';
 
-import { UserCacheEntityFixture } from './entities/user-cache-entity.fixture';
-import { UserEntityFixture } from './entities/user-entity.fixture';
+import { UserCacheEntityFixture } from './entities/user-cache-entity.fixture.js';
+import { UserEntityFixture } from './entities/user-entity.fixture.js';
 
 @Module({
   imports: [

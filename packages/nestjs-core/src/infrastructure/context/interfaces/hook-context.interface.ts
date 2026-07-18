@@ -1,6 +1,6 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type HookWithSpec } from '../../hook/hook.types';
+import { type HookWithSpec } from '../../hook/hook.types.js';
 
 /**
  * Context interface for hooks.

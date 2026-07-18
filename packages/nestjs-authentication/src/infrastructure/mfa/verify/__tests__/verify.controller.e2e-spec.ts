@@ -6,11 +6,11 @@ import { Test, type TestingModule } from '@nestjs/testing';
 
 import { ExceptionsFilter } from '@concepta/nestjs-core';
 
-import { AppModuleFixture } from '../../../../__tests__/fixtures/app.module.fixture';
-import { VerifyOtpInvalidException } from '../../../../application/exceptions/verify-otp-invalid.exception';
-import { VerifyService } from '../../../../application/services/verify/verify.service';
+import { AppModuleFixture } from '../../../../__tests__/fixtures/app.module.fixture.js';
+import { VerifyOtpInvalidException } from '../../../../application/exceptions/verify-otp-invalid.exception.js';
+import { VerifyService } from '../../../../application/services/verify/verify.service.js';
 
-import { VerifyControllerFixture } from './fixtures/verify.controller.fixture';
+import { VerifyControllerFixture } from './fixtures/verify.controller.fixture.js';
 
 describe('VerifyController (e2e)', () => {
   let app: INestApplication;

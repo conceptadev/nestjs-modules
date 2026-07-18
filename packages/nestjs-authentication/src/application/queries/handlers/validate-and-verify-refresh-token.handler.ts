@@ -4,11 +4,11 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import {
   AUTHENTICATION_JWT_PORT_TOKEN,
   AUTHENTICATION_USER_PORT_TOKEN,
-} from '../../../authentication.constants';
-import { JwtPort } from '../../../domain/ports/jwt.port';
-import { UserPort } from '../../../domain/ports/user.port';
-import { AuthenticationRefreshTokenException } from '../../exceptions/authentication-refresh-token.exception';
-import { ValidateAndVerifyRefreshTokenQuery } from '../impl/validate-and-verify-refresh-token.query';
+} from '../../../authentication.constants.js';
+import { JwtPort } from '../../../domain/ports/jwt.port.js';
+import { UserPort } from '../../../domain/ports/user.port.js';
+import { AuthenticationRefreshTokenException } from '../../exceptions/authentication-refresh-token.exception.js';
+import { ValidateAndVerifyRefreshTokenQuery } from '../impl/validate-and-verify-refresh-token.query.js';
 
 @QueryHandler(ValidateAndVerifyRefreshTokenQuery)
 export class ValidateAndVerifyRefreshTokenHandler implements IQueryHandler<

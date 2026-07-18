@@ -4,10 +4,10 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { EventContextHost } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { Identity } from '../../../domain/aggregates/identity';
-import { IdentityRepositoryInterface } from '../../../domain/repositories/identity-repository.interface';
-import { FEDERATED_MODULE_IDENTITY_REPOSITORY_TOKEN } from '../../../federated.constants';
-import { CreateIdentityCommand } from '../impl/create-identity.command';
+import { Identity } from '../../../domain/aggregates/identity.js';
+import { IdentityRepositoryInterface } from '../../../domain/repositories/identity-repository.interface.js';
+import { FEDERATED_MODULE_IDENTITY_REPOSITORY_TOKEN } from '../../../federated.constants.js';
+import { CreateIdentityCommand } from '../impl/create-identity.command.js';
 
 @CommandHandler(CreateIdentityCommand)
 export class CreateIdentityHandler implements ICommandHandler<CreateIdentityCommand> {

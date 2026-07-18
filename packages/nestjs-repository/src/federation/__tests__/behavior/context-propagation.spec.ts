@@ -7,14 +7,14 @@
  *
  * Ported from nestjs-crud __tests__/crud-federation/behavior/transaction-propagation.spec.ts
  */
-import { WhereOperator } from '../../../repository/repository.types';
-import { type TestRoot, type TestRelation } from '../federation-test-data';
+import { WhereOperator } from '../../../repository/repository.types.js';
+import { type TestRoot, type TestRelation } from '../federation-test-data.js';
 import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
   mockContext,
-} from '../fixtures/federation-orchestrator.mock';
+} from '../fixtures/federation-orchestrator.mock.js';
 
 describe('FederationOrchestrator - Context Propagation', () => {
   it('should propagate ctx to relation queries in ROOT_FIRST strategy', async () => {

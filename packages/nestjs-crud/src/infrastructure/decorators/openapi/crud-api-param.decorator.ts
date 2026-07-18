@@ -1,10 +1,10 @@
 import { type ApiParamOptions } from '@nestjs/swagger';
 
-import { CRUD_MODULE_API_PARAMS_METADATA } from '../../../crud.constants';
+import { CRUD_MODULE_API_PARAMS_METADATA } from '../../../crud.constants.js';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,
-} from '../../services/crud-metadata.service';
+} from '../../services/crud-metadata.service.js';
 
 export type ApiParamMetadata = (ApiParamOptions | undefined)[];
 

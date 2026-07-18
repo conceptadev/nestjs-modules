@@ -7,7 +7,7 @@ import {
   type SendVerifyNotificationCommandInterface,
   VerifyNotificationPort,
   type VerifyNotificationPortSettings,
-} from '../verify-notification.port';
+} from '../verify-notification.port.js';
 
 class MockSendVerifyNotificationCommand
   extends Command<void>

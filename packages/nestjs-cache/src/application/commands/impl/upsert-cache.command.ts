@@ -1,8 +1,8 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { type Cache } from '../../../domain/aggregates/cache';
-import { type CacheCreatableInterface } from '../../../domain/interfaces/cache-creatable.interface';
+import { type Cache } from '../../../domain/aggregates/cache.js';
+import { type CacheCreatableInterface } from '../../../domain/interfaces/cache-creatable.interface.js';
 
 export class UpsertCacheCommand extends Command<Cache> {
   constructor(

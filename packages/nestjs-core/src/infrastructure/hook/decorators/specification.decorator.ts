@@ -1,7 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
 
-import { SPECIFICATION_METADATA_KEY } from '../hook.constants';
-import { type SpecificationInterface } from '../interfaces/specification.interface';
+import { SPECIFICATION_METADATA_KEY } from '../hook.constants.js';
+import { type SpecificationInterface } from '../interfaces/specification.interface.js';
 
 /**
  * Sets a specification on a class or method.

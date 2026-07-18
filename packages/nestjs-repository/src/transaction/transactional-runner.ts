@@ -6,11 +6,11 @@ import { Reflector } from '@nestjs/core';
 
 import { getAppContext } from '@concepta/nestjs-core';
 
-import { TransactionScope } from './transaction-scope';
+import { TransactionScope } from './transaction-scope.js';
 import {
   TRANSACTIONAL_KEY,
   TransactionalOptions,
-} from './transactional.decorator';
+} from './transactional.decorator.js';
 
 /**
  * Helper for running operations within transactions.

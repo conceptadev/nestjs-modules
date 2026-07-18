@@ -12,7 +12,7 @@ import {
   type PasswordPortSettings,
   type SetPasswordCommandInterface,
   type ValidatePasswordCommandInterface,
-} from '../password.port';
+} from '../password.port.js';
 
 class MockValidatePasswordCommand
   extends Command<boolean>

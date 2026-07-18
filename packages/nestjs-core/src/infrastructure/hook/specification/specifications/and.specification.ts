@@ -1,7 +1,7 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type SpecificationInterface } from '../../interfaces/specification.interface';
-import { CompositeSpecification } from '../composite-specification';
+import { type SpecificationInterface } from '../../interfaces/specification.interface.js';
+import { CompositeSpecification } from '../composite-specification.js';
 
 /**
  * Combines two specifications with AND logic.

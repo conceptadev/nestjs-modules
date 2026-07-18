@@ -1,4 +1,4 @@
-import { type AuditDateUpdated } from './audit.types';
+import { type AuditDateUpdated } from './audit.types.js';
 
 /**
  * Date data was last updated.

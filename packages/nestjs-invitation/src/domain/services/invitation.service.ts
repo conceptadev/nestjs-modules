@@ -6,17 +6,17 @@ import { EventPublisher } from '@nestjs/cqrs';
 import { EventContextHost, ReferenceId } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { InvitationNotFoundException } from '../../application/exceptions/invitation-not-found.exception';
-import { InvitationUserUndefinedException } from '../../application/exceptions/invitation-user-undefined.exception';
-import { INVITATION_MODULE_REPOSITORY_TOKEN } from '../../invitation.constants';
-import { Invitation } from '../aggregates/invitation';
-import { InvitationDispatchedMetadataInterface } from '../events/interfaces/invitation-dispatched-metadata.interface';
-import { InvitationException } from '../exceptions/invitation.exception';
-import { InvitationCreatableByEmailInterface } from '../interfaces/invitation-creatable-by-email.interface';
-import { InvitationCreatableInterface } from '../interfaces/invitation-creatable.interface';
-import { InvitationOtpPort } from '../ports/invitation-otp.port';
-import { InvitationUserPort } from '../ports/invitation-user.port';
-import { InvitationRepositoryInterface } from '../repositories/invitation-repository.interface';
+import { InvitationNotFoundException } from '../../application/exceptions/invitation-not-found.exception.js';
+import { InvitationUserUndefinedException } from '../../application/exceptions/invitation-user-undefined.exception.js';
+import { INVITATION_MODULE_REPOSITORY_TOKEN } from '../../invitation.constants.js';
+import { Invitation } from '../aggregates/invitation.js';
+import { InvitationDispatchedMetadataInterface } from '../events/interfaces/invitation-dispatched-metadata.interface.js';
+import { InvitationException } from '../exceptions/invitation.exception.js';
+import { InvitationCreatableByEmailInterface } from '../interfaces/invitation-creatable-by-email.interface.js';
+import { InvitationCreatableInterface } from '../interfaces/invitation-creatable.interface.js';
+import { InvitationOtpPort } from '../ports/invitation-otp.port.js';
+import { InvitationUserPort } from '../ports/invitation-user.port.js';
+import { InvitationRepositoryInterface } from '../repositories/invitation-repository.interface.js';
 
 @Injectable()
 export class InvitationService {

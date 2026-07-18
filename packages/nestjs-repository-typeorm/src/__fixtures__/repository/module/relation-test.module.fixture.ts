@@ -2,15 +2,15 @@ import { Module } from '@nestjs/common';
 
 import { RepositoryModule } from '@concepta/nestjs-repository';
 
-import { TypeOrmRepositoryModule } from '../../../typeorm-repository.module';
+import { TypeOrmRepositoryModule } from '../../../typeorm-repository.module.js';
 import {
   AUTHOR_ENTITY_TOKEN,
   POST_ENTITY_TOKEN,
   TAG_ENTITY_TOKEN,
-} from '../config/relation.constants.fixture';
-import { AuthorEntityFixture } from '../entity/author.entity.fixture';
-import { PostEntityFixture } from '../entity/post.entity.fixture';
-import { TagEntityFixture } from '../entity/tag.entity.fixture';
+} from '../config/relation.constants.fixture.js';
+import { AuthorEntityFixture } from '../entity/author.entity.fixture.js';
+import { PostEntityFixture } from '../entity/post.entity.fixture.js';
+import { TagEntityFixture } from '../entity/tag.entity.fixture.js';
 
 @Module({
   imports: [

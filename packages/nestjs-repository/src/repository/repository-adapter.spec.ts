@@ -2,8 +2,8 @@ import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
 import { type DeepPartial, RuntimeException } from '@concepta/nestjs-core';
 
-import { type JoinClause } from './interfaces/join-clause.interface';
-import { type RepositoryMetadataInterface } from './interfaces/repository-metadata.interface';
+import { type JoinClause } from './interfaces/join-clause.interface.js';
+import { type RepositoryMetadataInterface } from './interfaces/repository-metadata.interface.js';
 import {
   type RepositoryFindOptions,
   type RepositoryFindOneOptions,
@@ -12,10 +12,10 @@ import {
   type RepositoryUpsertOptions,
   type RepositoryDeleteOptions,
   type RepositoryRestoreOptions,
-} from './interfaces/repository-options.interface';
-import { type WhereClause } from './interfaces/where-clause.interface';
-import { RepositoryAdapter } from './repository-adapter';
-import { Where } from './where.helpers';
+} from './interfaces/repository-options.interface.js';
+import { type WhereClause } from './interfaces/where-clause.interface.js';
+import { RepositoryAdapter } from './repository-adapter.js';
+import { Where } from './where.helpers.js';
 
 // ─── Test entity ─────────────────────────────────────────────────────────────
 

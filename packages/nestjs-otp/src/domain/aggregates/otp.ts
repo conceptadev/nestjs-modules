@@ -6,12 +6,12 @@ import {
 } from '@concepta/nestjs-core';
 import { DomainAggregate } from '@concepta/nestjs-core/aggregate';
 
-import { type OtpEventHeaderInterface } from '../events/interfaces/otp-event-header.interface';
-import { OtpConsumedEvent } from '../events/otp-consumed.event';
-import { OtpCreatedEvent } from '../events/otp-created.event';
-import { OtpDeactivatedEvent } from '../events/otp-deactivated.event';
-import { type OtpInterface } from '../interfaces/otp.interface';
-import { getExpirationDate } from '../utils/get-expiration-date.util';
+import { type OtpEventHeaderInterface } from '../events/interfaces/otp-event-header.interface.js';
+import { OtpConsumedEvent } from '../events/otp-consumed.event.js';
+import { OtpCreatedEvent } from '../events/otp-created.event.js';
+import { OtpDeactivatedEvent } from '../events/otp-deactivated.event.js';
+import { type OtpInterface } from '../interfaces/otp.interface.js';
+import { getExpirationDate } from '../utils/get-expiration-date.util.js';
 
 export interface OtpCreateProps {
   category: string;

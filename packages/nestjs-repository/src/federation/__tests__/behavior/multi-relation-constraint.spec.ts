@@ -11,19 +11,19 @@
 import {
   WhereCompoundOperator,
   WhereOperator,
-} from '../../../repository/repository.types';
-import { Where } from '../../../repository/where.helpers';
+} from '../../../repository/repository.types.js';
+import { Where } from '../../../repository/where.helpers.js';
 import {
   type TestRoot,
   type TestRelation,
   type TestProfile,
-} from '../federation-test-data';
+} from '../federation-test-data.js';
 import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
   mockOneToOneRelation,
-} from '../fixtures/federation-orchestrator.mock';
+} from '../fixtures/federation-orchestrator.mock.js';
 
 describe('FederationOrchestrator - Multi-Relation Constraint Field', () => {
   it('should use foreignKey (not rootKey) when constraining second relation', async () => {

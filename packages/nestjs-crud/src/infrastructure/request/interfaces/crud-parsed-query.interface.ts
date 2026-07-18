@@ -6,7 +6,7 @@ import {
   type WhereCondition,
 } from '@concepta/nestjs-repository';
 
-import { type SCondition } from '../crud-query.types';
+import { type SCondition } from '../crud-query.types.js';
 
 /**
  * Interface representing parsed query string parameters from a CRUD request.

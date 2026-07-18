@@ -3,19 +3,19 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { Ctx } from '@concepta/nestjs-core';
 
-import { CrudCreateCommand } from '../../../application/commands/impl/crud-create.command';
-import { CrudDeleteCommand } from '../../../application/commands/impl/crud-delete.command';
-import { CrudReadQuery } from '../../../application/queries/impl/crud-read.query';
-import { CrudController } from '../../../infrastructure/decorators/controller/crud-controller.decorator';
-import { CrudCreate } from '../../../infrastructure/decorators/operations/crud-create.decorator';
-import { CrudDelete } from '../../../infrastructure/decorators/operations/crud-delete.decorator';
-import { CrudRead } from '../../../infrastructure/decorators/operations/crud-read.decorator';
-import { CrudBody } from '../../../infrastructure/decorators/params/crud-body.decorator';
-import { CrudCtx } from '../../../infrastructure/interceptors/crud-context.overlay';
-import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
-import { CrudAdapterResolver } from '../../../infrastructure/resolvers/crud-adapter.resolver';
-import { CrudResolverInterface } from '../../../infrastructure/resolvers/interfaces/crud-resolver.interface';
-import { Order } from '../dto/order.dto';
+import { CrudCreateCommand } from '../../../application/commands/impl/crud-create.command.js';
+import { CrudDeleteCommand } from '../../../application/commands/impl/crud-delete.command.js';
+import { CrudReadQuery } from '../../../application/queries/impl/crud-read.query.js';
+import { CrudController } from '../../../infrastructure/decorators/controller/crud-controller.decorator.js';
+import { CrudCreate } from '../../../infrastructure/decorators/operations/crud-create.decorator.js';
+import { CrudDelete } from '../../../infrastructure/decorators/operations/crud-delete.decorator.js';
+import { CrudRead } from '../../../infrastructure/decorators/operations/crud-read.decorator.js';
+import { CrudBody } from '../../../infrastructure/decorators/params/crud-body.decorator.js';
+import { CrudCtx } from '../../../infrastructure/interceptors/crud-context.overlay.js';
+import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface.js';
+import { CrudAdapterResolver } from '../../../infrastructure/resolvers/crud-adapter.resolver.js';
+import { CrudResolverInterface } from '../../../infrastructure/resolvers/interfaces/crud-resolver.interface.js';
+import { Order } from '../dto/order.dto.js';
 
 @CrudController({
   path: 'store/order',

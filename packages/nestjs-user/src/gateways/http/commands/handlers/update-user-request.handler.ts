@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { UpdateUserCommand } from '../../../../application/commands/impl/update-user.command';
-import { assertUserId } from '../../../../application/utils/assert-user-id.util';
-import { User } from '../../../../domain/aggregates/user';
-import { UpdateUserRequest } from '../impl/update-user.request';
+import { UpdateUserCommand } from '../../../../application/commands/impl/update-user.command.js';
+import { assertUserId } from '../../../../application/utils/assert-user-id.util.js';
+import { User } from '../../../../domain/aggregates/user.js';
+import { UpdateUserRequest } from '../impl/update-user.request.js';
 
 @Injectable()
 export class UpdateUserRequestHandler {

@@ -2,18 +2,18 @@ import { Inject, PlainLiteralObject } from '@nestjs/common';
 
 import { Ctx, Operation } from '@concepta/nestjs-core';
 
-import { ConfigurableCrudOptionsTransformer } from '../../../crud.types';
-import { CrudAdapter } from '../../adapters/crud.adapter';
-import { CrudController } from '../../decorators/controller/crud-controller.decorator';
-import { CrudCreate } from '../../decorators/operations/crud-create.decorator';
-import { CrudList } from '../../decorators/operations/crud-list.decorator';
-import { CrudRead } from '../../decorators/operations/crud-read.decorator';
-import { CrudBody } from '../../decorators/params/crud-body.decorator';
-import { CrudCtx } from '../../interceptors/crud-context.overlay';
-import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface';
-import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver';
-import { CrudResolverInterface } from '../../resolvers/interfaces/crud-resolver.interface';
-import { ConfigurableCrudBuilder } from '../configurable-crud.builder';
+import { ConfigurableCrudOptionsTransformer } from '../../../crud.types.js';
+import { CrudAdapter } from '../../adapters/crud.adapter.js';
+import { CrudController } from '../../decorators/controller/crud-controller.decorator.js';
+import { CrudCreate } from '../../decorators/operations/crud-create.decorator.js';
+import { CrudList } from '../../decorators/operations/crud-list.decorator.js';
+import { CrudRead } from '../../decorators/operations/crud-read.decorator.js';
+import { CrudBody } from '../../decorators/params/crud-body.decorator.js';
+import { CrudCtx } from '../../interceptors/crud-context.overlay.js';
+import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface.js';
+import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver.js';
+import { CrudResolverInterface } from '../../resolvers/interfaces/crud-resolver.interface.js';
+import { ConfigurableCrudBuilder } from '../configurable-crud.builder.js';
 
 interface TestEntity {
   id: string;

@@ -24,7 +24,7 @@ import {
   PossessionEnum,
   ResolveUserRolesHandler,
   ResolveUserRolesQuery,
-} from './index';
+} from './index.js';
 
 describe('Index', () => {
   it('exports module and runtime classes', () => {

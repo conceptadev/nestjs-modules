@@ -1,7 +1,7 @@
 import { PasswordStorageService } from '@concepta/nestjs-password';
 import { Factory } from '@concepta/typeorm-seeding';
 
-import { type UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';
+import { type UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface.js';
 
 /**
  * User credential factory

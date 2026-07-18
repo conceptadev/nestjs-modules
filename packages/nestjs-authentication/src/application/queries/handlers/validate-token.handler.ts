@@ -1,11 +1,11 @@
 import { Inject, Optional } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { AUTHENTICATION_USER_PORT_TOKEN } from '../../../authentication.constants';
-import { JwtStrategyPolicy } from '../../../domain/policies/jwt-strategy.policy';
-import { UserPort } from '../../../domain/ports/user.port';
-import { AuthenticationUserPortRequiredException } from '../../exceptions/authentication-user-port-required.exception';
-import { ValidateTokenQuery } from '../impl/validate-token.query';
+import { AUTHENTICATION_USER_PORT_TOKEN } from '../../../authentication.constants.js';
+import { JwtStrategyPolicy } from '../../../domain/policies/jwt-strategy.policy.js';
+import { UserPort } from '../../../domain/ports/user.port.js';
+import { AuthenticationUserPortRequiredException } from '../../exceptions/authentication-user-port-required.exception.js';
+import { ValidateTokenQuery } from '../impl/validate-token.query.js';
 
 @QueryHandler(ValidateTokenQuery)
 export class ValidateTokenHandler implements IQueryHandler<

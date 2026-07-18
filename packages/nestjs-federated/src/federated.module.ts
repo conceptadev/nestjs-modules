@@ -4,7 +4,7 @@ import {
   FederatedAsyncOptions,
   FederatedModuleClass,
   FederatedOptions,
-} from './federated.module-definition';
+} from './federated.module-definition.js';
 
 @Module({})
 export class FederatedModule extends FederatedModuleClass {

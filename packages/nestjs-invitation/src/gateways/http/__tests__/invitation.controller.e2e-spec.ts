@@ -8,16 +8,16 @@ import { getDataSourceToken } from '@nestjs/typeorm';
 
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
-import { type InvitationCreatableInterface } from '../../../domain/interfaces/invitation-creatable.interface';
-import { InvitationOtpPort } from '../../../domain/ports/invitation-otp.port';
-import { type InvitationAcceptDto } from '../../../infrastructure/dtos/invitation-accept.dto';
-import { type InvitationDto } from '../../../infrastructure/dtos/invitation.dto';
-import { type InvitationEntityInterface } from '../../../infrastructure/persistence/interfaces/invitation-entity.interface';
-import { InvitationFactory } from '../../../seeding/invitation.factory';
+import { type InvitationCreatableInterface } from '../../../domain/interfaces/invitation-creatable.interface.js';
+import { InvitationOtpPort } from '../../../domain/ports/invitation-otp.port.js';
+import { type InvitationAcceptDto } from '../../../infrastructure/dtos/invitation-accept.dto.js';
+import { type InvitationDto } from '../../../infrastructure/dtos/invitation.dto.js';
+import { type InvitationEntityInterface } from '../../../infrastructure/persistence/interfaces/invitation-entity.interface.js';
+import { InvitationFactory } from '../../../seeding/invitation.factory.js';
 
-import { AppCrudModuleFixture } from './fixtures/app-crud.module.fixture';
-import { InvitationEntityFixture } from './fixtures/entities/invitation.entity.fixture';
-import { UserEntityFixture } from './fixtures/entities/user.entity.fixture';
+import { AppCrudModuleFixture } from './fixtures/app-crud.module.fixture.js';
+import { InvitationEntityFixture } from './fixtures/entities/invitation.entity.fixture.js';
+import { UserEntityFixture } from './fixtures/entities/user.entity.fixture.js';
 
 describe('InvitationController (e2e)', () => {
   const userCategory = 'user';

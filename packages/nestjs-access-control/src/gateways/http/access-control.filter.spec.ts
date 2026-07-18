@@ -3,9 +3,9 @@ import { mock } from 'vitest-mock-extended';
 
 import { type CallHandler, type ExecutionContext } from '@nestjs/common';
 
-import { type AccessControlPort } from '../../application/ports/access-control.port';
+import { type AccessControlPort } from '../../application/ports/access-control.port.js';
 
-import { AccessControlFilter } from './access-control.filter';
+import { AccessControlFilter } from './access-control.filter.js';
 
 describe(AccessControlFilter.name, () => {
   it('delegates each emitted value to AccessControlPort.filterResponseAttributes', async () => {

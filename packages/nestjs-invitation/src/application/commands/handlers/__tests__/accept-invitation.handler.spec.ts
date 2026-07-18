@@ -1,7 +1,7 @@
-import { createMockInvitationService } from '../../../../__tests__/helpers/mock.helpers';
-import { Invitation } from '../../../../domain/aggregates/invitation';
-import { AcceptInvitationCommand } from '../../impl/accept-invitation.command';
-import { AcceptInvitationHandler } from '../accept-invitation.handler';
+import { createMockInvitationService } from '../../../../__tests__/helpers/mock.helpers.js';
+import { Invitation } from '../../../../domain/aggregates/invitation.js';
+import { AcceptInvitationCommand } from '../../impl/accept-invitation.command.js';
+import { AcceptInvitationHandler } from '../accept-invitation.handler.js';
 
 describe(AcceptInvitationHandler.name, () => {
   const ctx = {};

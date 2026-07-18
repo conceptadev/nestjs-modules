@@ -4,12 +4,12 @@ import { mock } from 'vitest-mock-extended';
 
 import { type EventPublisher } from '@nestjs/cqrs';
 
-import { type Token } from '../../../../domain/aggregates/token.aggregate';
-import { type AuthenticatedResponseInterface } from '../../../../domain/interfaces/authenticated-response.interface';
-import { type JwtPolicy } from '../../../../domain/policies/jwt.policy';
-import { type JwtPort } from '../../../../domain/ports/jwt.port';
-import { IssueAuthenticatedResponseCommand } from '../../impl/issue-authenticated-response.command';
-import { IssueAuthenticatedResponseHandler } from '../issue-authenticated-response.handler';
+import { type Token } from '../../../../domain/aggregates/token.aggregate.js';
+import { type AuthenticatedResponseInterface } from '../../../../domain/interfaces/authenticated-response.interface.js';
+import { type JwtPolicy } from '../../../../domain/policies/jwt.policy.js';
+import { type JwtPort } from '../../../../domain/ports/jwt.port.js';
+import { IssueAuthenticatedResponseCommand } from '../../impl/issue-authenticated-response.command.js';
+import { IssueAuthenticatedResponseHandler } from '../issue-authenticated-response.handler.js';
 
 describe(IssueAuthenticatedResponseHandler.name, () => {
   const accessTokenStr = 'accessToken';

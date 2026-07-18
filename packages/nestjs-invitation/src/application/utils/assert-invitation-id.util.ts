@@ -1,6 +1,6 @@
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { InvitationException } from '../../domain/exceptions/invitation.exception';
+import { InvitationException } from '../../domain/exceptions/invitation.exception.js';
 
 export function assertInvitationId(
   value: unknown,

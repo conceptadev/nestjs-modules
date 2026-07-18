@@ -3,11 +3,11 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
 import { EventContextHost } from '@concepta/nestjs-core';
 
-import { AUTHENTICATION_JWT_PORT_TOKEN } from '../../../authentication.constants';
-import { Token } from '../../../domain/aggregates/token.aggregate';
-import { JwtPolicy } from '../../../domain/policies/jwt.policy';
-import { JwtPort } from '../../../domain/ports/jwt.port';
-import { IssueRefreshTokenCommand } from '../impl/issue-refresh-token.command';
+import { AUTHENTICATION_JWT_PORT_TOKEN } from '../../../authentication.constants.js';
+import { Token } from '../../../domain/aggregates/token.aggregate.js';
+import { JwtPolicy } from '../../../domain/policies/jwt.policy.js';
+import { JwtPort } from '../../../domain/ports/jwt.port.js';
+import { IssueRefreshTokenCommand } from '../impl/issue-refresh-token.command.js';
 
 @CommandHandler(IssueRefreshTokenCommand)
 export class IssueRefreshTokenHandler implements ICommandHandler<

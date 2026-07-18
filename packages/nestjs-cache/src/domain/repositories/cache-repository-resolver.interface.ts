@@ -1,4 +1,4 @@
-import { type CacheRepositoryInterface } from './cache-repository.interface';
+import { type CacheRepositoryInterface } from './cache-repository.interface.js';
 
 export interface CacheRepositoryResolverInterface {
   resolve(entityKey: string): CacheRepositoryInterface;

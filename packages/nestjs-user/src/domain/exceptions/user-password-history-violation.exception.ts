@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { UserException } from './user.exception';
+import { UserException } from './user.exception.js';
 
 export class UserPasswordHistoryViolationException extends UserException {
   constructor(options?: { message?: string; originalError?: unknown }) {

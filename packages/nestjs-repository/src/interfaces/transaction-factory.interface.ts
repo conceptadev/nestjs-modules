@@ -1,4 +1,4 @@
-import { type TransactionInterface } from '../transaction/interfaces/transaction.interface';
+import { type TransactionInterface } from '../transaction/interfaces/transaction.interface.js';
 
 /**
  * Factory for creating transactions.

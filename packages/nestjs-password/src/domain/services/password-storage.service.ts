@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import { PasswordRequiredException } from '../exceptions/password-required.exception';
-import { PasswordHashObjectOptionsInterface } from '../interfaces/password-hash-object-options.interface';
-import { PasswordStorageServiceInterface } from '../interfaces/password-storage-service.interface';
-import { PasswordPlainInterface } from '../password/interfaces/password-plain.interface';
-import { PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
-import { CryptUtil } from '../utils/crypt.util';
+import { PasswordRequiredException } from '../exceptions/password-required.exception.js';
+import { PasswordHashObjectOptionsInterface } from '../interfaces/password-hash-object-options.interface.js';
+import { PasswordStorageServiceInterface } from '../interfaces/password-storage-service.interface.js';
+import { PasswordPlainInterface } from '../password/interfaces/password-plain.interface.js';
+import { PasswordStorageInterface } from '../password/interfaces/password-storage.interface.js';
+import { CryptUtil } from '../utils/crypt.util.js';
 
 /**
  * Service with functions related to password security

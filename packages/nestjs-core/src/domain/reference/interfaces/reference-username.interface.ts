@@ -1,4 +1,4 @@
-import { type ReferenceUsername } from './reference.types';
+import { type ReferenceUsername } from './reference.types.js';
 
 /**
  * Identifiable by username.

@@ -7,11 +7,11 @@ import {
   Where,
 } from '@concepta/nestjs-repository';
 
-import { type UserCredentials } from '../../domain/aggregates/user-credentials';
-import { type UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';
-import { type UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';
+import { type UserCredentials } from '../../domain/aggregates/user-credentials.js';
+import { type UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface.js';
+import { type UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface.js';
 
-import { type UserCredentialsMapper } from './user-credentials.mapper';
+import { type UserCredentialsMapper } from './user-credentials.mapper.js';
 
 export class UserCredentialsRepository implements UserCredentialsRepositoryInterface {
   constructor(

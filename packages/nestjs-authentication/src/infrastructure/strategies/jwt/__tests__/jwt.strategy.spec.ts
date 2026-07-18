@@ -2,15 +2,15 @@ import { randomUUID } from 'crypto';
 
 import { mock } from 'vitest-mock-extended';
 
-import { type AuthorizationPayloadInterface } from '../../../../domain/interfaces/authorization-payload.interface';
-import { JwtStrategyPolicy } from '../../../../domain/policies/jwt-strategy.policy';
-import { type JwtPort } from '../../../../domain/ports/jwt.port';
+import { type AuthorizationPayloadInterface } from '../../../../domain/interfaces/authorization-payload.interface.js';
+import { JwtStrategyPolicy } from '../../../../domain/policies/jwt-strategy.policy.js';
+import { type JwtPort } from '../../../../domain/ports/jwt.port.js';
 import {
   type AuthenticationUserResult,
   type UserPort,
-} from '../../../../domain/ports/user.port';
-import { JwtUnauthorizedException } from '../exceptions/jwt-unauthorized.exception';
-import { JwtStrategy } from '../jwt.strategy';
+} from '../../../../domain/ports/user.port.js';
+import { JwtUnauthorizedException } from '../exceptions/jwt-unauthorized.exception.js';
+import { JwtStrategy } from '../jwt.strategy.js';
 
 describe(JwtStrategy, () => {
   let user: NonNullable<AuthenticationUserResult>;

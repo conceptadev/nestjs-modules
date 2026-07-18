@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 
-import { PasswordCurrentRequiredException } from '../exceptions/password-current-required.exception';
-import { PasswordNotStrongException } from '../exceptions/password-not-strong.exception';
-import { PasswordUsedRecentlyException } from '../exceptions/password-used-recently.exception';
-import { PasswordCreationServiceInterface } from '../interfaces/password-creation-service.interface';
-import { PasswordCurrentPasswordInterface } from '../interfaces/password-current-password.interface';
-import { PasswordHistoryPasswordInterface } from '../interfaces/password-history-password.interface';
-import { PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
-import { PasswordPolicy } from '../policies/password.policy';
+import { PasswordCurrentRequiredException } from '../exceptions/password-current-required.exception.js';
+import { PasswordNotStrongException } from '../exceptions/password-not-strong.exception.js';
+import { PasswordUsedRecentlyException } from '../exceptions/password-used-recently.exception.js';
+import { PasswordCreationServiceInterface } from '../interfaces/password-creation-service.interface.js';
+import { PasswordCurrentPasswordInterface } from '../interfaces/password-current-password.interface.js';
+import { PasswordHistoryPasswordInterface } from '../interfaces/password-history-password.interface.js';
+import { PasswordStorageInterface } from '../password/interfaces/password-storage.interface.js';
+import { PasswordPolicy } from '../policies/password.policy.js';
 
-import { PasswordStorageService } from './password-storage.service';
-import { PasswordStrengthService } from './password-strength.service';
-import { PasswordValidationService } from './password-validation.service';
+import { PasswordStorageService } from './password-storage.service.js';
+import { PasswordStrengthService } from './password-strength.service.js';
+import { PasswordValidationService } from './password-validation.service.js';
 
 /**
  * Service with functions related to password creation

@@ -3,11 +3,11 @@ import { createMockCommandBus } from '@concepta/nestjs-core/testing';
 import {
   createMockInvitationEntity,
   toInvitationDomain,
-} from '../../../../../__tests__/helpers/mock.helpers';
-import { type InvitationAcceptableInterface } from '../../../../../domain/interfaces/invitation-acceptable.interface';
-import { InvitationNotAcceptedException } from '../../../../exceptions/invitation-not-accepted.exception';
-import { AcceptInvitationRequest } from '../../impl/accept-invitation.request';
-import { AcceptInvitationRequestHandler } from '../accept-invitation-request.handler';
+} from '../../../../../__tests__/helpers/mock.helpers.js';
+import { type InvitationAcceptableInterface } from '../../../../../domain/interfaces/invitation-acceptable.interface.js';
+import { InvitationNotAcceptedException } from '../../../../exceptions/invitation-not-accepted.exception.js';
+import { AcceptInvitationRequest } from '../../impl/accept-invitation.request.js';
+import { AcceptInvitationRequestHandler } from '../accept-invitation-request.handler.js';
 
 describe(AcceptInvitationRequestHandler.name, () => {
   let commandBus: ReturnType<typeof createMockCommandBus>;

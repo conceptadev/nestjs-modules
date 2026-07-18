@@ -1,7 +1,7 @@
 import { ActionEnum, Operation } from '@concepta/nestjs-core';
 
-import { type CrudSpecContextInterface } from '../infrastructure/specifications/interfaces/crud-spec-context.interface';
-import { OperationSpecification } from '../infrastructure/specifications/operation.specification';
+import { type CrudSpecContextInterface } from '../infrastructure/specifications/interfaces/crud-spec-context.interface.js';
+import { OperationSpecification } from '../infrastructure/specifications/operation.specification.js';
 
 function createContext(
   operation: Operation,

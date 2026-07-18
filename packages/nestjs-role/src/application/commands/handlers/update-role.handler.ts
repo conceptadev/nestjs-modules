@@ -4,11 +4,11 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { EventContextHost } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { Role } from '../../../domain/aggregates/role';
-import { RoleRepositoryResolverInterface } from '../../../domain/repositories/role-repository-resolver.interface';
-import { ROLE_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants';
-import { RoleNotFoundException } from '../../exceptions/role-not-found.exception';
-import { UpdateRoleCommand } from '../impl/update-role.command';
+import { Role } from '../../../domain/aggregates/role.js';
+import { RoleRepositoryResolverInterface } from '../../../domain/repositories/role-repository-resolver.interface.js';
+import { ROLE_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants.js';
+import { RoleNotFoundException } from '../../exceptions/role-not-found.exception.js';
+import { UpdateRoleCommand } from '../impl/update-role.command.js';
 
 @CommandHandler(UpdateRoleCommand)
 export class UpdateRoleHandler implements ICommandHandler<UpdateRoleCommand> {

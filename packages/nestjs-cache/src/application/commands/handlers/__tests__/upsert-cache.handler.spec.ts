@@ -6,11 +6,11 @@ import {
   createMockCacheEntity,
   toCacheDomain,
   DEFAULT_CACHE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Cache } from '../../../../domain/aggregates/cache';
-import { CacheExpirationPolicy } from '../../../../domain/policies/cache-expiration.policy';
-import { UpsertCacheCommand } from '../../impl/upsert-cache.command';
-import { UpsertCacheHandler } from '../upsert-cache.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Cache } from '../../../../domain/aggregates/cache.js';
+import { CacheExpirationPolicy } from '../../../../domain/policies/cache-expiration.policy.js';
+import { UpsertCacheCommand } from '../../impl/upsert-cache.command.js';
+import { UpsertCacheHandler } from '../upsert-cache.handler.js';
 
 describe(UpsertCacheHandler.name, () => {
   const ctx = {};

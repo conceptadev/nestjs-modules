@@ -3,7 +3,7 @@ import { Column } from 'typeorm';
 import { ReferenceId } from '@concepta/nestjs-core';
 import { CommonSqliteEntity } from '@concepta/nestjs-repository-typeorm';
 
-import { UserCredentialEntityInterface } from '../../../domain/interfaces/user-credential-entity.interface';
+import { UserCredentialEntityInterface } from '../../../domain/interfaces/user-credential-entity.interface.js';
 
 export abstract class UserCredentialSqliteEntity
   extends CommonSqliteEntity

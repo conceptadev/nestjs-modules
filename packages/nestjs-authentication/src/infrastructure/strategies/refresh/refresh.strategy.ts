@@ -5,17 +5,17 @@ import { getAppContext } from '@concepta/nestjs-core';
 import {
   AUTHENTICATION_JWT_PORT_TOKEN,
   AUTHENTICATION_USER_PORT_TOKEN,
-} from '../../../authentication.constants';
-import { AuthorizationPayloadInterface } from '../../../domain/interfaces/authorization-payload.interface';
-import { RefreshStrategyPolicy } from '../../../domain/policies/refresh-strategy.policy';
-import { JwtPort } from '../../../domain/ports/jwt.port';
-import { UserPort } from '../../../domain/ports/user.port';
-import { JwtPassportStrategy } from '../../passport/jwt-passport.strategy';
-import { PassportStrategyFactory } from '../../passport/passport-strategy.factory';
-import { createVerifyTokenCallback } from '../../passport/utils/create-verify-token-callback.util';
+} from '../../../authentication.constants.js';
+import { AuthorizationPayloadInterface } from '../../../domain/interfaces/authorization-payload.interface.js';
+import { RefreshStrategyPolicy } from '../../../domain/policies/refresh-strategy.policy.js';
+import { JwtPort } from '../../../domain/ports/jwt.port.js';
+import { UserPort } from '../../../domain/ports/user.port.js';
+import { JwtPassportStrategy } from '../../passport/jwt-passport.strategy.js';
+import { PassportStrategyFactory } from '../../passport/passport-strategy.factory.js';
+import { createVerifyTokenCallback } from '../../passport/utils/create-verify-token-callback.util.js';
 
-import { RefreshUnauthorizedException } from './exceptions/refresh-unauthorized.exception';
-import { REFRESH_STRATEGY_NAME } from './refresh.constants';
+import { RefreshUnauthorizedException } from './exceptions/refresh-unauthorized.exception.js';
+import { REFRESH_STRATEGY_NAME } from './refresh.constants.js';
 
 @Injectable()
 export class RefreshStrategy extends PassportStrategyFactory<JwtPassportStrategy>(

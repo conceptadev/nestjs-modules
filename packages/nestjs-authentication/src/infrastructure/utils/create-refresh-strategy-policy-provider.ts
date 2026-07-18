@@ -1,11 +1,11 @@
 import { type Provider } from '@nestjs/common';
 
-import { RefreshStrategyPolicy } from '../../domain/policies/refresh-strategy.policy';
+import { RefreshStrategyPolicy } from '../../domain/policies/refresh-strategy.policy.js';
 import {
   authenticationDefaultConfig,
   type AuthenticationModuleDefaultsInterface,
-} from '../config/authentication-default.config';
-import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
+} from '../config/authentication-default.config.js';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface.js';
 
 export function createRefreshStrategyPolicyProvider(
   rawOptionsToken: symbol,

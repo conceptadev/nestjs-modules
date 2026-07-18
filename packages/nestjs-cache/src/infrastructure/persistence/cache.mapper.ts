@@ -1,9 +1,9 @@
 import { DomainMapper } from '@concepta/nestjs-core/aggregate';
 
-import { Cache } from '../../domain/aggregates/cache';
-import { type CacheInterface } from '../../domain/interfaces/cache.interface';
+import { Cache } from '../../domain/aggregates/cache.js';
+import { type CacheInterface } from '../../domain/interfaces/cache.interface.js';
 
-import { type CacheEntityInterface } from './interfaces/cache-entity.interface';
+import { type CacheEntityInterface } from './interfaces/cache-entity.interface.js';
 
 export class CacheMapper extends DomainMapper<
   CacheEntityInterface,

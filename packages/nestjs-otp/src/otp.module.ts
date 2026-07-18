@@ -1,11 +1,11 @@
 import { DynamicModule, Module } from '@nestjs/common';
 
-import { createOtpRepositoryProvider } from './infrastructure/utils/create-otp-repository-provider';
+import { createOtpRepositoryProvider } from './infrastructure/utils/create-otp-repository-provider.js';
 import {
   OtpCoreAsyncOptions,
   OtpCoreModuleClass,
   OtpCoreOptions,
-} from './otp-core.module-definition';
+} from './otp-core.module-definition.js';
 
 type OtpOptions = Omit<OtpCoreOptions, 'global'>;
 type OtpAsyncOptions = Omit<OtpCoreAsyncOptions, 'global'>;

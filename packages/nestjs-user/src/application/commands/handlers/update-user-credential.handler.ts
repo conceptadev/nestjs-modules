@@ -3,8 +3,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EventContextHost } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { UserCredentialsService } from '../../../domain/services/user-credentials.service';
-import { UpdateUserCredentialCommand } from '../impl/update-user-credential.command';
+import { UserCredentialsService } from '../../../domain/services/user-credentials.service.js';
+import { UpdateUserCredentialCommand } from '../impl/update-user-credential.command.js';
 
 @CommandHandler(UpdateUserCredentialCommand)
 export class UpdateUserCredentialHandler implements ICommandHandler<

@@ -3,11 +3,11 @@ import { type PlainLiteralObject } from '@nestjs/common';
 import { type ReferenceId } from '@concepta/nestjs-core';
 import { type RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
-import { type Identity } from '../../domain/aggregates/identity';
-import { type IdentityRepositoryInterface } from '../../domain/repositories/identity-repository.interface';
+import { type Identity } from '../../domain/aggregates/identity.js';
+import { type IdentityRepositoryInterface } from '../../domain/repositories/identity-repository.interface.js';
 
-import { type IdentityMapper } from './identity.mapper';
-import { type IdentityEntityInterface } from './interfaces/identity-entity.interface';
+import { type IdentityMapper } from './identity.mapper.js';
+import { type IdentityEntityInterface } from './interfaces/identity-entity.interface.js';
 
 export class IdentityRepository implements IdentityRepositoryInterface {
   constructor(

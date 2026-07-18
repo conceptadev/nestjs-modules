@@ -1,6 +1,6 @@
-import { createMockInvitationService } from '../../../../__tests__/helpers/mock.helpers';
-import { RevokeInvitationsCommand } from '../../impl/revoke-invitations.command';
-import { RevokeInvitationsHandler } from '../revoke-invitations.handler';
+import { createMockInvitationService } from '../../../../__tests__/helpers/mock.helpers.js';
+import { RevokeInvitationsCommand } from '../../impl/revoke-invitations.command.js';
+import { RevokeInvitationsHandler } from '../revoke-invitations.handler.js';
 
 describe(RevokeInvitationsHandler.name, () => {
   const ctx = {};

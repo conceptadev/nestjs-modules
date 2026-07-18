@@ -2,9 +2,9 @@ import { Type } from 'class-transformer';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { CrudResponsePaginatedDto } from '../../../../infrastructure/dtos/crud-response-paginated.dto';
+import { CrudResponsePaginatedDto } from '../../../../infrastructure/dtos/crud-response-paginated.dto.js';
 
-import { CompanyDto } from './company.dto';
+import { CompanyDto } from './company.dto.js';
 
 export class CompanyPaginatedDto extends CrudResponsePaginatedDto<CompanyDto> {
   @ApiProperty({

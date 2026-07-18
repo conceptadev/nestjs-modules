@@ -3,7 +3,7 @@ import {
   type RuntimeExceptionOptions,
 } from '@concepta/nestjs-core';
 
-import { OtpException } from '../../domain/exceptions/otp.exception';
+import { OtpException } from '../../domain/exceptions/otp.exception.js';
 
 export class OtpEntityNotFoundException extends OtpException {
   declare context: RuntimeException['context'] & {

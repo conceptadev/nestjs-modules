@@ -10,8 +10,8 @@ import {
 import {
   ROLE_NAMESPACE_KEY,
   RoleNamespaceOptions,
-} from './decorators/role-namespace.decorator';
-import { RoleContextInterface } from './interfaces/role-context.interface';
+} from './decorators/role-namespace.decorator.js';
+import { RoleContextInterface } from './interfaces/role-context.interface.js';
 
 export const RoleCtx = new OverlayRef<'withRole', RoleContextInterface>(
   'withRole',

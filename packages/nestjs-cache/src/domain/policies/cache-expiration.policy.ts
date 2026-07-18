@@ -1,4 +1,4 @@
-import { getExpirationDate } from '../utils/get-expiration-date.util';
+import { getExpirationDate } from '../utils/get-expiration-date.util.js';
 
 export interface CacheExpirationSettings {
   expiresIn?: string | null;

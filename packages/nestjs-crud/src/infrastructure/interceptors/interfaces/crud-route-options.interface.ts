@@ -1,7 +1,7 @@
 import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
-import { type CrudCommandInterface } from '../../../application/commands/interfaces/crud-command.interface';
-import { type CrudQueryInterface } from '../../../application/queries/interfaces/crud-query.interface';
+import { type CrudCommandInterface } from '../../../application/commands/interfaces/crud-command.interface.js';
+import { type CrudQueryInterface } from '../../../application/queries/interfaces/crud-query.interface.js';
 
 /**
  * Resolved handler options containing the handler class.

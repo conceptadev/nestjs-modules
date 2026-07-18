@@ -3,13 +3,13 @@ import { ModuleRef } from '@nestjs/core';
 
 import { DeepPartial } from '@concepta/nestjs-core';
 
-import { CrudAdapter } from '../adapters/crud.adapter';
-import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
-import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';
-import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
-import { getDynamicAdapterToken } from '../utils/crud-infra.utils';
+import { CrudAdapter } from '../adapters/crud.adapter.js';
+import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface.js';
+import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface.js';
+import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface.js';
+import { getDynamicAdapterToken } from '../utils/crud-infra.utils.js';
 
-import { CrudResolverInterface } from './interfaces/crud-resolver.interface';
+import { CrudResolverInterface } from './interfaces/crud-resolver.interface.js';
 
 /**
  * Adapter resolver - calls adapter directly without handlers.

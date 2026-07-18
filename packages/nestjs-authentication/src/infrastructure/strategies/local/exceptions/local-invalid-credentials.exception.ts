@@ -1,6 +1,6 @@
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { LocalUnauthorizedException } from './local-unauthorized.exception';
+import { LocalUnauthorizedException } from './local-unauthorized.exception.js';
 
 export class LocalInvalidCredentialsException extends LocalUnauthorizedException {
   constructor(options?: Omit<RuntimeExceptionOptions, 'httpStatus'>) {

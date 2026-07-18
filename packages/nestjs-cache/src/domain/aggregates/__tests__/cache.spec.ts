@@ -1,11 +1,11 @@
 import {
   createMockEventContext,
   toCacheDomain,
-} from '../../../__tests__/helpers/mock.helpers';
-import { type CacheEntityInterface } from '../../../infrastructure/persistence/interfaces/cache-entity.interface';
-import { type CacheCreatableInterface } from '../../interfaces/cache-creatable.interface';
-import { CacheExpirationPolicy } from '../../policies/cache-expiration.policy';
-import { Cache } from '../cache';
+} from '../../../__tests__/helpers/mock.helpers.js';
+import { type CacheEntityInterface } from '../../../infrastructure/persistence/interfaces/cache-entity.interface.js';
+import { type CacheCreatableInterface } from '../../interfaces/cache-creatable.interface.js';
+import { CacheExpirationPolicy } from '../../policies/cache-expiration.policy.js';
+import { Cache } from '../cache.js';
 
 describe(Cache.name, () => {
   const eventContext = createMockEventContext();

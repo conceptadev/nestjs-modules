@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { CacheException } from '../../../domain/exceptions/cache.exception';
-import { CacheNotFoundException } from '../cache-not-found.exception';
+import { CacheException } from '../../../domain/exceptions/cache.exception.js';
+import { CacheNotFoundException } from '../cache-not-found.exception.js';
 
 describe(CacheNotFoundException.name, () => {
   it('should be an instance of CacheException', () => {

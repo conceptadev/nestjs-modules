@@ -2,9 +2,9 @@ import { Exclude } from 'class-transformer';
 
 import { PickType } from '@nestjs/swagger';
 
-import { RoleUpdatableInterface } from '../../domain/interfaces/role-updatable.interface';
+import { RoleUpdatableInterface } from '../../domain/interfaces/role-updatable.interface.js';
 
-import { RoleDto } from './role.dto';
+import { RoleDto } from './role.dto.js';
 
 /**
  * Role Update DTO

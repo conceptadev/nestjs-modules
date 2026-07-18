@@ -9,11 +9,11 @@ import {
 import { EventContextHost } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { User } from '../../../domain/aggregates/user';
-import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface';
-import { USER_REPOSITORY_TOKEN } from '../../../user.constants';
-import { CreateUserCredentialCommand } from '../impl/create-user-credential.command';
-import { CreateUserCommand } from '../impl/create-user.command';
+import { User } from '../../../domain/aggregates/user.js';
+import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface.js';
+import { USER_REPOSITORY_TOKEN } from '../../../user.constants.js';
+import { CreateUserCredentialCommand } from '../impl/create-user-credential.command.js';
+import { CreateUserCommand } from '../impl/create-user.command.js';
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {

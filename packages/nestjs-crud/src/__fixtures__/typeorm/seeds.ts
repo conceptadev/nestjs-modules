@@ -7,11 +7,11 @@ import {
 
 import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
-import { CompanyEntity } from './company/company.entity';
-import { NoteEntity } from './note/note.entity';
-import { ProjectEntity } from './project/project.entity';
-import { UserProfileEntity } from './user-profile/user-profile.entity';
-import { UserEntity } from './users/user.entity';
+import { CompanyEntity } from './company/company.entity.js';
+import { NoteEntity } from './note/note.entity.js';
+import { ProjectEntity } from './project/project.entity.js';
+import { UserProfileEntity } from './user-profile/user-profile.entity.js';
+import { UserEntity } from './users/user.entity.js';
 
 export class Seeds implements MigrationInterface {
   private save<T extends PlainLiteralObject>(

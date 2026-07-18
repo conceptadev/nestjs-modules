@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { RemoveRoleCommand } from '../../../../application/commands/impl/remove-role.command';
-import { assertRoleId } from '../../../../application/utils/assert-role-id.util';
-import { DeleteRoleRequest } from '../impl/delete-role.request';
+import { RemoveRoleCommand } from '../../../../application/commands/impl/remove-role.command.js';
+import { assertRoleId } from '../../../../application/utils/assert-role-id.util.js';
+import { DeleteRoleRequest } from '../impl/delete-role.request.js';
 
 @Injectable()
 export class DeleteRoleRequestHandler {

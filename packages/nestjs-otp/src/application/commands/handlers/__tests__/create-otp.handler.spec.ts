@@ -7,12 +7,12 @@ import {
   createMockTransaction,
   DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Otp } from '../../../../domain/aggregates/otp';
-import { OtpLimitReachedException } from '../../../../domain/exceptions/otp-limit-reached.exception';
-import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception';
-import { CreateOtpCommand } from '../../impl/create-otp.command';
-import { CreateOtpHandler } from '../create-otp.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Otp } from '../../../../domain/aggregates/otp.js';
+import { OtpLimitReachedException } from '../../../../domain/exceptions/otp-limit-reached.exception.js';
+import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception.js';
+import { CreateOtpCommand } from '../../impl/create-otp.command.js';
+import { CreateOtpHandler } from '../create-otp.handler.js';
 
 describe(CreateOtpHandler.name, () => {
   let handler: CreateOtpHandler;

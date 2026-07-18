@@ -3,7 +3,7 @@ import { IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { ReferenceIdInterface } from '../../domain/reference/interfaces/reference-id.interface';
+import { ReferenceIdInterface } from '../../domain/reference/interfaces/reference-id.interface.js';
 
 @Exclude()
 export class ReferenceIdDto implements ReferenceIdInterface {

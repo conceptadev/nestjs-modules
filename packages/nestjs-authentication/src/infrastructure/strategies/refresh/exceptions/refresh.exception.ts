@@ -1,6 +1,6 @@
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { AuthenticationException } from '../../../../domain/exceptions/authentication.exception';
+import { AuthenticationException } from '../../../../domain/exceptions/authentication.exception.js';
 
 export class RefreshException extends AuthenticationException {
   constructor(options?: RuntimeExceptionOptions) {

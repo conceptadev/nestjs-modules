@@ -1,4 +1,4 @@
-import { GuardsPolicy } from '../guards.policy';
+import { GuardsPolicy } from '../guards.policy.js';
 
 describe(GuardsPolicy.name, () => {
   it('should default enable to true and disable to always-false fn', () => {

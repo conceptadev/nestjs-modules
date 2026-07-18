@@ -1,5 +1,5 @@
-import { OrderBy } from '../order-by.helpers';
-import { SortOrder } from '../repository.types';
+import { OrderBy } from '../order-by.helpers.js';
+import { SortOrder } from '../repository.types.js';
 
 interface TestEntity {
   id: string;

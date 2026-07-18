@@ -1,4 +1,4 @@
-import { CacheException } from './cache.exception';
+import { CacheException } from './cache.exception.js';
 
 export class CacheInvalidExpiredDateException extends CacheException {
   constructor() {

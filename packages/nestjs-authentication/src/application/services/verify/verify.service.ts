@@ -9,15 +9,15 @@ import {
   AUTHENTICATION_OTP_PORT_TOKEN,
   AUTHENTICATION_USER_PORT_TOKEN,
   AUTHENTICATION_VERIFY_NOTIFICATION_PORT_TOKEN,
-} from '../../../authentication.constants';
-import { VerifyPolicy } from '../../../domain/policies/verify.policy';
-import { OtpPort } from '../../../domain/ports/otp.port';
-import { UserPort } from '../../../domain/ports/user.port';
-import { VerifyNotificationPort } from '../../../domain/ports/verify-notification.port';
-import { VerifyOtpInvalidException } from '../../exceptions/verify-otp-invalid.exception';
+} from '../../../authentication.constants.js';
+import { VerifyPolicy } from '../../../domain/policies/verify.policy.js';
+import { OtpPort } from '../../../domain/ports/otp.port.js';
+import { UserPort } from '../../../domain/ports/user.port.js';
+import { VerifyNotificationPort } from '../../../domain/ports/verify-notification.port.js';
+import { VerifyOtpInvalidException } from '../../exceptions/verify-otp-invalid.exception.js';
 
-import { VerifyConfirmParamsInterface } from './interfaces/verify-confirm-params.interface';
-import { VerifySendParamsInterface } from './interfaces/verify-send-params.interface';
+import { VerifyConfirmParamsInterface } from './interfaces/verify-confirm-params.interface.js';
+import { VerifySendParamsInterface } from './interfaces/verify-send-params.interface.js';
 
 @Injectable()
 export class VerifyService {

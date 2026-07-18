@@ -1,7 +1,7 @@
-import { type PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
+import { type PasswordStorageInterface } from '../password/interfaces/password-storage.interface.js';
 
-import { type PasswordCurrentPasswordInterface } from './password-current-password.interface';
-import { type PasswordHistoryPasswordInterface } from './password-history-password.interface';
+import { type PasswordCurrentPasswordInterface } from './password-current-password.interface.js';
+import { type PasswordHistoryPasswordInterface } from './password-history-password.interface.js';
 
 /**
  * Password Creation Service Interface

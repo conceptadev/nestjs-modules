@@ -2,9 +2,9 @@ import {
   createMockRoleAssignmentRepository,
   createMockAssignmentRepositoryResolver,
   DEFAULT_ROLE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { IsAssignedRoleQuery } from '../../impl/is-assigned-role.query';
-import { IsAssignedRoleHandler } from '../is-assigned-role.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { IsAssignedRoleQuery } from '../../impl/is-assigned-role.query.js';
+import { IsAssignedRoleHandler } from '../is-assigned-role.handler.js';
 
 describe(IsAssignedRoleHandler.name, () => {
   const ctx = {};

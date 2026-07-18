@@ -3,9 +3,9 @@ import { IsEmail } from 'class-validator';
 
 import { ApiProperty, PickType } from '@nestjs/swagger';
 
-import { InvitationCreatableByEmailInterface } from '../../domain/interfaces/invitation-creatable-by-email.interface';
+import { InvitationCreatableByEmailInterface } from '../../domain/interfaces/invitation-creatable-by-email.interface.js';
 
-import { InvitationCreateDto } from './invitation-create.dto';
+import { InvitationCreateDto } from './invitation-create.dto.js';
 
 @Exclude()
 export class InvitationCreateByEmailDto

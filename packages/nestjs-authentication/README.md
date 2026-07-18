@@ -1077,7 +1077,7 @@ user without taking it as a parameter.
 
 **Runtime dependencies:**
 
-- [`@concepta/nestjs-core`](../nestjs-common) — `AppContextHost`, `OverlayRef`,
+- [`@concepta/nestjs-core`](../nestjs-core) — `AppContextHost`, `OverlayRef`,
   `ReferenceId`, event/exception base classes.
 - [`@concepta/nestjs-password`](../nestjs-password) — password hashing and
   validation utilities (typically used in `PasswordPort` command handlers).

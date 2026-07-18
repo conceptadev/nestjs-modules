@@ -5,11 +5,11 @@ import {
   type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { type RoleAssignmentEntityInterface } from '../../domain/interfaces/role-assignment-entity.interface';
-import { type RoleAssignmentRepositoryInterface } from '../../domain/repositories/role-assignment-repository.interface';
-import { ROLE_ASSIGNMENT_CUSTOM_REPOSITORY_TOKEN } from '../../role.constants';
-import { RoleAssignmentMapper } from '../persistence/role-assignment.mapper';
-import { RoleAssignmentRepository } from '../persistence/role-assignment.repository';
+import { type RoleAssignmentEntityInterface } from '../../domain/interfaces/role-assignment-entity.interface.js';
+import { type RoleAssignmentRepositoryInterface } from '../../domain/repositories/role-assignment-repository.interface.js';
+import { ROLE_ASSIGNMENT_CUSTOM_REPOSITORY_TOKEN } from '../../role.constants.js';
+import { RoleAssignmentMapper } from '../persistence/role-assignment.mapper.js';
+import { RoleAssignmentRepository } from '../persistence/role-assignment.repository.js';
 
 /**
  * Generates a dynamic repository token for a given Role Assignment entity key.

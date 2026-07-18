@@ -9,13 +9,13 @@ import {
 } from '@nestjs/swagger';
 import { Test } from '@nestjs/testing';
 
-import { CrudModule } from '../crud.module';
+import { CrudModule } from '../crud.module.js';
 
-import { type OperationObject, type ParameterObject } from './openapi-types';
+import { type OperationObject, type ParameterObject } from './openapi-types.js';
 
-import { PhotoPaginatedDtoFixture } from '../__fixtures__/photo/dto/photo-paginated.dto.fixture';
-import { PhotoDtoFixture } from '../__fixtures__/photo/dto/photo.dto.fixture';
-import { PhotoControllerFixture } from '../__fixtures__/photo/photo.controller.fixture';
+import { PhotoPaginatedDtoFixture } from '../__fixtures__/photo/dto/photo-paginated.dto.fixture.js';
+import { PhotoDtoFixture } from '../__fixtures__/photo/dto/photo.dto.fixture.js';
+import { PhotoControllerFixture } from '../__fixtures__/photo/photo.controller.fixture.js';
 
 const ARTIFACT_DIR = join(__dirname, '__artifacts__');
 

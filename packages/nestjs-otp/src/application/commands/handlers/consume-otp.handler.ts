@@ -7,14 +7,14 @@ import {
 } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception';
-import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface';
-import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface';
+import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception.js';
+import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface.js';
+import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface.js';
 import {
   OTP_MODULE_SETTINGS_TOKEN,
   OTP_REPOSITORY_RESOLVER_TOKEN,
-} from '../../../otp.constants';
-import { ConsumeOtpCommand } from '../impl/consume-otp.command';
+} from '../../../otp.constants.js';
+import { ConsumeOtpCommand } from '../impl/consume-otp.command.js';
 
 @CommandHandler(ConsumeOtpCommand)
 export class ConsumeOtpHandler implements ICommandHandler<

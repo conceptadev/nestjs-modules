@@ -11,15 +11,15 @@ import { getDataSourceToken } from '@nestjs/typeorm';
 import { TransactionScope } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
-import { CacheSeederFixture } from '../../../__tests__/fixtures/cache.seeder.fixture';
-import { UserCacheEntityFixture } from '../../../__tests__/fixtures/entities/user-cache-entity.fixture';
-import { type UserEntityFixture } from '../../../__tests__/fixtures/entities/user-entity.fixture';
-import { UserCacheFactoryFixture } from '../../../__tests__/fixtures/factories/user-cache.factory.fixture';
-import { UserFactoryFixture } from '../../../__tests__/fixtures/factories/user.factory.fixture';
-import { type CacheCreatableInterface } from '../../../domain/interfaces/cache-creatable.interface';
-import { CacheFactory } from '../../../infrastructure/persistence/cache.factory';
+import { CacheSeederFixture } from '../../../__tests__/fixtures/cache.seeder.fixture.js';
+import { UserCacheEntityFixture } from '../../../__tests__/fixtures/entities/user-cache-entity.fixture.js';
+import { type UserEntityFixture } from '../../../__tests__/fixtures/entities/user-entity.fixture.js';
+import { UserCacheFactoryFixture } from '../../../__tests__/fixtures/factories/user-cache.factory.fixture.js';
+import { UserFactoryFixture } from '../../../__tests__/fixtures/factories/user.factory.fixture.js';
+import { type CacheCreatableInterface } from '../../../domain/interfaces/cache-creatable.interface.js';
+import { CacheFactory } from '../../../infrastructure/persistence/cache.factory.js';
 
-import { AppCrudModuleFixture } from './fixtures/app-crud.module.fixture';
+import { AppCrudModuleFixture } from './fixtures/app-crud.module.fixture.js';
 
 describe('CacheAssignmentController (e2e)', () => {
   let app: INestApplication;

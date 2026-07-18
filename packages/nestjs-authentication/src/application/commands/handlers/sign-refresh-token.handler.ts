@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { JwtService } from '../../../infrastructure/jwt/jwt.service';
-import { SignRefreshTokenCommand } from '../impl/sign-refresh-token.command';
+import { JwtService } from '../../../infrastructure/jwt/jwt.service.js';
+import { SignRefreshTokenCommand } from '../impl/sign-refresh-token.command.js';
 
 @CommandHandler(SignRefreshTokenCommand)
 export class SignRefreshTokenHandler implements ICommandHandler<

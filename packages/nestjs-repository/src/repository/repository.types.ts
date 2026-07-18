@@ -3,7 +3,7 @@ import { type PlainLiteralObject } from '@nestjs/common';
 import {
   type OrderSortKeyAsc,
   type OrderSortKeyDesc,
-} from './interfaces/order-sort-key.interface';
+} from './interfaces/order-sort-key.interface.js';
 
 /**
  * Column name type — narrows to `keyof T & string` when an entity is provided.

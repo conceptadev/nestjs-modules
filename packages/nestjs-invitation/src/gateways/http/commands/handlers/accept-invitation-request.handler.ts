@@ -1,10 +1,10 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { AcceptInvitationCommand } from '../../../../application/commands/impl/accept-invitation.command';
-import { assertInvitationCode } from '../../../../application/utils/assert-invitation-code.util';
-import { Invitation } from '../../../../domain/aggregates/invitation';
-import { InvitationNotAcceptedException } from '../../../exceptions/invitation-not-accepted.exception';
-import { AcceptInvitationRequest } from '../impl/accept-invitation.request';
+import { AcceptInvitationCommand } from '../../../../application/commands/impl/accept-invitation.command.js';
+import { assertInvitationCode } from '../../../../application/utils/assert-invitation-code.util.js';
+import { Invitation } from '../../../../domain/aggregates/invitation.js';
+import { InvitationNotAcceptedException } from '../../../exceptions/invitation-not-accepted.exception.js';
+import { AcceptInvitationRequest } from '../impl/accept-invitation.request.js';
 
 @CommandHandler(AcceptInvitationRequest)
 export class AcceptInvitationRequestHandler implements ICommandHandler<AcceptInvitationRequest> {

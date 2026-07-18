@@ -3,11 +3,11 @@ import { type PlainLiteralObject } from '@nestjs/common';
 import { type ReferenceId } from '@concepta/nestjs-core';
 import { type RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
-import { type Invitation } from '../../domain/aggregates/invitation';
-import { type InvitationRepositoryInterface } from '../../domain/repositories/invitation-repository.interface';
+import { type Invitation } from '../../domain/aggregates/invitation.js';
+import { type InvitationRepositoryInterface } from '../../domain/repositories/invitation-repository.interface.js';
 
-import { type InvitationEntityInterface } from './interfaces/invitation-entity.interface';
-import { type InvitationMapper } from './invitation.mapper';
+import { type InvitationEntityInterface } from './interfaces/invitation-entity.interface.js';
+import { type InvitationMapper } from './invitation.mapper.js';
 
 export class InvitationRepository implements InvitationRepositoryInterface {
   constructor(

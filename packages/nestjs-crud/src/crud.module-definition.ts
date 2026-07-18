@@ -11,15 +11,15 @@ import { createSettingsProvider } from '@concepta/nestjs-core';
 import {
   CRUD_DEFAULT_RESOLVER_TOKEN,
   CRUD_MODULE_SETTINGS_TOKEN,
-} from './crud.constants';
-import { crudDefaultConfig } from './infrastructure/config/crud-default.config';
-import { type CrudModuleOptionsExtrasInterface } from './infrastructure/config/interfaces/crud-module-options-extras.interface';
-import { type CrudModuleOptionsInterface } from './infrastructure/config/interfaces/crud-module-options.interface';
-import { type CrudModuleSettingsInterface } from './infrastructure/config/interfaces/crud-module-settings.interface';
-import { CrudContextOverlay } from './infrastructure/interceptors/crud-context.overlay';
-import { CrudAdapterResolver } from './infrastructure/resolvers/crud-adapter.resolver';
-import { CrudOperationResolver } from './infrastructure/resolvers/crud-operation.resolver';
-import { CrudMetaview } from './infrastructure/services/crud-metaview.service';
+} from './crud.constants.js';
+import { crudDefaultConfig } from './infrastructure/config/crud-default.config.js';
+import { type CrudModuleOptionsExtrasInterface } from './infrastructure/config/interfaces/crud-module-options-extras.interface.js';
+import { type CrudModuleOptionsInterface } from './infrastructure/config/interfaces/crud-module-options.interface.js';
+import { type CrudModuleSettingsInterface } from './infrastructure/config/interfaces/crud-module-settings.interface.js';
+import { CrudContextOverlay } from './infrastructure/interceptors/crud-context.overlay.js';
+import { CrudAdapterResolver } from './infrastructure/resolvers/crud-adapter.resolver.js';
+import { CrudOperationResolver } from './infrastructure/resolvers/crud-operation.resolver.js';
+import { CrudMetaview } from './infrastructure/services/crud-metaview.service.js';
 
 const RAW_OPTIONS_TOKEN = Symbol('__CRUD_MODULE_RAW_OPTIONS_TOKEN__');
 

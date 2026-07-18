@@ -3,7 +3,7 @@ import { Command } from '@nestjs/cqrs';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { type AuthenticatedResponseInterface } from '../../../domain/interfaces/authenticated-response.interface';
+import { type AuthenticatedResponseInterface } from '../../../domain/interfaces/authenticated-response.interface.js';
 
 export class IssueAuthenticatedResponseCommand extends Command<AuthenticatedResponseInterface> {
   constructor(

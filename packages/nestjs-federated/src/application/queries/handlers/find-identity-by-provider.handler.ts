@@ -1,10 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { Identity } from '../../../domain/aggregates/identity';
-import { IdentityRepositoryInterface } from '../../../domain/repositories/identity-repository.interface';
-import { FEDERATED_MODULE_IDENTITY_REPOSITORY_TOKEN } from '../../../federated.constants';
-import { FindIdentityByProviderQuery } from '../impl/find-identity-by-provider.query';
+import { Identity } from '../../../domain/aggregates/identity.js';
+import { IdentityRepositoryInterface } from '../../../domain/repositories/identity-repository.interface.js';
+import { FEDERATED_MODULE_IDENTITY_REPOSITORY_TOKEN } from '../../../federated.constants.js';
+import { FindIdentityByProviderQuery } from '../impl/find-identity-by-provider.query.js';
 
 @QueryHandler(FindIdentityByProviderQuery)
 export class FindIdentityByProviderHandler implements IQueryHandler<FindIdentityByProviderQuery> {

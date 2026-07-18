@@ -1,7 +1,7 @@
 import { ApiBody, type ApiBodyOptions } from '@nestjs/swagger';
 
-import { type DecoratorTargetObject } from '../../../crud.types';
-import { CrudException } from '../../exceptions/crud.exception';
+import { type DecoratorTargetObject } from '../../../crud.types.js';
+import { CrudException } from '../../exceptions/crud.exception.js';
 
 /**
  * \@CrudApiBody() open api decorator

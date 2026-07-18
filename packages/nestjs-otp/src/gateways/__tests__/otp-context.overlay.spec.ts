@@ -5,7 +5,7 @@ import { type Reflector } from '@nestjs/core';
 
 import { getAppContext } from '@concepta/nestjs-core';
 
-import { OtpCtx, OtpContextOverlay } from '../otp-context.overlay';
+import { OtpCtx, OtpContextOverlay } from '../otp-context.overlay.js';
 
 describe('OtpContextOverlay', () => {
   let reflector: DeepMockProxy<Reflector>;

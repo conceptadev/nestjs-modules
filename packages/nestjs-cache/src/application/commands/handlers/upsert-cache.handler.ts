@@ -4,11 +4,11 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { EventContextHost } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants';
-import { Cache } from '../../../domain/aggregates/cache';
-import { CacheExpirationPolicy } from '../../../domain/policies/cache-expiration.policy';
-import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface';
-import { UpsertCacheCommand } from '../impl/upsert-cache.command';
+import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants.js';
+import { Cache } from '../../../domain/aggregates/cache.js';
+import { CacheExpirationPolicy } from '../../../domain/policies/cache-expiration.policy.js';
+import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface.js';
+import { UpsertCacheCommand } from '../impl/upsert-cache.command.js';
 
 @CommandHandler(UpsertCacheCommand)
 export class UpsertCacheHandler implements ICommandHandler<UpsertCacheCommand> {

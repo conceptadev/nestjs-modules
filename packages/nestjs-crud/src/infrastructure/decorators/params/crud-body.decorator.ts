@@ -1,12 +1,12 @@
-import { CRUD_MODULE_PARAM_BODY_METADATA } from '../../../crud.constants';
+import { CRUD_MODULE_PARAM_BODY_METADATA } from '../../../crud.constants.js';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,
-} from '../../services/crud-metadata.service';
-import { getMethodHandler } from '../../utils/crud-infra.utils';
+} from '../../services/crud-metadata.service.js';
+import { getMethodHandler } from '../../utils/crud-infra.utils.js';
 
-import { type CrudBodyMetadataInterface } from './interfaces/crud-body-metadata.interface';
-import { type CrudBodyOptionsInterface } from './interfaces/crud-body-options.interface';
+import { type CrudBodyMetadataInterface } from './interfaces/crud-body-metadata.interface.js';
+import { type CrudBodyOptionsInterface } from './interfaces/crud-body-options.interface.js';
 
 type CrudBodyDecoratorFn = (
   options?: CrudBodyOptionsInterface,

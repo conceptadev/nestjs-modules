@@ -10,11 +10,11 @@ import {
   WhereOperator,
 } from '@concepta/nestjs-repository';
 
-import { type CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
-import { isArrayStrings, isStringFull } from '../utils/validation';
+import { type CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface.js';
+import { isArrayStrings, isStringFull } from '../utils/validation.js';
 
-import { type ComparisonOperator, CondOperator } from './crud-query.types';
-import { CrudQueryValidatorException } from './exceptions/crud-query-validator.exception';
+import { type ComparisonOperator, CondOperator } from './crud-query.types.js';
+import { CrudQueryValidatorException } from './exceptions/crud-query-validator.exception.js';
 
 export const COMPARISON_OPERATORS: CondOperator[] = Object.values(CondOperator);
 

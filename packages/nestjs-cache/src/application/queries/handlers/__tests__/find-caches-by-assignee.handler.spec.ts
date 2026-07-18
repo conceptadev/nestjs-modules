@@ -4,9 +4,9 @@ import {
   createMockCacheEntity,
   toCacheDomain,
   DEFAULT_CACHE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { FindCachesByAssigneeQuery } from '../../impl/find-caches-by-assignee.query';
-import { FindCachesByAssigneeHandler } from '../find-caches-by-assignee.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { FindCachesByAssigneeQuery } from '../../impl/find-caches-by-assignee.query.js';
+import { FindCachesByAssigneeHandler } from '../find-caches-by-assignee.handler.js';
 
 describe(FindCachesByAssigneeHandler.name, () => {
   const ctx = {};

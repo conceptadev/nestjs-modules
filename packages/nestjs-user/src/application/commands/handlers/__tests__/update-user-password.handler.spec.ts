@@ -5,11 +5,11 @@ import {
   createMockUserEntity,
   createMockUserRepository,
   toUserDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { UserNotFoundException } from '../../../exceptions/user-not-found.exception';
-import { type UpdateUserCredentialCommand } from '../../impl/update-user-credential.command';
-import { UpdateUserPasswordCommand } from '../../impl/update-user-password.command';
-import { UpdateUserPasswordHandler } from '../update-user-password.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { UserNotFoundException } from '../../../exceptions/user-not-found.exception.js';
+import { type UpdateUserCredentialCommand } from '../../impl/update-user-credential.command.js';
+import { UpdateUserPasswordCommand } from '../../impl/update-user-password.command.js';
+import { UpdateUserPasswordHandler } from '../update-user-password.handler.js';
 
 describe(UpdateUserPasswordHandler.name, () => {
   const userRepository = createMockUserRepository();

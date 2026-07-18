@@ -2,7 +2,7 @@ import { isString } from 'class-validator';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { UserException } from '../../domain/exceptions/user.exception';
+import { UserException } from '../../domain/exceptions/user.exception.js';
 
 export function assertUserId(value: unknown): asserts value is ReferenceId {
   if (!isString(value) || value.trim() === '') {

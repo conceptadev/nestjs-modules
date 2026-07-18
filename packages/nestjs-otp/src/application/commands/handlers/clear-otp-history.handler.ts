@@ -3,10 +3,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { OtpHistoryCleanupService } from '../../../domain/services/otp-history-cleanup.service';
-import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface';
-import { OTP_MODULE_SETTINGS_TOKEN } from '../../../otp.constants';
-import { ClearOtpHistoryCommand } from '../impl/clear-otp-history.command';
+import { OtpHistoryCleanupService } from '../../../domain/services/otp-history-cleanup.service.js';
+import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface.js';
+import { OTP_MODULE_SETTINGS_TOKEN } from '../../../otp.constants.js';
+import { ClearOtpHistoryCommand } from '../impl/clear-otp-history.command.js';
 
 @CommandHandler(ClearOtpHistoryCommand)
 export class ClearOtpHistoryHandler implements ICommandHandler<ClearOtpHistoryCommand> {

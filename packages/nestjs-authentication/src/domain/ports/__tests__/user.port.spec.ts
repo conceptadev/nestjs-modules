@@ -15,7 +15,7 @@ import {
   type GetUserByUsernameQueryInterface,
   type GetUserByEmailQueryInterface,
   type UpdateUserCommandInterface,
-} from '../user.port';
+} from '../user.port.js';
 
 class MockGetByIdQuery
   extends Query<AuthenticationUserResult>

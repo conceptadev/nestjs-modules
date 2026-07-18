@@ -1,8 +1,8 @@
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
-import { CommonSqliteEntity } from '../../../entities/common/common-sqlite.entity';
+import { CommonSqliteEntity } from '../../../entities/common/common-sqlite.entity.js';
 
-import { PostEntityFixture } from './post.entity.fixture';
+import { PostEntityFixture } from './post.entity.fixture.js';
 
 @Entity()
 export class TagEntityFixture extends CommonSqliteEntity {

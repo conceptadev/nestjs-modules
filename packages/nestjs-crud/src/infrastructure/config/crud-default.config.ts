@@ -3,9 +3,9 @@ import { registerAs } from '@nestjs/config';
 import {
   CRUD_MODULE_DEFAULT_SETTINGS_TOKEN,
   CRUD_MODULE_DEFAULT_TRANSFORM_OPTIONS,
-} from '../../crud.constants';
+} from '../../crud.constants.js';
 
-import { type CrudModuleSettingsInterface } from './interfaces/crud-module-settings.interface';
+import { type CrudModuleSettingsInterface } from './interfaces/crud-module-settings.interface.js';
 
 /**
  * Default configuration for crud.

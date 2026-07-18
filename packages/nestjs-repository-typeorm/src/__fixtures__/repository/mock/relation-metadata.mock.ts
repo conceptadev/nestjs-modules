@@ -1,7 +1,7 @@
 import {
   type TypeOrmRelationMetadata,
   type TypeOrmInverseRelation,
-} from '../../../repository/typeorm-metadata.types';
+} from '../../../repository/typeorm-metadata.types.js';
 
 type RelationOverrides = Partial<
   Omit<TypeOrmRelationMetadata, 'inverseRelation'>

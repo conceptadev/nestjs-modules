@@ -1,11 +1,11 @@
 import { type Provider } from '@nestjs/common';
 
-import { RecoveryPolicy } from '../../domain/policies/recovery.policy';
+import { RecoveryPolicy } from '../../domain/policies/recovery.policy.js';
 import {
   authenticationDefaultConfig,
   type AuthenticationModuleDefaultsInterface,
-} from '../config/authentication-default.config';
-import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
+} from '../config/authentication-default.config.js';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface.js';
 
 export function createRecoveryPolicyProvider(
   rawOptionsToken: symbol,

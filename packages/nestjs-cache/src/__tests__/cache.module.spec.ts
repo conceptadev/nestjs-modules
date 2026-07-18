@@ -1,11 +1,11 @@
 import { Test, type TestingModule } from '@nestjs/testing';
 
-import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../cache.constants';
-import { CacheModule } from '../cache.module';
-import { type CacheRepositoryResolverInterface } from '../domain/repositories/cache-repository-resolver.interface';
-import { CacheRepository } from '../infrastructure/persistence/cache.repository';
+import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../cache.constants.js';
+import { CacheModule } from '../cache.module.js';
+import { type CacheRepositoryResolverInterface } from '../domain/repositories/cache-repository-resolver.interface.js';
+import { CacheRepository } from '../infrastructure/persistence/cache.repository.js';
 
-import { AppModuleFixture } from './fixtures/app.module.fixture';
+import { AppModuleFixture } from './fixtures/app.module.fixture.js';
 
 describe(CacheModule.name, () => {
   let cacheModule: CacheModule;

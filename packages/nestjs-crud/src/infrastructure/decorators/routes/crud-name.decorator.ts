@@ -1,8 +1,8 @@
-import { CRUD_MODULE_CONTROLLER_NAME_METADATA } from '../../../crud.constants';
+import { CRUD_MODULE_CONTROLLER_NAME_METADATA } from '../../../crud.constants.js';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,
-} from '../../services/crud-metadata.service';
+} from '../../services/crud-metadata.service.js';
 
 /**
  * Set the controller name used for CQRS class naming.

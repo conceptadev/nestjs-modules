@@ -1,32 +1,32 @@
 import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
-import { JoinClause } from '../repository/interfaces/join-clause.interface';
-import { RepositoryFindOptions } from '../repository/interfaces/repository-options.interface';
-import { RepositoryRelationMetadataInterface } from '../repository/interfaces/repository-relation-metadata.interface';
-import { RepositoryInterface } from '../repository/interfaces/repository.interface';
-import { OrderClause } from '../repository/repository.types';
-import { Where } from '../repository/where.helpers';
+import { JoinClause } from '../repository/interfaces/join-clause.interface.js';
+import { RepositoryFindOptions } from '../repository/interfaces/repository-options.interface.js';
+import { RepositoryRelationMetadataInterface } from '../repository/interfaces/repository-relation-metadata.interface.js';
+import { RepositoryInterface } from '../repository/interfaces/repository.interface.js';
+import { OrderClause } from '../repository/repository.types.js';
+import { Where } from '../repository/where.helpers.js';
 import {
   REPOSITORY_REGISTRY,
   RepositoryRegistryService,
-} from '../services/repository-registry.service';
-import { getDynamicRepositoryToken } from '../utils/get-dynamic-repository-token';
+} from '../services/repository-registry.service.js';
+import { getDynamicRepositoryToken } from '../utils/get-dynamic-repository-token.js';
 
-import { BufferStrategy } from './buffer-strategy';
-import { FederationException } from './exceptions/federation.exception';
-import { analyzeExecution, ExecutionAnalysis } from './execution-strategy';
+import { BufferStrategy } from './buffer-strategy.js';
+import { FederationException } from './exceptions/federation.exception.js';
+import { analyzeExecution, ExecutionAnalysis } from './execution-strategy.js';
 import {
   FEDERATION_DEFAULT_LIMIT,
   FEDERATION_MAX_ITERATIONS,
-} from './federation.constants';
+} from './federation.constants.js';
 import {
   FederatedRelation,
   FederationStrategy,
   RelationResult,
-} from './federation.types';
-import { FilterAnalyzer } from './filter-analyzer';
-import { hydrateRelations } from './hydration';
+} from './federation.types.js';
+import { FilterAnalyzer } from './filter-analyzer.js';
+import { hydrateRelations } from './hydration.js';
 
 export const FEDERATION_ORCHESTRATOR = Symbol('FederationOrchestrator');
 

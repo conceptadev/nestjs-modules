@@ -1,4 +1,4 @@
-import { type OAuthParamsInterface } from './oauth-params.interface';
+import { type OAuthParamsInterface } from './oauth-params.interface.js';
 
 /**
  * Interface for OAuth authentication parameters that can be passed via query parameters

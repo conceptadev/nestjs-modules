@@ -2,7 +2,7 @@ import { Exclude, Expose, Type } from 'class-transformer';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { UserDto } from '../../users/dto/user.dto';
+import { UserDto } from '../../users/dto/user.dto.js';
 
 export class CompanyDto {
   @Expose()

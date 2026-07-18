@@ -1,8 +1,8 @@
 import { mock } from 'vitest-mock-extended';
 
-import { type JwtPort } from '../../../../domain/ports/jwt.port';
-import { VerifyRefreshTokenQuery } from '../../impl/verify-refresh-token.query';
-import { VerifyRefreshTokenHandler } from '../verify-refresh-token.handler';
+import { type JwtPort } from '../../../../domain/ports/jwt.port.js';
+import { VerifyRefreshTokenQuery } from '../../impl/verify-refresh-token.query.js';
+import { VerifyRefreshTokenHandler } from '../verify-refresh-token.handler.js';
 
 describe(VerifyRefreshTokenHandler.name, () => {
   const token = 'token';

@@ -5,9 +5,9 @@ import { type Operation } from '@concepta/nestjs-core';
 import {
   type CrudRouteCommandOptionsInterface,
   type CrudRouteQueryOptionsInterface,
-} from '../interfaces/crud-route-ctlr-options.interface';
+} from '../interfaces/crud-route-ctlr-options.interface.js';
 
-import { type CrudExtraDecoratorsInterface } from './interfaces/crud-extra-decorators.interface';
+import { type CrudExtraDecoratorsInterface } from './interfaces/crud-extra-decorators.interface.js';
 
 /**
  * Operation options type - intersection of base props with union of query/command options.

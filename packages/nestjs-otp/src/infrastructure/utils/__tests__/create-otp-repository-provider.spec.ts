@@ -1,9 +1,9 @@
-import { OtpMapper } from '../../persistence/otp.mapper';
-import { OtpRepository } from '../../persistence/otp.repository';
+import { OtpMapper } from '../../persistence/otp.mapper.js';
+import { OtpRepository } from '../../persistence/otp.repository.js';
 import {
   createOtpRepositoryProvider,
   getDynamicOtpRepositoryToken,
-} from '../create-otp-repository-provider';
+} from '../create-otp-repository-provider.js';
 
 describe('getDynamicOtpRepositoryToken', () => {
   it('should return an uppercased token with OTP_REPOSITORY_ prefix', () => {

@@ -6,10 +6,10 @@ import { getDataSourceToken } from '@nestjs/typeorm';
 import { HookResolverService } from '@concepta/nestjs-core';
 import { getDynamicRepositoryToken } from '@concepta/nestjs-repository';
 
-import { type TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface';
-import { TypeOrmRepository } from './repository/typeorm-repository';
-import { TypeOrmTransactionFactory } from './transaction/typeorm-transaction.factory';
-import { TYPEORM_DEFAULT_DATA_SOURCE_NAME } from './typeorm-repository.constants';
+import { type TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface.js';
+import { TypeOrmRepository } from './repository/typeorm-repository.js';
+import { TypeOrmTransactionFactory } from './transaction/typeorm-transaction.factory.js';
+import { TYPEORM_DEFAULT_DATA_SOURCE_NAME } from './typeorm-repository.constants.js';
 import {
   resolveDataSourceName,
   resolveTransactionKey,
@@ -19,7 +19,7 @@ import {
   getTypeOrmImports,
   createTransactionFactoryDescriptor,
   OPTIONAL_HOOK_RESOLVER_INJECT,
-} from './typeorm-repository.util';
+} from './typeorm-repository.util.js';
 
 // Mock entity class for testing
 class TestEntity {

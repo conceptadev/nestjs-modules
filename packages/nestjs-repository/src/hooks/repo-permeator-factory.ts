@@ -13,13 +13,13 @@ import {
   type HookMethodKeyType,
 } from '@concepta/nestjs-core';
 
-import { RepositoryQueryException } from '../exceptions/repository-query.exception';
+import { RepositoryQueryException } from '../exceptions/repository-query.exception.js';
 import {
   type RepositoryFindOptions,
   type RepositoryFindOneOptions,
-} from '../repository/interfaces/repository-options.interface';
+} from '../repository/interfaces/repository-options.interface.js';
 
-import { RepoHookMethodKey as K } from './repository-hook.decorators';
+import { RepoHookMethodKey as K } from './repository-hook.decorators.js';
 
 type RunHooksFn = <T>(
   methodKey: HookMethodKeyType,

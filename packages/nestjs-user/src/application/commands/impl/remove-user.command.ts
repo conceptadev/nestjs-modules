@@ -3,7 +3,7 @@ import { Command } from '@nestjs/cqrs';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { type User } from '../../../domain/aggregates/user';
+import { type User } from '../../../domain/aggregates/user.js';
 
 export class RemoveUserCommand extends Command<User> {
   constructor(

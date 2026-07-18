@@ -1,8 +1,8 @@
 import { type Provider } from '@nestjs/common';
 
-import { UserPasswordPolicy } from '../../domain/policies/user-password.policy';
-import { USER_MODULE_SETTINGS_TOKEN } from '../../user.constants';
-import { type UserSettingsInterface } from '../config/interfaces/user-settings.interface';
+import { UserPasswordPolicy } from '../../domain/policies/user-password.policy.js';
+import { USER_MODULE_SETTINGS_TOKEN } from '../../user.constants.js';
+import { type UserSettingsInterface } from '../config/interfaces/user-settings.interface.js';
 
 export function createPasswordPolicyProvider(): Provider {
   return {

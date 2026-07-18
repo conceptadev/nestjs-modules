@@ -1,4 +1,4 @@
-import { UserPasswordPolicy } from '../user-password.policy';
+import { UserPasswordPolicy } from '../user-password.policy.js';
 
 describe(UserPasswordPolicy.name, () => {
   describe('defaults', () => {

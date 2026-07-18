@@ -4,10 +4,10 @@ import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { AppContextHost } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { OtpCreatedEvent } from '../../domain/events/otp-created.event';
-import { OtpHistoryCleanupService } from '../../domain/services/otp-history-cleanup.service';
-import { OtpSettingsInterface } from '../../infrastructure/config/interfaces/otp-settings.interface';
-import { OTP_MODULE_SETTINGS_TOKEN } from '../../otp.constants';
+import { OtpCreatedEvent } from '../../domain/events/otp-created.event.js';
+import { OtpHistoryCleanupService } from '../../domain/services/otp-history-cleanup.service.js';
+import { OtpSettingsInterface } from '../../infrastructure/config/interfaces/otp-settings.interface.js';
+import { OTP_MODULE_SETTINGS_TOKEN } from '../../otp.constants.js';
 
 @EventsHandler(OtpCreatedEvent)
 export class OtpHistoryCleanupListener implements IEventHandler<OtpCreatedEvent> {

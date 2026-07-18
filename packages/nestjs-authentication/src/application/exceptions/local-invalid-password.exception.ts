@@ -1,6 +1,6 @@
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { LocalInvalidCredentialsException } from '../../infrastructure/strategies/local/exceptions/local-invalid-credentials.exception';
+import { LocalInvalidCredentialsException } from '../../infrastructure/strategies/local/exceptions/local-invalid-credentials.exception.js';
 
 export class LocalInvalidPasswordException extends LocalInvalidCredentialsException {
   constructor(userName: string, options?: RuntimeExceptionOptions) {

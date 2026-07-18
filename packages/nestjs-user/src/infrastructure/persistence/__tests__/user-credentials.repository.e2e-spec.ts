@@ -4,18 +4,18 @@ import { Test, type TestingModule } from '@nestjs/testing';
 
 import { EventContextHost } from '@concepta/nestjs-core';
 
-import { AppRepoModuleFixture } from '../../../__tests__/fixtures/app-repo.module.fixture';
-import { User } from '../../../domain/aggregates/user';
-import { UserCredentials } from '../../../domain/aggregates/user-credentials';
-import { type UserCredentialEntityInterface } from '../../../domain/interfaces/user-credential-entity.interface';
-import { type UserCredentialsRepositoryInterface } from '../../../domain/repositories/user-credentials-repository.interface';
-import { type UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface';
+import { AppRepoModuleFixture } from '../../../__tests__/fixtures/app-repo.module.fixture.js';
+import { UserCredentials } from '../../../domain/aggregates/user-credentials.js';
+import { User } from '../../../domain/aggregates/user.js';
+import { type UserCredentialEntityInterface } from '../../../domain/interfaces/user-credential-entity.interface.js';
+import { type UserCredentialsRepositoryInterface } from '../../../domain/repositories/user-credentials-repository.interface.js';
+import { type UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface.js';
 import {
   USER_CREDENTIALS_REPOSITORY_TOKEN,
   USER_REPOSITORY_TOKEN,
-} from '../../../user.constants';
-import { UserCredentialsMapper } from '../user-credentials.mapper';
-import { UserCredentialsRepository } from '../user-credentials.repository';
+} from '../../../user.constants.js';
+import { UserCredentialsMapper } from '../user-credentials.mapper.js';
+import { UserCredentialsRepository } from '../user-credentials.repository.js';
 
 describe(UserCredentialsRepository.name + ' (e2e)', () => {
   let moduleFixture: TestingModule;

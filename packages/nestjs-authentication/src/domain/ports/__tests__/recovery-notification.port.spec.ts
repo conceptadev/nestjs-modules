@@ -9,7 +9,7 @@ import {
   type SendPasswordUpdatedNotificationCommandInterface,
   type SendRecoverLoginNotificationCommandInterface,
   type SendRecoverPasswordNotificationCommandInterface,
-} from '../recovery-notification.port';
+} from '../recovery-notification.port.js';
 
 class MockSendRecoverLoginCommand
   extends Command<void>

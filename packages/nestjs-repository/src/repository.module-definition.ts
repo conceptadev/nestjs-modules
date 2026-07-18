@@ -7,20 +7,20 @@ import {
 import {
   FEDERATION_ORCHESTRATOR,
   FederationOrchestrator,
-} from './federation/federation-orchestrator.service';
-import { TransactionInterceptor } from './interceptors/transaction.interceptor';
-import { type RepositoryModuleOptionsInterface } from './interfaces/repository-module-options.interface';
-import { REPOSITORY_MODULE_OPTIONS } from './repository.constants';
+} from './federation/federation-orchestrator.service.js';
+import { TransactionInterceptor } from './interceptors/transaction.interceptor.js';
+import { type RepositoryModuleOptionsInterface } from './interfaces/repository-module-options.interface.js';
+import { REPOSITORY_MODULE_OPTIONS } from './repository.constants.js';
 import {
   RepositoryRegistryService,
   REPOSITORY_REGISTRY,
-} from './services/repository-registry.service';
+} from './services/repository-registry.service.js';
 import {
   TransactionFactoryRegistry,
   TRANSACTION_FACTORY_REGISTRY,
-} from './transaction/transaction-factory-registry';
-import { TransactionScope } from './transaction/transaction-scope';
-import { TransactionalRunner } from './transaction/transactional-runner';
+} from './transaction/transaction-factory-registry.js';
+import { TransactionScope } from './transaction/transaction-scope.js';
+import { TransactionalRunner } from './transaction/transactional-runner.js';
 
 const RAW_OPTIONS_TOKEN = Symbol('__REPOSITORY_MODULE_RAW_OPTIONS_TOKEN__');
 

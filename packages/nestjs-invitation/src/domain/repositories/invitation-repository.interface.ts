@@ -2,7 +2,7 @@ import { type PlainLiteralObject } from '@nestjs/common';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { type Invitation } from '../aggregates/invitation';
+import { type Invitation } from '../aggregates/invitation.js';
 
 export interface InvitationRepositoryInterface {
   get(ctx: PlainLiteralObject, id: ReferenceId): Promise<Invitation | null>;

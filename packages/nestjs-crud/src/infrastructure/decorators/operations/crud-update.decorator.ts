@@ -6,21 +6,21 @@ import {
 
 import { Operation } from '@concepta/nestjs-core';
 
-import { CrudUpdateHandler } from '../../../application/commands/handlers/crud-update.handler';
-import { CrudUpdateCommand } from '../../../application/commands/impl/crud-update.command';
-import { CRUD_MODULE_ROUTE_ID_DEFAULT_PATH } from '../../../crud.constants';
-import { type CrudValidationOptions } from '../../../crud.types';
-import { type CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
-import { getTransactionalDecorators } from '../../utils/get-transactional-decorators';
-import { CrudApiBody } from '../openapi/crud-api-body.decorator';
-import { CrudApiOperation } from '../openapi/crud-api-operation.decorator';
-import { CrudApiParam } from '../openapi/crud-api-param.decorator';
-import { CrudApiResponse } from '../openapi/crud-api-response.decorator';
-import { CrudCommandHandler } from '../routes/crud-command-handler.decorator';
-import { CrudCommand } from '../routes/crud-command.decorator';
-import { CrudOperation } from '../routes/crud-operation.decorator';
-import { CrudSerialize } from '../routes/crud-serialize.decorator';
-import { CrudValidate } from '../routes/crud-validate.decorator';
+import { CrudUpdateHandler } from '../../../application/commands/handlers/crud-update.handler.js';
+import { CrudUpdateCommand } from '../../../application/commands/impl/crud-update.command.js';
+import { CRUD_MODULE_ROUTE_ID_DEFAULT_PATH } from '../../../crud.constants.js';
+import { type CrudValidationOptions } from '../../../crud.types.js';
+import { type CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface.js';
+import { getTransactionalDecorators } from '../../utils/get-transactional-decorators.js';
+import { CrudApiBody } from '../openapi/crud-api-body.decorator.js';
+import { CrudApiOperation } from '../openapi/crud-api-operation.decorator.js';
+import { CrudApiParam } from '../openapi/crud-api-param.decorator.js';
+import { CrudApiResponse } from '../openapi/crud-api-response.decorator.js';
+import { CrudCommandHandler } from '../routes/crud-command-handler.decorator.js';
+import { CrudCommand } from '../routes/crud-command.decorator.js';
+import { CrudOperation } from '../routes/crud-operation.decorator.js';
+import { CrudSerialize } from '../routes/crud-serialize.decorator.js';
+import { CrudValidate } from '../routes/crud-validate.decorator.js';
 
 /**
  * CRUD Update route decorator

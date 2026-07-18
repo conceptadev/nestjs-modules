@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import {
   NoopSendInvitationNotificationCommand,
   NoopSendAcceptedNotificationCommand,
-} from './noop-notification.command';
+} from './noop-notification.command.js';
 
 @CommandHandler(NoopSendInvitationNotificationCommand)
 export class NoopSendInvitationNotificationHandler implements ICommandHandler<NoopSendInvitationNotificationCommand> {

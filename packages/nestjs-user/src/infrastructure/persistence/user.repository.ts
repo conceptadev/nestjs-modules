@@ -7,11 +7,11 @@ import {
 } from '@concepta/nestjs-core';
 import { type RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
-import { type User } from '../../domain/aggregates/user';
-import { type UserEntityInterface } from '../../domain/interfaces/user-entity.interface';
-import { type UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
+import { type User } from '../../domain/aggregates/user.js';
+import { type UserEntityInterface } from '../../domain/interfaces/user-entity.interface.js';
+import { type UserRepositoryInterface } from '../../domain/repositories/user-repository.interface.js';
 
-import { type UserMapper } from './user.mapper';
+import { type UserMapper } from './user.mapper.js';
 
 export class UserRepository implements UserRepositoryInterface {
   constructor(

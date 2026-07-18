@@ -4,9 +4,9 @@ import {
   type PlainLiteralObject,
 } from '@nestjs/common';
 
-import { type OverlayRef } from '../../domain/context/overlay-ref';
+import { type OverlayRef } from '../../domain/context/overlay-ref.js';
 
-import { getAppContext } from './get-app-context.util';
+import { getAppContext } from './get-app-context.util.js';
 
 /**
  * Parameter decorator to inject the per-request application context.

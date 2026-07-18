@@ -1,11 +1,11 @@
-import { WhereOperator } from '../../repository/repository.types';
-import { FederationException } from '../exceptions/federation.exception';
-import { analyzeExecution } from '../execution-strategy';
+import { WhereOperator } from '../../repository/repository.types.js';
+import { FederationException } from '../exceptions/federation.exception.js';
+import { analyzeExecution } from '../execution-strategy.js';
 import {
   type FederatedRelation,
   FederationStrategy,
-} from '../federation.types';
-import { FilterAnalyzer } from '../filter-analyzer';
+} from '../federation.types.js';
+import { FilterAnalyzer } from '../filter-analyzer.js';
 
 const makeRelation = (
   overrides: Partial<FederatedRelation> & { name: string },

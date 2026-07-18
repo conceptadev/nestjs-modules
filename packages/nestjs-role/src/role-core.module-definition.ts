@@ -9,35 +9,35 @@ import { CqrsModule } from '@nestjs/cqrs';
 
 import { createSettingsProvider } from '@concepta/nestjs-core';
 
-import { AssignRoleHandler } from './application/commands/handlers/assign-role.handler';
-import { AssignRolesHandler } from './application/commands/handlers/assign-roles.handler';
-import { CreateRoleHandler } from './application/commands/handlers/create-role.handler';
-import { RemoveRoleHandler } from './application/commands/handlers/remove-role.handler';
-import { ReplaceRoleHandler } from './application/commands/handlers/replace-role.handler';
-import { RevokeRoleHandler } from './application/commands/handlers/revoke-role.handler';
-import { RevokeRolesHandler } from './application/commands/handlers/revoke-roles.handler';
-import { UpdateRoleHandler } from './application/commands/handlers/update-role.handler';
-import { GetAssignedRolesHandler } from './application/queries/handlers/get-assigned-roles.handler';
-import { GetRoleAssignmentHandler } from './application/queries/handlers/get-role-assignment.handler';
-import { GetRoleHandler } from './application/queries/handlers/get-role.handler';
-import { IsAssignedRoleHandler } from './application/queries/handlers/is-assigned-role.handler';
-import { IsAssignedRolesHandler } from './application/queries/handlers/is-assigned-roles.handler';
-import { RoleContextOverlay } from './gateways/role-context.overlay';
-import { type RoleExtrasInterface } from './infrastructure/config/interfaces/role-extras.interface';
-import { type RoleOptionsInterface } from './infrastructure/config/interfaces/role-options.interface';
-import { type RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface';
-import { roleDefaultConfig } from './infrastructure/config/role-default.config';
-import { RoleAssignmentRepositoryResolver } from './infrastructure/persistence/role-assignment-repository.resolver';
-import { RoleAssignmentMapper } from './infrastructure/persistence/role-assignment.mapper';
-import { RoleRepositoryResolver } from './infrastructure/persistence/role-repository.resolver';
-import { RoleMapper } from './infrastructure/persistence/role.mapper';
+import { AssignRoleHandler } from './application/commands/handlers/assign-role.handler.js';
+import { AssignRolesHandler } from './application/commands/handlers/assign-roles.handler.js';
+import { CreateRoleHandler } from './application/commands/handlers/create-role.handler.js';
+import { RemoveRoleHandler } from './application/commands/handlers/remove-role.handler.js';
+import { ReplaceRoleHandler } from './application/commands/handlers/replace-role.handler.js';
+import { RevokeRoleHandler } from './application/commands/handlers/revoke-role.handler.js';
+import { RevokeRolesHandler } from './application/commands/handlers/revoke-roles.handler.js';
+import { UpdateRoleHandler } from './application/commands/handlers/update-role.handler.js';
+import { GetAssignedRolesHandler } from './application/queries/handlers/get-assigned-roles.handler.js';
+import { GetRoleAssignmentHandler } from './application/queries/handlers/get-role-assignment.handler.js';
+import { GetRoleHandler } from './application/queries/handlers/get-role.handler.js';
+import { IsAssignedRoleHandler } from './application/queries/handlers/is-assigned-role.handler.js';
+import { IsAssignedRolesHandler } from './application/queries/handlers/is-assigned-roles.handler.js';
+import { RoleContextOverlay } from './gateways/role-context.overlay.js';
+import { type RoleExtrasInterface } from './infrastructure/config/interfaces/role-extras.interface.js';
+import { type RoleOptionsInterface } from './infrastructure/config/interfaces/role-options.interface.js';
+import { type RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface.js';
+import { roleDefaultConfig } from './infrastructure/config/role-default.config.js';
+import { RoleAssignmentRepositoryResolver } from './infrastructure/persistence/role-assignment-repository.resolver.js';
+import { RoleAssignmentMapper } from './infrastructure/persistence/role-assignment.mapper.js';
+import { RoleRepositoryResolver } from './infrastructure/persistence/role-repository.resolver.js';
+import { RoleMapper } from './infrastructure/persistence/role.mapper.js';
 import {
   ROLE_ASSIGNMENT_CUSTOM_REPOSITORY_TOKEN,
   ROLE_ASSIGNMENT_REPOSITORY_RESOLVER_TOKEN,
   ROLE_CUSTOM_REPOSITORY_TOKEN,
   ROLE_MODULE_SETTINGS_TOKEN,
   ROLE_REPOSITORY_RESOLVER_TOKEN,
-} from './role.constants';
+} from './role.constants.js';
 
 const RAW_OPTIONS_TOKEN = Symbol('__ROLE_MODULE_RAW_OPTIONS_TOKEN__');
 

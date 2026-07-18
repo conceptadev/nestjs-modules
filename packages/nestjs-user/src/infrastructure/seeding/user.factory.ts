@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Factory } from '@concepta/typeorm-seeding';
 
-import { type UserEntityInterface } from '../../domain/interfaces/user-entity.interface';
+import { type UserEntityInterface } from '../../domain/interfaces/user-entity.interface.js';
 
 /**
  * User factory

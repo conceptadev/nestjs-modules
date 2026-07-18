@@ -1,12 +1,12 @@
 import { getDynamicRepositoryToken } from '@concepta/nestjs-repository';
 
-import { CACHE_CUSTOM_REPOSITORY_TOKEN } from '../../../cache.constants';
-import { CacheMapper } from '../../persistence/cache.mapper';
-import { CacheRepository } from '../../persistence/cache.repository';
+import { CACHE_CUSTOM_REPOSITORY_TOKEN } from '../../../cache.constants.js';
+import { CacheMapper } from '../../persistence/cache.mapper.js';
+import { CacheRepository } from '../../persistence/cache.repository.js';
 import {
   createCacheRepositoryProvider,
   getDynamicCacheRepositoryToken,
-} from '../create-cache-repository-provider';
+} from '../create-cache-repository-provider.js';
 
 describe('getDynamicCacheRepositoryToken', () => {
   it('should return uppercase token with prefix', () => {

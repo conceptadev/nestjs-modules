@@ -1,4 +1,4 @@
-import { Join } from '../join.helpers';
+import { Join } from '../join.helpers.js';
 
 describe('Join', () => {
   describe('static left()', () => {

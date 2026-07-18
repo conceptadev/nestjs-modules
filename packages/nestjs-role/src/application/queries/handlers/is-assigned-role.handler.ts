@@ -1,9 +1,9 @@
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { RoleAssignmentRepositoryResolverInterface } from '../../../domain/repositories/role-assignment-repository-resolver.interface';
-import { ROLE_ASSIGNMENT_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants';
-import { IsAssignedRoleQuery } from '../impl/is-assigned-role.query';
+import { RoleAssignmentRepositoryResolverInterface } from '../../../domain/repositories/role-assignment-repository-resolver.interface.js';
+import { ROLE_ASSIGNMENT_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants.js';
+import { IsAssignedRoleQuery } from '../impl/is-assigned-role.query.js';
 
 @QueryHandler(IsAssignedRoleQuery)
 export class IsAssignedRoleHandler implements IQueryHandler<IsAssignedRoleQuery> {

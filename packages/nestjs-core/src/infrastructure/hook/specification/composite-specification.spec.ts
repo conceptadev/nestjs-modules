@@ -1,11 +1,11 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type SpecificationInterface } from '../interfaces/specification.interface';
+import { type SpecificationInterface } from '../interfaces/specification.interface.js';
 
-import { Spec } from './spec.factory';
-import { AndSpecification } from './specifications/and.specification';
-import { NotSpecification } from './specifications/not.specification';
-import { OrSpecification } from './specifications/or.specification';
+import { Spec } from './spec.factory.js';
+import { AndSpecification } from './specifications/and.specification.js';
+import { NotSpecification } from './specifications/not.specification.js';
+import { OrSpecification } from './specifications/or.specification.js';
 
 /**
  * Simple specification that checks if a value is greater than a threshold.

@@ -5,11 +5,11 @@ import {
   type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { CACHE_CUSTOM_REPOSITORY_TOKEN } from '../../cache.constants';
-import { type CacheRepositoryInterface } from '../../domain/repositories/cache-repository.interface';
-import { CacheMapper } from '../persistence/cache.mapper';
-import { CacheRepository } from '../persistence/cache.repository';
-import { type CacheEntityInterface } from '../persistence/interfaces/cache-entity.interface';
+import { CACHE_CUSTOM_REPOSITORY_TOKEN } from '../../cache.constants.js';
+import { type CacheRepositoryInterface } from '../../domain/repositories/cache-repository.interface.js';
+import { CacheMapper } from '../persistence/cache.mapper.js';
+import { CacheRepository } from '../persistence/cache.repository.js';
+import { type CacheEntityInterface } from '../persistence/interfaces/cache-entity.interface.js';
 
 export function getDynamicCacheRepositoryToken(entityKey: string): string {
   return `CACHE_REPOSITORY_${entityKey.toUpperCase()}`;

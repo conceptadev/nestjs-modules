@@ -3,7 +3,7 @@ import { IsString, MaxLength } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { AuthenticationLoginInterface } from '../../../../domain/interfaces/authentication-login.interface';
+import { AuthenticationLoginInterface } from '../../../../domain/interfaces/authentication-login.interface.js';
 
 @Exclude()
 export class LocalLoginDto implements AuthenticationLoginInterface {

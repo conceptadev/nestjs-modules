@@ -2,10 +2,10 @@ import { Injectable, PlainLiteralObject } from '@nestjs/common';
 
 import { RepositoryInterface, WhereClause } from '@concepta/nestjs-repository';
 
-import { CrudAdapter } from '../../../infrastructure/adapters/crud.adapter';
-import { CrudContextOptionsInterface } from '../../../infrastructure/interceptors/interfaces/crud-context-options.interface';
-import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface';
-import { CrudParsedQueryInterface } from '../../../infrastructure/request/interfaces/crud-parsed-query.interface';
+import { CrudAdapter } from '../../../infrastructure/adapters/crud.adapter.js';
+import { CrudContextOptionsInterface } from '../../../infrastructure/interceptors/interfaces/crud-context-options.interface.js';
+import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface.js';
+import { CrudParsedQueryInterface } from '../../../infrastructure/request/interfaces/crud-parsed-query.interface.js';
 
 @Injectable()
 export class TestCrudAdapter<

@@ -1,5 +1,5 @@
-import { BufferStrategy } from '../buffer-strategy';
-import { FEDERATION_MAX_BUFFER_SIZE } from '../federation.constants';
+import { BufferStrategy } from '../buffer-strategy.js';
+import { FEDERATION_MAX_BUFFER_SIZE } from '../federation.constants.js';
 
 describe('BufferStrategy', () => {
   it('should advance with default batch size equal to user limit', () => {

@@ -10,11 +10,11 @@ import {
 
 import { Operation } from '@concepta/nestjs-core';
 
-import { type DecoratorTargetObject } from '../../../crud.types';
-import { CrudInvalidResponseDto } from '../../dtos/crud-invalid-response.dto';
-import { CrudResponsePaginatedDto } from '../../dtos/crud-response-paginated.dto';
-import { CrudException } from '../../exceptions/crud.exception';
-import { CrudMetaview } from '../../services/crud-metaview.service';
+import { type DecoratorTargetObject } from '../../../crud.types.js';
+import { CrudInvalidResponseDto } from '../../dtos/crud-invalid-response.dto.js';
+import { CrudResponsePaginatedDto } from '../../dtos/crud-response-paginated.dto.js';
+import { CrudException } from '../../exceptions/crud.exception.js';
+import { CrudMetaview } from '../../services/crud-metaview.service.js';
 
 /**
  * Utility decorator used to apply response

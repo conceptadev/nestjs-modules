@@ -4,12 +4,12 @@ import {
   createMockEventPublisher,
   createMockTxScope,
   createMockUserRepository,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { User } from '../../../../domain/aggregates/user';
-import { type UserCreatableInterface } from '../../../../domain/interfaces/user-creatable.interface';
-import { type CreateUserCredentialCommand } from '../../impl/create-user-credential.command';
-import { CreateUserCommand } from '../../impl/create-user.command';
-import { CreateUserHandler } from '../create-user.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { User } from '../../../../domain/aggregates/user.js';
+import { type UserCreatableInterface } from '../../../../domain/interfaces/user-creatable.interface.js';
+import { type CreateUserCredentialCommand } from '../../impl/create-user-credential.command.js';
+import { CreateUserCommand } from '../../impl/create-user.command.js';
+import { CreateUserHandler } from '../create-user.handler.js';
 
 describe(CreateUserHandler.name, () => {
   const userRepository = createMockUserRepository();

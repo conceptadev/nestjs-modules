@@ -1,8 +1,8 @@
-import { PasswordRequiredException } from '../exceptions/password-required.exception';
-import { type PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
+import { PasswordRequiredException } from '../exceptions/password-required.exception.js';
+import { type PasswordStorageInterface } from '../password/interfaces/password-storage.interface.js';
 
-import { PasswordStorageService } from './password-storage.service';
-import { PasswordValidationService } from './password-validation.service';
+import { PasswordStorageService } from './password-storage.service.js';
+import { PasswordValidationService } from './password-validation.service.js';
 
 describe(PasswordStorageService, () => {
   let storageService: PasswordStorageService;

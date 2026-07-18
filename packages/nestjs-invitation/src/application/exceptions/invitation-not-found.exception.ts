@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import { type RuntimeException } from '@concepta/nestjs-core';
 
-import { InvitationException } from '../../domain/exceptions/invitation.exception';
+import { InvitationException } from '../../domain/exceptions/invitation.exception.js';
 
 export class InvitationNotFoundException extends InvitationException {
   declare context: RuntimeException['context'] & {

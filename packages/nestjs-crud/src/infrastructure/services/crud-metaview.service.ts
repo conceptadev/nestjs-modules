@@ -11,60 +11,60 @@ import {
   ControllerTarget,
   CrudValidationOptions,
   MethodHandler,
-} from '../../crud.types';
-import { CrudApiParam } from '../decorators/openapi/crud-api-param.decorator';
-import { CrudApiQuery } from '../decorators/openapi/crud-api-query.decorator';
-import { CrudApiResponse } from '../decorators/openapi/crud-api-response.decorator';
-import { CrudBody } from '../decorators/params/crud-body.decorator';
-import { CrudBodyMetadataInterface } from '../decorators/params/interfaces/crud-body-metadata.interface';
-import { CrudAdapter } from '../decorators/routes/crud-adapter.decorator';
-import { CrudAllow } from '../decorators/routes/crud-allow.decorator';
-import { CrudCache } from '../decorators/routes/crud-cache.decorator';
+} from '../../crud.types.js';
+import { CrudApiParam } from '../decorators/openapi/crud-api-param.decorator.js';
+import { CrudApiQuery } from '../decorators/openapi/crud-api-query.decorator.js';
+import { CrudApiResponse } from '../decorators/openapi/crud-api-response.decorator.js';
+import { CrudBody } from '../decorators/params/crud-body.decorator.js';
+import { CrudBodyMetadataInterface } from '../decorators/params/interfaces/crud-body-metadata.interface.js';
+import { CrudAdapter } from '../decorators/routes/crud-adapter.decorator.js';
+import { CrudAllow } from '../decorators/routes/crud-allow.decorator.js';
+import { CrudCache } from '../decorators/routes/crud-cache.decorator.js';
 import {
   CrudCommandHandler,
   CrudCommandHandlerOptionsInterface,
-} from '../decorators/routes/crud-command-handler.decorator';
+} from '../decorators/routes/crud-command-handler.decorator.js';
 import {
   CrudCommand,
   CrudCommandOptionsInterface,
-} from '../decorators/routes/crud-command.decorator';
-import { CrudEntity } from '../decorators/routes/crud-entity.decorator';
-import { CrudExclude } from '../decorators/routes/crud-exclude.decorator';
-import { CrudFilter } from '../decorators/routes/crud-filter.decorator';
-import { CrudJoin } from '../decorators/routes/crud-join.decorator';
-import { CrudLimit } from '../decorators/routes/crud-limit.decorator';
-import { CrudMaxLimit } from '../decorators/routes/crud-max-limit.decorator';
-import { CrudName } from '../decorators/routes/crud-name.decorator';
-import { CrudOperation } from '../decorators/routes/crud-operation.decorator';
-import { CrudParams } from '../decorators/routes/crud-params.decorator';
-import { CrudPersist } from '../decorators/routes/crud-persist.decorator';
+} from '../decorators/routes/crud-command.decorator.js';
+import { CrudEntity } from '../decorators/routes/crud-entity.decorator.js';
+import { CrudExclude } from '../decorators/routes/crud-exclude.decorator.js';
+import { CrudFilter } from '../decorators/routes/crud-filter.decorator.js';
+import { CrudJoin } from '../decorators/routes/crud-join.decorator.js';
+import { CrudLimit } from '../decorators/routes/crud-limit.decorator.js';
+import { CrudMaxLimit } from '../decorators/routes/crud-max-limit.decorator.js';
+import { CrudName } from '../decorators/routes/crud-name.decorator.js';
+import { CrudOperation } from '../decorators/routes/crud-operation.decorator.js';
+import { CrudParams } from '../decorators/routes/crud-params.decorator.js';
+import { CrudPersist } from '../decorators/routes/crud-persist.decorator.js';
 import {
   CrudQueryHandler,
   CrudQueryHandlerOptionsInterface,
-} from '../decorators/routes/crud-query-handler.decorator';
+} from '../decorators/routes/crud-query-handler.decorator.js';
 import {
   CrudQuery,
   CrudQueryDecoratorOptionsInterface,
-} from '../decorators/routes/crud-query.decorator';
-import { CrudRequestBodyBatch } from '../decorators/routes/crud-request-body-batch.decorator';
-import { CrudRequestBody } from '../decorators/routes/crud-request-body.decorator';
-import { CrudResolver } from '../decorators/routes/crud-resolver.decorator';
-import { CrudResponsePaginated } from '../decorators/routes/crud-response-paginated.decorator';
-import { CrudResponseResource } from '../decorators/routes/crud-response-resource.decorator';
-import { CrudReturnDeleted } from '../decorators/routes/crud-return-deleted.decorator';
-import { CrudReturnRestored } from '../decorators/routes/crud-return-restored.decorator';
-import { CrudSerialize } from '../decorators/routes/crud-serialize.decorator';
-import { CrudSort } from '../decorators/routes/crud-sort.decorator';
-import { CrudValidate } from '../decorators/routes/crud-validate.decorator';
-import { CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
-import { CrudSerializationOptionsInterface } from '../interfaces/crud-serialization-options.interface';
-import { CrudOptionsInterface } from '../request/interfaces/crud-options.interface';
+} from '../decorators/routes/crud-query.decorator.js';
+import { CrudRequestBodyBatch } from '../decorators/routes/crud-request-body-batch.decorator.js';
+import { CrudRequestBody } from '../decorators/routes/crud-request-body.decorator.js';
+import { CrudResolver } from '../decorators/routes/crud-resolver.decorator.js';
+import { CrudResponsePaginated } from '../decorators/routes/crud-response-paginated.decorator.js';
+import { CrudResponseResource } from '../decorators/routes/crud-response-resource.decorator.js';
+import { CrudReturnDeleted } from '../decorators/routes/crud-return-deleted.decorator.js';
+import { CrudReturnRestored } from '../decorators/routes/crud-return-restored.decorator.js';
+import { CrudSerialize } from '../decorators/routes/crud-serialize.decorator.js';
+import { CrudSort } from '../decorators/routes/crud-sort.decorator.js';
+import { CrudValidate } from '../decorators/routes/crud-validate.decorator.js';
+import { CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface.js';
+import { CrudSerializationOptionsInterface } from '../interfaces/crud-serialization-options.interface.js';
+import { CrudOptionsInterface } from '../request/interfaces/crud-options.interface.js';
 import {
   CrudResolverInterface,
   CrudResolverStatic,
-} from '../resolvers/interfaces/crud-resolver.interface';
+} from '../resolvers/interfaces/crud-resolver.interface.js';
 
-import { CrudMetadata } from './crud-metadata.service';
+import { CrudMetadata } from './crud-metadata.service.js';
 
 @Injectable()
 export class CrudMetaview<

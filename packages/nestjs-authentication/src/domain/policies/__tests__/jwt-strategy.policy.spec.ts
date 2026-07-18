@@ -1,6 +1,6 @@
 import { ExtractJwt } from 'passport-jwt';
 
-import { JwtStrategyPolicy } from '../jwt-strategy.policy';
+import { JwtStrategyPolicy } from '../jwt-strategy.policy.js';
 
 describe(JwtStrategyPolicy.name, () => {
   it('should default requireUserValidation to false', () => {

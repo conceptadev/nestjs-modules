@@ -1,9 +1,9 @@
 import { mock } from 'vitest-mock-extended';
 
-import { Token } from '../../../domain/aggregates/token.aggregate';
-import { JwtPolicy } from '../../../domain/policies/jwt.policy';
-import { type NestJwtService } from '../jwt.externals';
-import { JwtService } from '../jwt.service';
+import { Token } from '../../../domain/aggregates/token.aggregate.js';
+import { JwtPolicy } from '../../../domain/policies/jwt.policy.js';
+import { type NestJwtService } from '../jwt.externals.js';
+import { JwtService } from '../jwt.service.js';
 
 describe(JwtService, () => {
   const signedToken = 'signed-token';

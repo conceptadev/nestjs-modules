@@ -1,6 +1,6 @@
 import { type Type } from '@nestjs/common';
 
-import { type CrudSerializationOptionsInterface } from '../../interfaces/crud-serialization-options.interface';
+import { type CrudSerializationOptionsInterface } from '../../interfaces/crud-serialization-options.interface.js';
 
 /**
  * Response configuration for CRUD operations.

@@ -1,7 +1,7 @@
-import { GetUserByEmailQuery } from '../get-user-by-email.query';
-import { GetUserBySubjectQuery } from '../get-user-by-subject.query';
-import { GetUserByUsernameQuery } from '../get-user-by-username.query';
-import { GetUserQuery } from '../get-user.query';
+import { GetUserByEmailQuery } from '../get-user-by-email.query.js';
+import { GetUserBySubjectQuery } from '../get-user-by-subject.query.js';
+import { GetUserByUsernameQuery } from '../get-user-by-username.query.js';
+import { GetUserQuery } from '../get-user.query.js';
 
 describe(GetUserQuery.name, () => {
   it('should store ctx and id', () => {

@@ -2,10 +2,10 @@ import {
   createMockCommandBus,
   createMockInvitationEntity,
   toInvitationDomain,
-} from '../../../../../__tests__/helpers/mock.helpers';
-import { CreateInvitationByEmailCommand } from '../../../../../application/commands/impl/create-invitation-by-email.command';
-import { CreateInvitationByEmailRequest } from '../../impl/create-invitation-by-email.request';
-import { CreateInvitationByEmailRequestHandler } from '../create-invitation-by-email-request.handler';
+} from '../../../../../__tests__/helpers/mock.helpers.js';
+import { CreateInvitationByEmailCommand } from '../../../../../application/commands/impl/create-invitation-by-email.command.js';
+import { CreateInvitationByEmailRequest } from '../../impl/create-invitation-by-email.request.js';
+import { CreateInvitationByEmailRequestHandler } from '../create-invitation-by-email-request.handler.js';
 
 describe(CreateInvitationByEmailRequestHandler.name, () => {
   let commandBus: ReturnType<typeof createMockCommandBus>;

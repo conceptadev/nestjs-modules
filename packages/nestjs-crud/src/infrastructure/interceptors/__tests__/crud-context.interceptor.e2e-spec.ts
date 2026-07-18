@@ -11,15 +11,15 @@ import {
   WhereConditionArr,
 } from '@concepta/nestjs-repository';
 
-import { TestCrudAdapter } from '../../../__fixtures__/crud/adapters/test-crud.adapter';
-import { TestModelDto } from '../../../__fixtures__/crud/models/test.model';
-import { CrudModule } from '../../../crud.module';
-import { CrudController } from '../../decorators/controller/crud-controller.decorator';
-import { CrudList } from '../../decorators/operations/crud-list.decorator';
-import { CrudRead } from '../../decorators/operations/crud-read.decorator';
-import { CrudQueryBuilder } from '../../request/crud-query.builder';
-import { CrudCtx } from '../crud-context.overlay';
-import { CrudContextInterface } from '../interfaces/crud-context.interface';
+import { TestCrudAdapter } from '../../../__fixtures__/crud/adapters/test-crud.adapter.js';
+import { TestModelDto } from '../../../__fixtures__/crud/models/test.model.js';
+import { CrudModule } from '../../../crud.module.js';
+import { CrudController } from '../../decorators/controller/crud-controller.decorator.js';
+import { CrudList } from '../../decorators/operations/crud-list.decorator.js';
+import { CrudRead } from '../../decorators/operations/crud-read.decorator.js';
+import { CrudQueryBuilder } from '../../request/crud-query.builder.js';
+import { CrudCtx } from '../crud-context.overlay.js';
+import { CrudContextInterface } from '../interfaces/crud-context.interface.js';
 
 // tslint:disable:max-classes-per-file
 describe('#crud', () => {

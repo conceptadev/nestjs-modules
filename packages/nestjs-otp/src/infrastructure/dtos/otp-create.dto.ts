@@ -1,7 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
 import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 
-import { OtpCreatableInterface } from '../../domain/interfaces/otp-creatable.interface';
+import { OtpCreatableInterface } from '../../domain/interfaces/otp-creatable.interface.js';
 
 /**
  * Otp Create DTO

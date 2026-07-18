@@ -2,11 +2,11 @@ import {
   createMockCommandBus,
   createMockInvitationEntity,
   toInvitationDomain,
-} from '../../../../../__tests__/helpers/mock.helpers';
-import { CreateInvitationCommand } from '../../../../../application/commands/impl/create-invitation.command';
-import { type InvitationCreatableInterface } from '../../../../../domain/interfaces/invitation-creatable.interface';
-import { CreateInvitationRequest } from '../../impl/create-invitation.request';
-import { CreateInvitationRequestHandler } from '../create-invitation-request.handler';
+} from '../../../../../__tests__/helpers/mock.helpers.js';
+import { CreateInvitationCommand } from '../../../../../application/commands/impl/create-invitation.command.js';
+import { type InvitationCreatableInterface } from '../../../../../domain/interfaces/invitation-creatable.interface.js';
+import { CreateInvitationRequest } from '../../impl/create-invitation.request.js';
+import { CreateInvitationRequestHandler } from '../create-invitation-request.handler.js';
 
 describe(CreateInvitationRequestHandler.name, () => {
   let commandBus: ReturnType<typeof createMockCommandBus>;

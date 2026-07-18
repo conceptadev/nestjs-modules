@@ -3,8 +3,8 @@ import { type PlainLiteralObject } from '@nestjs/common';
 import {
   type FederatedRelation,
   type RelationResult,
-} from '../federation.types';
-import { hydrateRelations, initializeEmptyRelations } from '../hydration';
+} from '../federation.types.js';
+import { hydrateRelations, initializeEmptyRelations } from '../hydration.js';
 
 const makeRelation = (
   overrides: Partial<FederatedRelation> & { name: string },

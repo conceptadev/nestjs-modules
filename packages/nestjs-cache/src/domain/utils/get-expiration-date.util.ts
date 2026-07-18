@@ -1,6 +1,6 @@
 import { toMilliseconds } from '@concepta/nestjs-core';
 
-import { CacheInvalidExpiredDateException } from '../exceptions/cache-invalid-expired-date.exception';
+import { CacheInvalidExpiredDateException } from '../exceptions/cache-invalid-expired-date.exception.js';
 
 const getExpirationDate = (
   expiresIn: string | null | undefined,

@@ -8,11 +8,11 @@ import {
 import { Reflector } from '@nestjs/core';
 import { AuthGuard as PassportAuthGuard } from '@nestjs/passport';
 
-import { AUTHENTICATION_MODULE_DISABLE_GUARDS_TOKEN } from '../authentication.constants';
-import { GuardsPolicy } from '../domain/policies/guards.policy';
+import { AUTHENTICATION_MODULE_DISABLE_GUARDS_TOKEN } from '../authentication.constants.js';
+import { GuardsPolicy } from '../domain/policies/guards.policy.js';
 
-import { AuthGuardCtr, AuthGuardOptions } from './auth.guard.types';
-import { AuthPublicMetadata } from './decorators/auth-public.decorator';
+import { AuthGuardCtr, AuthGuardOptions } from './auth.guard.types.js';
+import { AuthPublicMetadata } from './decorators/auth-public.decorator.js';
 
 /**
  * A Guard to use passport for express or fastify

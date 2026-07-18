@@ -3,9 +3,9 @@ import {
   createMockRepositoryResolver,
   createMockTransaction,
   DEFAULT_CACHE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { ClearCachesByAssigneeCommand } from '../../impl/clear-caches-by-assignee.command';
-import { ClearCachesByAssigneeHandler } from '../clear-caches-by-assignee.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { ClearCachesByAssigneeCommand } from '../../impl/clear-caches-by-assignee.command.js';
+import { ClearCachesByAssigneeHandler } from '../clear-caches-by-assignee.handler.js';
 
 describe(ClearCachesByAssigneeHandler.name, () => {
   const ctx = {};

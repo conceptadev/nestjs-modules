@@ -4,9 +4,9 @@ import {
   isNullaryCondition,
   isArrayCondition,
   isPairCondition,
-} from '../interfaces/where-clause.interface';
-import { WhereOperator, WhereCompoundOperator } from '../repository.types';
-import { Where } from '../where.helpers';
+} from '../interfaces/where-clause.interface.js';
+import { WhereOperator, WhereCompoundOperator } from '../repository.types.js';
+import { Where } from '../where.helpers.js';
 
 interface TestEntity {
   id: string;

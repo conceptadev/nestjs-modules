@@ -1,7 +1,7 @@
 import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
-import { type CrudOptionsInterface } from './infrastructure/request/interfaces/crud-options.interface';
-import { type ConfigurableCrudOptions } from './infrastructure/utils/interfaces/configurable-crud-options.interface';
+import { type CrudOptionsInterface } from './infrastructure/request/interfaces/crud-options.interface.js';
+import { type ConfigurableCrudOptions } from './infrastructure/utils/interfaces/configurable-crud-options.interface.js';
 
 export type CrudValidationOptions<Entity extends PlainLiteralObject> =
   CrudOptionsInterface<Entity>['validation'];

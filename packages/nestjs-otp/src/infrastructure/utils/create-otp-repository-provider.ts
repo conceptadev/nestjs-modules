@@ -5,11 +5,11 @@ import {
   type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { type OtpRepositoryInterface } from '../../domain/repositories/otp-repository.interface';
-import { OTP_CUSTOM_REPOSITORY_TOKEN } from '../../otp.constants';
-import { type OtpEntityInterface } from '../persistence/interfaces/otp-entity.interface';
-import { OtpMapper } from '../persistence/otp.mapper';
-import { OtpRepository } from '../persistence/otp.repository';
+import { type OtpRepositoryInterface } from '../../domain/repositories/otp-repository.interface.js';
+import { OTP_CUSTOM_REPOSITORY_TOKEN } from '../../otp.constants.js';
+import { type OtpEntityInterface } from '../persistence/interfaces/otp-entity.interface.js';
+import { OtpMapper } from '../persistence/otp.mapper.js';
+import { OtpRepository } from '../persistence/otp.repository.js';
 
 /**
  * Generates a dynamic repository token for a given OTP entity key.

@@ -4,9 +4,9 @@ import {
   createMockRoleAssignmentEntity,
   toRoleAssignmentDomain,
   DEFAULT_ROLE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { GetAssignedRolesQuery } from '../../impl/get-assigned-roles.query';
-import { GetAssignedRolesHandler } from '../get-assigned-roles.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { GetAssignedRolesQuery } from '../../impl/get-assigned-roles.query.js';
+import { GetAssignedRolesHandler } from '../get-assigned-roles.handler.js';
 
 describe(GetAssignedRolesHandler.name, () => {
   const ctx = {};

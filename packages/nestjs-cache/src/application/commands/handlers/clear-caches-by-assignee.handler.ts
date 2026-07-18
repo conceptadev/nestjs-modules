@@ -3,9 +3,9 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants';
-import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface';
-import { ClearCachesByAssigneeCommand } from '../impl/clear-caches-by-assignee.command';
+import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants.js';
+import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface.js';
+import { ClearCachesByAssigneeCommand } from '../impl/clear-caches-by-assignee.command.js';
 
 @CommandHandler(ClearCachesByAssigneeCommand)
 export class ClearCachesByAssigneeHandler implements ICommandHandler<ClearCachesByAssigneeCommand> {

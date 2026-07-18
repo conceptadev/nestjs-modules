@@ -9,15 +9,15 @@
 import {
   WhereCompoundOperator,
   WhereOperator,
-} from '../../../repository/repository.types';
-import { FederationException } from '../../exceptions/federation.exception';
-import { type TestRoot, type TestRelation } from '../federation-test-data';
+} from '../../../repository/repository.types.js';
+import { FederationException } from '../../exceptions/federation.exception.js';
+import { type TestRoot, type TestRelation } from '../federation-test-data.js';
 import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
   mockOneToOneRelation,
-} from '../fixtures/federation-orchestrator.mock';
+} from '../fixtures/federation-orchestrator.mock.js';
 
 describe('FederationOrchestrator - distinctFilter Validation', () => {
   describe('distinctFilter requirement validation', () => {

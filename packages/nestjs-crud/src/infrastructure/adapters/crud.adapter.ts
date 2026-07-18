@@ -18,16 +18,16 @@ import {
   type WhereCondition,
 } from '@concepta/nestjs-repository';
 
-import { type CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface';
-import { type CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';
-import { type CrudContextOptionsInterface } from '../interceptors/interfaces/crud-context-options.interface';
-import { type CrudContextInterface } from '../interceptors/interfaces/crud-context.interface';
-import { type CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface';
-import { SConditionConverter } from '../request/crud-scondition.converter';
-import { type CrudParsedQueryInterface } from '../request/interfaces/crud-parsed-query.interface';
-import { type CrudQueryOptionsInterface } from '../request/interfaces/crud-query-options.interface';
-import { queryFilterIsArray } from '../utils/crud-infra.utils';
-import { sanitizeForMessage } from '../utils/validation';
+import { type CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface.js';
+import { type CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface.js';
+import { type CrudContextOptionsInterface } from '../interceptors/interfaces/crud-context-options.interface.js';
+import { type CrudContextInterface } from '../interceptors/interfaces/crud-context.interface.js';
+import { type CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface.js';
+import { SConditionConverter } from '../request/crud-scondition.converter.js';
+import { type CrudParsedQueryInterface } from '../request/interfaces/crud-parsed-query.interface.js';
+import { type CrudQueryOptionsInterface } from '../request/interfaces/crud-query-options.interface.js';
+import { queryFilterIsArray } from '../utils/crud-infra.utils.js';
+import { sanitizeForMessage } from '../utils/validation.js';
 
 export class CrudAdapter<Entity extends PlainLiteralObject> {
   protected entityColumns: EntityColumn<Entity>[] = [];

@@ -1,9 +1,9 @@
-import { type OrderClause } from '../../repository/repository.types';
+import { type OrderClause } from '../../repository/repository.types.js';
 import {
   type FederatedRelation,
   type FederationStrategy,
-} from '../federation.types';
-import { type FilterAnalyzer } from '../filter-analyzer';
+} from '../federation.types.js';
+import { type FilterAnalyzer } from '../filter-analyzer.js';
 
 /**
  * Result of analyzing execution requirements for a federation query.

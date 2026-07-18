@@ -1,7 +1,7 @@
 import { type Provider } from '@nestjs/common';
 
-import { GuardsPolicy } from '../../domain/policies/guards.policy';
-import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
+import { GuardsPolicy } from '../../domain/policies/guards.policy.js';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface.js';
 
 export function createGuardsPolicyProvider(rawOptionsToken: symbol): Provider {
   return {

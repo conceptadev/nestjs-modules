@@ -1,1 +1,1 @@
-export { InvitationFactory } from './seeding/invitation.factory';
+export { InvitationFactory } from './seeding/invitation.factory.js';

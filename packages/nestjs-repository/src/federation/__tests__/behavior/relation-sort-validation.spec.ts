@@ -7,14 +7,14 @@
  *
  * Ported from nestjs-crud __tests__/crud-federation/behavior/relation-sort-validation.spec.ts
  */
-import { WhereOperator } from '../../../repository/repository.types';
-import { FederationException } from '../../exceptions/federation.exception';
-import { type TestRoot, type TestRelation } from '../federation-test-data';
+import { WhereOperator } from '../../../repository/repository.types.js';
+import { FederationException } from '../../exceptions/federation.exception.js';
+import { type TestRoot, type TestRelation } from '../federation-test-data.js';
 import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
-} from '../fixtures/federation-orchestrator.mock';
+} from '../fixtures/federation-orchestrator.mock.js';
 
 describe('FederationOrchestrator - Relation Sort Validation', () => {
   describe('Forward relationship validation', () => {

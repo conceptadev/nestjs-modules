@@ -1,6 +1,6 @@
 import { Entity } from 'typeorm';
 
-import { OtpSqliteEntity } from '../../../infrastructure/persistence/typeorm/otp-sqlite.entity';
+import { OtpSqliteEntity } from '../../../infrastructure/persistence/typeorm/otp-sqlite.entity.js';
 
 /**
  * Otp Entity Fixture

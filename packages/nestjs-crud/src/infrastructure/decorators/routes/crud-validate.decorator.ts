@@ -1,11 +1,11 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { CRUD_MODULE_ROUTE_VALIDATION_METADATA } from '../../../crud.constants';
-import { type CrudValidationOptions } from '../../../crud.types';
+import { CRUD_MODULE_ROUTE_VALIDATION_METADATA } from '../../../crud.constants.js';
+import { type CrudValidationOptions } from '../../../crud.types.js';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,
-} from '../../services/crud-metadata.service';
+} from '../../services/crud-metadata.service.js';
 
 /**
  * Crud validate options decorator.

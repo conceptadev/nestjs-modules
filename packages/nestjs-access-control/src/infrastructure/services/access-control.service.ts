@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { AccessControlServiceInterface } from '../../domain/ports/access-control-service.interface';
+import { AccessControlServiceInterface } from '../../domain/ports/access-control-service.interface.js';
 
 interface RoleDefaultInterface {
   name: string;

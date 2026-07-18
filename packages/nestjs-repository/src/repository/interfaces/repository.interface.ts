@@ -2,7 +2,7 @@ import { type PlainLiteralObject } from '@nestjs/common';
 
 import { type DeepPartial } from '@concepta/nestjs-core';
 
-import { type RepositoryMetadataInterface } from './repository-metadata.interface';
+import { type RepositoryMetadataInterface } from './repository-metadata.interface.js';
 import {
   type RepositoryCreateOptions,
   type RepositoryDeleteOptions,
@@ -11,7 +11,7 @@ import {
   type RepositoryRestoreOptions,
   type RepositoryUpdateOptions,
   type RepositoryUpsertOptions,
-} from './repository-options.interface';
+} from './repository-options.interface.js';
 
 export interface RepositoryInterface<Entity extends PlainLiteralObject> {
   /**

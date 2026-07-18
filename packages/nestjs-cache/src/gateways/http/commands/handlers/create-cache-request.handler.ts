@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { CreateCacheCommand } from '../../../../application/commands/impl/create-cache.command';
-import { CreateCacheRequest } from '../impl/create-cache.request';
+import { CreateCacheCommand } from '../../../../application/commands/impl/create-cache.command.js';
+import { CreateCacheRequest } from '../impl/create-cache.request.js';
 
 @Injectable()
 export class CreateCacheRequestHandler {

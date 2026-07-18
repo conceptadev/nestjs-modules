@@ -1,8 +1,8 @@
 import { Body, ValidationPipe } from '@nestjs/common';
 import { MetadataScanner } from '@nestjs/core';
 
-import { CRUD_MODULE_DEFAULT_VALIDATION_PIPE_OPTIONS } from '../../../crud.constants';
-import { CrudMetaview } from '../../services/crud-metaview.service';
+import { CRUD_MODULE_DEFAULT_VALIDATION_PIPE_OPTIONS } from '../../../crud.constants.js';
+import { CrudMetaview } from '../../services/crud-metaview.service.js';
 
 /**
  * Crud initialize validation decorator.

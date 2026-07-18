@@ -2,9 +2,9 @@ import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
 import { type ModuleRef } from '@nestjs/core';
 
-import { OtpEntityNotFoundException } from '../../exceptions/otp-entity-not-found.exception';
-import { OtpRepositoryResolver } from '../otp-repository.resolver';
-import { type OtpRepository } from '../otp.repository';
+import { OtpEntityNotFoundException } from '../../exceptions/otp-entity-not-found.exception.js';
+import { OtpRepositoryResolver } from '../otp-repository.resolver.js';
+import { type OtpRepository } from '../otp.repository.js';
 
 describe(OtpRepositoryResolver.name, () => {
   let resolver: OtpRepositoryResolver;

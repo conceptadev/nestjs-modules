@@ -5,11 +5,11 @@ import {
   createMockCacheContext,
   createMockCacheEntity,
   toCacheDomain,
-} from '../../../../../__tests__/helpers/mock.helpers';
-import { ReplaceCacheCommand } from '../../../../../application/commands/impl/replace-cache.command';
-import { type CacheCreatableInterface } from '../../../../../domain/interfaces/cache-creatable.interface';
-import { type CacheInterface } from '../../../../../domain/interfaces/cache.interface';
-import { ReplaceCacheRequestHandler } from '../replace-cache-request.handler';
+} from '../../../../../__tests__/helpers/mock.helpers.js';
+import { ReplaceCacheCommand } from '../../../../../application/commands/impl/replace-cache.command.js';
+import { type CacheCreatableInterface } from '../../../../../domain/interfaces/cache-creatable.interface.js';
+import { type CacheInterface } from '../../../../../domain/interfaces/cache.interface.js';
+import { ReplaceCacheRequestHandler } from '../replace-cache-request.handler.js';
 
 describe(ReplaceCacheRequestHandler.name, () => {
   let commandBus: ReturnType<typeof createMockCommandBus>;

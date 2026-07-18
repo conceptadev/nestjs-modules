@@ -1,14 +1,14 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { OverlayRef } from '../../domain/context/overlay-ref';
-import { ContextOverlayInterceptor } from '../context/context-overlay.interceptor';
-import { getAppContext } from '../context/get-app-context.util';
-import { HookContextInterface } from '../context/interfaces/hook-context.interface';
+import { OverlayRef } from '../../domain/context/overlay-ref.js';
+import { ContextOverlayInterceptor } from '../context/context-overlay.interceptor.js';
+import { getAppContext } from '../context/get-app-context.util.js';
+import { HookContextInterface } from '../context/interfaces/hook-context.interface.js';
 
-import { HOOK_METADATA_KEY, HOOKS_METADATA_KEY } from './hook.constants';
-import { HookMetadataInterface } from './hook.interfaces';
-import { HookOption, HookWithSpec } from './hook.types';
+import { HOOK_METADATA_KEY, HOOKS_METADATA_KEY } from './hook.constants.js';
+import { HookMetadataInterface } from './hook.interfaces.js';
+import { HookOption, HookWithSpec } from './hook.types.js';
 
 export const HooksCtx = new OverlayRef<'withHooks', HookContextInterface>(
   'withHooks',

@@ -2,10 +2,10 @@ import { mock, type MockProxy } from 'vitest-mock-extended';
 
 import { type RepositoryInterface } from '@concepta/nestjs-repository';
 
-import { UserCredentials } from '../../../domain/aggregates/user-credentials';
-import { type UserCredentialEntityInterface } from '../../../domain/interfaces/user-credential-entity.interface';
-import { UserCredentialsMapper } from '../user-credentials.mapper';
-import { UserCredentialsRepository } from '../user-credentials.repository';
+import { UserCredentials } from '../../../domain/aggregates/user-credentials.js';
+import { type UserCredentialEntityInterface } from '../../../domain/interfaces/user-credential-entity.interface.js';
+import { UserCredentialsMapper } from '../user-credentials.mapper.js';
+import { UserCredentialsRepository } from '../user-credentials.repository.js';
 
 const credentialsMapper = new UserCredentialsMapper();
 

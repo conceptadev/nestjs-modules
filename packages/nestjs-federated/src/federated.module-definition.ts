@@ -8,20 +8,20 @@ import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
 
 import { createSettingsProvider } from '@concepta/nestjs-core';
 
-import { CreateIdentityHandler } from './application/commands/handlers/create-identity.handler';
-import { FindIdentityByProviderHandler } from './application/queries/handlers/find-identity-by-provider.handler';
-import { FederatedUserPort } from './domain/ports/federated-user.port';
-import { FederatedOAuthService } from './domain/services/federated-oauth.service';
+import { CreateIdentityHandler } from './application/commands/handlers/create-identity.handler.js';
+import { FindIdentityByProviderHandler } from './application/queries/handlers/find-identity-by-provider.handler.js';
+import { FederatedUserPort } from './domain/ports/federated-user.port.js';
+import { FederatedOAuthService } from './domain/services/federated-oauth.service.js';
 import {
   FEDERATED_MODULE_DEFAULT_ENTITY_KEY,
   FEDERATED_MODULE_SETTINGS_TOKEN,
-} from './federated.constants';
-import { federatedDefaultConfig } from './infrastructure/config/federated-default.config';
-import { type FederatedSettingsInterface } from './infrastructure/config/interfaces/federated-settings.interface';
-import { IdentityMapper } from './infrastructure/persistence/identity.mapper';
-import { createIdentityRepositoryProvider } from './infrastructure/utils/create-identity-repository-provider';
-import { type FederatedOptionsExtrasInterface } from './interfaces/federated-options-extras.interface';
-import { type FederatedOptionsInterface } from './interfaces/federated-options.interface';
+} from './federated.constants.js';
+import { federatedDefaultConfig } from './infrastructure/config/federated-default.config.js';
+import { type FederatedSettingsInterface } from './infrastructure/config/interfaces/federated-settings.interface.js';
+import { IdentityMapper } from './infrastructure/persistence/identity.mapper.js';
+import { createIdentityRepositoryProvider } from './infrastructure/utils/create-identity-repository-provider.js';
+import { type FederatedOptionsExtrasInterface } from './interfaces/federated-options-extras.interface.js';
+import { type FederatedOptionsInterface } from './interfaces/federated-options.interface.js';
 
 const RAW_OPTIONS_TOKEN = Symbol('__FEDERATED_MODULE_RAW_OPTIONS_TOKEN__');
 

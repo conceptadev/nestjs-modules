@@ -3,13 +3,13 @@ import { mock } from 'vitest-mock-extended';
 import { type PlainLiteralObject } from '@nestjs/common';
 import { Command, type CommandBus, Query, type QueryBus } from '@nestjs/cqrs';
 
-import { Token } from '../../../domain/aggregates/token.aggregate';
+import { Token } from '../../../domain/aggregates/token.aggregate.js';
 import {
   JwtPort,
   type JwtPortSettings,
   type JwtVerifyTokenQueryInterface,
   type SignTokenCommandInterface,
-} from '../jwt.port';
+} from '../jwt.port.js';
 
 const makeToken = (): Token =>
   new Token('test-jti', {

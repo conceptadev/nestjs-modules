@@ -3,11 +3,11 @@ import { type PlainLiteralObject } from '@nestjs/common';
 import { type ReferenceId } from '@concepta/nestjs-core';
 import { type RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
-import { type Otp } from '../../domain/aggregates/otp';
-import { type OtpRepositoryInterface } from '../../domain/repositories/otp-repository.interface';
+import { type Otp } from '../../domain/aggregates/otp.js';
+import { type OtpRepositoryInterface } from '../../domain/repositories/otp-repository.interface.js';
 
-import { type OtpEntityInterface } from './interfaces/otp-entity.interface';
-import { type OtpMapper } from './otp.mapper';
+import { type OtpEntityInterface } from './interfaces/otp-entity.interface.js';
+import { type OtpMapper } from './otp.mapper.js';
 
 export class OtpRepository implements OtpRepositoryInterface {
   constructor(

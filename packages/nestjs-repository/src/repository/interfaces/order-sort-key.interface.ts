@@ -1,6 +1,6 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type EntityColumn, type SortOrder } from '../repository.types';
+import { type EntityColumn, type SortOrder } from '../repository.types.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // OrderSortKey variants — discriminated union on `order`

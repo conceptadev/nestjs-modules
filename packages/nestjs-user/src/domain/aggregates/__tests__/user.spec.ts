@@ -3,8 +3,8 @@ import { EventContextHost } from '@concepta/nestjs-core';
 import {
   createMockUserEntity,
   toUserDomain,
-} from '../../../__tests__/helpers/mock.helpers';
-import { User } from '../user';
+} from '../../../__tests__/helpers/mock.helpers.js';
+import { User } from '../user.js';
 
 const eventContext = new EventContextHost({}, {});
 const mockEntity = createMockUserEntity();

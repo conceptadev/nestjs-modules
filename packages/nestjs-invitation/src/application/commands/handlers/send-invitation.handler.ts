@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { InvitationService } from '../../../domain/services/invitation.service';
-import { SendInvitationCommand } from '../impl/send-invitation.command';
+import { InvitationService } from '../../../domain/services/invitation.service.js';
+import { SendInvitationCommand } from '../impl/send-invitation.command.js';
 
 @CommandHandler(SendInvitationCommand)
 export class SendInvitationHandler implements ICommandHandler<SendInvitationCommand> {

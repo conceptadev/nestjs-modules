@@ -5,9 +5,9 @@ import {
   createMockTransaction,
   DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { ClearOtpsCommand } from '../../impl/clear-otps.command';
-import { ClearOtpsHandler } from '../clear-otps.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { ClearOtpsCommand } from '../../impl/clear-otps.command.js';
+import { ClearOtpsHandler } from '../clear-otps.handler.js';
 
 describe(ClearOtpsHandler.name, () => {
   let handler: ClearOtpsHandler;

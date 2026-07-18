@@ -17,15 +17,15 @@ import {
 } from '@nestjs/common';
 import { isFunction, isObject } from '@nestjs/common/utils/shared.utils';
 
-import { CRUD_MODULE_SETTINGS_TOKEN } from '../../crud.constants';
-import { CrudModuleSettingsInterface } from '../config/interfaces/crud-module-settings.interface';
-import { CrudInvalidResponseDto } from '../dtos/crud-invalid-response.dto';
-import { CrudResponsePaginatedDto } from '../dtos/crud-response-paginated.dto';
-import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface';
-import { CrudException } from '../exceptions/crud.exception';
-import { CrudSerializationOptionsInterface } from '../interfaces/crud-serialization-options.interface';
-import { CrudMetaview } from '../services/crud-metaview.service';
-import { crudIsPaginatedHelper } from '../utils/crud-is-paginated.helper';
+import { CRUD_MODULE_SETTINGS_TOKEN } from '../../crud.constants.js';
+import { CrudModuleSettingsInterface } from '../config/interfaces/crud-module-settings.interface.js';
+import { CrudInvalidResponseDto } from '../dtos/crud-invalid-response.dto.js';
+import { CrudResponsePaginatedDto } from '../dtos/crud-response-paginated.dto.js';
+import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface.js';
+import { CrudException } from '../exceptions/crud.exception.js';
+import { CrudSerializationOptionsInterface } from '../interfaces/crud-serialization-options.interface.js';
+import { CrudMetaview } from '../services/crud-metaview.service.js';
+import { crudIsPaginatedHelper } from '../utils/crud-is-paginated.helper.js';
 
 type ResponseType =
   | (PlainLiteralObject & CrudResponsePaginatedInterface)

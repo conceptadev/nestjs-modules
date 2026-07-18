@@ -1,10 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants';
-import { Cache } from '../../../domain/aggregates/cache';
-import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface';
-import { FindOneCacheQuery } from '../impl/find-one-cache.query';
+import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants.js';
+import { Cache } from '../../../domain/aggregates/cache.js';
+import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface.js';
+import { FindOneCacheQuery } from '../impl/find-one-cache.query.js';
 
 @QueryHandler(FindOneCacheQuery)
 export class FindOneCacheHandler implements IQueryHandler<FindOneCacheQuery> {

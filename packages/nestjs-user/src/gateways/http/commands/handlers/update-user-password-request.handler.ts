@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { UpdateUserPasswordCommand } from '../../../../application/commands/impl/update-user-password.command';
-import { assertUserId } from '../../../../application/utils/assert-user-id.util';
-import { UpdateUserPasswordRequest } from '../impl/update-user-password.request';
+import { UpdateUserPasswordCommand } from '../../../../application/commands/impl/update-user-password.command.js';
+import { assertUserId } from '../../../../application/utils/assert-user-id.util.js';
+import { UpdateUserPasswordRequest } from '../impl/update-user-password.request.js';
 
 @Injectable()
 export class UpdateUserPasswordRequestHandler {

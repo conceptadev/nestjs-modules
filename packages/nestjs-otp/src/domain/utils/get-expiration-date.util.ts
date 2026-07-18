@@ -1,6 +1,6 @@
 import { toMilliseconds } from '@concepta/nestjs-core';
 
-import { OtpInvalidExpirationDateException } from '../exceptions/otp-invalid-expiration-date.exception';
+import { OtpInvalidExpirationDateException } from '../exceptions/otp-invalid-expiration-date.exception.js';
 
 export const getExpirationDate = (
   expiresIn: string,

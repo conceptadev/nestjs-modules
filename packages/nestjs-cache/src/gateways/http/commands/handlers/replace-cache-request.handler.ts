@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { ReplaceCacheCommand } from '../../../../application/commands/impl/replace-cache.command';
-import { assertCacheId } from '../../../../application/utils/assert-cache-id.util';
-import { ReplaceCacheRequest } from '../impl/replace-cache.request';
+import { ReplaceCacheCommand } from '../../../../application/commands/impl/replace-cache.command.js';
+import { assertCacheId } from '../../../../application/utils/assert-cache-id.util.js';
+import { ReplaceCacheRequest } from '../impl/replace-cache.request.js';
 
 @Injectable()
 export class ReplaceCacheRequestHandler {

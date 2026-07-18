@@ -6,10 +6,10 @@ import { Test, type TestingModule } from '@nestjs/testing';
 
 import { ExceptionsFilter } from '@concepta/nestjs-core';
 
-import { AppModuleFixture } from '../../../../__tests__/fixtures/app.module.fixture';
-import { RecoveryService } from '../../../../application/services/recovery/recovery.service';
+import { AppModuleFixture } from '../../../../__tests__/fixtures/app.module.fixture.js';
+import { RecoveryService } from '../../../../application/services/recovery/recovery.service.js';
 
-import { RecoveryController } from './fixtures/recovery.controller.fixture';
+import { RecoveryController } from './fixtures/recovery.controller.fixture.js';
 
 describe('RecoveryController (e2e)', () => {
   let app: INestApplication;

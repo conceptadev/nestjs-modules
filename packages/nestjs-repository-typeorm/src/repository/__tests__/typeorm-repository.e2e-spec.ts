@@ -8,11 +8,11 @@ import {
 } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
-import { TEST_ENTITY_TOKEN } from '../../__fixtures__/repository/config/test.constants.fixture';
-import { TestEntityFixture } from '../../__fixtures__/repository/entity/test.entity.fixture';
-import { TestFactoryFixture } from '../../__fixtures__/repository/factory/test.factory.fixture';
-import { AppModuleFixture } from '../../__fixtures__/repository/module/app.module.fixture';
-import { TypeOrmRepository } from '../typeorm-repository';
+import { TEST_ENTITY_TOKEN } from '../../__fixtures__/repository/config/test.constants.fixture.js';
+import { TestEntityFixture } from '../../__fixtures__/repository/entity/test.entity.fixture.js';
+import { TestFactoryFixture } from '../../__fixtures__/repository/factory/test.factory.fixture.js';
+import { AppModuleFixture } from '../../__fixtures__/repository/module/app.module.fixture.js';
+import { TypeOrmRepository } from '../typeorm-repository.js';
 
 describe(TypeOrmRepository, () => {
   let testRepository: TypeOrmRepository<TestEntityFixture>;

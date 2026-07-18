@@ -1,8 +1,8 @@
 import { EventContextHost } from '@concepta/nestjs-core';
 
-import { UserCredentialsMapper } from '../../../infrastructure/persistence/user-credentials.mapper';
-import { type UserCredentialEntityInterface } from '../../interfaces/user-credential-entity.interface';
-import { UserCredentials } from '../user-credentials';
+import { UserCredentialsMapper } from '../../../infrastructure/persistence/user-credentials.mapper.js';
+import { type UserCredentialEntityInterface } from '../../interfaces/user-credential-entity.interface.js';
+import { UserCredentials } from '../user-credentials.js';
 
 const eventContext = new EventContextHost({}, {});
 const mapper = new UserCredentialsMapper();

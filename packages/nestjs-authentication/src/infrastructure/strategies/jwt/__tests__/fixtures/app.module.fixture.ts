@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { UserModuleFixture } from '../../../../../__tests__/fixtures/user.module.fixture';
-import { AuthenticationModule } from '../../../../../authentication.module';
+import { UserModuleFixture } from '../../../../../__tests__/fixtures/user.module.fixture.js';
+import { AuthenticationModule } from '../../../../../authentication.module.js';
 
-import { UserControllerFixtures } from './user.controller.fixture';
+import { UserControllerFixtures } from './user.controller.fixture.js';
 
 @Module({
   imports: [

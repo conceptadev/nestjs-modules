@@ -1,8 +1,8 @@
 import { type Provider, type Type } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
-import { HookContextOverlay } from '../hook.context.overlay';
-import { HookResolverService } from '../hook.resolver.service';
+import { HookContextOverlay } from '../hook.context.overlay.js';
+import { HookResolverService } from '../hook.resolver.service.js';
 
 export function createHookFeatureProviders(): Provider[] {
   return [

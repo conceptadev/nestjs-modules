@@ -4,13 +4,13 @@ import {
   type Type,
 } from '@nestjs/common';
 
-import { type CrudAdapterProvider } from '../adapters/interfaces/crud-adapter.types';
-import { type CrudRequestConfig } from '../request/interfaces/crud-request-config.interface';
-import { type CrudResponseConfig } from '../request/interfaces/crud-response-config.interface';
-import { type CrudResolverInterface } from '../resolvers/interfaces/crud-resolver.interface';
+import { type CrudAdapterProvider } from '../adapters/interfaces/crud-adapter.types.js';
+import { type CrudRequestConfig } from '../request/interfaces/crud-request-config.interface.js';
+import { type CrudResponseConfig } from '../request/interfaces/crud-response-config.interface.js';
+import { type CrudResolverInterface } from '../resolvers/interfaces/crud-resolver.interface.js';
 
-import { type CrudControllerEntityInterface } from './crud-controller-entity.interface';
-import { type CrudTransactionalInterface } from './crud-transactional.interface';
+import { type CrudControllerEntityInterface } from './crud-controller-entity.interface.js';
+import { type CrudTransactionalInterface } from './crud-transactional.interface.js';
 
 /**
  * Controller options for pre-decorated class path (build() with class).

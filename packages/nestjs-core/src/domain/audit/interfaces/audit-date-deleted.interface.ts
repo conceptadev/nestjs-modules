@@ -1,4 +1,4 @@
-import { type AuditDateDeleted } from './audit.types';
+import { type AuditDateDeleted } from './audit.types.js';
 
 /**
  * Date data was deleted.

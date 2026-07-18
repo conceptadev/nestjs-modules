@@ -6,19 +6,19 @@
  *
  * Ported from nestjs-crud __tests__/crud-federation/behavior/root-sort-behavior.spec.ts
  */
-import { WhereOperator } from '../../../repository/repository.types';
+import { WhereOperator } from '../../../repository/repository.types.js';
 import {
   type TestRoot,
   type TestRelation,
   createNameSortDataSet,
   createIdDescSortDataSet,
   createMultiSortDataSet,
-} from '../federation-test-data';
+} from '../federation-test-data.js';
 import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
-} from '../fixtures/federation-orchestrator.mock';
+} from '../fixtures/federation-orchestrator.mock.js';
 
 describe('FederationOrchestrator - Root Sort Strategy', () => {
   describe('Single root field sort', () => {

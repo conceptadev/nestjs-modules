@@ -1,4 +1,4 @@
-import { type CacheSettingsInterface } from './cache-settings.interface';
+import { type CacheSettingsInterface } from './cache-settings.interface.js';
 
 export interface CacheOptionsInterface {
   settings?: CacheSettingsInterface;

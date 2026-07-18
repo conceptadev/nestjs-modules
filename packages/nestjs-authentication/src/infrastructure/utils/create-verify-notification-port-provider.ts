@@ -1,11 +1,11 @@
 import { type Provider } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { AUTHENTICATION_VERIFY_NOTIFICATION_PORT_TOKEN } from '../../authentication.constants';
+import { AUTHENTICATION_VERIFY_NOTIFICATION_PORT_TOKEN } from '../../authentication.constants.js';
 import {
   VerifyNotificationPort,
   type VerifyNotificationPortSettings,
-} from '../../domain/ports/verify-notification.port';
+} from '../../domain/ports/verify-notification.port.js';
 
 export function createVerifyNotificationPortProvider(
   portSettings: VerifyNotificationPortSettings,

@@ -4,8 +4,8 @@ import {
   CacheCoreAsyncOptions,
   CacheCoreModuleClass,
   CacheCoreOptions,
-} from './cache-core.module-definition';
-import { createCacheRepositoryProvider } from './infrastructure/utils/create-cache-repository-provider';
+} from './cache-core.module-definition.js';
+import { createCacheRepositoryProvider } from './infrastructure/utils/create-cache-repository-provider.js';
 type CacheOptions = Omit<CacheCoreOptions, 'global'>;
 type CacheAsyncOptions = Omit<CacheCoreAsyncOptions, 'global'>;
 

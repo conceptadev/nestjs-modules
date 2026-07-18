@@ -5,9 +5,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { CrudCreateBatchDto } from '@concepta/nestjs-crud';
 
-import { UserCreatableInterface } from '../../domain/interfaces/user-creatable.interface';
+import { UserCreatableInterface } from '../../domain/interfaces/user-creatable.interface.js';
 
-import { UserCreateDto } from './user-create.dto';
+import { UserCreateDto } from './user-create.dto.js';
 
 @Exclude()
 export class UserCreateBatchDto extends CrudCreateBatchDto<UserCreatableInterface> {

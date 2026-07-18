@@ -4,11 +4,11 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { EventContextHost } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { User } from '../../../domain/aggregates/user';
-import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface';
-import { USER_REPOSITORY_TOKEN } from '../../../user.constants';
-import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
-import { RemoveUserCommand } from '../impl/remove-user.command';
+import { User } from '../../../domain/aggregates/user.js';
+import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface.js';
+import { USER_REPOSITORY_TOKEN } from '../../../user.constants.js';
+import { UserNotFoundException } from '../../exceptions/user-not-found.exception.js';
+import { RemoveUserCommand } from '../impl/remove-user.command.js';
 
 @CommandHandler(RemoveUserCommand)
 export class RemoveUserHandler implements ICommandHandler<

@@ -1,4 +1,4 @@
-import { getExpirationDate } from '../get-expiration-date.util';
+import { getExpirationDate } from '../get-expiration-date.util.js';
 
 describe('getExpirationDate', () => {
   it('should return null when expiresIn is null', () => {

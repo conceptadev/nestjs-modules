@@ -11,13 +11,13 @@ import {
   type HookResolverService,
 } from '@concepta/nestjs-core';
 
-import { RepoCtx } from '../context/interfaces/repository-context.interface';
-import { type FederationOrchestrator } from '../federation/federation-orchestrator.service';
-import { RepoPermeatorFactory } from '../hooks/repo-permeator-factory';
-import { RepoHook } from '../hooks/repository-hook.decorators';
+import { RepoCtx } from '../context/interfaces/repository-context.interface.js';
+import { type FederationOrchestrator } from '../federation/federation-orchestrator.service.js';
+import { RepoPermeatorFactory } from '../hooks/repo-permeator-factory.js';
+import { RepoHook } from '../hooks/repository-hook.decorators.js';
 
-import { type JoinClause } from './interfaces/join-clause.interface';
-import { type RepositoryMetadataInterface } from './interfaces/repository-metadata.interface';
+import { type JoinClause } from './interfaces/join-clause.interface.js';
+import { type RepositoryMetadataInterface } from './interfaces/repository-metadata.interface.js';
 import {
   type RepositoryFindOptions,
   type RepositoryFindOneOptions,
@@ -26,14 +26,14 @@ import {
   type RepositoryUpsertOptions,
   type RepositoryDeleteOptions,
   type RepositoryRestoreOptions,
-} from './interfaces/repository-options.interface';
-import { type RepositoryInterface } from './interfaces/repository.interface';
+} from './interfaces/repository-options.interface.js';
+import { type RepositoryInterface } from './interfaces/repository.interface.js';
 import {
   type WhereClause,
   isWhereCondition,
   isWhereCompound,
-} from './interfaces/where-clause.interface';
-import { WhereCompoundOperator } from './repository.types';
+} from './interfaces/where-clause.interface.js';
+import { WhereCompoundOperator } from './repository.types.js';
 
 /**
  * Abstract repository adapter that implements DTO transformation.

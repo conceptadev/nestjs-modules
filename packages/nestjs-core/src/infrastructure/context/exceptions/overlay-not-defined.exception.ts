@@ -1,5 +1,5 @@
-import { type RuntimeExceptionOptions } from '../../../domain/exceptions/interfaces/runtime-exception-options.interface';
-import { RuntimeException } from '../../../domain/exceptions/runtime.exception';
+import { type RuntimeExceptionOptions } from '../../../domain/exceptions/interfaces/runtime-exception-options.interface.js';
+import { RuntimeException } from '../../../domain/exceptions/runtime.exception.js';
 
 export class OverlayNotDefinedException extends RuntimeException {
   constructor(name: string, options?: RuntimeExceptionOptions) {

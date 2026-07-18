@@ -1,7 +1,7 @@
 import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
-import { type RepositoryColumnMetadataInterface } from './repository-column-metadata.interface';
-import { type RepositoryRelationMetadataInterface } from './repository-relation-metadata.interface';
+import { type RepositoryColumnMetadataInterface } from './repository-column-metadata.interface.js';
+import { type RepositoryRelationMetadataInterface } from './repository-relation-metadata.interface.js';
 
 /**
  * Repository metadata interface for entity introspection.

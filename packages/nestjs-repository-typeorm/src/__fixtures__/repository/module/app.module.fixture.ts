@@ -3,9 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { RepositoryModule } from '@concepta/nestjs-repository';
 
-import { ormConfig } from '../config/ormconfig.fixture';
+import { ormConfig } from '../config/ormconfig.fixture.js';
 
-import { TestModuleFixture } from './test.module.fixture';
+import { TestModuleFixture } from './test.module.fixture.js';
 
 @Module({
   imports: [

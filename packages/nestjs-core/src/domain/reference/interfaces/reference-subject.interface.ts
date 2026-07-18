@@ -1,4 +1,4 @@
-import { type ReferenceSubject } from './reference.types';
+import { type ReferenceSubject } from './reference.types.js';
 
 /**
  * Identifiable by subject (JWT).

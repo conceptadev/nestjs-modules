@@ -10,11 +10,11 @@ import {
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
-import { UserModule } from '../../user.module';
+import { UserModule } from '../../user.module.js';
 
-import { UserCredentialEntityFixture } from './entities/user-credential.entity.fixture';
-import { UserEntityFixture } from './entities/user.entity.fixture';
-import { ormConfig } from './ormconfig.fixture';
+import { UserCredentialEntityFixture } from './entities/user-credential.entity.fixture.js';
+import { UserEntityFixture } from './entities/user.entity.fixture.js';
+import { ormConfig } from './ormconfig.fixture.js';
 
 const USER_ENTITY_KEY = 'user';
 const USER_CREDENTIALS_ENTITY_KEY = 'user-credentials';

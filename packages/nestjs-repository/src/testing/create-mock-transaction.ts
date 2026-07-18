@@ -6,8 +6,8 @@ import { AppContextHost } from '@concepta/nestjs-core';
 import {
   type TransactionContextInterface,
   TrxCtx,
-} from '../transaction/interfaces/transaction-context.interface';
-import { type TransactionScope } from '../transaction/transaction-scope';
+} from '../transaction/interfaces/transaction-context.interface.js';
+import { type TransactionScope } from '../transaction/transaction-scope.js';
 
 export interface MockTransactionHandle {
   onCommit: Mock;

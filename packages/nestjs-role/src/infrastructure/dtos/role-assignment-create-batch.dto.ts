@@ -5,9 +5,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { CrudCreateBatchDto } from '@concepta/nestjs-crud';
 
-import { RoleAssignmentCreatableInterface } from '../../domain/interfaces/role-assignment-creatable.interface';
+import { RoleAssignmentCreatableInterface } from '../../domain/interfaces/role-assignment-creatable.interface.js';
 
-import { RoleAssignmentCreateDto } from './role-assignment-create.dto';
+import { RoleAssignmentCreateDto } from './role-assignment-create.dto.js';
 
 /**
  * Role Assignment Create Batch DTO

@@ -7,12 +7,12 @@ import {
   createMockUserCredentialEntity,
   createMockUserCredentialsRepository,
   toUserCredentialsDomain,
-} from '../../../__tests__/helpers/mock.helpers';
-import { UserCredentialsAlreadyExistException } from '../../exceptions/user-credentials-already-exist.exception';
-import { UserPasswordCurrentInvalidException } from '../../exceptions/user-password-current-invalid.exception';
-import { UserPasswordHistoryViolationException } from '../../exceptions/user-password-history-violation.exception';
-import { UserPasswordPolicy } from '../../policies/user-password.policy';
-import { UserCredentialsService } from '../user-credentials.service';
+} from '../../../__tests__/helpers/mock.helpers.js';
+import { UserCredentialsAlreadyExistException } from '../../exceptions/user-credentials-already-exist.exception.js';
+import { UserPasswordCurrentInvalidException } from '../../exceptions/user-password-current-invalid.exception.js';
+import { UserPasswordHistoryViolationException } from '../../exceptions/user-password-history-violation.exception.js';
+import { UserPasswordPolicy } from '../../policies/user-password.policy.js';
+import { UserCredentialsService } from '../user-credentials.service.js';
 
 describe(UserCredentialsService.name, () => {
   const eventContext = new EventContextHost({}, {});

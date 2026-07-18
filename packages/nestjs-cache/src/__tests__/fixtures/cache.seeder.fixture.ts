@@ -1,8 +1,8 @@
 import { Seeder } from '@concepta/typeorm-seeding';
 
-import { CacheFactory } from '../../infrastructure/persistence/cache.factory';
+import { CacheFactory } from '../../infrastructure/persistence/cache.factory.js';
 
-import { UserFactoryFixture } from './factories/user.factory.fixture';
+import { UserFactoryFixture } from './factories/user.factory.fixture.js';
 
 /**
  * Cache seeder

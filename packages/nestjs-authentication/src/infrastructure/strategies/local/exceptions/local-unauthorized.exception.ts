@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { LocalException } from './local.exception';
+import { LocalException } from './local.exception.js';
 
 export class LocalUnauthorizedException extends LocalException {
   constructor(options?: Omit<RuntimeExceptionOptions, 'httpStatus'>) {

@@ -1,7 +1,7 @@
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 
-import { InvitationRevokedEvent } from '../../domain/events/invitation-revoked.event';
-import { InvitationOtpPort } from '../../domain/ports/invitation-otp.port';
+import { InvitationRevokedEvent } from '../../domain/events/invitation-revoked.event.js';
+import { InvitationOtpPort } from '../../domain/ports/invitation-otp.port.js';
 
 @EventsHandler(InvitationRevokedEvent)
 export class InvitationRevokedListener implements IEventHandler<InvitationRevokedEvent> {

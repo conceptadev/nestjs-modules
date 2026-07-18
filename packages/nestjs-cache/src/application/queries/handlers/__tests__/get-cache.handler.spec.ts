@@ -4,10 +4,10 @@ import {
   createMockCacheEntity,
   toCacheDomain,
   DEFAULT_CACHE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Cache } from '../../../../domain/aggregates/cache';
-import { GetCacheQuery } from '../../impl/get-cache.query';
-import { GetCacheHandler } from '../get-cache.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Cache } from '../../../../domain/aggregates/cache.js';
+import { GetCacheQuery } from '../../impl/get-cache.query.js';
+import { GetCacheHandler } from '../get-cache.handler.js';
 
 describe(GetCacheHandler.name, () => {
   const ctx = {};

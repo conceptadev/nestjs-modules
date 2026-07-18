@@ -1,4 +1,4 @@
-import { InvitationException } from './invitation.exception';
+import { InvitationException } from './invitation.exception.js';
 
 export class InvitationAlreadyAcceptedException extends InvitationException {
   constructor() {

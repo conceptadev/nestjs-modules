@@ -1,11 +1,11 @@
 import { Injectable, PlainLiteralObject } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
 
-import { HookMethodKeyType } from './decorators/hook-method.decorator';
-import { HOOK_METHODS_CACHE_KEY } from './hook.constants';
-import { HookMethodMapInterface, ResolvedHook } from './hook.interfaces';
-import { HookWithSpec } from './hook.types';
-import { SpecificationInterface } from './interfaces/specification.interface';
+import { HookMethodKeyType } from './decorators/hook-method.decorator.js';
+import { HOOK_METHODS_CACHE_KEY } from './hook.constants.js';
+import { HookMethodMapInterface, ResolvedHook } from './hook.interfaces.js';
+import { HookWithSpec } from './hook.types.js';
+import { SpecificationInterface } from './interfaces/specification.interface.js';
 
 /**
  * Service for resolving hook configurations to instances

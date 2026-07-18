@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 
-import { AccessControlService } from './access-control.service';
+import { AccessControlService } from './access-control.service.js';
 
 type HttpArgumentsHost = ReturnType<ArgumentsHost['switchToHttp']>;
 

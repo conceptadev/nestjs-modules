@@ -2,7 +2,7 @@ import { type IEvent } from '@nestjs/cqrs';
 
 import { type EventContextHost } from '@concepta/nestjs-core';
 
-import { type TokenInterface } from '../interfaces/token.interface';
+import { type TokenInterface } from '../interfaces/token.interface.js';
 
 export class TokenIssuedEvent implements IEvent {
   constructor(

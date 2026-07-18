@@ -3,14 +3,14 @@ import { mock } from 'vitest-mock-extended';
 import { type PlainLiteralObject } from '@nestjs/common';
 import { Command, type CommandBus, Query, type QueryBus } from '@nestjs/cqrs';
 
-import { type AuthorizationPayloadInterface } from '../../../domain/interfaces/authorization-payload.interface';
+import { type AuthorizationPayloadInterface } from '../../../domain/interfaces/authorization-payload.interface.js';
 import {
   TokenPort,
   type TokenPortSettings,
   type IssueTokenCommandInterface,
   type ValidateTokenQueryInterface,
   type VerifyTokenQueryInterface,
-} from '../token.port';
+} from '../token.port.js';
 
 class MockIssueAccessTokenCommand
   extends Command<string>

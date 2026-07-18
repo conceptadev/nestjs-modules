@@ -10,10 +10,10 @@ import {
   RepositoryModule,
 } from '@concepta/nestjs-repository';
 
-import { ormConfig } from '../../__fixtures__/repository/config/ormconfig.fixture';
-import { TestEntityFixture } from '../../__fixtures__/repository/entity/test.entity.fixture';
-import { TypeOrmRepositoryModule } from '../../typeorm-repository.module';
-import { TypeOrmRepository } from '../typeorm-repository';
+import { ormConfig } from '../../__fixtures__/repository/config/ormconfig.fixture.js';
+import { TestEntityFixture } from '../../__fixtures__/repository/entity/test.entity.fixture.js';
+import { TypeOrmRepositoryModule } from '../../typeorm-repository.module.js';
+import { TypeOrmRepository } from '../typeorm-repository.js';
 
 const FACTORY_TOKEN = 'test-factory';
 const STANDARD_TOKEN = 'test-standard';

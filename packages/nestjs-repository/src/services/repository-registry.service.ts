@@ -1,7 +1,7 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 
-import { RepositoryDuplicateKeyException } from '../exceptions/repository-duplicate-key.exception';
-import { RepositoryRegistryItem } from '../interfaces/repository-registry-item.interface';
+import { RepositoryDuplicateKeyException } from '../exceptions/repository-duplicate-key.exception.js';
+import { RepositoryRegistryItem } from '../interfaces/repository-registry-item.interface.js';
 
 export { RepositoryRegistryItem };
 

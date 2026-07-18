@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ReferenceId } from '@concepta/nestjs-core';
 import { DomainAggregateDto } from '@concepta/nestjs-core/aggregate';
 
-import { RoleAssignmentInterface } from '../../domain/interfaces/role-assignment.interface';
+import { RoleAssignmentInterface } from '../../domain/interfaces/role-assignment.interface.js';
 
 @Exclude()
 export class RoleAssignmentDto

@@ -3,37 +3,37 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { Ctx } from '@concepta/nestjs-core';
 
-import { CrudCreateBatchCommand } from '../../application/commands/impl/crud-create-batch.command';
-import { CrudCreateCommand } from '../../application/commands/impl/crud-create.command';
-import { CrudDeleteCommand } from '../../application/commands/impl/crud-delete.command';
-import { CrudReplaceCommand } from '../../application/commands/impl/crud-replace.command';
-import { CrudRestoreCommand } from '../../application/commands/impl/crud-restore.command';
-import { CrudSoftDeleteCommand } from '../../application/commands/impl/crud-soft-delete.command';
-import { CrudUpdateCommand } from '../../application/commands/impl/crud-update.command';
-import { CrudListQuery } from '../../application/queries/impl/crud-list.query';
-import { CrudReadQuery } from '../../application/queries/impl/crud-read.query';
-import { CrudController } from '../../infrastructure/decorators/controller/crud-controller.decorator';
-import { CrudCreateBatch } from '../../infrastructure/decorators/operations/crud-create-batch.decorator';
-import { CrudCreate } from '../../infrastructure/decorators/operations/crud-create.decorator';
-import { CrudDelete } from '../../infrastructure/decorators/operations/crud-delete.decorator';
-import { CrudList } from '../../infrastructure/decorators/operations/crud-list.decorator';
-import { CrudRead } from '../../infrastructure/decorators/operations/crud-read.decorator';
-import { CrudReplace } from '../../infrastructure/decorators/operations/crud-replace.decorator';
-import { CrudRestore } from '../../infrastructure/decorators/operations/crud-restore.decorator';
-import { CrudSoftDelete } from '../../infrastructure/decorators/operations/crud-soft-delete.decorator';
-import { CrudUpdate } from '../../infrastructure/decorators/operations/crud-update.decorator';
-import { CrudBody } from '../../infrastructure/decorators/params/crud-body.decorator';
-import { CrudCtx } from '../../infrastructure/interceptors/crud-context.overlay';
-import { CrudContextInterface } from '../../infrastructure/interceptors/interfaces/crud-context.interface';
-import { CrudAdapterResolver } from '../../infrastructure/resolvers/crud-adapter.resolver';
-import { CrudResolverInterface } from '../../infrastructure/resolvers/interfaces/crud-resolver.interface';
+import { CrudCreateBatchCommand } from '../../application/commands/impl/crud-create-batch.command.js';
+import { CrudCreateCommand } from '../../application/commands/impl/crud-create.command.js';
+import { CrudDeleteCommand } from '../../application/commands/impl/crud-delete.command.js';
+import { CrudReplaceCommand } from '../../application/commands/impl/crud-replace.command.js';
+import { CrudRestoreCommand } from '../../application/commands/impl/crud-restore.command.js';
+import { CrudSoftDeleteCommand } from '../../application/commands/impl/crud-soft-delete.command.js';
+import { CrudUpdateCommand } from '../../application/commands/impl/crud-update.command.js';
+import { CrudListQuery } from '../../application/queries/impl/crud-list.query.js';
+import { CrudReadQuery } from '../../application/queries/impl/crud-read.query.js';
+import { CrudController } from '../../infrastructure/decorators/controller/crud-controller.decorator.js';
+import { CrudCreateBatch } from '../../infrastructure/decorators/operations/crud-create-batch.decorator.js';
+import { CrudCreate } from '../../infrastructure/decorators/operations/crud-create.decorator.js';
+import { CrudDelete } from '../../infrastructure/decorators/operations/crud-delete.decorator.js';
+import { CrudList } from '../../infrastructure/decorators/operations/crud-list.decorator.js';
+import { CrudRead } from '../../infrastructure/decorators/operations/crud-read.decorator.js';
+import { CrudReplace } from '../../infrastructure/decorators/operations/crud-replace.decorator.js';
+import { CrudRestore } from '../../infrastructure/decorators/operations/crud-restore.decorator.js';
+import { CrudSoftDelete } from '../../infrastructure/decorators/operations/crud-soft-delete.decorator.js';
+import { CrudUpdate } from '../../infrastructure/decorators/operations/crud-update.decorator.js';
+import { CrudBody } from '../../infrastructure/decorators/params/crud-body.decorator.js';
+import { CrudCtx } from '../../infrastructure/interceptors/crud-context.overlay.js';
+import { CrudContextInterface } from '../../infrastructure/interceptors/interfaces/crud-context.interface.js';
+import { CrudAdapterResolver } from '../../infrastructure/resolvers/crud-adapter.resolver.js';
+import { CrudResolverInterface } from '../../infrastructure/resolvers/interfaces/crud-resolver.interface.js';
 
-import { PhotoCreateBatchDtoFixture } from './dto/photo-create-batch.dto.fixture';
-import { PhotoCreateDtoFixture } from './dto/photo-create.dto.fixture';
-import { PhotoPaginatedDtoFixture } from './dto/photo-paginated.dto.fixture';
-import { PhotoUpdateDtoFixture } from './dto/photo-update.dto.fixture';
-import { PhotoDtoFixture } from './dto/photo.dto.fixture';
-import { PhotoEntityInterfaceFixture } from './interfaces/photo-entity.interface.fixture';
+import { PhotoCreateBatchDtoFixture } from './dto/photo-create-batch.dto.fixture.js';
+import { PhotoCreateDtoFixture } from './dto/photo-create.dto.fixture.js';
+import { PhotoPaginatedDtoFixture } from './dto/photo-paginated.dto.fixture.js';
+import { PhotoUpdateDtoFixture } from './dto/photo-update.dto.fixture.js';
+import { PhotoDtoFixture } from './dto/photo.dto.fixture.js';
+import { PhotoEntityInterfaceFixture } from './interfaces/photo-entity.interface.fixture.js';
 
 /**
  * Photo controller.

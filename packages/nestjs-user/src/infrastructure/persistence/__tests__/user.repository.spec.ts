@@ -2,11 +2,11 @@ import { mock, type MockProxy } from 'vitest-mock-extended';
 
 import { type RepositoryInterface } from '@concepta/nestjs-repository';
 
-import { createMockUserEntity } from '../../../__tests__/helpers/mock.helpers';
-import { User } from '../../../domain/aggregates/user';
-import { type UserEntityInterface } from '../../../domain/interfaces/user-entity.interface';
-import { UserMapper } from '../user.mapper';
-import { UserRepository } from '../user.repository';
+import { createMockUserEntity } from '../../../__tests__/helpers/mock.helpers.js';
+import { User } from '../../../domain/aggregates/user.js';
+import { type UserEntityInterface } from '../../../domain/interfaces/user-entity.interface.js';
+import { UserMapper } from '../user.mapper.js';
+import { UserRepository } from '../user.repository.js';
 
 const userMapper = new UserMapper();
 

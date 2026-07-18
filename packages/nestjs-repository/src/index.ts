@@ -1,12 +1,12 @@
 // ═══════════════════════════════════════════════════════════════════
 // Module
 // ═══════════════════════════════════════════════════════════════════
-export { RepositoryModule } from './repository.module';
+export { RepositoryModule } from './repository.module.js';
 
 // ═══════════════════════════════════════════════════════════════════
 // Repository Adapter
 // ═══════════════════════════════════════════════════════════════════
-export { RepositoryAdapter } from './repository/repository-adapter';
+export { RepositoryAdapter } from './repository/repository-adapter.js';
 
 // ═══════════════════════════════════════════════════════════════════
 // Repository Implementation Interfaces
@@ -14,40 +14,40 @@ export { RepositoryAdapter } from './repository/repository-adapter';
 export {
   RelationActionConfig,
   RepositoryProviderOptions,
-} from './interfaces/repository-provider-options.interface';
+} from './interfaces/repository-provider-options.interface.js';
 export {
   RepositoryModuleInterface,
   DynamicRepositoryModule,
-} from './interfaces/repository-module.interface';
+} from './interfaces/repository-module.interface.js';
 
 // ═══════════════════════════════════════════════════════════════════
 // Exceptions
 // ═══════════════════════════════════════════════════════════════════
-export { RepositoryDuplicateKeyException } from './exceptions/repository-duplicate-key.exception';
-export { RepositoryQueryException } from './exceptions/repository-query.exception';
-export { FederationException } from './federation/exceptions/federation.exception';
-export { TransactionRequiredException } from './exceptions/transaction-required.exception';
-export { TransactionTimeoutException } from './exceptions/transaction-timeout.exception';
+export { RepositoryDuplicateKeyException } from './exceptions/repository-duplicate-key.exception.js';
+export { RepositoryQueryException } from './exceptions/repository-query.exception.js';
+export { FederationException } from './federation/exceptions/federation.exception.js';
+export { TransactionRequiredException } from './exceptions/transaction-required.exception.js';
+export { TransactionTimeoutException } from './exceptions/transaction-timeout.exception.js';
 
 // ═══════════════════════════════════════════════════════════════════
 // Transaction
 // ═══════════════════════════════════════════════════════════════════
-export { TransactionFactoryInterface } from './interfaces/transaction-factory.interface';
-export { TransactionManager } from './transaction/transaction-manager';
-export { TransactionScope } from './transaction/transaction-scope';
-export { RepoCtx } from './context/interfaces/repository-context.interface';
-export { TrxCtx } from './transaction/interfaces/transaction-context.interface';
-export { TransactionalRunner } from './transaction/transactional-runner';
+export { TransactionFactoryInterface } from './interfaces/transaction-factory.interface.js';
+export { TransactionManager } from './transaction/transaction-manager.js';
+export { TransactionScope } from './transaction/transaction-scope.js';
+export { RepoCtx } from './context/interfaces/repository-context.interface.js';
+export { TrxCtx } from './transaction/interfaces/transaction-context.interface.js';
+export { TransactionalRunner } from './transaction/transactional-runner.js';
 export {
   Transactional,
   TransactionalOptions,
-} from './transaction/transactional.decorator';
-export { TransactionInterceptor } from './interceptors/transaction.interceptor';
+} from './transaction/transactional.decorator.js';
+export { TransactionInterceptor } from './interceptors/transaction.interceptor.js';
 
 // ═══════════════════════════════════════════════════════════════════
 // Permeators
 // ═══════════════════════════════════════════════════════════════════
-export { RepoPermeatorFactory } from './hooks/repo-permeator-factory';
+export { RepoPermeatorFactory } from './hooks/repo-permeator-factory.js';
 
 // ═══════════════════════════════════════════════════════════════════
 // Hooks
@@ -93,7 +93,7 @@ export {
   AfterTransitionMethod,
   BeforeDestroyMethod,
   AfterDestroyMethod,
-} from './hooks/hook-method.types';
+} from './hooks/hook-method.types.js';
 
 // Hook decorators
 export {
@@ -139,18 +139,18 @@ export {
   AfterSoftDelete,
   BeforeRestore,
   AfterRestore,
-} from './hooks/repository-hook.decorators';
+} from './hooks/repository-hook.decorators.js';
 
 // Hook specifications
-export { RepoSpec } from './hooks/specifications/repo-spec.factory';
-export { EntitySpecification } from './hooks/specifications/entity.specification';
+export { RepoSpec } from './hooks/specifications/repo-spec.factory.js';
+export { EntitySpecification } from './hooks/specifications/entity.specification.js';
 
 // Repository interfaces
-export { RepositoryInterface } from './repository/interfaces/repository.interface';
-export { RepositoryEntityOptionInterface } from './repository/interfaces/repository-entity-option.interface';
-export { RepositoryColumnMetadataInterface } from './repository/interfaces/repository-column-metadata.interface';
-export { RepositoryMetadataInterface } from './repository/interfaces/repository-metadata.interface';
-export { RepositoryRelationMetadataInterface } from './repository/interfaces/repository-relation-metadata.interface';
+export { RepositoryInterface } from './repository/interfaces/repository.interface.js';
+export { RepositoryEntityOptionInterface } from './repository/interfaces/repository-entity-option.interface.js';
+export { RepositoryColumnMetadataInterface } from './repository/interfaces/repository-column-metadata.interface.js';
+export { RepositoryMetadataInterface } from './repository/interfaces/repository-metadata.interface.js';
+export { RepositoryRelationMetadataInterface } from './repository/interfaces/repository-relation-metadata.interface.js';
 
 // Repository option types
 export {
@@ -161,7 +161,7 @@ export {
   RepositoryUpsertOptions,
   RepositoryDeleteOptions,
   RepositoryRestoreOptions,
-} from './repository/interfaces/repository-options.interface';
+} from './repository/interfaces/repository-options.interface.js';
 
 // Repository query types
 export {
@@ -178,16 +178,16 @@ export {
   OrderSortKey,
   OrderSortKeyArr,
   OrderClause,
-} from './repository/repository.types';
+} from './repository/repository.types.js';
 
 // Order sort key interfaces
 export {
   OrderSortKeyAsc,
   OrderSortKeyDesc,
-} from './repository/interfaces/order-sort-key.interface';
+} from './repository/interfaces/order-sort-key.interface.js';
 
 // Join clause interface
-export { JoinClause } from './repository/interfaces/join-clause.interface';
+export { JoinClause } from './repository/interfaces/join-clause.interface.js';
 
 // Where clause interfaces
 export {
@@ -203,25 +203,25 @@ export {
   isNullaryCondition,
   isArrayCondition,
   isPairCondition,
-} from './repository/interfaces/where-clause.interface';
+} from './repository/interfaces/where-clause.interface.js';
 
 // Where clause helpers
-export { Where } from './repository/where.helpers';
+export { Where } from './repository/where.helpers.js';
 
 // Order clause helpers
-export { OrderBy } from './repository/order-by.helpers';
+export { OrderBy } from './repository/order-by.helpers.js';
 
 // Join clause helpers
-export { Join } from './repository/join.helpers';
+export { Join } from './repository/join.helpers.js';
 
 // Repository utils
-export { getDynamicRepositoryToken } from './utils/get-dynamic-repository-token';
+export { getDynamicRepositoryToken } from './utils/get-dynamic-repository-token.js';
 
 // Repository decorators
-export { InjectDynamicRepository } from './decorators/inject-dynamic-repository.decorator';
+export { InjectDynamicRepository } from './decorators/inject-dynamic-repository.decorator.js';
 
 // Transaction interfaces
-export { TransactionInterface } from './transaction/interfaces/transaction.interface';
+export { TransactionInterface } from './transaction/interfaces/transaction.interface.js';
 
 // Context interfaces
-export { TransactionContextInterface } from './transaction/interfaces/transaction-context.interface';
+export { TransactionContextInterface } from './transaction/interfaces/transaction-context.interface.js';

@@ -1,7 +1,7 @@
 import {
   CrudMetadata,
   CrudMetadataLookupTarget,
-} from '../crud-metadata.service';
+} from '../crud-metadata.service.js';
 
 // Test decorators for different lookup targets
 const TestMethodDecorator = CrudMetadata.createDecorator<string>({

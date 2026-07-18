@@ -8,13 +8,13 @@ import {
   createMockEventPublisher,
   createMockTransaction,
   toInvitationDomain,
-} from '../../../__tests__/helpers/mock.helpers';
-import { InvitationNotFoundException } from '../../../application/exceptions/invitation-not-found.exception';
-import { InvitationUserUndefinedException } from '../../../application/exceptions/invitation-user-undefined.exception';
-import { Invitation } from '../../aggregates/invitation';
-import { type InvitationOtpPort } from '../../ports/invitation-otp.port';
-import { type InvitationUserPort } from '../../ports/invitation-user.port';
-import { InvitationService } from '../invitation.service';
+} from '../../../__tests__/helpers/mock.helpers.js';
+import { InvitationNotFoundException } from '../../../application/exceptions/invitation-not-found.exception.js';
+import { InvitationUserUndefinedException } from '../../../application/exceptions/invitation-user-undefined.exception.js';
+import { Invitation } from '../../aggregates/invitation.js';
+import { type InvitationOtpPort } from '../../ports/invitation-otp.port.js';
+import { type InvitationUserPort } from '../../ports/invitation-user.port.js';
+import { InvitationService } from '../invitation.service.js';
 
 describe(InvitationService.name, () => {
   const ctx = {};

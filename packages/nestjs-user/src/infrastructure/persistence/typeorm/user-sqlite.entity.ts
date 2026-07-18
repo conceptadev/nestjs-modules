@@ -2,7 +2,7 @@ import { Column } from 'typeorm';
 
 import { CommonSqliteEntity } from '@concepta/nestjs-repository-typeorm';
 
-import { UserEntityInterface } from '../../../domain/interfaces/user-entity.interface';
+import { UserEntityInterface } from '../../../domain/interfaces/user-entity.interface.js';
 
 /**
  * User Entity

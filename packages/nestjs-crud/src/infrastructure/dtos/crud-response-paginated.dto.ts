@@ -2,8 +2,8 @@ import { Exclude, Expose, Type } from 'class-transformer';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { CrudInvalidResponseDto } from './crud-invalid-response.dto';
-import { CrudResponsePaginatedInterface } from './interfaces/crud-response-paginated.interface';
+import { CrudInvalidResponseDto } from './crud-invalid-response.dto.js';
+import { CrudResponsePaginatedInterface } from './interfaces/crud-response-paginated.interface.js';
 
 @Exclude()
 export class CrudResponsePaginatedDto<

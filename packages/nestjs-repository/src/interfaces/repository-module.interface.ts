@@ -1,7 +1,7 @@
 import { type DynamicModule, type InjectionToken } from '@nestjs/common';
 
-import { type RepositoryProviderOptions } from './repository-provider-options.interface';
-import { type TransactionFactoryInterface } from './transaction-factory.interface';
+import { type RepositoryProviderOptions } from './repository-provider-options.interface.js';
+import { type TransactionFactoryInterface } from './transaction-factory.interface.js';
 
 /**
  * Descriptor for a transaction factory that a respository module wants to register.

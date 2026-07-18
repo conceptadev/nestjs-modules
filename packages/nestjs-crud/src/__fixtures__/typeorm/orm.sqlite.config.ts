@@ -1,11 +1,11 @@
 import { type TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-import { CompanyEntity } from './company/company.entity';
-import { DeviceEntity } from './device/device.entity';
-import { NoteEntity } from './note/note.entity';
-import { ProjectEntity } from './project/project.entity';
-import { UserProfileEntity } from './user-profile/user-profile.entity';
-import { UserEntity } from './users/user.entity';
+import { CompanyEntity } from './company/company.entity.js';
+import { DeviceEntity } from './device/device.entity.js';
+import { NoteEntity } from './note/note.entity.js';
+import { ProjectEntity } from './project/project.entity.js';
+import { UserProfileEntity } from './user-profile/user-profile.entity.js';
+import { UserEntity } from './users/user.entity.js';
 
 export const ormSqliteConfig: TypeOrmModuleOptions = {
   type: 'sqlite',

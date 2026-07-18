@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { JwtException } from './jwt.exception';
+import { JwtException } from './jwt.exception.js';
 
 /**
  * Generic exception.

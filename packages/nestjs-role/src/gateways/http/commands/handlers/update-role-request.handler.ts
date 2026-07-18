@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { UpdateRoleCommand } from '../../../../application/commands/impl/update-role.command';
-import { assertRoleId } from '../../../../application/utils/assert-role-id.util';
-import { Role } from '../../../../domain/aggregates/role';
-import { UpdateRoleRequest } from '../impl/update-role.request';
+import { UpdateRoleCommand } from '../../../../application/commands/impl/update-role.command.js';
+import { assertRoleId } from '../../../../application/utils/assert-role-id.util.js';
+import { Role } from '../../../../domain/aggregates/role.js';
+import { UpdateRoleRequest } from '../impl/update-role.request.js';
 
 @Injectable()
 export class UpdateRoleRequestHandler {

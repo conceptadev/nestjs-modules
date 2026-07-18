@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { OtpException } from './otp.exception';
+import { OtpException } from './otp.exception.js';
 
 export class OtpInvalidExpirationDateException extends OtpException {
   constructor() {

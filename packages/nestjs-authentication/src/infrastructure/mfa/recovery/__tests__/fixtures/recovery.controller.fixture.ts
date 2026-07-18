@@ -19,12 +19,12 @@ import {
 
 import { Ctx } from '@concepta/nestjs-core';
 
-import { RecoveryService } from '../../../../../application/services/recovery/recovery.service';
-import { AuthPublic } from '../../../../decorators/auth-public.decorator';
-import { RecoveryRecoverLoginDto } from '../../dto/recovery-recover-login.dto';
-import { RecoveryRecoverPasswordDto } from '../../dto/recovery-recover-password.dto';
-import { RecoveryUpdatePasswordDto } from '../../dto/recovery-update-password.dto';
-import { RecoveryOtpInvalidException } from '../../exceptions/recovery-otp-invalid.exception';
+import { RecoveryService } from '../../../../../application/services/recovery/recovery.service.js';
+import { AuthPublic } from '../../../../decorators/auth-public.decorator.js';
+import { RecoveryRecoverLoginDto } from '../../dto/recovery-recover-login.dto.js';
+import { RecoveryRecoverPasswordDto } from '../../dto/recovery-recover-password.dto.js';
+import { RecoveryUpdatePasswordDto } from '../../dto/recovery-update-password.dto.js';
+import { RecoveryOtpInvalidException } from '../../exceptions/recovery-otp-invalid.exception.js';
 
 @Controller('auth/recovery')
 @AuthPublic({ classLevel: true })

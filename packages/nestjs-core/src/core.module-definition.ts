@@ -7,7 +7,7 @@ import {
 import {
   createHookFeatureExports,
   createHookFeatureProviders,
-} from './infrastructure/hook/utils/create-hook-feature-providers';
+} from './infrastructure/hook/utils/create-hook-feature-providers.js';
 
 const CORE_MODULE_RAW_OPTIONS_TOKEN = Symbol(
   '__CORE_MODULE_RAW_OPTIONS_TOKEN__',

@@ -4,7 +4,7 @@ import { CqrsModule, QueryHandler } from '@nestjs/cqrs';
 import {
   createMockPasswordPortProvider,
   mockPasswordPortHandlers,
-} from '../../../../../__tests__/fixtures/ports/mock-password-port.provider';
+} from '../../../../../__tests__/fixtures/ports/mock-password-port.provider.js';
 import {
   createMockUserPortProvider,
   MockGetUserByIdHandler,
@@ -12,13 +12,13 @@ import {
   MockGetUserBySubjectQuery,
   MockGetUserByUsernameQuery,
   MockUpdateUserHandler,
-} from '../../../../../__tests__/fixtures/ports/mock-user-port.provider';
+} from '../../../../../__tests__/fixtures/ports/mock-user-port.provider.js';
 import {
   AUTHENTICATION_PASSWORD_PORT_TOKEN,
   AUTHENTICATION_USER_PORT_TOKEN,
-} from '../../../../../authentication.constants';
+} from '../../../../../authentication.constants.js';
 
-import { USER_SUCCESS } from './constants';
+import { USER_SUCCESS } from './constants.js';
 
 @QueryHandler(MockGetUserByUsernameQuery)
 class GetUserByUsernameHandler {

@@ -12,7 +12,7 @@ import {
 import {
   type TypeOrmColumnMetadata,
   type TypeOrmRelationMetadata,
-} from './typeorm-metadata.types';
+} from './typeorm-metadata.types.js';
 
 /**
  * Type guard that validates EntityTarget satisfies Type<Entity>.

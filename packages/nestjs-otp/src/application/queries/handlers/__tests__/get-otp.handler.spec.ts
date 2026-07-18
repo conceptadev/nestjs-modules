@@ -4,11 +4,11 @@ import {
   createMockRepositoryResolver,
   DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Otp } from '../../../../domain/aggregates/otp';
-import { OtpNotFoundException } from '../../../exceptions/otp-not-found.exception';
-import { GetOtpQuery } from '../../impl/get-otp.query';
-import { GetOtpHandler } from '../get-otp.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Otp } from '../../../../domain/aggregates/otp.js';
+import { OtpNotFoundException } from '../../../exceptions/otp-not-found.exception.js';
+import { GetOtpQuery } from '../../impl/get-otp.query.js';
+import { GetOtpHandler } from '../get-otp.handler.js';
 
 describe(GetOtpHandler.name, () => {
   let handler: GetOtpHandler;

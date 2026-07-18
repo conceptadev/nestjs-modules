@@ -5,8 +5,8 @@ import {
   WhereOperator,
 } from '@concepta/nestjs-repository';
 
-import { type SCondition } from '../crud-query.types';
-import { SConditionConverter } from '../crud-scondition.converter';
+import { type SCondition } from '../crud-query.types.js';
+import { SConditionConverter } from '../crud-scondition.converter.js';
 
 interface TestEntity {
   id: string;

@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { PasswordCreationService } from '../../../domain/services/password-creation.service';
-import { ValidateCurrentPasswordCommand } from '../impl/validate-current-password.command';
+import { PasswordCreationService } from '../../../domain/services/password-creation.service.js';
+import { ValidateCurrentPasswordCommand } from '../impl/validate-current-password.command.js';
 
 @CommandHandler(ValidateCurrentPasswordCommand)
 export class ValidateCurrentPasswordHandler implements ICommandHandler<ValidateCurrentPasswordCommand> {

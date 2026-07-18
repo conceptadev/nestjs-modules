@@ -6,9 +6,9 @@ import {
   ManyToOne,
 } from 'typeorm';
 
-import { BaseEntity } from '../base-entity';
-import { CompanyEntity } from '../company/company.entity';
-import { UserProfileEntity } from '../user-profile/user-profile.entity';
+import { BaseEntity } from '../base-entity.js';
+import { CompanyEntity } from '../company/company.entity.js';
+import { UserProfileEntity } from '../user-profile/user-profile.entity.js';
 
 @Entity('users')
 export class UserEntity extends BaseEntity {

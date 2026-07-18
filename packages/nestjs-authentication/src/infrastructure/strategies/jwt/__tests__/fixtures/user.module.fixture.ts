@@ -1,8 +1,8 @@
 import { Global, Module } from '@nestjs/common';
 
-import { GuardsPolicy } from '../../../../../domain/policies/guards.policy';
+import { GuardsPolicy } from '../../../../../domain/policies/guards.policy.js';
 
-import { UserControllerFixtures } from './user.controller.fixture';
+import { UserControllerFixtures } from './user.controller.fixture.js';
 
 @Global()
 @Module({

@@ -9,10 +9,10 @@ import {
   Where,
 } from '@concepta/nestjs-repository';
 
-import { UserCredentialEntityInterface } from '../../../../domain/interfaces/user-credential-entity.interface';
-import { UserEntityInterface } from '../../../../domain/interfaces/user-entity.interface';
+import { UserCredentialEntityInterface } from '../../../../domain/interfaces/user-credential-entity.interface.js';
+import { UserEntityInterface } from '../../../../domain/interfaces/user-entity.interface.js';
 
-import { AuthorizedUserRef } from './authorized-user.local.fixture';
+import { AuthorizedUserRef } from './authorized-user.local.fixture.js';
 
 @RepoHook()
 @Injectable()

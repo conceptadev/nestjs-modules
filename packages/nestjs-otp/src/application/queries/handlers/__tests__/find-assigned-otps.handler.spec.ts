@@ -4,10 +4,10 @@ import {
   createMockRepositoryResolver,
   DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Otp } from '../../../../domain/aggregates/otp';
-import { FindAssignedOtpsQuery } from '../../impl/find-assigned-otps.query';
-import { FindAssignedOtpsHandler } from '../find-assigned-otps.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Otp } from '../../../../domain/aggregates/otp.js';
+import { FindAssignedOtpsQuery } from '../../impl/find-assigned-otps.query.js';
+import { FindAssignedOtpsHandler } from '../find-assigned-otps.handler.js';
 
 describe(FindAssignedOtpsHandler.name, () => {
   let handler: FindAssignedOtpsHandler;

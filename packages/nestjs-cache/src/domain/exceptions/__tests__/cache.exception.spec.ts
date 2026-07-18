@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import { RuntimeException } from '@concepta/nestjs-core';
 
-import { CacheException } from '../cache.exception';
+import { CacheException } from '../cache.exception.js';
 
 describe(CacheException.name, () => {
   it('should be an instance of RuntimeException', () => {

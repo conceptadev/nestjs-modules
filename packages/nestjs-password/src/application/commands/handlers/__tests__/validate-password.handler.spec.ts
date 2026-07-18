@@ -1,7 +1,7 @@
-import { ValidatePasswordCommand } from '../../impl/validate-password.command';
-import { ValidatePasswordHandler } from '../validate-password.handler';
+import { ValidatePasswordCommand } from '../../impl/validate-password.command.js';
+import { ValidatePasswordHandler } from '../validate-password.handler.js';
 
-import { createMockValidationService } from './mock.helpers';
+import { createMockValidationService } from './mock.helpers.js';
 
 describe(ValidatePasswordHandler.name, () => {
   it('should delegate to PasswordValidationService.validate', async () => {

@@ -5,7 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { DomainAggregateDto } from '@concepta/nestjs-core/aggregate';
 
-import { CacheInterface } from '../../domain/interfaces/cache.interface';
+import { CacheInterface } from '../../domain/interfaces/cache.interface.js';
 
 @Exclude()
 export class CacheDto extends DomainAggregateDto implements CacheInterface {

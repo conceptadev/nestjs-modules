@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { JwtAuthenticationException } from './jwt-authentication.exception';
+import { JwtAuthenticationException } from './jwt-authentication.exception.js';
 
 export class JwtUnauthorizedException extends JwtAuthenticationException {
   constructor(options?: Omit<RuntimeExceptionOptions, 'httpStatus'>) {

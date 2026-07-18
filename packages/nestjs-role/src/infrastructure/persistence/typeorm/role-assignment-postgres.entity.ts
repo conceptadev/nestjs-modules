@@ -3,7 +3,7 @@ import { Column, Unique } from 'typeorm';
 import { ReferenceId } from '@concepta/nestjs-core';
 import { CommonPostgresEntity } from '@concepta/nestjs-repository-typeorm';
 
-import { RoleAssignmentEntityInterface } from '../../../domain/interfaces/role-assignment-entity.interface';
+import { RoleAssignmentEntityInterface } from '../../../domain/interfaces/role-assignment-entity.interface.js';
 
 /**
  * Role Assignment Postgres Entity

@@ -1,5 +1,5 @@
-import { RoleException } from '../../exceptions/role.exception';
-import { assertRoleId } from '../assert-role-id.util';
+import { RoleException } from '../../exceptions/role.exception.js';
+import { assertRoleId } from '../assert-role-id.util.js';
 
 describe('assertRoleId', () => {
   it('should not throw for a valid string id', () => {

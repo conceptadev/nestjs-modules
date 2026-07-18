@@ -1,8 +1,8 @@
-import { type CrudParamsOptionsInterface } from '../../interfaces/crud-params-options.interface';
-import { CrudQueryParser } from '../crud-query.parser';
-import { CrudQueryParserException } from '../exceptions/crud-query-parser.exception';
-import { CrudQueryValidatorException } from '../exceptions/crud-query-validator.exception';
-import { type CrudParsedQueryInterface } from '../interfaces/crud-parsed-query.interface';
+import { type CrudParamsOptionsInterface } from '../../interfaces/crud-params-options.interface.js';
+import { CrudQueryParser } from '../crud-query.parser.js';
+import { CrudQueryParserException } from '../exceptions/crud-query-parser.exception.js';
+import { CrudQueryValidatorException } from '../exceptions/crud-query-validator.exception.js';
+import { type CrudParsedQueryInterface } from '../interfaces/crud-parsed-query.interface.js';
 
 class TestEntity {
   foo!: unknown;

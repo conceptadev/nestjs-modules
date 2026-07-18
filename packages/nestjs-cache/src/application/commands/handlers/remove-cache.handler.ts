@@ -3,11 +3,11 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants';
-import { Cache } from '../../../domain/aggregates/cache';
-import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface';
-import { CacheNotFoundException } from '../../exceptions/cache-not-found.exception';
-import { RemoveCacheCommand } from '../impl/remove-cache.command';
+import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants.js';
+import { Cache } from '../../../domain/aggregates/cache.js';
+import { CacheRepositoryResolverInterface } from '../../../domain/repositories/cache-repository-resolver.interface.js';
+import { CacheNotFoundException } from '../../exceptions/cache-not-found.exception.js';
+import { RemoveCacheCommand } from '../impl/remove-cache.command.js';
 
 @CommandHandler(RemoveCacheCommand)
 export class RemoveCacheHandler implements ICommandHandler<RemoveCacheCommand> {

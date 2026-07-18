@@ -8,13 +8,13 @@ import {
 import { isObject } from '@nestjs/common/utils/shared.utils';
 import { HttpAdapterHost } from '@nestjs/core';
 
-import { ExceptionInterface } from '../../../domain/exceptions/interfaces/exception.interface';
-import { RuntimeException } from '../../../domain/exceptions/runtime.exception';
+import { ExceptionInterface } from '../../../domain/exceptions/interfaces/exception.interface.js';
+import { RuntimeException } from '../../../domain/exceptions/runtime.exception.js';
 import {
   ERROR_CODE_UNKNOWN,
   ERROR_MESSAGE_FALLBACK,
-} from '../../../infrastructure/constants/error-codes.constants';
-import { mapHttpStatus } from '../../../infrastructure/utils/map-http-status.util';
+} from '../../../infrastructure/constants/error-codes.constants.js';
+import { mapHttpStatus } from '../../../infrastructure/utils/map-http-status.util.js';
 
 @Catch()
 export class ExceptionsFilter implements ExceptionFilter {

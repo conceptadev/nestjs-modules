@@ -5,7 +5,7 @@ import {
   type RuntimeExceptionOptions,
 } from '@concepta/nestjs-core';
 
-import { RoleException } from './role.exception';
+import { RoleException } from './role.exception.js';
 
 export class RoleAssignmentConflictException extends RoleException {
   declare context: RuntimeException['context'] & {

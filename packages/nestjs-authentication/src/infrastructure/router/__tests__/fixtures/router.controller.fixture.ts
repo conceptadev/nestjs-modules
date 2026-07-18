@@ -1,11 +1,11 @@
 import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { AuthenticatedUserInterface } from '../../../../domain/interfaces/authenticated-user.interface';
-import { AuthPublic } from '../../../decorators/auth-public.decorator';
-import { AuthUser } from '../../../decorators/auth-user.decorator';
-import { AuthenticationResponseDto } from '../../../dtos/authenticated-response.dto';
-import { AuthRouterGuard } from '../../auth-router.guard';
+import { AuthenticatedUserInterface } from '../../../../domain/interfaces/authenticated-user.interface.js';
+import { AuthPublic } from '../../../decorators/auth-public.decorator.js';
+import { AuthUser } from '../../../decorators/auth-user.decorator.js';
+import { AuthenticationResponseDto } from '../../../dtos/authenticated-response.dto.js';
+import { AuthRouterGuard } from '../../auth-router.guard.js';
 
 @Controller('auth-router')
 @UseGuards(AuthRouterGuard)

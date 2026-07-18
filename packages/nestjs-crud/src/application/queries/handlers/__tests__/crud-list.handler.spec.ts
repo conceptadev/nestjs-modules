@@ -1,16 +1,16 @@
 import { BadRequestException } from '@nestjs/common';
 
-import { mockCrudContext } from '../../../../__fixtures__/crud/mocks/crud-context.mock';
-import { createPaginatedResponse } from '../../../../__fixtures__/crud/mocks/crud-paginated-response.mock';
-import { CrudQueryException } from '../../../../infrastructure/exceptions/crud-query.exception';
-import { CrudListQuery } from '../../impl/crud-list.query';
-import { CrudListHandler } from '../crud-list.handler';
+import { mockCrudContext } from '../../../../__fixtures__/crud/mocks/crud-context.mock.js';
+import { createPaginatedResponse } from '../../../../__fixtures__/crud/mocks/crud-paginated-response.mock.js';
+import { CrudQueryException } from '../../../../infrastructure/exceptions/crud-query.exception.js';
+import { CrudListQuery } from '../../impl/crud-list.query.js';
+import { CrudListHandler } from '../crud-list.handler.js';
 
 import {
   type TestCrudAdapter,
   type TestEntity,
   createTestAdapter,
-} from './fixtures/query-handler-test.fixture';
+} from './fixtures/query-handler-test.fixture.js';
 
 describe('CrudListHandler', () => {
   let adapter: TestCrudAdapter;

@@ -4,10 +4,10 @@ import {
   createMockTransaction,
   createMockEventPublisher,
   DEFAULT_ROLE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Role } from '../../../../domain/aggregates/role';
-import { CreateRoleCommand } from '../../impl/create-role.command';
-import { CreateRoleHandler } from '../create-role.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Role } from '../../../../domain/aggregates/role.js';
+import { CreateRoleCommand } from '../../impl/create-role.command.js';
+import { CreateRoleHandler } from '../create-role.handler.js';
 
 describe(CreateRoleHandler.name, () => {
   const ctx = {};

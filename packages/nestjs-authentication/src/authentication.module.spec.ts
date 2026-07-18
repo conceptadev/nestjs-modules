@@ -9,13 +9,13 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { GlobalModuleFixture } from './__tests__/fixtures/global.module.fixture';
-import { AUTHENTICATION_JWT_PORT_TOKEN } from './authentication.constants';
-import { AuthenticationModule } from './authentication.module';
-import { Token } from './domain/aggregates/token.aggregate';
-import { JwtPolicy } from './domain/policies/jwt.policy';
-import { JwtPort } from './domain/ports/jwt.port';
-import { JwtService } from './infrastructure/jwt/jwt.service';
+import { GlobalModuleFixture } from './__tests__/fixtures/global.module.fixture.js';
+import { AUTHENTICATION_JWT_PORT_TOKEN } from './authentication.constants.js';
+import { AuthenticationModule } from './authentication.module.js';
+import { Token } from './domain/aggregates/token.aggregate.js';
+import { JwtPolicy } from './domain/policies/jwt.policy.js';
+import { JwtPort } from './domain/ports/jwt.port.js';
+import { JwtService } from './infrastructure/jwt/jwt.service.js';
 
 describe(AuthenticationModule, () => {
   let testModule: TestingModule;

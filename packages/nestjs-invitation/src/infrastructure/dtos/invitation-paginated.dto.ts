@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { CrudResponsePaginatedDto } from '@concepta/nestjs-crud';
 
-import { InvitationDto } from './invitation.dto';
+import { InvitationDto } from './invitation.dto.js';
 
 @Exclude()
 export class InvitationPaginatedDto extends CrudResponsePaginatedDto<InvitationDto> {

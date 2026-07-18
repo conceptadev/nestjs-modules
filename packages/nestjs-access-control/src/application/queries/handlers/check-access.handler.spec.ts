@@ -17,23 +17,23 @@ import {
   ACCESS_CONTROL_MODULE_QUERY_METADATA,
   ACCESS_CONTROL_MODULE_GRANT_METADATA,
   ACCESS_CONTROL_MODULE_SETTINGS_TOKEN,
-} from '../../../access-control.constants';
-import { AccessControlContext } from '../../../domain/access-control.context';
-import { PossessionEnum } from '../../../domain/enums/possession.enum';
-import { AccessControlContextInterface } from '../../../domain/interfaces/access-control-context.interface';
-import { AccessControlGrantOptionInterface } from '../../../domain/interfaces/access-control-grant-option.interface';
-import { AccessControlQueryOptionInterface } from '../../../domain/interfaces/access-control-query-option.interface';
-import { CanAccess } from '../../../domain/policies/can-access.policy';
-import { AccessControlServiceInterface } from '../../../domain/ports/access-control-service.interface';
-import { AccessControlCreateOne } from '../../../gateways/decorators/access-control-create-one.decorator';
-import { AccessControlQuery } from '../../../gateways/decorators/access-control-query.decorator';
-import { AccessControlReadMany } from '../../../gateways/decorators/access-control-read-many.decorator';
-import { AccessControlReadOne } from '../../../gateways/decorators/access-control-read-one.decorator';
-import { AccessControlOptionsInterface } from '../../../infrastructure/config/interfaces/access-control-options.interface';
-import { AccessControlService } from '../../../infrastructure/services/access-control.service';
-import { CheckAccessQuery } from '../impl/check-access.query';
+} from '../../../access-control.constants.js';
+import { AccessControlContext } from '../../../domain/access-control.context.js';
+import { PossessionEnum } from '../../../domain/enums/possession.enum.js';
+import { AccessControlContextInterface } from '../../../domain/interfaces/access-control-context.interface.js';
+import { AccessControlGrantOptionInterface } from '../../../domain/interfaces/access-control-grant-option.interface.js';
+import { AccessControlQueryOptionInterface } from '../../../domain/interfaces/access-control-query-option.interface.js';
+import { CanAccess } from '../../../domain/policies/can-access.policy.js';
+import { AccessControlServiceInterface } from '../../../domain/ports/access-control-service.interface.js';
+import { AccessControlCreateOne } from '../../../gateways/decorators/access-control-create-one.decorator.js';
+import { AccessControlQuery } from '../../../gateways/decorators/access-control-query.decorator.js';
+import { AccessControlReadMany } from '../../../gateways/decorators/access-control-read-many.decorator.js';
+import { AccessControlReadOne } from '../../../gateways/decorators/access-control-read-one.decorator.js';
+import { AccessControlOptionsInterface } from '../../../infrastructure/config/interfaces/access-control-options.interface.js';
+import { AccessControlService } from '../../../infrastructure/services/access-control.service.js';
+import { CheckAccessQuery } from '../impl/check-access.query.js';
 
-import { CheckAccessHandler } from './check-access.handler';
+import { CheckAccessHandler } from './check-access.handler.js';
 
 type HttpArgumentsHost = ReturnType<ArgumentsHost['switchToHttp']>;
 

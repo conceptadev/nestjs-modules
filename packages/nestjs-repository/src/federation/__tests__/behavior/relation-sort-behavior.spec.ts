@@ -12,19 +12,19 @@
 import {
   WhereCompoundOperator,
   WhereOperator,
-} from '../../../repository/repository.types';
+} from '../../../repository/repository.types.js';
 import {
   type TestRoot,
   type TestRelation,
   createRelationSortByTitleSet,
   createRelationSortByPrioritySet,
   createRelationSortPaginationSet,
-} from '../federation-test-data';
+} from '../federation-test-data.js';
 import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
-} from '../fixtures/federation-orchestrator.mock';
+} from '../fixtures/federation-orchestrator.mock.js';
 
 describe('FederationOrchestrator - Relation Sort Strategy', () => {
   describe('Forward relationship relation sort', () => {

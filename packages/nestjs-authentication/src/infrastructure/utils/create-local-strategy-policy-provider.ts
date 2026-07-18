@@ -1,11 +1,11 @@
 import { type Provider } from '@nestjs/common';
 
-import { LocalStrategyPolicy } from '../../domain/policies/local-strategy.policy';
+import { LocalStrategyPolicy } from '../../domain/policies/local-strategy.policy.js';
 import {
   authenticationDefaultConfig,
   type AuthenticationModuleDefaultsInterface,
-} from '../config/authentication-default.config';
-import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
+} from '../config/authentication-default.config.js';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface.js';
 
 export function createLocalStrategyPolicyProvider(
   rawOptionsToken: symbol,

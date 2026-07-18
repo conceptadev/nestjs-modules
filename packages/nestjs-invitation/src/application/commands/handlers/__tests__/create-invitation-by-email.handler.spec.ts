@@ -2,10 +2,10 @@ import {
   createMockInvitationService,
   createMockInvitationEntity,
   toInvitationDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Invitation } from '../../../../domain/aggregates/invitation';
-import { CreateInvitationByEmailCommand } from '../../impl/create-invitation-by-email.command';
-import { CreateInvitationByEmailHandler } from '../create-invitation-by-email.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Invitation } from '../../../../domain/aggregates/invitation.js';
+import { CreateInvitationByEmailCommand } from '../../impl/create-invitation-by-email.command.js';
+import { CreateInvitationByEmailHandler } from '../create-invitation-by-email.handler.js';
 
 describe(CreateInvitationByEmailHandler.name, () => {
   const ctx = {};

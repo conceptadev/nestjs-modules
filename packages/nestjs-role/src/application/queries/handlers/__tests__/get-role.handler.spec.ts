@@ -4,11 +4,11 @@ import {
   createMockRoleEntity,
   toRoleDomain,
   DEFAULT_ROLE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Role } from '../../../../domain/aggregates/role';
-import { RoleNotFoundException } from '../../../exceptions/role-not-found.exception';
-import { GetRoleQuery } from '../../impl/get-role.query';
-import { GetRoleHandler } from '../get-role.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Role } from '../../../../domain/aggregates/role.js';
+import { RoleNotFoundException } from '../../../exceptions/role-not-found.exception.js';
+import { GetRoleQuery } from '../../impl/get-role.query.js';
+import { GetRoleHandler } from '../get-role.handler.js';
 
 describe(GetRoleHandler.name, () => {
   const ctx = {};

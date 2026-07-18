@@ -1,7 +1,7 @@
 import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
 
-import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../otp.constants';
-import { OtpRepositoryResolverInterface } from '../repositories/otp-repository-resolver.interface';
+import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../otp.constants.js';
+import { OtpRepositoryResolverInterface } from '../repositories/otp-repository-resolver.interface.js';
 
 @Injectable()
 export class OtpHistoryCleanupService {

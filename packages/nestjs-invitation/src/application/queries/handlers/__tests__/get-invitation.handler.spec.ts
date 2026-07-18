@@ -2,10 +2,10 @@ import {
   createMockInvitationRepository,
   createMockInvitationEntity,
   toInvitationDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Invitation } from '../../../../domain/aggregates/invitation';
-import { GetInvitationQuery } from '../../impl/get-invitation.query';
-import { GetInvitationHandler } from '../get-invitation.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Invitation } from '../../../../domain/aggregates/invitation.js';
+import { GetInvitationQuery } from '../../impl/get-invitation.query.js';
+import { GetInvitationHandler } from '../get-invitation.handler.js';
 
 describe(GetInvitationHandler.name, () => {
   const ctx = {};

@@ -3,7 +3,7 @@ import { type PlainLiteralObject } from '@nestjs/common';
 import {
   type FederatedRelation,
   type RelationResult,
-} from './federation.types';
+} from './federation.types.js';
 
 /**
  * Hydrate relations on root entities by matching FK columns.

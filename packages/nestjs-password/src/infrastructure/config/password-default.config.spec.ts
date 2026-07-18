@@ -1,8 +1,8 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, type TestingModule } from '@nestjs/testing';
 
-import { type PasswordOptionsInterface } from './interfaces/password-options.interface';
-import { passwordDefaultConfig } from './password-default.config';
+import { type PasswordOptionsInterface } from './interfaces/password-options.interface.js';
+import { passwordDefaultConfig } from './password-default.config.js';
 
 describe('password configuration', () => {
   let envOriginal: NodeJS.ProcessEnv;

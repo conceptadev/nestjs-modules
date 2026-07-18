@@ -1,11 +1,11 @@
 import { type Provider } from '@nestjs/common';
 
-import { VerifyPolicy } from '../../domain/policies/verify.policy';
+import { VerifyPolicy } from '../../domain/policies/verify.policy.js';
 import {
   authenticationDefaultConfig,
   type AuthenticationModuleDefaultsInterface,
-} from '../config/authentication-default.config';
-import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
+} from '../config/authentication-default.config.js';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface.js';
 
 export function createVerifyPolicyProvider(rawOptionsToken: symbol): Provider {
   return {

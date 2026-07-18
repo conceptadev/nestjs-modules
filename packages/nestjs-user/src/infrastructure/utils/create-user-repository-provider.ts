@@ -5,11 +5,11 @@ import {
   type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { type UserEntityInterface } from '../../domain/interfaces/user-entity.interface';
-import { type UserRepositoryInterface } from '../../domain/repositories/user-repository.interface';
-import { USER_REPOSITORY_TOKEN } from '../../user.constants';
-import { UserMapper } from '../persistence/user.mapper';
-import { UserRepository } from '../persistence/user.repository';
+import { type UserEntityInterface } from '../../domain/interfaces/user-entity.interface.js';
+import { type UserRepositoryInterface } from '../../domain/repositories/user-repository.interface.js';
+import { USER_REPOSITORY_TOKEN } from '../../user.constants.js';
+import { UserMapper } from '../persistence/user.mapper.js';
+import { UserRepository } from '../persistence/user.repository.js';
 
 export function createUserRepositoryProvider(
   entityKey: string,

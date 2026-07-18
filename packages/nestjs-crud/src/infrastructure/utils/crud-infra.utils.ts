@@ -11,10 +11,10 @@ import {
   type WhereConditionArray,
 } from '@concepta/nestjs-repository';
 
-import { type CrudAdapter } from '../adapters/crud.adapter';
-import { type CrudAdapterProvider } from '../adapters/interfaces/crud-adapter.types';
-import { CrudDecoratorException } from '../exceptions/crud-decorator.exception';
-import { type CrudControllerEntityInterface } from '../interfaces/crud-controller-entity.interface';
+import { type CrudAdapter } from '../adapters/crud.adapter.js';
+import { type CrudAdapterProvider } from '../adapters/interfaces/crud-adapter.types.js';
+import { CrudDecoratorException } from '../exceptions/crud-decorator.exception.js';
+import { type CrudControllerEntityInterface } from '../interfaces/crud-controller-entity.interface.js';
 
 /**
  * Gets the dynamic adapter token for a given name.
@@ -58,21 +58,6 @@ export function getMethodHandler(
     });
   }
   return handler;
-}
-
-export function safeRequire<T = unknown>(
-  path: string,
-  loader?: () => T,
-): T | null {
-  try {
-    /* istanbul ignore next */
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const pack = loader ? loader() : require(path);
-    return pack;
-  } catch (_) {
-    /* istanbul ignore next */
-    return null;
-  }
 }
 
 /**

@@ -2,7 +2,7 @@ import { isString } from 'class-validator';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { CacheException } from '../../domain/exceptions/cache.exception';
+import { CacheException } from '../../domain/exceptions/cache.exception.js';
 
 export function assertCacheId(value: unknown): asserts value is ReferenceId {
   if (!isString(value) || value.trim() === '') {

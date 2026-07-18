@@ -4,7 +4,7 @@ import {
   type ReferenceVersionInterface,
 } from '@concepta/nestjs-core';
 
-import { type InvitationInterface } from '../../interfaces/invitation.interface';
+import { type InvitationInterface } from '../../interfaces/invitation.interface.js';
 
 export interface InvitationEventPayloadInterface
   extends

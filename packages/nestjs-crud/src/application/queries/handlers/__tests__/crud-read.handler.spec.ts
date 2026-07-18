@@ -1,15 +1,15 @@
 import { BadRequestException } from '@nestjs/common';
 
-import { mockCrudContext } from '../../../../__fixtures__/crud/mocks/crud-context.mock';
-import { CrudQueryException } from '../../../../infrastructure/exceptions/crud-query.exception';
-import { CrudReadQuery } from '../../impl/crud-read.query';
-import { CrudReadHandler } from '../crud-read.handler';
+import { mockCrudContext } from '../../../../__fixtures__/crud/mocks/crud-context.mock.js';
+import { CrudQueryException } from '../../../../infrastructure/exceptions/crud-query.exception.js';
+import { CrudReadQuery } from '../../impl/crud-read.query.js';
+import { CrudReadHandler } from '../crud-read.handler.js';
 
 import {
   type TestCrudAdapter,
   type TestEntity,
   createTestAdapter,
-} from './fixtures/query-handler-test.fixture';
+} from './fixtures/query-handler-test.fixture.js';
 
 describe('CrudReadHandler', () => {
   let adapter: TestCrudAdapter;

@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { CrudResponsePaginatedDto } from '@concepta/nestjs-crud';
 
-import { CacheDto } from './cache.dto';
+import { CacheDto } from './cache.dto.js';
 
 @Exclude()
 export class CachePaginatedDto extends CrudResponsePaginatedDto<CacheDto> {

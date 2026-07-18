@@ -21,7 +21,7 @@ import {
   type WhereOperator,
 } from '@concepta/nestjs-repository';
 
-import { TypeOrmRepository } from '../typeorm-repository';
+import { TypeOrmRepository } from '../typeorm-repository.js';
 
 interface TestEntity {
   id: string;

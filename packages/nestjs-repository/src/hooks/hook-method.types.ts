@@ -5,7 +5,7 @@ import { type DeepPartial } from '@concepta/nestjs-core';
 import {
   type RepositoryFindOptions,
   type RepositoryFindOneOptions,
-} from '../repository/interfaces/repository-options.interface';
+} from '../repository/interfaces/repository-options.interface.js';
 
 // =============================================================================
 // Read Operations

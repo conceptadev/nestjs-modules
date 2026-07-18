@@ -13,7 +13,7 @@ import {
   type CreateOtpCommandInterface,
   type ValidateOtpQueryInterface,
   type ClearOtpCommandInterface,
-} from '../otp.port';
+} from '../otp.port.js';
 
 class MockCreateOtpCommand
   extends Command<AuthenticationOtpInterface>

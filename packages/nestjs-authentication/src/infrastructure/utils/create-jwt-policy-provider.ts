@@ -1,7 +1,7 @@
 import { type Provider } from '@nestjs/common';
 
-import { JwtPolicy } from '../../domain/policies/jwt.policy';
-import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
+import { JwtPolicy } from '../../domain/policies/jwt.policy.js';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface.js';
 
 export function createJwtPolicyProvider(rawOptionsToken: symbol): Provider {
   return {

@@ -1,8 +1,8 @@
 import { Test, type TestingModule } from '@nestjs/testing';
 
-import { CRUD_MODULE_SETTINGS_TOKEN } from '../crud.constants';
-import { CrudModule } from '../crud.module';
-import { type CrudModuleSettingsInterface } from '../infrastructure/config/interfaces/crud-module-settings.interface';
+import { CRUD_MODULE_SETTINGS_TOKEN } from '../crud.constants.js';
+import { CrudModule } from '../crud.module.js';
+import { type CrudModuleSettingsInterface } from '../infrastructure/config/interfaces/crud-module-settings.interface.js';
 
 describe(CrudModule, () => {
   let crudModule: CrudModule;

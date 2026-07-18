@@ -1,10 +1,10 @@
 import { type Type } from '@nestjs/common';
 
-import { CRUD_MODULE_RESPONSE_RESOURCE_METADATA } from '../../../crud.constants';
+import { CRUD_MODULE_RESPONSE_RESOURCE_METADATA } from '../../../crud.constants.js';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,
-} from '../../services/crud-metadata.service';
+} from '../../services/crud-metadata.service.js';
 
 /**
  * Set the response DTO type for single-item responses.

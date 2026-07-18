@@ -2,12 +2,12 @@ import { ExtractJwt } from 'passport-jwt';
 
 import { registerAs } from '@nestjs/config';
 
-import { LocalLoginDto } from '../strategies/local/dto/local-login.dto';
+import { LocalLoginDto } from '../strategies/local/dto/local-login.dto.js';
 
 import {
   type AuthenticationMfaSettingsInterface,
   type AuthenticationStrategiesSettingsInterface,
-} from './interfaces/authentication-settings.interface';
+} from './interfaces/authentication-settings.interface.js';
 
 export const AUTHENTICATION_MODULE_DEFAULTS_TOKEN =
   'AUTHENTICATION_MODULE_DEFAULTS_TOKEN';

@@ -5,7 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { DomainAggregateDto } from '@concepta/nestjs-core/aggregate';
 
-import { UserInterface } from '../../domain/interfaces/user.interface';
+import { UserInterface } from '../../domain/interfaces/user.interface.js';
 
 @Exclude()
 export class UserDto extends DomainAggregateDto implements UserInterface {

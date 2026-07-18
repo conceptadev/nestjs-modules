@@ -11,17 +11,17 @@ import {
   DomainAggregate,
 } from '@concepta/nestjs-core/aggregate';
 
-import { type InvitationDispatchedMetadataInterface } from '../events/interfaces/invitation-dispatched-metadata.interface';
-import { type InvitationEventHeaderInterface } from '../events/interfaces/invitation-event-header.interface';
-import { InvitationAcceptedEvent } from '../events/invitation-accepted.event';
-import { InvitationCreatedEvent } from '../events/invitation-created.event';
-import { InvitationDispatchedEvent } from '../events/invitation-dispatched.event';
-import { InvitationRemovedEvent } from '../events/invitation-removed.event';
-import { InvitationRevokedEvent } from '../events/invitation-revoked.event';
-import { InvitationAlreadyAcceptedException } from '../exceptions/invitation-already-accepted.exception';
-import { InvitationRevokedException } from '../exceptions/invitation-revoked.exception';
-import { type InvitationCreatableInterface } from '../interfaces/invitation-creatable.interface';
-import { type InvitationInterface } from '../interfaces/invitation.interface';
+import { type InvitationDispatchedMetadataInterface } from '../events/interfaces/invitation-dispatched-metadata.interface.js';
+import { type InvitationEventHeaderInterface } from '../events/interfaces/invitation-event-header.interface.js';
+import { InvitationAcceptedEvent } from '../events/invitation-accepted.event.js';
+import { InvitationCreatedEvent } from '../events/invitation-created.event.js';
+import { InvitationDispatchedEvent } from '../events/invitation-dispatched.event.js';
+import { InvitationRemovedEvent } from '../events/invitation-removed.event.js';
+import { InvitationRevokedEvent } from '../events/invitation-revoked.event.js';
+import { InvitationAlreadyAcceptedException } from '../exceptions/invitation-already-accepted.exception.js';
+import { InvitationRevokedException } from '../exceptions/invitation-revoked.exception.js';
+import { type InvitationCreatableInterface } from '../interfaces/invitation-creatable.interface.js';
+import { type InvitationInterface } from '../interfaces/invitation.interface.js';
 
 export class Invitation extends DomainAggregate<InvitationInterface> {
   constructor(

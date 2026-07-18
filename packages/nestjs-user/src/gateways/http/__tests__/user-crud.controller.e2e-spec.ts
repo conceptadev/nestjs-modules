@@ -8,13 +8,13 @@ import { getDataSourceToken } from '@nestjs/typeorm';
 import { TransactionScope } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
-import { UserEntityFixture } from '../../../__tests__/fixtures/entities/user.entity.fixture';
-import { type UserEntityInterface } from '../../../domain/interfaces/user-entity.interface';
-import { UserFactory } from '../../../infrastructure/seeding/user.factory';
-import { UserSeeder } from '../../../infrastructure/seeding/user.seeder';
+import { UserEntityFixture } from '../../../__tests__/fixtures/entities/user.entity.fixture.js';
+import { type UserEntityInterface } from '../../../domain/interfaces/user-entity.interface.js';
+import { UserFactory } from '../../../infrastructure/seeding/user.factory.js';
+import { UserSeeder } from '../../../infrastructure/seeding/user.seeder.js';
 
-import { AppModuleCrudFixture } from './fixtures/app-crud.module.fixture';
-import { FakeAuthInterceptorFixture } from './fixtures/fake-auth.interceptor.fixture';
+import { AppModuleCrudFixture } from './fixtures/app-crud.module.fixture.js';
+import { FakeAuthInterceptorFixture } from './fixtures/fake-auth.interceptor.fixture.js';
 
 describe('UserCrudController (e2e)', () => {
   let app: INestApplication;

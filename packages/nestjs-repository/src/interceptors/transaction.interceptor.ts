@@ -7,7 +7,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 
-import { TransactionalRunner } from '../transaction/transactional-runner';
+import { TransactionalRunner } from '../transaction/transactional-runner.js';
 
 /**
  * Interceptor that wraps requests in transactions.

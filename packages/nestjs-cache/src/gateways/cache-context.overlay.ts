@@ -10,8 +10,8 @@ import {
 import {
   CACHE_NAMESPACE_KEY,
   CacheNamespaceOptions,
-} from './decorators/cache-namespace.decorator';
-import { CacheContextInterface } from './interfaces/cache-context.interface';
+} from './decorators/cache-namespace.decorator.js';
+import { CacheContextInterface } from './interfaces/cache-context.interface.js';
 
 export const CacheCtx = new OverlayRef<'withCache', CacheContextInterface>(
   'withCache',

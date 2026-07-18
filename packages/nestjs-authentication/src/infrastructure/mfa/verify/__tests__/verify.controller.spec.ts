@@ -1,10 +1,10 @@
 import { mock } from 'vitest-mock-extended';
 
-import { type VerifyService } from '../../../../application/services/verify/verify.service';
-import { type VerifyUpdateDto } from '../dto/verify-update.dto';
-import { type VerifyDto } from '../dto/verify.dto';
+import { type VerifyService } from '../../../../application/services/verify/verify.service.js';
+import { type VerifyUpdateDto } from '../dto/verify-update.dto.js';
+import { type VerifyDto } from '../dto/verify.dto.js';
 
-import { VerifyControllerFixture } from './fixtures/verify.controller.fixture';
+import { VerifyControllerFixture } from './fixtures/verify.controller.fixture.js';
 
 describe(VerifyControllerFixture.name, () => {
   let controller: VerifyControllerFixture;

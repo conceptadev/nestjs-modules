@@ -7,7 +7,7 @@ import {
   ReferenceIdInterface,
 } from '@concepta/nestjs-core';
 
-import { InvitationUserInterface } from '../interfaces/invitation-user.interface';
+import { InvitationUserInterface } from '../interfaces/invitation-user.interface.js';
 
 export type InvitationUserResult =
   | (ReferenceIdInterface & InvitationUserInterface)

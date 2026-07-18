@@ -4,22 +4,22 @@ import {
   type PlainLiteralObject,
 } from '@nestjs/common';
 
-import { CRUD_MODULE_DEFAULT_PARAMS_OPTIONS } from '../../../crud.constants';
-import { CrudAdapter as CrudAdapterClass } from '../../adapters/crud.adapter';
-import { type CrudControllerOptionsInterface } from '../../interfaces/crud-controller-options.interface';
-import { CrudAdapter } from '../routes/crud-adapter.decorator';
-import { CrudEntity } from '../routes/crud-entity.decorator';
-import { CrudName } from '../routes/crud-name.decorator';
-import { CrudParams } from '../routes/crud-params.decorator';
-import { CrudRequestBodyBatch } from '../routes/crud-request-body-batch.decorator';
-import { CrudRequestBody } from '../routes/crud-request-body.decorator';
-import { CrudResolver } from '../routes/crud-resolver.decorator';
-import { CrudResponsePaginated } from '../routes/crud-response-paginated.decorator';
-import { CrudResponseResource } from '../routes/crud-response-resource.decorator';
-import { CrudSerialize } from '../routes/crud-serialize.decorator';
-import { CrudValidate } from '../routes/crud-validate.decorator';
+import { CRUD_MODULE_DEFAULT_PARAMS_OPTIONS } from '../../../crud.constants.js';
+import { CrudAdapter as CrudAdapterClass } from '../../adapters/crud.adapter.js';
+import { type CrudControllerOptionsInterface } from '../../interfaces/crud-controller-options.interface.js';
+import { CrudAdapter } from '../routes/crud-adapter.decorator.js';
+import { CrudEntity } from '../routes/crud-entity.decorator.js';
+import { CrudName } from '../routes/crud-name.decorator.js';
+import { CrudParams } from '../routes/crud-params.decorator.js';
+import { CrudRequestBodyBatch } from '../routes/crud-request-body-batch.decorator.js';
+import { CrudRequestBody } from '../routes/crud-request-body.decorator.js';
+import { CrudResolver } from '../routes/crud-resolver.decorator.js';
+import { CrudResponsePaginated } from '../routes/crud-response-paginated.decorator.js';
+import { CrudResponseResource } from '../routes/crud-response-resource.decorator.js';
+import { CrudSerialize } from '../routes/crud-serialize.decorator.js';
+import { CrudValidate } from '../routes/crud-validate.decorator.js';
 
-import { CrudInit } from './crud-init.decorator';
+import { CrudInit } from './crud-init.decorator.js';
 
 /**
  * CRUD controller decorator

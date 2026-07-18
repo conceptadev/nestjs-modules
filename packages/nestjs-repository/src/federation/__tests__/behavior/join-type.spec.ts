@@ -12,17 +12,17 @@
 import {
   WhereCompoundOperator,
   WhereOperator,
-} from '../../../repository/repository.types';
+} from '../../../repository/repository.types.js';
 import {
   type TestRoot,
   type TestRelation,
   createMinimalRootRelationSet,
-} from '../federation-test-data';
+} from '../federation-test-data.js';
 import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
-} from '../fixtures/federation-orchestrator.mock';
+} from '../fixtures/federation-orchestrator.mock.js';
 
 describe('FederationOrchestrator - Join Type (Forward Relations)', () => {
   describe('Forward relationships (one-to-many)', () => {

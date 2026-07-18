@@ -3,7 +3,7 @@ import { Column } from 'typeorm';
 import { ReferenceId } from '@concepta/nestjs-core';
 import { CommonSqliteEntity } from '@concepta/nestjs-repository-typeorm';
 
-import { OtpInterface } from '../../../domain/interfaces/otp.interface';
+import { OtpInterface } from '../../../domain/interfaces/otp.interface.js';
 
 /**
  * Otp Sqlite Entity

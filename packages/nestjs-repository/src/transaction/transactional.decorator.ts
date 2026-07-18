@@ -1,10 +1,10 @@
 import { SetMetadata, UseInterceptors, applyDecorators } from '@nestjs/common';
 
-import { TransactionInterceptor } from '../interceptors/transaction.interceptor';
+import { TransactionInterceptor } from '../interceptors/transaction.interceptor.js';
 import {
   PropagationBehavior,
   TransactionalOptions,
-} from '../interfaces/transactional-options.interface';
+} from '../interfaces/transactional-options.interface.js';
 
 export { PropagationBehavior, TransactionalOptions };
 

@@ -1,4 +1,4 @@
-import { LocalStrategyPolicy } from '../local-strategy.policy';
+import { LocalStrategyPolicy } from '../local-strategy.policy.js';
 
 class MockLoginDto {}
 

@@ -1,6 +1,6 @@
 import ms from 'ms';
 
-import { type TokenOptionsInterface } from '../interfaces/token-options.interface';
+import { type TokenOptionsInterface } from '../interfaces/token-options.interface.js';
 
 export interface JwtPolicySettingsInterface {
   access?: TokenOptionsInterface;

@@ -1,5 +1,5 @@
-import { CacheInvalidExpiredDateException } from '../cache-invalid-expired-date.exception';
-import { CacheException } from '../cache.exception';
+import { CacheInvalidExpiredDateException } from '../cache-invalid-expired-date.exception.js';
+import { CacheException } from '../cache.exception.js';
 
 describe(CacheInvalidExpiredDateException.name, () => {
   it('should be an instance of CacheException', () => {

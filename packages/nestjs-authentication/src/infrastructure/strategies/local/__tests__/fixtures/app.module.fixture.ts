@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { AuthenticationModule } from '../../../../../authentication.module';
+import { AuthenticationModule } from '../../../../../authentication.module.js';
 
-import { UserModuleFixture } from './user.module.fixture';
+import { UserModuleFixture } from './user.module.fixture.js';
 
 @Module({
   imports: [

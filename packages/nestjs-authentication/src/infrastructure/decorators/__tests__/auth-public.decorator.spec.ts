@@ -1,7 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
 
-import { AUTHENTICATION_MODULE_DISABLE_GUARDS_TOKEN } from '../../../authentication.constants';
-import { AuthPublic } from '../auth-public.decorator';
+import { AUTHENTICATION_MODULE_DISABLE_GUARDS_TOKEN } from '../../../authentication.constants.js';
+import { AuthPublic } from '../auth-public.decorator.js';
 
 vi.mock('@nestjs/common', () => {
   return {

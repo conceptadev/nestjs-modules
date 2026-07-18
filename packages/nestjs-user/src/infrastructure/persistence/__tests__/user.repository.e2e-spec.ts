@@ -2,11 +2,11 @@ import { Test, type TestingModule } from '@nestjs/testing';
 
 import { EventContextHost } from '@concepta/nestjs-core';
 
-import { AppRepoModuleFixture } from '../../../__tests__/fixtures/app-repo.module.fixture';
-import { User } from '../../../domain/aggregates/user';
-import { type UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface';
-import { USER_REPOSITORY_TOKEN } from '../../../user.constants';
-import { UserRepository } from '../user.repository';
+import { AppRepoModuleFixture } from '../../../__tests__/fixtures/app-repo.module.fixture.js';
+import { User } from '../../../domain/aggregates/user.js';
+import { type UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface.js';
+import { USER_REPOSITORY_TOKEN } from '../../../user.constants.js';
+import { UserRepository } from '../user.repository.js';
 
 describe(UserRepository.name + ' (e2e)', () => {
   let moduleFixture: TestingModule;

@@ -6,9 +6,9 @@ import {
   OneToMany,
 } from 'typeorm';
 
-import { BaseEntity } from '../base-entity';
-import { ProjectEntity } from '../project/project.entity';
-import { UserEntity } from '../users/user.entity';
+import { BaseEntity } from '../base-entity.js';
+import { ProjectEntity } from '../project/project.entity.js';
+import { UserEntity } from '../users/user.entity.js';
 
 @Entity('companies')
 export class CompanyEntity extends BaseEntity {

@@ -1,8 +1,8 @@
 import { type ReferenceIdInterface } from '@concepta/nestjs-core';
 import { type PasswordStorageInterface } from '@concepta/nestjs-password';
 
-import { UserPasswordHistoryViolationException } from '../exceptions/user-password-history-violation.exception';
-import { type UserPasswordPort } from '../ports/user-password.port';
+import { UserPasswordHistoryViolationException } from '../exceptions/user-password-history-violation.exception.js';
+import { type UserPasswordPort } from '../ports/user-password.port.js';
 
 export class UserCredentialsCollection {
   constructor(

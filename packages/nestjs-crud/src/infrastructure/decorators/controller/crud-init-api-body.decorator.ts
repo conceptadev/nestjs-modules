@@ -4,8 +4,8 @@ import { ApiBody, ApiExtraModels } from '@nestjs/swagger';
 
 import { Operation } from '@concepta/nestjs-core';
 
-import { CrudMetaview } from '../../services/crud-metaview.service';
-import { swagger } from '../../utils/swagger.helper';
+import { CrudMetaview } from '../../services/crud-metaview.service.js';
+import { swagger } from '../../utils/swagger.helper.js';
 
 /**
  * Discovers the Reflect metadata key that `@ApiBody()` uses to store

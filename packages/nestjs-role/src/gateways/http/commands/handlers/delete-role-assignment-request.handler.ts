@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
-import { RevokeRoleCommand } from '../../../../application/commands/impl/revoke-role.command';
-import { GetRoleAssignmentQuery } from '../../../../application/queries/impl/get-role-assignment.query';
-import { assertRoleId } from '../../../../application/utils/assert-role-id.util';
-import { RoleAssignment } from '../../../../domain/aggregates/role-assignment';
-import { DeleteRoleAssignmentRequest } from '../impl/delete-role-assignment.request';
+import { RevokeRoleCommand } from '../../../../application/commands/impl/revoke-role.command.js';
+import { GetRoleAssignmentQuery } from '../../../../application/queries/impl/get-role-assignment.query.js';
+import { assertRoleId } from '../../../../application/utils/assert-role-id.util.js';
+import { RoleAssignment } from '../../../../domain/aggregates/role-assignment.js';
+import { DeleteRoleAssignmentRequest } from '../impl/delete-role-assignment.request.js';
 
 @Injectable()
 export class DeleteRoleAssignmentRequestHandler {

@@ -1,6 +1,6 @@
-import { WhereOperator } from '../../repository/repository.types';
-import { Where } from '../../repository/where.helpers';
-import { FederationException } from '../exceptions/federation.exception';
+import { WhereOperator } from '../../repository/repository.types.js';
+import { Where } from '../../repository/where.helpers.js';
+import { FederationException } from '../exceptions/federation.exception.js';
 
 import {
   mockTestRepo,
@@ -12,7 +12,7 @@ import {
   type TestRoot,
   type TestRelation,
   type TestProfile,
-} from './fixtures/federation-orchestrator.mock';
+} from './fixtures/federation-orchestrator.mock.js';
 
 describe('FederationOrchestrator', () => {
   // ═════════════════════════════════════════════════════════════════════

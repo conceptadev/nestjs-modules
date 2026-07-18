@@ -1,14 +1,14 @@
 import { type Provider } from '@nestjs/common';
 
-import { LocalService } from '../../application/services/local/local.service';
+import { LocalService } from '../../application/services/local/local.service.js';
 import {
   AUTHENTICATION_USER_PORT_TOKEN,
   AUTHENTICATION_PASSWORD_PORT_TOKEN,
-} from '../../authentication.constants';
-import { type PasswordPort } from '../../domain/ports/password.port';
-import { type UserPort } from '../../domain/ports/user.port';
-import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
-import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception';
+} from '../../authentication.constants.js';
+import { type PasswordPort } from '../../domain/ports/password.port.js';
+import { type UserPort } from '../../domain/ports/user.port.js';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface.js';
+import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception.js';
 
 export function createLocalValidateUserServiceProvider(
   rawOptionsToken: symbol,

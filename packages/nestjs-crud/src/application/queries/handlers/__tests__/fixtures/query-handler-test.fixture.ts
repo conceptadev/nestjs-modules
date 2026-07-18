@@ -1,6 +1,6 @@
 import { createMockRepository } from '@concepta/nestjs-repository/testing';
 
-import { CrudAdapter } from '../../../../../infrastructure/adapters/crud.adapter';
+import { CrudAdapter } from '../../../../../infrastructure/adapters/crud.adapter.js';
 
 export interface TestEntity {
   id: string;

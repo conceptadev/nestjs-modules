@@ -4,11 +4,11 @@ import {
   createMockRoleAssignmentEntity,
   toRoleAssignmentDomain,
   DEFAULT_ROLE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { RoleAssignment } from '../../../../domain/aggregates/role-assignment';
-import { RoleAssignmentNotFoundException } from '../../../exceptions/role-assignment-not-found.exception';
-import { GetRoleAssignmentQuery } from '../../impl/get-role-assignment.query';
-import { GetRoleAssignmentHandler } from '../get-role-assignment.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { RoleAssignment } from '../../../../domain/aggregates/role-assignment.js';
+import { RoleAssignmentNotFoundException } from '../../../exceptions/role-assignment-not-found.exception.js';
+import { GetRoleAssignmentQuery } from '../../impl/get-role-assignment.query.js';
+import { GetRoleAssignmentHandler } from '../get-role-assignment.handler.js';
 
 describe(GetRoleAssignmentHandler.name, () => {
   const ctx = {};

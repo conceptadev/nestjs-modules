@@ -2,7 +2,7 @@ import { type PlainLiteralObject } from '@nestjs/common';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { type UserCredentials } from '../aggregates/user-credentials';
+import { type UserCredentials } from '../aggregates/user-credentials.js';
 
 export interface UserCredentialsRepositoryInterface {
   findActiveByUserId(

@@ -4,10 +4,10 @@ import {
   createMockCommandBus,
   createMockInvitationEntity,
   toInvitationDomain,
-} from '../../../../../__tests__/helpers/mock.helpers';
-import { RemoveInvitationCommand } from '../../../../../application/commands/impl/remove-invitation.command';
-import { DeleteInvitationRequest } from '../../impl/delete-invitation.request';
-import { DeleteInvitationRequestHandler } from '../delete-invitation-request.handler';
+} from '../../../../../__tests__/helpers/mock.helpers.js';
+import { RemoveInvitationCommand } from '../../../../../application/commands/impl/remove-invitation.command.js';
+import { DeleteInvitationRequest } from '../../impl/delete-invitation.request.js';
+import { DeleteInvitationRequestHandler } from '../delete-invitation-request.handler.js';
 
 describe(DeleteInvitationRequestHandler.name, () => {
   let commandBus: ReturnType<typeof createMockCommandBus>;

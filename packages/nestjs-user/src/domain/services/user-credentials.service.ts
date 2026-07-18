@@ -9,14 +9,14 @@ import {
 import { PasswordStorageInterface } from '@concepta/nestjs-password';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { USER_CREDENTIALS_REPOSITORY_TOKEN } from '../../user.constants';
-import { UserCredentials } from '../aggregates/user-credentials';
-import { UserCredentialsCollection } from '../collections/user-credentials.collection';
-import { UserCredentialsAlreadyExistException } from '../exceptions/user-credentials-already-exist.exception';
-import { UserPasswordCurrentInvalidException } from '../exceptions/user-password-current-invalid.exception';
-import { UserPasswordPolicy } from '../policies/user-password.policy';
-import { UserPasswordPort } from '../ports/user-password.port';
-import { UserCredentialsRepositoryInterface } from '../repositories/user-credentials-repository.interface';
+import { USER_CREDENTIALS_REPOSITORY_TOKEN } from '../../user.constants.js';
+import { UserCredentials } from '../aggregates/user-credentials.js';
+import { UserCredentialsCollection } from '../collections/user-credentials.collection.js';
+import { UserCredentialsAlreadyExistException } from '../exceptions/user-credentials-already-exist.exception.js';
+import { UserPasswordCurrentInvalidException } from '../exceptions/user-password-current-invalid.exception.js';
+import { UserPasswordPolicy } from '../policies/user-password.policy.js';
+import { UserPasswordPort } from '../ports/user-password.port.js';
+import { UserCredentialsRepositoryInterface } from '../repositories/user-credentials-repository.interface.js';
 
 @Injectable()
 export class UserCredentialsService {

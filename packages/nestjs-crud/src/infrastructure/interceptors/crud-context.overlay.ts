@@ -15,14 +15,14 @@ import {
   RuntimeException,
 } from '@concepta/nestjs-core';
 
-import { ControllerTarget, MethodHandler } from '../../crud.types';
-import { CrudContextException } from '../exceptions/crud-context.exception';
-import { CrudQueryParser } from '../request/crud-query.parser';
-import { CrudMetaview } from '../services/crud-metaview.service';
-import { operationToAction } from '../utils/crud-infra.utils';
+import { ControllerTarget, MethodHandler } from '../../crud.types.js';
+import { CrudContextException } from '../exceptions/crud-context.exception.js';
+import { CrudQueryParser } from '../request/crud-query.parser.js';
+import { CrudMetaview } from '../services/crud-metaview.service.js';
+import { operationToAction } from '../utils/crud-infra.utils.js';
 
-import { CrudContextInterface } from './interfaces/crud-context.interface';
-import { CrudRouteOptionsInterface } from './interfaces/crud-route-options.interface';
+import { CrudContextInterface } from './interfaces/crud-context.interface.js';
+import { CrudRouteOptionsInterface } from './interfaces/crud-route-options.interface.js';
 
 export const CrudCtx = new OverlayRef<'withCrud', CrudContextInterface>(
   'withCrud',

@@ -16,17 +16,17 @@ import {
   type WhereConditionArr,
 } from '@concepta/nestjs-repository';
 
-import { hasValue } from '../utils/validation';
+import { hasValue } from '../utils/validation.js';
 
-import { COND_OPERATOR_PREFIX, type SCondition } from './crud-query.types';
+import { COND_OPERATOR_PREFIX, type SCondition } from './crud-query.types.js';
 import {
   validateCondition,
   validateFields,
   validateNumeric,
   validateSort,
-} from './crud-query.validator';
-import { type CrudCreateQueryParamsInterface } from './interfaces/crud-create-query-params.interface';
-import { type CrudQueryBuilderOptionsInterface } from './interfaces/crud-query-builder-options.interface';
+} from './crud-query.validator.js';
+import { type CrudCreateQueryParamsInterface } from './interfaces/crud-create-query-params.interface.js';
+import { type CrudQueryBuilderOptionsInterface } from './interfaces/crud-query-builder-options.interface.js';
 
 export class CrudQueryBuilder<
   Entity extends PlainLiteralObject = PlainLiteralObject,

@@ -1,8 +1,8 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type ConfigurableCrudOptions } from '../../utils/interfaces/configurable-crud-options.interface';
+import { type ConfigurableCrudOptions } from '../../utils/interfaces/configurable-crud-options.interface.js';
 
-import { type CrudModuleOptionsInterface } from './crud-module-options.interface';
+import { type CrudModuleOptionsInterface } from './crud-module-options.interface.js';
 
 /**
  * Configuration options for a single CRUD feature registration.

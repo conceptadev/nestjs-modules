@@ -7,12 +7,12 @@ import { IQueryHandler, QueryBus, QueryHandler } from '@nestjs/cqrs';
 import {
   ACCESS_CONTROL_MODULE_GRANT_METADATA,
   ACCESS_CONTROL_MODULE_SETTINGS_TOKEN,
-} from '../../../access-control.constants';
-import { PossessionEnum } from '../../../domain/enums/possession.enum';
-import { AccessControlGrantOptionInterface } from '../../../domain/interfaces/access-control-grant-option.interface';
-import { AccessControlSettingsInterface } from '../../../infrastructure/config/interfaces/access-control-settings.interface';
-import { FilterResponseAttributesQuery } from '../impl/filter-response-attributes.query';
-import { ResolveUserRolesQuery } from '../impl/resolve-user-roles.query';
+} from '../../../access-control.constants.js';
+import { PossessionEnum } from '../../../domain/enums/possession.enum.js';
+import { AccessControlGrantOptionInterface } from '../../../domain/interfaces/access-control-grant-option.interface.js';
+import { AccessControlSettingsInterface } from '../../../infrastructure/config/interfaces/access-control-settings.interface.js';
+import { FilterResponseAttributesQuery } from '../impl/filter-response-attributes.query.js';
+import { ResolveUserRolesQuery } from '../impl/resolve-user-roles.query.js';
 
 @QueryHandler(FilterResponseAttributesQuery)
 export class FilterResponseAttributesHandler implements IQueryHandler<

@@ -1,11 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { RoleEntityNotFoundException } from '../../../infrastructure/exceptions/role-entity-not-found.exception';
-import { RoleAssignmentConflictException } from '../role-assignment-conflict.exception';
-import { RoleAssignmentNotFoundException } from '../role-assignment-not-found.exception';
-import { RoleAssignmentsConflictException } from '../role-assignments-conflict.exception';
-import { RoleNotFoundException } from '../role-not-found.exception';
-import { RoleException } from '../role.exception';
+import { RoleEntityNotFoundException } from '../../../infrastructure/exceptions/role-entity-not-found.exception.js';
+import { RoleAssignmentConflictException } from '../role-assignment-conflict.exception.js';
+import { RoleAssignmentNotFoundException } from '../role-assignment-not-found.exception.js';
+import { RoleAssignmentsConflictException } from '../role-assignments-conflict.exception.js';
+import { RoleNotFoundException } from '../role-not-found.exception.js';
+import { RoleException } from '../role.exception.js';
 
 describe('Role Exceptions', () => {
   describe(RoleException.name, () => {

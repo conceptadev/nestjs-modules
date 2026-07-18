@@ -1,6 +1,6 @@
 import { type Repository } from 'typeorm';
 
-import { TypeOrmRepository } from '../../../repository/typeorm-repository';
+import { TypeOrmRepository } from '../../../repository/typeorm-repository.js';
 
 interface TestEntity {
   id: string;

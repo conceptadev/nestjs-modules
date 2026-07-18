@@ -1,9 +1,9 @@
 import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
 
-import { Token } from '../../domain/aggregates/token.aggregate';
-import { JwtPolicy } from '../../domain/policies/jwt.policy';
+import { Token } from '../../domain/aggregates/token.aggregate.js';
+import { JwtPolicy } from '../../domain/policies/jwt.policy.js';
 
-import { NestJwtService } from './jwt.externals';
+import { NestJwtService } from './jwt.externals.js';
 
 @Injectable()
 export class JwtService {

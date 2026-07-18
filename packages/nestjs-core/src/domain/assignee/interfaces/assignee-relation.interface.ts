@@ -1,4 +1,4 @@
-import { type ReferenceId } from '../../reference/interfaces/reference.types';
+import { type ReferenceId } from '../../reference/interfaces/reference.types.js';
 
 /**
  * Assigned to assignee.

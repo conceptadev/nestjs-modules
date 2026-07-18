@@ -7,11 +7,11 @@ import {
   createMockRepositoryResolver,
   DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception';
-import { type OtpSettingsInterface } from '../../../../infrastructure/config/interfaces/otp-settings.interface';
-import { ValidateOtpQuery } from '../../impl/validate-otp.query';
-import { ValidateOtpHandler } from '../validate-otp.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception.js';
+import { type OtpSettingsInterface } from '../../../../infrastructure/config/interfaces/otp-settings.interface.js';
+import { ValidateOtpQuery } from '../../impl/validate-otp.query.js';
+import { ValidateOtpHandler } from '../validate-otp.handler.js';
 
 describe(ValidateOtpHandler.name, () => {
   let handler: ValidateOtpHandler;

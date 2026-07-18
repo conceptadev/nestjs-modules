@@ -2,8 +2,8 @@ import { type DataSource, type EntityManager, type QueryRunner } from 'typeorm';
 import { type Mock } from 'vitest';
 import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
-import { TypeOrmTransaction } from './typeorm-transaction';
-import { TypeOrmTransactionFactory } from './typeorm-transaction.factory';
+import { TypeOrmTransactionFactory } from './typeorm-transaction.factory.js';
+import { TypeOrmTransaction } from './typeorm-transaction.js';
 
 interface MockQueryRunner {
   connect: Mock;

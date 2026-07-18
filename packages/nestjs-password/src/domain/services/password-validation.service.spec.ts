@@ -1,7 +1,7 @@
-import { type PasswordStorageInterface } from '../password/interfaces/password-storage.interface';
+import { type PasswordStorageInterface } from '../password/interfaces/password-storage.interface.js';
 
-import { PasswordStorageService } from './password-storage.service';
-import { PasswordValidationService } from './password-validation.service';
+import { PasswordStorageService } from './password-storage.service.js';
+import { PasswordValidationService } from './password-validation.service.js';
 
 describe('PasswordValidationService', () => {
   let storageService: PasswordStorageService;

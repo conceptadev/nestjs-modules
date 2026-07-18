@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import { type RuntimeException } from '@concepta/nestjs-core';
 
-import { CacheException } from '../../domain/exceptions/cache.exception';
+import { CacheException } from '../../domain/exceptions/cache.exception.js';
 
 export class CacheNotFoundException extends CacheException {
   declare context: RuntimeException['context'] & {

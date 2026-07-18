@@ -3,7 +3,7 @@ import {
   ACCESS_CONTROL_MODULE_DEFAULT_SETTINGS_TOKEN,
   ACCESS_CONTROL_MODULE_QUERY_METADATA,
   ACCESS_CONTROL_MODULE_GRANT_METADATA,
-} from './access-control.constants';
+} from './access-control.constants.js';
 
 describe('Constants', () => {
   it('Should each match expected value', () => {

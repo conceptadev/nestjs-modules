@@ -7,20 +7,20 @@ import { BadRequestException, HttpStatus } from '@nestjs/common';
 
 import { type ReferenceIdInterface } from '@concepta/nestjs-core';
 
-import { type LocalServiceInterface } from '../../../../application/services/local/interfaces/local-service.interface';
-import { type LocalValidateUserInterface } from '../../../../application/services/local/interfaces/local-validate-user.interface';
-import { LocalService } from '../../../../application/services/local/local.service';
-import { LocalStrategyPolicy } from '../../../../domain/policies/local-strategy.policy';
-import { type PasswordPort } from '../../../../domain/ports/password.port';
+import { type LocalServiceInterface } from '../../../../application/services/local/interfaces/local-service.interface.js';
+import { type LocalValidateUserInterface } from '../../../../application/services/local/interfaces/local-validate-user.interface.js';
+import { LocalService } from '../../../../application/services/local/local.service.js';
+import { LocalStrategyPolicy } from '../../../../domain/policies/local-strategy.policy.js';
+import { type PasswordPort } from '../../../../domain/ports/password.port.js';
 import {
   type AuthenticationUserResult,
   type UserPort,
-} from '../../../../domain/ports/user.port';
-import { LocalLoginDto } from '../dto/local-login.dto';
-import { LocalInvalidCredentialsException } from '../exceptions/local-invalid-credentials.exception';
-import { LocalInvalidLoginDataException } from '../exceptions/local-invalid-login-data.exception';
-import { LocalException } from '../exceptions/local.exception';
-import { LocalStrategy } from '../local.strategy';
+} from '../../../../domain/ports/user.port.js';
+import { LocalLoginDto } from '../dto/local-login.dto.js';
+import { LocalInvalidCredentialsException } from '../exceptions/local-invalid-credentials.exception.js';
+import { LocalInvalidLoginDataException } from '../exceptions/local-invalid-login-data.exception.js';
+import { LocalException } from '../exceptions/local.exception.js';
+import { LocalStrategy } from '../local.strategy.js';
 
 describe(LocalStrategy.name, () => {
   const USERNAME = 'username';

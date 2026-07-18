@@ -3,14 +3,14 @@ import { type Provider } from '@nestjs/common';
 import {
   AUTHENTICATION_JWT_PORT_TOKEN,
   AUTHENTICATION_USER_PORT_TOKEN,
-} from '../../authentication.constants';
-import { JwtStrategyPolicy } from '../../domain/policies/jwt-strategy.policy';
-import { JwtPolicy } from '../../domain/policies/jwt.policy';
-import { type JwtPort } from '../../domain/ports/jwt.port';
-import { type UserPort } from '../../domain/ports/user.port';
-import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
-import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception';
-import { JwtStrategy } from '../strategies/jwt/jwt.strategy';
+} from '../../authentication.constants.js';
+import { JwtStrategyPolicy } from '../../domain/policies/jwt-strategy.policy.js';
+import { JwtPolicy } from '../../domain/policies/jwt.policy.js';
+import { type JwtPort } from '../../domain/ports/jwt.port.js';
+import { type UserPort } from '../../domain/ports/user.port.js';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface.js';
+import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception.js';
+import { JwtStrategy } from '../strategies/jwt/jwt.strategy.js';
 
 export function createJwtStrategyProvider(rawOptionsToken: symbol): Provider {
   return {

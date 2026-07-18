@@ -3,11 +3,11 @@ import { CommandBus } from '@nestjs/cqrs';
 
 import { Operation } from '@concepta/nestjs-core';
 
-import { ArchiveCacheCommand } from '../../../../application/commands/impl/archive-cache.command';
-import { RemoveCacheCommand } from '../../../../application/commands/impl/remove-cache.command';
-import { assertCacheId } from '../../../../application/utils/assert-cache-id.util';
-import { Cache } from '../../../../domain/aggregates/cache';
-import { DeleteCacheRequest } from '../impl/delete-cache.request';
+import { ArchiveCacheCommand } from '../../../../application/commands/impl/archive-cache.command.js';
+import { RemoveCacheCommand } from '../../../../application/commands/impl/remove-cache.command.js';
+import { assertCacheId } from '../../../../application/utils/assert-cache-id.util.js';
+import { Cache } from '../../../../domain/aggregates/cache.js';
+import { DeleteCacheRequest } from '../impl/delete-cache.request.js';
 
 @Injectable()
 export class DeleteCacheRequestHandler {

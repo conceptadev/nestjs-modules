@@ -3,4 +3,4 @@
  * and tools without loading the entire module which
  * runs all of its decorators and meta data.
  */
-export { RoleFactory } from './infrastructure/persistence/role.factory';
+export { RoleFactory } from './infrastructure/persistence/role.factory.js';

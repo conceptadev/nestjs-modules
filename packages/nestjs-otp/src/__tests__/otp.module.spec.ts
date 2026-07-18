@@ -1,11 +1,11 @@
 import { Test, type TestingModule } from '@nestjs/testing';
 
-import { type OtpRepositoryResolverInterface } from '../domain/repositories/otp-repository-resolver.interface';
-import { OtpRepository } from '../infrastructure/persistence/otp.repository';
-import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../otp.constants';
-import { OtpModule } from '../otp.module';
+import { type OtpRepositoryResolverInterface } from '../domain/repositories/otp-repository-resolver.interface.js';
+import { OtpRepository } from '../infrastructure/persistence/otp.repository.js';
+import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../otp.constants.js';
+import { OtpModule } from '../otp.module.js';
 
-import { AppModuleFixture } from './fixtures/app.module.fixture';
+import { AppModuleFixture } from './fixtures/app.module.fixture.js';
 
 describe(OtpModule.name, () => {
   let otpModule: OtpModule;

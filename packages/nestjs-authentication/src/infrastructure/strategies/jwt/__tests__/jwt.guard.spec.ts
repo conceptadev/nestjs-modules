@@ -8,10 +8,10 @@ import { Test } from '@nestjs/testing';
 
 import { type ReferenceIdInterface } from '@concepta/nestjs-core';
 
-import { JwtUnauthorizedException } from '../exceptions/jwt-unauthorized.exception';
-import { JwtGuard } from '../jwt.guard';
+import { JwtUnauthorizedException } from '../exceptions/jwt-unauthorized.exception.js';
+import { JwtGuard } from '../jwt.guard.js';
 
-import { UserModuleFixture } from './fixtures/user.module.fixture';
+import { UserModuleFixture } from './fixtures/user.module.fixture.js';
 
 describe(JwtGuard, () => {
   let context: ExecutionContext;

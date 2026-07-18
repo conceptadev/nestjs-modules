@@ -6,7 +6,7 @@ import {
   OverlayRef,
 } from '@concepta/nestjs-core';
 
-import { UserEntityInterface } from '../../../../domain/interfaces/user-entity.interface';
+import { UserEntityInterface } from '../../../../domain/interfaces/user-entity.interface.js';
 
 export const AuthorizedUserRef = new OverlayRef<
   'withAuthorizedUser',

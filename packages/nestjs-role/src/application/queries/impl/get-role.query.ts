@@ -3,7 +3,7 @@ import { Query } from '@nestjs/cqrs';
 
 import { type ReferenceId } from '@concepta/nestjs-core';
 
-import { type Role } from '../../../domain/aggregates/role';
+import { type Role } from '../../../domain/aggregates/role.js';
 
 export class GetRoleQuery extends Query<Role> {
   constructor(

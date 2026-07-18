@@ -1,7 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
 
-import { HOOKS_METADATA_KEY } from '../hook.constants';
-import { type HookOption } from '../hook.types';
+import { HOOKS_METADATA_KEY } from '../hook.constants.js';
+import { type HookOption } from '../hook.types.js';
 
 /**
  * Decorator to specify hooks for a controller class or method.

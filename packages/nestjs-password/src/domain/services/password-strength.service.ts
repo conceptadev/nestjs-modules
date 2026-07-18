@@ -2,8 +2,8 @@ import zxcvbn from 'zxcvbn';
 
 import { Injectable } from '@nestjs/common';
 
-import { PasswordStrengthServiceInterface } from '../interfaces/password-strength-service.interface';
-import { PasswordPolicy } from '../policies/password.policy';
+import { PasswordStrengthServiceInterface } from '../interfaces/password-strength-service.interface.js';
+import { PasswordPolicy } from '../policies/password.policy.js';
 
 /**
  * Service to validate password strength

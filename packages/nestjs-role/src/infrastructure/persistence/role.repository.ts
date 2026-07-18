@@ -3,11 +3,11 @@ import { type PlainLiteralObject } from '@nestjs/common';
 import { type ReferenceId } from '@concepta/nestjs-core';
 import { type RepositoryInterface, Where } from '@concepta/nestjs-repository';
 
-import { type Role } from '../../domain/aggregates/role';
-import { type RoleEntityInterface } from '../../domain/interfaces/role-entity.interface';
-import { type RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface';
+import { type Role } from '../../domain/aggregates/role.js';
+import { type RoleEntityInterface } from '../../domain/interfaces/role-entity.interface.js';
+import { type RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface.js';
 
-import { type RoleMapper } from './role.mapper';
+import { type RoleMapper } from './role.mapper.js';
 
 export class RoleRepository implements RoleRepositoryInterface {
   constructor(

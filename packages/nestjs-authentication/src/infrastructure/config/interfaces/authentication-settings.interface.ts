@@ -1,10 +1,10 @@
-import { type GuardsPolicySettingsInterface } from '../../../domain/policies/guards.policy';
-import { type JwtStrategyPolicySettingsInterface } from '../../../domain/policies/jwt-strategy.policy';
-import { type JwtPolicySettingsInterface } from '../../../domain/policies/jwt.policy';
-import { type LocalStrategyPolicySettingsInterface } from '../../../domain/policies/local-strategy.policy';
-import { type RecoveryPolicySettingsInterface } from '../../../domain/policies/recovery.policy';
-import { type RefreshStrategyPolicySettingsInterface } from '../../../domain/policies/refresh-strategy.policy';
-import { type VerifyPolicySettingsInterface } from '../../../domain/policies/verify.policy';
+import { type GuardsPolicySettingsInterface } from '../../../domain/policies/guards.policy.js';
+import { type JwtStrategyPolicySettingsInterface } from '../../../domain/policies/jwt-strategy.policy.js';
+import { type JwtPolicySettingsInterface } from '../../../domain/policies/jwt.policy.js';
+import { type LocalStrategyPolicySettingsInterface } from '../../../domain/policies/local-strategy.policy.js';
+import { type RecoveryPolicySettingsInterface } from '../../../domain/policies/recovery.policy.js';
+import { type RefreshStrategyPolicySettingsInterface } from '../../../domain/policies/refresh-strategy.policy.js';
+import { type VerifyPolicySettingsInterface } from '../../../domain/policies/verify.policy.js';
 
 export interface AuthenticationStrategiesSettingsInterface {
   jwt?: JwtStrategyPolicySettingsInterface;

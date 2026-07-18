@@ -5,11 +5,11 @@ import {
   type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { type IdentityRepositoryInterface } from '../../domain/repositories/identity-repository.interface';
-import { FEDERATED_MODULE_IDENTITY_REPOSITORY_TOKEN } from '../../federated.constants';
-import { IdentityMapper } from '../persistence/identity.mapper';
-import { IdentityRepository } from '../persistence/identity.repository';
-import { type IdentityEntityInterface } from '../persistence/interfaces/identity-entity.interface';
+import { type IdentityRepositoryInterface } from '../../domain/repositories/identity-repository.interface.js';
+import { FEDERATED_MODULE_IDENTITY_REPOSITORY_TOKEN } from '../../federated.constants.js';
+import { IdentityMapper } from '../persistence/identity.mapper.js';
+import { IdentityRepository } from '../persistence/identity.repository.js';
+import { type IdentityEntityInterface } from '../persistence/interfaces/identity-entity.interface.js';
 
 export function createIdentityRepositoryProvider(
   entityKey: string,

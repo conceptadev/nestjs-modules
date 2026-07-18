@@ -10,12 +10,12 @@ import {
   type WhereConditionNullary,
   type WhereConditionPair,
   type WhereConditionScalar,
-} from './interfaces/where-clause.interface';
+} from './interfaces/where-clause.interface.js';
 import {
   type EntityColumn,
   WhereCompoundOperator,
   WhereOperator,
-} from './repository.types';
+} from './repository.types.js';
 
 /**
  * Where clause builder with both static and instance APIs.

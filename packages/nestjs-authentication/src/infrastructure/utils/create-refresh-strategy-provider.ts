@@ -3,13 +3,13 @@ import { type Provider } from '@nestjs/common';
 import {
   AUTHENTICATION_JWT_PORT_TOKEN,
   AUTHENTICATION_USER_PORT_TOKEN,
-} from '../../authentication.constants';
-import { RefreshStrategyPolicy } from '../../domain/policies/refresh-strategy.policy';
-import { type JwtPort } from '../../domain/ports/jwt.port';
-import { type UserPort } from '../../domain/ports/user.port';
-import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface';
-import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception';
-import { RefreshStrategy } from '../strategies/refresh/refresh.strategy';
+} from '../../authentication.constants.js';
+import { RefreshStrategyPolicy } from '../../domain/policies/refresh-strategy.policy.js';
+import { type JwtPort } from '../../domain/ports/jwt.port.js';
+import { type UserPort } from '../../domain/ports/user.port.js';
+import { type AuthenticationOptionsInterface } from '../config/interfaces/authentication-options.interface.js';
+import { AuthenticationFeatureConfigException } from '../exceptions/authentication-feature-config.exception.js';
+import { RefreshStrategy } from '../strategies/refresh/refresh.strategy.js';
 
 export function createRefreshStrategyProvider(
   rawOptionsToken: symbol,

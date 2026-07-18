@@ -1,4 +1,4 @@
-import { OtpPolicy, type OtpPolicySettingsInterface } from './otp.policy';
+import { OtpPolicy, type OtpPolicySettingsInterface } from './otp.policy.js';
 
 export interface VerifyPolicySettingsInterface extends OtpPolicySettingsInterface {}
 

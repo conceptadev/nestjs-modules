@@ -1,6 +1,6 @@
 import { type SpecificationInterface } from '@concepta/nestjs-core';
 
-import { EntitySpecification } from './entity.specification';
+import { EntitySpecification } from './entity.specification.js';
 
 /**
  * Factory for creating repository-specific specifications.

@@ -1,6 +1,6 @@
 import { UseInterceptors } from '@nestjs/common';
 
-import { CrudSerializeInterceptor } from '../../interceptors/crud-serialize.interceptor';
+import { CrudSerializeInterceptor } from '../../interceptors/crud-serialize.interceptor.js';
 
 /**
  * Crud initialize serialization decorator.

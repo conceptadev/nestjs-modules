@@ -3,7 +3,7 @@ import { Column } from 'typeorm';
 import { ReferenceId } from '@concepta/nestjs-core';
 import { CommonPostgresEntity } from '@concepta/nestjs-repository-typeorm';
 
-import { UserCredentialEntityInterface } from '../../../domain/interfaces/user-credential-entity.interface';
+import { UserCredentialEntityInterface } from '../../../domain/interfaces/user-credential-entity.interface.js';
 
 export abstract class UserCredentialPostgresEntity
   extends CommonPostgresEntity

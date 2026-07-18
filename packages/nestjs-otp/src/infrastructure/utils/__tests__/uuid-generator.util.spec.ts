@@ -1,6 +1,6 @@
 import { isUUID } from 'class-validator';
 
-import { uuidGeneratorUtil } from '../uuid-generator.util';
+import { uuidGeneratorUtil } from '../uuid-generator.util.js';
 
 describe(uuidGeneratorUtil.name, () => {
   it('should return a valid UUID', () => {

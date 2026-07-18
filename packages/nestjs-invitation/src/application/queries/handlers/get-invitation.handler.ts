@@ -1,10 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { Invitation } from '../../../domain/aggregates/invitation';
-import { InvitationRepositoryInterface } from '../../../domain/repositories/invitation-repository.interface';
-import { INVITATION_MODULE_REPOSITORY_TOKEN } from '../../../invitation.constants';
-import { GetInvitationQuery } from '../impl/get-invitation.query';
+import { Invitation } from '../../../domain/aggregates/invitation.js';
+import { InvitationRepositoryInterface } from '../../../domain/repositories/invitation-repository.interface.js';
+import { INVITATION_MODULE_REPOSITORY_TOKEN } from '../../../invitation.constants.js';
+import { GetInvitationQuery } from '../impl/get-invitation.query.js';
 
 @QueryHandler(GetInvitationQuery)
 export class GetInvitationHandler implements IQueryHandler<GetInvitationQuery> {

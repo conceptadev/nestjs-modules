@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
-import { PasswordException } from './password.exception';
+import { PasswordException } from './password.exception.js';
 
 export class PasswordUsedRecentlyException extends PasswordException {
   constructor(options?: RuntimeExceptionOptions) {

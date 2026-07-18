@@ -2,10 +2,10 @@ import {
   createMockEventContext,
   createMockRoleAssignmentEntity,
   toRoleAssignmentDomain,
-} from '../../../__tests__/helpers/mock.helpers';
-import { RoleAssignedEvent } from '../../events/role-assigned.event';
-import { RoleRevokedEvent } from '../../events/role-revoked.event';
-import { RoleAssignment } from '../role-assignment';
+} from '../../../__tests__/helpers/mock.helpers.js';
+import { RoleAssignedEvent } from '../../events/role-assigned.event.js';
+import { RoleRevokedEvent } from '../../events/role-revoked.event.js';
+import { RoleAssignment } from '../role-assignment.js';
 
 describe(RoleAssignment.name, () => {
   const eventContext = createMockEventContext();

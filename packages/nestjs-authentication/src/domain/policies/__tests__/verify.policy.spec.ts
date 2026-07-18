@@ -1,7 +1,7 @@
 import {
   VerifyPolicy,
   type VerifyPolicySettingsInterface,
-} from '../verify.policy';
+} from '../verify.policy.js';
 
 describe(VerifyPolicy.name, () => {
   const defaultSettings: VerifyPolicySettingsInterface = {

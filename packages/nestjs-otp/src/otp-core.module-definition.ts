@@ -9,30 +9,30 @@ import { CqrsModule } from '@nestjs/cqrs';
 
 import { createSettingsProvider } from '@concepta/nestjs-core';
 
-import { ClearOtpHistoryHandler } from './application/commands/handlers/clear-otp-history.handler';
-import { ClearOtpsHandler } from './application/commands/handlers/clear-otps.handler';
-import { ConsumeOtpHandler } from './application/commands/handlers/consume-otp.handler';
-import { CreateOtpHandler } from './application/commands/handlers/create-otp.handler';
-import { DeactivateOtpHandler } from './application/commands/handlers/deactivate-otp.handler';
-import { RemoveOtpHandler } from './application/commands/handlers/remove-otp.handler';
-import { OtpHistoryCleanupListener } from './application/listeners/otp-history-cleanup.listener';
-import { FindActiveOtpHandler } from './application/queries/handlers/find-active-otp.handler';
-import { FindAssignedOtpsHandler } from './application/queries/handlers/find-assigned-otps.handler';
-import { GetOtpHandler } from './application/queries/handlers/get-otp.handler';
-import { ValidateOtpHandler } from './application/queries/handlers/validate-otp.handler';
-import { OtpHistoryCleanupService } from './domain/services/otp-history-cleanup.service';
-import { OtpContextOverlay } from './gateways/otp-context.overlay';
-import { type OtpExtrasInterface } from './infrastructure/config/interfaces/otp-extras.interface';
-import { type OtpOptionsInterface } from './infrastructure/config/interfaces/otp-options.interface';
-import { type OtpSettingsInterface } from './infrastructure/config/interfaces/otp-settings.interface';
-import { otpDefaultConfig } from './infrastructure/config/otp-default.config';
-import { OtpRepositoryResolver } from './infrastructure/persistence/otp-repository.resolver';
-import { OtpMapper } from './infrastructure/persistence/otp.mapper';
+import { ClearOtpHistoryHandler } from './application/commands/handlers/clear-otp-history.handler.js';
+import { ClearOtpsHandler } from './application/commands/handlers/clear-otps.handler.js';
+import { ConsumeOtpHandler } from './application/commands/handlers/consume-otp.handler.js';
+import { CreateOtpHandler } from './application/commands/handlers/create-otp.handler.js';
+import { DeactivateOtpHandler } from './application/commands/handlers/deactivate-otp.handler.js';
+import { RemoveOtpHandler } from './application/commands/handlers/remove-otp.handler.js';
+import { OtpHistoryCleanupListener } from './application/listeners/otp-history-cleanup.listener.js';
+import { FindActiveOtpHandler } from './application/queries/handlers/find-active-otp.handler.js';
+import { FindAssignedOtpsHandler } from './application/queries/handlers/find-assigned-otps.handler.js';
+import { GetOtpHandler } from './application/queries/handlers/get-otp.handler.js';
+import { ValidateOtpHandler } from './application/queries/handlers/validate-otp.handler.js';
+import { OtpHistoryCleanupService } from './domain/services/otp-history-cleanup.service.js';
+import { OtpContextOverlay } from './gateways/otp-context.overlay.js';
+import { type OtpExtrasInterface } from './infrastructure/config/interfaces/otp-extras.interface.js';
+import { type OtpOptionsInterface } from './infrastructure/config/interfaces/otp-options.interface.js';
+import { type OtpSettingsInterface } from './infrastructure/config/interfaces/otp-settings.interface.js';
+import { otpDefaultConfig } from './infrastructure/config/otp-default.config.js';
+import { OtpRepositoryResolver } from './infrastructure/persistence/otp-repository.resolver.js';
+import { OtpMapper } from './infrastructure/persistence/otp.mapper.js';
 import {
   OTP_CUSTOM_REPOSITORY_TOKEN,
   OTP_MODULE_SETTINGS_TOKEN,
   OTP_REPOSITORY_RESOLVER_TOKEN,
-} from './otp.constants';
+} from './otp.constants.js';
 
 const RAW_OPTIONS_TOKEN = Symbol('__OTP_MODULE_RAW_OPTIONS_TOKEN__');
 

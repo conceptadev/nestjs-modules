@@ -7,11 +7,11 @@ import { type QueryBus } from '@nestjs/cqrs';
 
 import { ActionEnum } from '@concepta/nestjs-core';
 
-import { ACCESS_CONTROL_MODULE_GRANT_METADATA } from '../../../access-control.constants';
-import { type AccessControlSettingsInterface } from '../../../infrastructure/config/interfaces/access-control-settings.interface';
-import { FilterResponseAttributesQuery } from '../impl/filter-response-attributes.query';
+import { ACCESS_CONTROL_MODULE_GRANT_METADATA } from '../../../access-control.constants.js';
+import { type AccessControlSettingsInterface } from '../../../infrastructure/config/interfaces/access-control-settings.interface.js';
+import { FilterResponseAttributesQuery } from '../impl/filter-response-attributes.query.js';
 
-import { FilterResponseAttributesHandler } from './filter-response-attributes.handler';
+import { FilterResponseAttributesHandler } from './filter-response-attributes.handler.js';
 
 describe(FilterResponseAttributesHandler.name, () => {
   const resource = 'user_resource';

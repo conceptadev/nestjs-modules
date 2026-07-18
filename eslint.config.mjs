@@ -5,6 +5,28 @@ import importPlugin from 'eslint-plugin-import';
 import tsdocPlugin from 'eslint-plugin-tsdoc';
 import jsdocPlugin from 'eslint-plugin-jsdoc';
 
+// The 13 packages migrated to v8 (nodenext, DDD) — same set as root
+// tsconfig.json's `references` and tsconfig.eslint.json's `include`. Only
+// these get type-aware linting; older packages predate the migration and
+// aren't part of the tsconfig project-reference graph the parser resolves
+// against, so linting them with a `project` would fail to find the file.
+const v8Packages = [
+  'nestjs-core',
+  'nestjs-repository',
+  'nestjs-repository-typeorm',
+  'nestjs-crud',
+  'nestjs-cache',
+  'nestjs-otp',
+  'nestjs-role',
+  'nestjs-password',
+  'nestjs-user',
+  'nestjs-invitation',
+  'nestjs-federated',
+  'nestjs-authentication',
+  'nestjs-access-control',
+];
+const v8Files = v8Packages.map((name) => `packages/${name}/src/**/*.ts`);
+
 export default tseslint.config(
   // Ignore patterns
   {
@@ -19,14 +41,13 @@ export default tseslint.config(
     ],
   },
 
-  // Extend @concepta/eslint-config/nest (filter out undefined configs)
-  ...conceptaConfig.filter(config => config !== undefined),
-
-  // JSDoc recommended config
-  jsdocPlugin.configs['flat/recommended-typescript'],
-
-  // Project-specific overrides
+  // Type-aware rules, scoped to the migrated v8 packages
   {
+    files: v8Files,
+    extends: [
+      ...conceptaConfig.filter((config) => config !== undefined),
+      jsdocPlugin.configs['flat/recommended-typescript'],
+    ],
     languageOptions: {
       parserOptions: {
         project: './tsconfig.eslint.json',
@@ -91,13 +112,7 @@ export default tseslint.config(
         'error',
         { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
       ],
-    },
-  },
 
-  // TypeScript files override
-  {
-    files: ['**/*.ts'],
-    rules: {
       'jsdoc/require-jsdoc': 'off',
       'jsdoc/require-param': 'off',
       'jsdoc/require-returns': 'off',
@@ -106,7 +121,10 @@ export default tseslint.config(
 
   // Spec and fixture files override
   {
-    files: ['**/*.spec.ts', '**/*.fixture.ts'],
+    files: v8Packages.flatMap((name) => [
+      `packages/${name}/src/**/*.spec.ts`,
+      `packages/${name}/src/**/*.fixture.ts`,
+    ]),
     rules: {
       '@darraghor/nestjs-typed/controllers-should-supply-api-tags': 'off',
       '@darraghor/nestjs-typed/api-method-should-specify-api-response': 'off',

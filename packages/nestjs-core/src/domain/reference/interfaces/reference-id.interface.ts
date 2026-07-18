@@ -1,4 +1,4 @@
-import { type ReferenceId } from './reference.types';
+import { type ReferenceId } from './reference.types.js';
 
 /**
  * Identifiable by id.

@@ -2,9 +2,9 @@ import { Exclude } from 'class-transformer';
 
 import { IntersectionType, PartialType, PickType } from '@nestjs/swagger';
 
-import { UserUpdatableInterface } from '../../domain/interfaces/user-updatable.interface';
+import { UserUpdatableInterface } from '../../domain/interfaces/user-updatable.interface.js';
 
-import { UserDto } from './user.dto';
+import { UserDto } from './user.dto.js';
 
 @Exclude()
 export class UserUpdateDto

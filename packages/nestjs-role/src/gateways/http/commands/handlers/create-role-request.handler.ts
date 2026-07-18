@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { CreateRoleCommand } from '../../../../application/commands/impl/create-role.command';
-import { Role } from '../../../../domain/aggregates/role';
-import { CreateRoleRequest } from '../impl/create-role.request';
+import { CreateRoleCommand } from '../../../../application/commands/impl/create-role.command.js';
+import { Role } from '../../../../domain/aggregates/role.js';
+import { CreateRoleRequest } from '../impl/create-role.request.js';
 
 @Injectable()
 export class CreateRoleRequestHandler {

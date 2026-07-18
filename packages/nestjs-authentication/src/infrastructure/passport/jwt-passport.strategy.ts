@@ -5,9 +5,9 @@ import { HttpStatus } from '@nestjs/common';
 
 import { NotAnErrorException } from '@concepta/nestjs-core';
 
-import { JwtVerifyException } from '../jwt/exceptions/jwt-verify.exception';
+import { JwtVerifyException } from '../jwt/exceptions/jwt-verify.exception.js';
 
-import { type JwtPassportOptionsInterface } from './interfaces/jwt-passport-options.interface';
+import { type JwtPassportOptionsInterface } from './interfaces/jwt-passport-options.interface.js';
 
 export class JwtPassportStrategy extends PassportStrategy {
   constructor(

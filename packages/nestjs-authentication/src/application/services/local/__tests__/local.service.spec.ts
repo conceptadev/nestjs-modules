@@ -1,9 +1,9 @@
 import { mock } from 'vitest-mock-extended';
 
-import { type PasswordPort } from '../../../../domain/ports/password.port';
-import { type UserPort } from '../../../../domain/ports/user.port';
-import { type LocalValidateUserInterface } from '../interfaces/local-validate-user.interface';
-import { LocalService } from '../local.service';
+import { type PasswordPort } from '../../../../domain/ports/password.port.js';
+import { type UserPort } from '../../../../domain/ports/user.port.js';
+import { type LocalValidateUserInterface } from '../interfaces/local-validate-user.interface.js';
+import { LocalService } from '../local.service.js';
 
 describe(LocalService.name, () => {
   const USERNAME = 'test';

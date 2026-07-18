@@ -4,9 +4,9 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { EventContextHost } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { RoleAssignmentRepositoryResolverInterface } from '../../../domain/repositories/role-assignment-repository-resolver.interface';
-import { ROLE_ASSIGNMENT_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants';
-import { RevokeRoleCommand } from '../impl/revoke-role.command';
+import { RoleAssignmentRepositoryResolverInterface } from '../../../domain/repositories/role-assignment-repository-resolver.interface.js';
+import { ROLE_ASSIGNMENT_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants.js';
+import { RevokeRoleCommand } from '../impl/revoke-role.command.js';
 
 @CommandHandler(RevokeRoleCommand)
 export class RevokeRoleHandler implements ICommandHandler<RevokeRoleCommand> {

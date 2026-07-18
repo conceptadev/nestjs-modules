@@ -2,20 +2,20 @@ import { applyDecorators, Get, type PlainLiteralObject } from '@nestjs/common';
 
 import { Operation } from '@concepta/nestjs-core';
 
-import { CrudReadHandler } from '../../../application/queries/handlers/crud-read.handler';
-import { CrudReadQuery } from '../../../application/queries/impl/crud-read.query';
-import { CRUD_MODULE_ROUTE_ID_DEFAULT_PATH } from '../../../crud.constants';
-import { type CrudRouteQueryOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface';
-import { getTransactionalDecorators } from '../../utils/get-transactional-decorators';
-import { CrudApiOperation } from '../openapi/crud-api-operation.decorator';
-import { CrudApiParam } from '../openapi/crud-api-param.decorator';
-import { CrudApiQuery } from '../openapi/crud-api-query.decorator';
-import { CrudApiResponse } from '../openapi/crud-api-response.decorator';
-import { CrudOperation } from '../routes/crud-operation.decorator';
-import { CrudQueryHandler } from '../routes/crud-query-handler.decorator';
-import { CrudQuery } from '../routes/crud-query.decorator';
-import { CrudSerialize } from '../routes/crud-serialize.decorator';
-import { CrudValidate } from '../routes/crud-validate.decorator';
+import { CrudReadHandler } from '../../../application/queries/handlers/crud-read.handler.js';
+import { CrudReadQuery } from '../../../application/queries/impl/crud-read.query.js';
+import { CRUD_MODULE_ROUTE_ID_DEFAULT_PATH } from '../../../crud.constants.js';
+import { type CrudRouteQueryOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface.js';
+import { getTransactionalDecorators } from '../../utils/get-transactional-decorators.js';
+import { CrudApiOperation } from '../openapi/crud-api-operation.decorator.js';
+import { CrudApiParam } from '../openapi/crud-api-param.decorator.js';
+import { CrudApiQuery } from '../openapi/crud-api-query.decorator.js';
+import { CrudApiResponse } from '../openapi/crud-api-response.decorator.js';
+import { CrudOperation } from '../routes/crud-operation.decorator.js';
+import { CrudQueryHandler } from '../routes/crud-query-handler.decorator.js';
+import { CrudQuery } from '../routes/crud-query.decorator.js';
+import { CrudSerialize } from '../routes/crud-serialize.decorator.js';
+import { CrudValidate } from '../routes/crud-validate.decorator.js';
 
 /**
  * CRUD Read route decorator

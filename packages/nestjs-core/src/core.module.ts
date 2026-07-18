@@ -4,7 +4,7 @@ import {
   CoreAsyncOptions,
   CoreModuleClass,
   CoreOptions,
-} from './core.module-definition';
+} from './core.module-definition.js';
 
 @Module({})
 export class CoreModule extends CoreModuleClass {

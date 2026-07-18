@@ -9,15 +9,15 @@ import {
   AUTHOR_ENTITY_TOKEN,
   POST_ENTITY_TOKEN,
   TAG_ENTITY_TOKEN,
-} from '../../__fixtures__/repository/config/relation.constants.fixture';
-import { AuthorEntityFixture } from '../../__fixtures__/repository/entity/author.entity.fixture';
-import { PostEntityFixture } from '../../__fixtures__/repository/entity/post.entity.fixture';
-import { TagEntityFixture } from '../../__fixtures__/repository/entity/tag.entity.fixture';
-import { AuthorFactoryFixture } from '../../__fixtures__/repository/factory/author.factory.fixture';
-import { PostFactoryFixture } from '../../__fixtures__/repository/factory/post.factory.fixture';
-import { TagFactoryFixture } from '../../__fixtures__/repository/factory/tag.factory.fixture';
-import { RelationAppModuleFixture } from '../../__fixtures__/repository/module/relation-app.module.fixture';
-import { type TypeOrmRepository } from '../typeorm-repository';
+} from '../../__fixtures__/repository/config/relation.constants.fixture.js';
+import { AuthorEntityFixture } from '../../__fixtures__/repository/entity/author.entity.fixture.js';
+import { PostEntityFixture } from '../../__fixtures__/repository/entity/post.entity.fixture.js';
+import { TagEntityFixture } from '../../__fixtures__/repository/entity/tag.entity.fixture.js';
+import { AuthorFactoryFixture } from '../../__fixtures__/repository/factory/author.factory.fixture.js';
+import { PostFactoryFixture } from '../../__fixtures__/repository/factory/post.factory.fixture.js';
+import { TagFactoryFixture } from '../../__fixtures__/repository/factory/tag.factory.fixture.js';
+import { RelationAppModuleFixture } from '../../__fixtures__/repository/module/relation-app.module.fixture.js';
+import { type TypeOrmRepository } from '../typeorm-repository.js';
 
 describe('TypeOrmRepository (relations)', () => {
   let authorRepo: TypeOrmRepository<AuthorEntityFixture>;

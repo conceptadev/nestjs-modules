@@ -10,55 +10,55 @@ import { ExceptionsFilter, Ctx } from '@concepta/nestjs-core';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
-import { CrudUpdateHandler } from '../application/commands/handlers/crud-update.handler';
-import { CrudListHandler } from '../application/queries/handlers/crud-list.handler';
-import { CrudReadHandler } from '../application/queries/handlers/crud-read.handler';
+import { CrudUpdateHandler } from '../application/commands/handlers/crud-update.handler.js';
+import { CrudListHandler } from '../application/queries/handlers/crud-list.handler.js';
+import { CrudReadHandler } from '../application/queries/handlers/crud-read.handler.js';
 import {
   createQueryHandler,
   createCommandHandler,
-} from '../application/utils/create-operation-handlers';
-import { CrudModule } from '../crud.module';
-import { CrudAdapter } from '../infrastructure/adapters/crud.adapter';
-import { CrudController } from '../infrastructure/decorators/controller/crud-controller.decorator';
-import { CrudList } from '../infrastructure/decorators/operations/crud-list.decorator';
-import { CrudRead } from '../infrastructure/decorators/operations/crud-read.decorator';
-import { CrudUpdate } from '../infrastructure/decorators/operations/crud-update.decorator';
-import { CrudBody } from '../infrastructure/decorators/params/crud-body.decorator';
-import { CrudAllow } from '../infrastructure/decorators/routes/crud-allow.decorator';
-import { CrudExclude } from '../infrastructure/decorators/routes/crud-exclude.decorator';
-import { CrudFilter } from '../infrastructure/decorators/routes/crud-filter.decorator';
-import { CrudLimit } from '../infrastructure/decorators/routes/crud-limit.decorator';
-import { CrudMaxLimit } from '../infrastructure/decorators/routes/crud-max-limit.decorator';
-import { CrudSort } from '../infrastructure/decorators/routes/crud-sort.decorator';
-import { CrudCtx } from '../infrastructure/interceptors/crud-context.overlay';
-import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/crud-context.interface';
-import { CrudQueryBuilder } from '../infrastructure/request/crud-query.builder';
-import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver';
-import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface';
-import { createCrudAdapterProvider } from '../infrastructure/utils/create-crud-adapter-provider';
+} from '../application/utils/create-operation-handlers.js';
+import { CrudModule } from '../crud.module.js';
+import { CrudAdapter } from '../infrastructure/adapters/crud.adapter.js';
+import { CrudController } from '../infrastructure/decorators/controller/crud-controller.decorator.js';
+import { CrudList } from '../infrastructure/decorators/operations/crud-list.decorator.js';
+import { CrudRead } from '../infrastructure/decorators/operations/crud-read.decorator.js';
+import { CrudUpdate } from '../infrastructure/decorators/operations/crud-update.decorator.js';
+import { CrudBody } from '../infrastructure/decorators/params/crud-body.decorator.js';
+import { CrudAllow } from '../infrastructure/decorators/routes/crud-allow.decorator.js';
+import { CrudExclude } from '../infrastructure/decorators/routes/crud-exclude.decorator.js';
+import { CrudFilter } from '../infrastructure/decorators/routes/crud-filter.decorator.js';
+import { CrudLimit } from '../infrastructure/decorators/routes/crud-limit.decorator.js';
+import { CrudMaxLimit } from '../infrastructure/decorators/routes/crud-max-limit.decorator.js';
+import { CrudSort } from '../infrastructure/decorators/routes/crud-sort.decorator.js';
+import { CrudCtx } from '../infrastructure/interceptors/crud-context.overlay.js';
+import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/crud-context.interface.js';
+import { CrudQueryBuilder } from '../infrastructure/request/crud-query.builder.js';
+import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver.js';
+import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface.js';
+import { createCrudAdapterProvider } from '../infrastructure/utils/create-crud-adapter-provider.js';
 
-import { createCrudOperationClasses } from '../__fixtures__/crud/create-crud-operation-classes.fixture';
+import { createCrudOperationClasses } from '../__fixtures__/crud/create-crud-operation-classes.fixture.js';
 import {
   CRUD_TEST_COMPANY_ENTITY_NAME,
   CRUD_TEST_NOTE_ENTITY_NAME,
   CRUD_TEST_PROJECT_ENTITY_NAME,
   CRUD_TEST_USER_ENTITY_NAME,
-} from '../__fixtures__/crud-test.constants';
-import { CompanyEntity } from '../__fixtures__/typeorm/company/company.entity';
-import { CompanyPaginatedDto } from '../__fixtures__/typeorm/company/dto/company-paginated.dto';
-import { CompanyDto } from '../__fixtures__/typeorm/company/dto/company.dto';
-import { NotePaginatedDto } from '../__fixtures__/typeorm/note/dto/note-paginated.dto';
-import { NoteDto } from '../__fixtures__/typeorm/note/dto/note.dto';
-import { NoteEntity } from '../__fixtures__/typeorm/note/note.entity';
-import { ormSqliteConfig } from '../__fixtures__/typeorm/orm.sqlite.config';
-import { ProjectCreateDto } from '../__fixtures__/typeorm/project/dto/project-create.dto';
-import { ProjectPaginatedDto } from '../__fixtures__/typeorm/project/dto/project-paginated.dto';
-import { ProjectDto } from '../__fixtures__/typeorm/project/dto/project.dto';
-import { ProjectEntity } from '../__fixtures__/typeorm/project/project.entity';
-import { Seeds } from '../__fixtures__/typeorm/seeds';
-import { UserPaginatedDto } from '../__fixtures__/typeorm/users/dto/user-paginated.dto';
-import { UserDto } from '../__fixtures__/typeorm/users/dto/user.dto';
-import { UserEntity } from '../__fixtures__/typeorm/users/user.entity';
+} from '../__fixtures__/crud-test.constants.js';
+import { CompanyEntity } from '../__fixtures__/typeorm/company/company.entity.js';
+import { CompanyPaginatedDto } from '../__fixtures__/typeorm/company/dto/company-paginated.dto.js';
+import { CompanyDto } from '../__fixtures__/typeorm/company/dto/company.dto.js';
+import { NotePaginatedDto } from '../__fixtures__/typeorm/note/dto/note-paginated.dto.js';
+import { NoteDto } from '../__fixtures__/typeorm/note/dto/note.dto.js';
+import { NoteEntity } from '../__fixtures__/typeorm/note/note.entity.js';
+import { ormSqliteConfig } from '../__fixtures__/typeorm/orm.sqlite.config.js';
+import { ProjectCreateDto } from '../__fixtures__/typeorm/project/dto/project-create.dto.js';
+import { ProjectPaginatedDto } from '../__fixtures__/typeorm/project/dto/project-paginated.dto.js';
+import { ProjectDto } from '../__fixtures__/typeorm/project/dto/project.dto.js';
+import { ProjectEntity } from '../__fixtures__/typeorm/project/project.entity.js';
+import { Seeds } from '../__fixtures__/typeorm/seeds.js';
+import { UserPaginatedDto } from '../__fixtures__/typeorm/users/dto/user-paginated.dto.js';
+import { UserDto } from '../__fixtures__/typeorm/users/dto/user.dto.js';
+import { UserEntity } from '../__fixtures__/typeorm/users/user.entity.js';
 
 // Create entity-specific operation classes
 const CompanyOps = createCrudOperationClasses<CompanyEntity>(

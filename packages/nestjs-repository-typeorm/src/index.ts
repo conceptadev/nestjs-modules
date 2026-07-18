@@ -1,16 +1,16 @@
 // Module
-export { TypeOrmRepositoryModule } from './typeorm-repository.module';
+export { TypeOrmRepositoryModule } from './typeorm-repository.module.js';
 
 // Repository
-export { TypeOrmRepository } from './repository/typeorm-repository';
-export { TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface';
+export { TypeOrmRepository } from './repository/typeorm-repository.js';
+export { TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface.js';
 
 // Transaction
-export { TypeOrmTransaction } from './transaction/typeorm-transaction';
-export { TypeOrmTransactionFactory } from './transaction/typeorm-transaction.factory';
+export { TypeOrmTransaction } from './transaction/typeorm-transaction.js';
+export { TypeOrmTransactionFactory } from './transaction/typeorm-transaction.factory.js';
 
 // base entities
-export { AuditPostgresEntity } from './entities/audit/audit-postgres.entity';
-export { AuditSqlLiteEntity } from './entities/audit/audit-sqlite.entity';
-export { CommonPostgresEntity } from './entities/common/common-postgres.entity';
-export { CommonSqliteEntity } from './entities/common/common-sqlite.entity';
+export { AuditPostgresEntity } from './entities/audit/audit-postgres.entity.js';
+export { AuditSqlLiteEntity } from './entities/audit/audit-sqlite.entity.js';
+export { CommonPostgresEntity } from './entities/common/common-postgres.entity.js';
+export { CommonSqliteEntity } from './entities/common/common-sqlite.entity.js';

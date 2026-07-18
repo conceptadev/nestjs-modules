@@ -1,17 +1,17 @@
 import { Injectable, type Type } from '@nestjs/common';
 import { MetadataScanner } from '@nestjs/core';
 
-import { createQuery } from '../../../application/utils/create-operation-classes';
-import { createQueryHandler } from '../../../application/utils/create-operation-handlers';
-import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver';
-import { CrudMetaview } from '../../services/crud-metaview.service';
+import { createQuery } from '../../../application/utils/create-operation-classes.js';
+import { createQueryHandler } from '../../../application/utils/create-operation-handlers.js';
+import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver.js';
+import { CrudMetaview } from '../../services/crud-metaview.service.js';
 import {
   hasExplicitConstructor,
   getControllerName,
-} from '../../utils/crud-infra.utils';
-import { CrudQueryHandler } from '../routes/crud-query-handler.decorator';
-import { CrudQuery } from '../routes/crud-query.decorator';
-import { applyConstructorInjection } from '../util/apply-constructor-injection.decorator';
+} from '../../utils/crud-infra.utils.js';
+import { CrudQueryHandler } from '../routes/crud-query-handler.decorator.js';
+import { CrudQuery } from '../routes/crud-query.decorator.js';
+import { applyConstructorInjection } from '../util/apply-constructor-injection.decorator.js';
 
 /**
  * Resolves query and query handler options for controller methods that have an operation.

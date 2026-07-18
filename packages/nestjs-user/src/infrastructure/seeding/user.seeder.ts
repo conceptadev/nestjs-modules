@@ -1,6 +1,6 @@
 import { Seeder } from '@concepta/typeorm-seeding';
 
-import { UserFactory } from './user.factory';
+import { UserFactory } from './user.factory.js';
 
 /**
  * User seeder

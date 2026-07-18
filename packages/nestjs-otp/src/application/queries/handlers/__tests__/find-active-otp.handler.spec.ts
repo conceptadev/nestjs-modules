@@ -4,10 +4,10 @@ import {
   createMockRepositoryResolver,
   DEFAULT_OTP_NAMESPACE,
   toOtpDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Otp } from '../../../../domain/aggregates/otp';
-import { FindActiveOtpQuery } from '../../impl/find-active-otp.query';
-import { FindActiveOtpHandler } from '../find-active-otp.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Otp } from '../../../../domain/aggregates/otp.js';
+import { FindActiveOtpQuery } from '../../impl/find-active-otp.query.js';
+import { FindActiveOtpHandler } from '../find-active-otp.handler.js';
 
 describe(FindActiveOtpHandler.name, () => {
   let handler: FindActiveOtpHandler;

@@ -13,14 +13,14 @@
 import {
   WhereCompoundOperator,
   WhereOperator,
-} from '../../../repository/repository.types';
-import { Where } from '../../../repository/where.helpers';
-import { type TestRoot, type TestRelation } from '../federation-test-data';
+} from '../../../repository/repository.types.js';
+import { Where } from '../../../repository/where.helpers.js';
+import { type TestRoot, type TestRelation } from '../federation-test-data.js';
 import {
   mockTestRepo,
   mockOrchestrator,
   mockOneToManyRelation,
-} from '../fixtures/federation-orchestrator.mock';
+} from '../fixtures/federation-orchestrator.mock.js';
 
 describe('FederationOrchestrator - Combined Root+Relation Filters', () => {
   describe('Combined Filters with Pagination', () => {

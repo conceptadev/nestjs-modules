@@ -1,4 +1,4 @@
-import { Transactional, TRANSACTIONAL_KEY } from './transactional.decorator';
+import { Transactional, TRANSACTIONAL_KEY } from './transactional.decorator.js';
 
 describe('Transactional decorator', () => {
   class TestError extends Error {}

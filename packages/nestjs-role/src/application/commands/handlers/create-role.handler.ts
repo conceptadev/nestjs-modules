@@ -4,10 +4,10 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { EventContextHost } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { Role } from '../../../domain/aggregates/role';
-import { RoleRepositoryResolverInterface } from '../../../domain/repositories/role-repository-resolver.interface';
-import { ROLE_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants';
-import { CreateRoleCommand } from '../impl/create-role.command';
+import { Role } from '../../../domain/aggregates/role.js';
+import { RoleRepositoryResolverInterface } from '../../../domain/repositories/role-repository-resolver.interface.js';
+import { ROLE_REPOSITORY_RESOLVER_TOKEN } from '../../../role.constants.js';
+import { CreateRoleCommand } from '../impl/create-role.command.js';
 
 @CommandHandler(CreateRoleCommand)
 export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand> {

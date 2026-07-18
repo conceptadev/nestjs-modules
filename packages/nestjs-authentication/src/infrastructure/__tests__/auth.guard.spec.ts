@@ -4,8 +4,8 @@ import { type ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard as PassportAuthGuard } from '@nestjs/passport';
 
-import { GuardsPolicy } from '../../domain/policies/guards.policy';
-import { AuthGuard } from '../auth.guard';
+import { GuardsPolicy } from '../../domain/policies/guards.policy.js';
+import { AuthGuard } from '../auth.guard.js';
 
 vi.mock('@nestjs/passport', () => ({
   AuthGuard: vi.fn().mockImplementation(() => vi.fn()),

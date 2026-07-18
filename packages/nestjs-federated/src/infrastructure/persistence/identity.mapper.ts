@@ -1,9 +1,9 @@
 import { DomainMapper } from '@concepta/nestjs-core/aggregate';
 
-import { Identity } from '../../domain/aggregates/identity';
-import { type IdentityInterface } from '../../domain/interfaces/identity.interface';
+import { Identity } from '../../domain/aggregates/identity.js';
+import { type IdentityInterface } from '../../domain/interfaces/identity.interface.js';
 
-import { type IdentityEntityInterface } from './interfaces/identity-entity.interface';
+import { type IdentityEntityInterface } from './interfaces/identity-entity.interface.js';
 
 export class IdentityMapper extends DomainMapper<
   IdentityEntityInterface,

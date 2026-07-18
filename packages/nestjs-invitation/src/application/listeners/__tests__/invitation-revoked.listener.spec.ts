@@ -2,9 +2,9 @@ import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
 import { EventContextHost } from '@concepta/nestjs-core';
 
-import { InvitationRevokedEvent } from '../../../domain/events/invitation-revoked.event';
-import { type InvitationOtpPort } from '../../../domain/ports/invitation-otp.port';
-import { InvitationRevokedListener } from '../invitation-revoked.listener';
+import { InvitationRevokedEvent } from '../../../domain/events/invitation-revoked.event.js';
+import { type InvitationOtpPort } from '../../../domain/ports/invitation-otp.port.js';
+import { InvitationRevokedListener } from '../invitation-revoked.listener.js';
 
 describe(InvitationRevokedListener.name, () => {
   let listener: InvitationRevokedListener;

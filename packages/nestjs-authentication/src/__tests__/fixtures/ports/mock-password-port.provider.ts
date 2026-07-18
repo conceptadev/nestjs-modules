@@ -7,8 +7,8 @@ import {
   PasswordPortSettings,
   SetPasswordCommandInterface,
   ValidatePasswordCommandInterface,
-} from '../../../domain/ports/password.port';
-import { createPasswordPortProvider } from '../../../infrastructure/utils/create-password-port-provider';
+} from '../../../domain/ports/password.port.js';
+import { createPasswordPortProvider } from '../../../infrastructure/utils/create-password-port-provider.js';
 
 // ── Mock commands ──
 

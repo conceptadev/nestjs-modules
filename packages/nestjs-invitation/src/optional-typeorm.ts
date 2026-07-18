@@ -1,2 +1,2 @@
-export { InvitationSqliteEntity } from './infrastructure/persistence/typeorm/invitation-sqlite.entity';
-export { InvitationPostgresEntity } from './infrastructure/persistence/typeorm/invitation-postgres.entity';
+export { InvitationSqliteEntity } from './infrastructure/persistence/typeorm/invitation-sqlite.entity.js';
+export { InvitationPostgresEntity } from './infrastructure/persistence/typeorm/invitation-postgres.entity.js';

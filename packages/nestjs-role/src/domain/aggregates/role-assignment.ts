@@ -6,10 +6,10 @@ import {
 } from '@concepta/nestjs-core';
 import { DomainAggregate } from '@concepta/nestjs-core/aggregate';
 
-import { type RoleEventHeaderInterface } from '../events/interfaces/role-event-header.interface';
-import { RoleAssignedEvent } from '../events/role-assigned.event';
-import { RoleRevokedEvent } from '../events/role-revoked.event';
-import { type RoleAssignmentInterface } from '../interfaces/role-assignment.interface';
+import { type RoleEventHeaderInterface } from '../events/interfaces/role-event-header.interface.js';
+import { RoleAssignedEvent } from '../events/role-assigned.event.js';
+import { RoleRevokedEvent } from '../events/role-revoked.event.js';
+import { type RoleAssignmentInterface } from '../interfaces/role-assignment.interface.js';
 
 export interface RoleAssignmentCreateProps {
   roleId: string;

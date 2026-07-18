@@ -15,10 +15,10 @@ import {
 
 import { Ctx } from '@concepta/nestjs-core';
 
-import { VerifyService } from '../../../../../application/services/verify/verify.service';
-import { AuthPublic } from '../../../../decorators/auth-public.decorator';
-import { VerifyUpdateDto } from '../../dto/verify-update.dto';
-import { VerifyDto } from '../../dto/verify.dto';
+import { VerifyService } from '../../../../../application/services/verify/verify.service.js';
+import { AuthPublic } from '../../../../decorators/auth-public.decorator.js';
+import { VerifyUpdateDto } from '../../dto/verify-update.dto.js';
+import { VerifyDto } from '../../dto/verify.dto.js';
 
 @Controller('auth/verify')
 @AuthPublic({ classLevel: true })

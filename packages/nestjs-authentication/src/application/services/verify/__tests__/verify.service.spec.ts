@@ -1,11 +1,11 @@
 import { mock } from 'vitest-mock-extended';
 
-import { VerifyPolicy } from '../../../../domain/policies/verify.policy';
-import { type OtpPort } from '../../../../domain/ports/otp.port';
-import { type UserPort } from '../../../../domain/ports/user.port';
-import { type VerifyNotificationPort } from '../../../../domain/ports/verify-notification.port';
-import { VerifyOtpInvalidException } from '../../../exceptions/verify-otp-invalid.exception';
-import { VerifyService } from '../verify.service';
+import { VerifyPolicy } from '../../../../domain/policies/verify.policy.js';
+import { type OtpPort } from '../../../../domain/ports/otp.port.js';
+import { type UserPort } from '../../../../domain/ports/user.port.js';
+import { type VerifyNotificationPort } from '../../../../domain/ports/verify-notification.port.js';
+import { VerifyOtpInvalidException } from '../../../exceptions/verify-otp-invalid.exception.js';
+import { VerifyService } from '../verify.service.js';
 
 describe(VerifyService, () => {
   const UserFixture = {

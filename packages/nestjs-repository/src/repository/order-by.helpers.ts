@@ -5,13 +5,13 @@ import { RuntimeException } from '@concepta/nestjs-core';
 import {
   type OrderSortKeyAsc,
   type OrderSortKeyDesc,
-} from './interfaces/order-sort-key.interface';
+} from './interfaces/order-sort-key.interface.js';
 import {
   type EntityColumn,
   type OrderClause,
   type OrderSortKey,
   SortOrder,
-} from './repository.types';
+} from './repository.types.js';
 
 /**
  * Order clause builder with both static and instance APIs.

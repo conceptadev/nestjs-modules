@@ -1,28 +1,17 @@
 {
   "name": "@concepta/nestjs-federated",
   "version": "8.0.0-alpha.7",
-  "main": "./dist/cjs/index.js",
-  "types": "./dist/cjs/index.d.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/index.d.ts",
-        "default": "./dist/cjs/index.js"
-      }
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./optional/typeorm": {
-      "import": {
-        "types": "./dist/esm/optional-typeorm.d.ts",
-        "default": "./dist/esm/optional-typeorm.js"
-      },
-      "require": {
-        "types": "./dist/cjs/optional-typeorm.d.ts",
-        "default": "./dist/cjs/optional-typeorm.js"
-      }
+      "types": "./dist/optional-typeorm.d.ts",
+      "default": "./dist/optional-typeorm.js"
     }
   },
   "license": "BSD-3-Clause",
@@ -30,10 +19,7 @@
     "access": "public"
   },
   "files": [
-    "dist/cjs/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
-    "dist/esm/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
-    "dist/cjs/package.json",
-    "dist/esm/package.json",
+    "dist/**/!(*.spec|*.e2e-spec|*.fixture|*.mock).{js,d.ts}",
     "!dist/**/__tests__/**",
     "!dist/**/__fixtures__/**"
   ],
@@ -64,6 +50,5 @@
     "typeorm": {
       "optional": true
     }
-  },
-  "module": "./dist/esm/index.js"
+  }
 }

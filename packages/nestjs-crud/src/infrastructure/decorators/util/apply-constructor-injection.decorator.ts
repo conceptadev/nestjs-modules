@@ -1,6 +1,6 @@
-import { CrudAdapter } from '../../adapters/crud.adapter';
+import { CrudAdapter } from '../../adapters/crud.adapter.js';
 
-import { InjectCrudAdapter } from './inject-crud-adapter.decorator';
+import { InjectCrudAdapter } from './inject-crud-adapter.decorator.js';
 
 /**
  * Creates a decorator that applies DI metadata to a handler class

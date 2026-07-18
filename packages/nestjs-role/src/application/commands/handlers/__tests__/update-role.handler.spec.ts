@@ -6,11 +6,11 @@ import {
   createMockRoleEntity,
   toRoleDomain,
   DEFAULT_ROLE_NAMESPACE,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { Role } from '../../../../domain/aggregates/role';
-import { RoleNotFoundException } from '../../../exceptions/role-not-found.exception';
-import { UpdateRoleCommand } from '../../impl/update-role.command';
-import { UpdateRoleHandler } from '../update-role.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { Role } from '../../../../domain/aggregates/role.js';
+import { RoleNotFoundException } from '../../../exceptions/role-not-found.exception.js';
+import { UpdateRoleCommand } from '../../impl/update-role.command.js';
+import { UpdateRoleHandler } from '../update-role.handler.js';
 
 describe(UpdateRoleHandler.name, () => {
   const ctx = {};

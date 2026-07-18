@@ -7,14 +7,14 @@ import {
   Inject,
 } from '@nestjs/common';
 
-import { AuthRouterGuards } from './auth-router.constants';
-import { AuthRouterGuardsRecord } from './auth-router.types';
-import { AuthRouterAuthenticationFailedException } from './exceptions/auth-router-authentication-failed.exception';
-import { AuthRouterConfigNotAvailableException } from './exceptions/auth-router-config-not-available.exception';
-import { AuthRouterGuardInvalidException } from './exceptions/auth-router-guard-invalid.exception';
-import { AuthRouterProviderMissingException } from './exceptions/auth-router-provider-missing.exception';
-import { AuthRouterProviderNotSupportedException } from './exceptions/auth-router-provider-not-supported.exception';
-import { AuthRouterException } from './exceptions/auth-router.exception';
+import { AuthRouterGuards } from './auth-router.constants.js';
+import { AuthRouterGuardsRecord } from './auth-router.types.js';
+import { AuthRouterAuthenticationFailedException } from './exceptions/auth-router-authentication-failed.exception.js';
+import { AuthRouterConfigNotAvailableException } from './exceptions/auth-router-config-not-available.exception.js';
+import { AuthRouterGuardInvalidException } from './exceptions/auth-router-guard-invalid.exception.js';
+import { AuthRouterProviderMissingException } from './exceptions/auth-router-provider-missing.exception.js';
+import { AuthRouterProviderNotSupportedException } from './exceptions/auth-router-provider-not-supported.exception.js';
+import { AuthRouterException } from './exceptions/auth-router.exception.js';
 
 /**
  * Auth Router

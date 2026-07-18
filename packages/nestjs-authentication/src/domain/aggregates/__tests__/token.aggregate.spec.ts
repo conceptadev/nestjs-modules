@@ -1,9 +1,9 @@
 import { EventContextHost } from '@concepta/nestjs-core';
 
-import { TokenIssuedEvent } from '../../events/token-issued.event';
-import { TokenRevokedEvent } from '../../events/token-revoked.event';
-import { TokenAlreadyRevokedException } from '../../exceptions/token-already-revoked.exception';
-import { Token } from '../token.aggregate';
+import { TokenIssuedEvent } from '../../events/token-issued.event.js';
+import { TokenRevokedEvent } from '../../events/token-revoked.event.js';
+import { TokenAlreadyRevokedException } from '../../exceptions/token-already-revoked.exception.js';
+import { Token } from '../token.aggregate.js';
 
 const eventContext = new EventContextHost({}, {});
 

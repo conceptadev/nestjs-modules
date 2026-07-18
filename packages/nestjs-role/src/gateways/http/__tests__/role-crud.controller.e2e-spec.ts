@@ -10,13 +10,13 @@ import { getDataSourceToken } from '@nestjs/typeorm';
 import { TransactionScope } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
-import { RoleEntityFixture } from '../../../__tests__/fixtures/entities/role-entity.fixture';
-import { type UserEntityFixture } from '../../../__tests__/fixtures/entities/user-entity.fixture';
-import { UserFactoryFixture } from '../../../__tests__/fixtures/factories/user.factory.fixture';
-import { RoleSeederFixture } from '../../../__tests__/fixtures/role.seeder.fixture';
-import { RoleFactory } from '../../../infrastructure/persistence/role.factory';
+import { RoleEntityFixture } from '../../../__tests__/fixtures/entities/role-entity.fixture.js';
+import { type UserEntityFixture } from '../../../__tests__/fixtures/entities/user-entity.fixture.js';
+import { UserFactoryFixture } from '../../../__tests__/fixtures/factories/user.factory.fixture.js';
+import { RoleSeederFixture } from '../../../__tests__/fixtures/role.seeder.fixture.js';
+import { RoleFactory } from '../../../infrastructure/persistence/role.factory.js';
 
-import { AppCrudModuleFixture } from './fixtures/app-crud.module.fixture';
+import { AppCrudModuleFixture } from './fixtures/app-crud.module.fixture.js';
 
 describe('RoleCrudController (e2e)', () => {
   let app: INestApplication;

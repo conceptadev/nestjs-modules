@@ -1,7 +1,7 @@
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 
-import { InvitationDispatchedEvent } from '../../domain/events/invitation-dispatched.event';
-import { InvitationNotificationPort } from '../../domain/ports/invitation-notification.port';
+import { InvitationDispatchedEvent } from '../../domain/events/invitation-dispatched.event.js';
+import { InvitationNotificationPort } from '../../domain/ports/invitation-notification.port.js';
 
 @EventsHandler(InvitationDispatchedEvent)
 export class InvitationDispatchedListener implements IEventHandler<InvitationDispatchedEvent> {

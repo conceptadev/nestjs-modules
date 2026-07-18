@@ -1,8 +1,8 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { type Token } from '../../../domain/aggregates/token.aggregate';
-import { type SignTokenCommandInterface } from '../../../domain/ports/jwt.port';
+import { type Token } from '../../../domain/aggregates/token.aggregate.js';
+import { type SignTokenCommandInterface } from '../../../domain/ports/jwt.port.js';
 
 export class SignAccessTokenCommand
   extends Command<string>

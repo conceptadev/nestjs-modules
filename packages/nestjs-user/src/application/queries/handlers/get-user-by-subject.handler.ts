@@ -1,10 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { User } from '../../../domain/aggregates/user';
-import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface';
-import { USER_REPOSITORY_TOKEN } from '../../../user.constants';
-import { GetUserBySubjectQuery } from '../impl/get-user-by-subject.query';
+import { User } from '../../../domain/aggregates/user.js';
+import { UserRepositoryInterface } from '../../../domain/repositories/user-repository.interface.js';
+import { USER_REPOSITORY_TOKEN } from '../../../user.constants.js';
+import { GetUserBySubjectQuery } from '../impl/get-user-by-subject.query.js';
 
 @QueryHandler(GetUserBySubjectQuery)
 export class GetUserBySubjectHandler implements IQueryHandler<GetUserBySubjectQuery> {

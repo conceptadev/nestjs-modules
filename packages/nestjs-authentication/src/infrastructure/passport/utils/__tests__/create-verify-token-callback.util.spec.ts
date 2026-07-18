@@ -1,7 +1,7 @@
 import { mock } from 'vitest-mock-extended';
 
-import { type JwtPort } from '../../../../domain/ports/jwt.port';
-import { createVerifyTokenCallback } from '../create-verify-token-callback.util';
+import { type JwtPort } from '../../../../domain/ports/jwt.port.js';
+import { createVerifyTokenCallback } from '../create-verify-token-callback.util.js';
 
 describe('createVerifyTokenCallback', () => {
   const token = 'raw.jwt.token';

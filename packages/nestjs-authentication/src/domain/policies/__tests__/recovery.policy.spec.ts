@@ -1,7 +1,7 @@
 import {
   RecoveryPolicy,
   type RecoveryPolicySettingsInterface,
-} from '../recovery.policy';
+} from '../recovery.policy.js';
 
 describe(RecoveryPolicy.name, () => {
   const defaultSettings: RecoveryPolicySettingsInterface = {

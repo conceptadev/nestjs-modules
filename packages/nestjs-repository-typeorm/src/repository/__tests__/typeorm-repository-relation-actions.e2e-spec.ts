@@ -9,19 +9,19 @@ import {
 } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
-import { relationOrmConfig } from '../../__fixtures__/repository/config/relation-ormconfig.fixture';
+import { relationOrmConfig } from '../../__fixtures__/repository/config/relation-ormconfig.fixture.js';
 import {
   AUTHOR_ENTITY_TOKEN,
   POST_ENTITY_TOKEN,
   TAG_ENTITY_TOKEN,
-} from '../../__fixtures__/repository/config/relation.constants.fixture';
-import { AuthorEntityFixture } from '../../__fixtures__/repository/entity/author.entity.fixture';
-import { PostEntityFixture } from '../../__fixtures__/repository/entity/post.entity.fixture';
-import { TagEntityFixture } from '../../__fixtures__/repository/entity/tag.entity.fixture';
-import { AuthorFactoryFixture } from '../../__fixtures__/repository/factory/author.factory.fixture';
-import { PostFactoryFixture } from '../../__fixtures__/repository/factory/post.factory.fixture';
-import { TypeOrmRepositoryModule } from '../../typeorm-repository.module';
-import { TypeOrmRepository } from '../typeorm-repository';
+} from '../../__fixtures__/repository/config/relation.constants.fixture.js';
+import { AuthorEntityFixture } from '../../__fixtures__/repository/entity/author.entity.fixture.js';
+import { PostEntityFixture } from '../../__fixtures__/repository/entity/post.entity.fixture.js';
+import { TagEntityFixture } from '../../__fixtures__/repository/entity/tag.entity.fixture.js';
+import { AuthorFactoryFixture } from '../../__fixtures__/repository/factory/author.factory.fixture.js';
+import { PostFactoryFixture } from '../../__fixtures__/repository/factory/post.factory.fixture.js';
+import { TypeOrmRepositoryModule } from '../../typeorm-repository.module.js';
+import { TypeOrmRepository } from '../typeorm-repository.js';
 
 describe('TypeOrmRepository relation actions (e2e)', () => {
   describe('metadata population', () => {

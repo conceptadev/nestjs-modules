@@ -7,17 +7,17 @@ import { TypeOrmModule, getDataSourceToken } from '@nestjs/typeorm';
 
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
-import { AppCcbCustomModuleFixture } from '../__fixtures__/app-ccb-custom.module.fixture';
-import { AppCcbSubModuleFixture } from '../__fixtures__/app-ccb-sub.module.fixture';
-import { AppCcbModuleFixture } from '../__fixtures__/app-ccb.module.fixture';
-import { AppResolverCqrsModuleFixture } from '../__fixtures__/app-resolver-cqrs.module.fixture';
-import { AppResolverOperationModuleFixture } from '../__fixtures__/app-resolver-operation.module.fixture';
-import { AppModuleFixture } from '../__fixtures__/app.module.fixture';
-import { default as ormConfig } from '../__fixtures__/ormconfig.fixture';
-import { PhotoDtoFixture } from '../__fixtures__/photo/dto/photo.dto.fixture';
-import { type PhotoFixture } from '../__fixtures__/photo/photo.entity.fixture';
-import { PhotoFactoryFixture } from '../__fixtures__/photo/photo.factory.fixture';
-import { PhotoSeederFixture } from '../__fixtures__/photo/photo.seeder.fixture';
+import { AppCcbCustomModuleFixture } from '../__fixtures__/app-ccb-custom.module.fixture.js';
+import { AppCcbSubModuleFixture } from '../__fixtures__/app-ccb-sub.module.fixture.js';
+import { AppCcbModuleFixture } from '../__fixtures__/app-ccb.module.fixture.js';
+import { AppResolverCqrsModuleFixture } from '../__fixtures__/app-resolver-cqrs.module.fixture.js';
+import { AppResolverOperationModuleFixture } from '../__fixtures__/app-resolver-operation.module.fixture.js';
+import { AppModuleFixture } from '../__fixtures__/app.module.fixture.js';
+import { default as ormConfig } from '../__fixtures__/ormconfig.fixture.js';
+import { PhotoDtoFixture } from '../__fixtures__/photo/dto/photo.dto.fixture.js';
+import { type PhotoFixture } from '../__fixtures__/photo/photo.entity.fixture.js';
+import { PhotoFactoryFixture } from '../__fixtures__/photo/photo.factory.fixture.js';
+import { PhotoSeederFixture } from '../__fixtures__/photo/photo.seeder.fixture.js';
 
 const toPhotoBody = (photo: PhotoFixture) =>
   instanceToPlain(

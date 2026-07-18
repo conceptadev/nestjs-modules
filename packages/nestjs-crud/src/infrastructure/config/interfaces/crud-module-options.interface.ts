@@ -1,4 +1,4 @@
-import { type CrudModuleSettingsInterface } from './crud-module-settings.interface';
+import { type CrudModuleSettingsInterface } from './crud-module-settings.interface.js';
 
 export interface CrudModuleOptionsInterface {
   /**

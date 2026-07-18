@@ -2,11 +2,11 @@ import {
   createMockEventContext,
   createMockRoleEntity,
   toRoleDomain,
-} from '../../../__tests__/helpers/mock.helpers';
-import { RoleCreatedEvent } from '../../events/role-created.event';
-import { RoleReplacedEvent } from '../../events/role-replaced.event';
-import { RoleUpdatedEvent } from '../../events/role-updated.event';
-import { Role } from '../role';
+} from '../../../__tests__/helpers/mock.helpers.js';
+import { RoleCreatedEvent } from '../../events/role-created.event.js';
+import { RoleReplacedEvent } from '../../events/role-replaced.event.js';
+import { RoleUpdatedEvent } from '../../events/role-updated.event.js';
+import { Role } from '../role.js';
 
 describe(Role.name, () => {
   const eventContext = createMockEventContext();

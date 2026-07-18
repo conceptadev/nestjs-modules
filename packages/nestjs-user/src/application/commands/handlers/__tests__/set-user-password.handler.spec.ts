@@ -5,12 +5,12 @@ import {
   createMockUserEntity,
   createMockUserRepository,
   toUserDomain,
-} from '../../../../__tests__/helpers/mock.helpers';
-import { type UserCredentials } from '../../../../domain/aggregates/user-credentials';
-import { UserNotFoundException } from '../../../exceptions/user-not-found.exception';
-import { type CreateUserCredentialCommand } from '../../impl/create-user-credential.command';
-import { SetUserPasswordCommand } from '../../impl/set-user-password.command';
-import { SetUserPasswordHandler } from '../set-user-password.handler';
+} from '../../../../__tests__/helpers/mock.helpers.js';
+import { type UserCredentials } from '../../../../domain/aggregates/user-credentials.js';
+import { UserNotFoundException } from '../../../exceptions/user-not-found.exception.js';
+import { type CreateUserCredentialCommand } from '../../impl/create-user-credential.command.js';
+import { SetUserPasswordCommand } from '../../impl/set-user-password.command.js';
+import { SetUserPasswordHandler } from '../set-user-password.handler.js';
 
 describe(SetUserPasswordHandler.name, () => {
   const userRepository = createMockUserRepository();

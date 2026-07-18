@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
-import { RoleRepositoryResolverInterface } from '../../domain/repositories/role-repository-resolver.interface';
-import { RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface';
-import { RoleEntityNotFoundException } from '../exceptions/role-entity-not-found.exception';
-import { getDynamicRoleRepositoryToken } from '../utils/create-role-repository-provider';
+import { RoleRepositoryResolverInterface } from '../../domain/repositories/role-repository-resolver.interface.js';
+import { RoleRepositoryInterface } from '../../domain/repositories/role-repository.interface.js';
+import { RoleEntityNotFoundException } from '../exceptions/role-entity-not-found.exception.js';
+import { getDynamicRoleRepositoryToken } from '../utils/create-role-repository-provider.js';
 
 @Injectable()
 export class RoleRepositoryResolver implements RoleRepositoryResolverInterface {

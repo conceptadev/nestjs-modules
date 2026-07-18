@@ -1,6 +1,6 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type SpecificationInterface } from '../interfaces/specification.interface';
+import { type SpecificationInterface } from '../interfaces/specification.interface.js';
 
 /**
  * Abstract base class for specifications.

@@ -2,8 +2,8 @@ import { mock } from 'vitest-mock-extended';
 
 import { NotAnErrorException } from '@concepta/nestjs-core';
 
-import { type JwtPassportOptionsInterface } from '../interfaces/jwt-passport-options.interface';
-import { JwtPassportStrategy } from '../jwt-passport.strategy';
+import { type JwtPassportOptionsInterface } from '../interfaces/jwt-passport-options.interface.js';
+import { JwtPassportStrategy } from '../jwt-passport.strategy.js';
 
 describe(JwtPassportStrategy, () => {
   let jwtStrategyOptions: JwtPassportOptionsInterface;

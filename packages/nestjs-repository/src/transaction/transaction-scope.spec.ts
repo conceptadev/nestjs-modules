@@ -2,17 +2,17 @@ import { Test, type TestingModule } from '@nestjs/testing';
 
 import { AppContextHost } from '@concepta/nestjs-core';
 
-import { TransactionRequiredException } from '../exceptions/transaction-required.exception';
-import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception';
-import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants';
+import { TransactionRequiredException } from '../exceptions/transaction-required.exception.js';
+import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception.js';
+import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants.js';
 
-import { type TransactionContextInterface } from './interfaces/transaction-context.interface';
-import { type TransactionInterface } from './interfaces/transaction.interface';
+import { type TransactionContextInterface } from './interfaces/transaction-context.interface.js';
+import { type TransactionInterface } from './interfaces/transaction.interface.js';
 import {
   TransactionFactoryRegistry,
   TRANSACTION_FACTORY_REGISTRY,
-} from './transaction-factory-registry';
-import { TransactionScope } from './transaction-scope';
+} from './transaction-factory-registry.js';
+import { TransactionScope } from './transaction-scope.js';
 
 describe(TransactionScope.name, () => {
   let transaction: TransactionScope;

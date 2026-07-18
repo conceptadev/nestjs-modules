@@ -4,11 +4,11 @@ import { createMockRepository } from '@concepta/nestjs-repository/testing';
 import {
   createMockOtpEntity,
   toOtpDomain,
-} from '../../../__tests__/helpers/mock.helpers';
-import { Otp } from '../../../domain/aggregates/otp';
-import { type OtpEntityInterface } from '../interfaces/otp-entity.interface';
-import { OtpMapper } from '../otp.mapper';
-import { OtpRepository } from '../otp.repository';
+} from '../../../__tests__/helpers/mock.helpers.js';
+import { Otp } from '../../../domain/aggregates/otp.js';
+import { type OtpEntityInterface } from '../interfaces/otp-entity.interface.js';
+import { OtpMapper } from '../otp.mapper.js';
+import { OtpRepository } from '../otp.repository.js';
 
 const mapper = new OtpMapper();
 

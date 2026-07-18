@@ -1,11 +1,11 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { CRUD_MODULE_CONTROLLER_ADAPTER_METADATA } from '../../../crud.constants';
-import { type CrudAdapterProvider } from '../../adapters/interfaces/crud-adapter.types';
+import { CRUD_MODULE_CONTROLLER_ADAPTER_METADATA } from '../../../crud.constants.js';
+import { type CrudAdapterProvider } from '../../adapters/interfaces/crud-adapter.types.js';
 import {
   CrudMetadataLookupTarget,
   CrudMetadata,
-} from '../../services/crud-metadata.service';
+} from '../../services/crud-metadata.service.js';
 
 /**
  * Set the adapter type used for the controller.

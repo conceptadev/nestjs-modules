@@ -1,10 +1,10 @@
 import { mock } from 'vitest-mock-extended';
 
-import { type JwtPort } from '../../../../domain/ports/jwt.port';
-import { type UserPort } from '../../../../domain/ports/user.port';
-import { AuthenticationAccessTokenException } from '../../../exceptions/authentication-access-token.exception';
-import { ValidateAndVerifyAccessTokenQuery } from '../../impl/validate-and-verify-access-token.query';
-import { ValidateAndVerifyAccessTokenHandler } from '../validate-and-verify-access-token.handler';
+import { type JwtPort } from '../../../../domain/ports/jwt.port.js';
+import { type UserPort } from '../../../../domain/ports/user.port.js';
+import { AuthenticationAccessTokenException } from '../../../exceptions/authentication-access-token.exception.js';
+import { ValidateAndVerifyAccessTokenQuery } from '../../impl/validate-and-verify-access-token.query.js';
+import { ValidateAndVerifyAccessTokenHandler } from '../validate-and-verify-access-token.handler.js';
 
 describe(ValidateAndVerifyAccessTokenHandler.name, () => {
   const token = 'access-token';

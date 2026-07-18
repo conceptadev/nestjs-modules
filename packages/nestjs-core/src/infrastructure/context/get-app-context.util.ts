@@ -1,4 +1,4 @@
-import { AppContextHost, APP_CONTEXT_KEY } from './app-context.host';
+import { AppContextHost, APP_CONTEXT_KEY } from './app-context.host.js';
 
 /**
  * Get or create the application context for a request.

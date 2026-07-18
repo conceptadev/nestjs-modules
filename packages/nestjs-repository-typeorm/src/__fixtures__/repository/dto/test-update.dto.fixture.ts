@@ -1,6 +1,6 @@
 import { IsOptional, IsString, MinLength } from 'class-validator';
 
-import { TestUpdatableInterfaceFixture } from '../interface/test-updatable.interface.fixture';
+import { TestUpdatableInterfaceFixture } from '../interface/test-updatable.interface.fixture.js';
 
 export class TestUpdateDtoFixture implements TestUpdatableInterfaceFixture {
   @IsString()

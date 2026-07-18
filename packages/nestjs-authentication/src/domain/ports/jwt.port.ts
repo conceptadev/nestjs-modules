@@ -1,7 +1,7 @@
 import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 import { Command, CommandBus, Query, QueryBus } from '@nestjs/cqrs';
 
-import { Token } from '../../domain/aggregates/token.aggregate';
+import { Token } from '../../domain/aggregates/token.aggregate.js';
 
 export interface SignTokenCommandInterface extends Command<string> {
   ctx: PlainLiteralObject;

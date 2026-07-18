@@ -1,7 +1,7 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 import { Command } from '@nestjs/cqrs';
 
-import { type OtpInterface } from '../../../domain/interfaces/otp.interface';
+import { type OtpInterface } from '../../../domain/interfaces/otp.interface.js';
 
 interface ClearOtpHistoryCommandOptions {
   keepHistoryDays?: number;

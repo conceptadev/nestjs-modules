@@ -1,12 +1,12 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type SpecificationInterface } from '../interfaces/specification.interface';
+import { type SpecificationInterface } from '../interfaces/specification.interface.js';
 
-import { AlwaysSpecification } from './specifications/always.specification';
-import { AndSpecification } from './specifications/and.specification';
-import { NeverSpecification } from './specifications/never.specification';
-import { NotSpecification } from './specifications/not.specification';
-import { OrSpecification } from './specifications/or.specification';
+import { AlwaysSpecification } from './specifications/always.specification.js';
+import { AndSpecification } from './specifications/and.specification.js';
+import { NeverSpecification } from './specifications/never.specification.js';
+import { NotSpecification } from './specifications/not.specification.js';
+import { OrSpecification } from './specifications/or.specification.js';
 
 /**
  * Factory for creating common specifications.

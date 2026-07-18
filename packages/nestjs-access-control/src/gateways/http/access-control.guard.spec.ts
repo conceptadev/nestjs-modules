@@ -2,9 +2,9 @@ import { mock } from 'vitest-mock-extended';
 
 import { type ExecutionContext } from '@nestjs/common';
 
-import { type AccessControlPort } from '../../application/ports/access-control.port';
+import { type AccessControlPort } from '../../application/ports/access-control.port.js';
 
-import { AccessControlGuard } from './access-control.guard';
+import { AccessControlGuard } from './access-control.guard.js';
 
 describe(AccessControlGuard.name, () => {
   it('delegates canActivate to AccessControlPort.checkAccess and returns its result', async () => {

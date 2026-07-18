@@ -8,12 +8,12 @@ import {
 } from '@concepta/nestjs-core/testing';
 import { createMockTransaction } from '@concepta/nestjs-repository/testing';
 
-import { type Otp } from '../../domain/aggregates/otp';
-import { type OtpSettingsInterface } from '../../infrastructure/config/interfaces/otp-settings.interface';
-import { type OtpEntityInterface } from '../../infrastructure/persistence/interfaces/otp-entity.interface';
-import { type OtpRepositoryResolver } from '../../infrastructure/persistence/otp-repository.resolver';
-import { OtpMapper } from '../../infrastructure/persistence/otp.mapper';
-import { type OtpRepository } from '../../infrastructure/persistence/otp.repository';
+import { type Otp } from '../../domain/aggregates/otp.js';
+import { type OtpSettingsInterface } from '../../infrastructure/config/interfaces/otp-settings.interface.js';
+import { type OtpEntityInterface } from '../../infrastructure/persistence/interfaces/otp-entity.interface.js';
+import { type OtpRepositoryResolver } from '../../infrastructure/persistence/otp-repository.resolver.js';
+import { OtpMapper } from '../../infrastructure/persistence/otp.mapper.js';
+import { type OtpRepository } from '../../infrastructure/persistence/otp.repository.js';
 
 export const DEFAULT_OTP_NAMESPACE = 'userOtp';
 

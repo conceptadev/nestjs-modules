@@ -5,14 +5,14 @@ import {
   type WhereCondition,
   isWhereCondition,
   isWhereCompound,
-} from '../repository/interfaces/where-clause.interface';
+} from '../repository/interfaces/where-clause.interface.js';
 import {
   WhereCompoundOperator,
   WhereOperator,
-} from '../repository/repository.types';
+} from '../repository/repository.types.js';
 
-import { FederationException } from './exceptions/federation.exception';
-import { type FederatedRelation } from './federation.types';
+import { FederationException } from './exceptions/federation.exception.js';
+import { type FederatedRelation } from './federation.types.js';
 
 /**
  * Separates a WhereClause tree into root conditions and

@@ -8,7 +8,7 @@ import {
   PlainLiteralObject,
 } from '@nestjs/common';
 
-import { OverlayRef } from '../../domain/context/overlay-ref';
+import { OverlayRef } from '../../domain/context/overlay-ref.js';
 
 @Injectable()
 export abstract class ContextOverlayInterceptor implements NestInterceptor {

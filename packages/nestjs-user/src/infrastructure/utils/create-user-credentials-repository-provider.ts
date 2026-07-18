@@ -5,11 +5,11 @@ import {
   type RepositoryInterface,
 } from '@concepta/nestjs-repository';
 
-import { type UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface';
-import { type UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface';
-import { USER_CREDENTIALS_REPOSITORY_TOKEN } from '../../user.constants';
-import { UserCredentialsMapper } from '../persistence/user-credentials.mapper';
-import { UserCredentialsRepository } from '../persistence/user-credentials.repository';
+import { type UserCredentialEntityInterface } from '../../domain/interfaces/user-credential-entity.interface.js';
+import { type UserCredentialsRepositoryInterface } from '../../domain/repositories/user-credentials-repository.interface.js';
+import { USER_CREDENTIALS_REPOSITORY_TOKEN } from '../../user.constants.js';
+import { UserCredentialsMapper } from '../persistence/user-credentials.mapper.js';
+import { UserCredentialsRepository } from '../persistence/user-credentials.repository.js';
 
 export function createUserCredentialsRepositoryProvider(
   entityKey?: string,
