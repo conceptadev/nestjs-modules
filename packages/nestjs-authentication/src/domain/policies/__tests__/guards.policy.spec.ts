@@ -15,7 +15,7 @@ describe(GuardsPolicy.name, () => {
   });
 
   it('should apply provided disable function', () => {
-    const disableFn = jest.fn().mockReturnValue(true);
+    const disableFn = vi.fn().mockReturnValue(true);
     const policy = new GuardsPolicy({ disable: disableFn });
 
     const result = policy.disable({} as never, {} as never);

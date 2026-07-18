@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type PlainLiteralObject } from '@nestjs/common';
 import { Command, type CommandBus } from '@nestjs/cqrs';
@@ -67,7 +67,8 @@ describe(RecoveryNotificationPort.name, () => {
 
   describe('sendRecoverLogin', () => {
     it('should dispatch command via commandBus', () => {
-      jest.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
 
       port.sendRecoverLogin({}, 'me@mail.com', 'username');
 
@@ -79,7 +80,8 @@ describe(RecoveryNotificationPort.name, () => {
 
   describe('sendRecoverPassword', () => {
     it('should dispatch command via commandBus', () => {
-      jest.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
 
       port.sendRecoverPassword({}, 'me@mail.com', {
         passcode: 'abc123',
@@ -94,7 +96,8 @@ describe(RecoveryNotificationPort.name, () => {
 
   describe('sendPasswordUpdated', () => {
     it('should dispatch command via commandBus', () => {
-      jest.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
 
       port.sendPasswordUpdated({}, 'me@mail.com');
 

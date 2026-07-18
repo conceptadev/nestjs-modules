@@ -1,4 +1,5 @@
-import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
+import { vi, type Mock } from 'vitest';
+import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
 import { AppContextHost } from '@concepta/nestjs-core';
 
@@ -9,8 +10,8 @@ import {
 import { type TransactionScope } from '../transaction/transaction-scope';
 
 export interface MockTransactionHandle {
-  onCommit: jest.Mock;
-  onRollback: jest.Mock;
+  onCommit: Mock;
+  onRollback: Mock;
 }
 
 /**
@@ -25,8 +26,8 @@ export function createMockTransaction(): {
   trxHandle: MockTransactionHandle;
 } {
   const trxHandle: MockTransactionHandle = {
-    onCommit: jest.fn(),
-    onRollback: jest.fn(),
+    onCommit: vi.fn(),
+    onRollback: vi.fn(),
   };
 
   const mockHost = new AppContextHost();

@@ -448,7 +448,7 @@ import {
 } from '@concepta/nestjs-core/testing';
 ```
 
-Each factory returns a `jest-mock-extended` `DeepMockProxy` of the
+Each factory returns a `vitest-mock-extended` `DeepMockProxy` of the
 corresponding CQRS class. `createMockEventPublisher` additionally pre-wires
 `mergeObjectContext` to return its argument unchanged, matching real runtime
 behavior.

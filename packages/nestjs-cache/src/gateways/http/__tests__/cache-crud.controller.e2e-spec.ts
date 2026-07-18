@@ -2,6 +2,7 @@ import assert from 'assert';
 import { randomUUID } from 'crypto';
 
 import supertest from 'supertest';
+import { type MockInstance } from 'vitest';
 
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -26,7 +27,7 @@ describe('CacheAssignmentController (e2e)', () => {
   let userFactory: UserFactoryFixture;
   let userCacheFactory: UserCacheFactoryFixture;
   let user: UserEntityFixture;
-  let txSpy: jest.SpyInstance;
+  let txSpy: MockInstance;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -36,7 +37,7 @@ describe('CacheAssignmentController (e2e)', () => {
     await app.init();
 
     const txScope = app.get(TransactionScope);
-    txSpy = jest.spyOn(txScope, 'run');
+    txSpy = vi.spyOn(txScope, 'run');
 
     seedingSource = new SeedingSource({
       dataSource: app.get(getDataSourceToken()),
@@ -57,7 +58,7 @@ describe('CacheAssignmentController (e2e)', () => {
   });
 
   afterEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     return app ? await app.close() : undefined;
   });
 

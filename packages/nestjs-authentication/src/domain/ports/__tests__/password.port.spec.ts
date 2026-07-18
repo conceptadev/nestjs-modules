@@ -51,7 +51,7 @@ describe(PasswordPort.name, () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [{ provide: CommandBus, useValue: { execute: jest.fn() } }],
+      providers: [{ provide: CommandBus, useValue: { execute: vi.fn() } }],
     }).compile();
 
     commandBus = module.get(CommandBus);
@@ -61,7 +61,7 @@ describe(PasswordPort.name, () => {
   describe('validate', () => {
     it('should dispatch ValidatePasswordCommand via commandBus', async () => {
       const target: ReferenceIdInterface = { id: 'user-1' };
-      jest.spyOn(commandBus, 'execute').mockResolvedValue(true);
+      vi.spyOn(commandBus, 'execute').mockResolvedValue(true);
 
       const result = await port.validate({}, 'my-password', target);
 
@@ -73,7 +73,7 @@ describe(PasswordPort.name, () => {
 
     it('should forward password and target to command', async () => {
       const target: ReferenceIdInterface = { id: 'user-1' };
-      jest.spyOn(commandBus, 'execute').mockResolvedValue(false);
+      vi.spyOn(commandBus, 'execute').mockResolvedValue(false);
 
       await port.validate({}, 'secret', target);
 
@@ -85,7 +85,7 @@ describe(PasswordPort.name, () => {
 
   describe('setPassword', () => {
     it('should dispatch SetPasswordCommand via commandBus', async () => {
-      jest.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
+      vi.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
 
       await port.setPassword({}, 'new-password', 'user-1');
 
@@ -95,7 +95,7 @@ describe(PasswordPort.name, () => {
     });
 
     it('should forward password and assigneeId to command', async () => {
-      jest.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
+      vi.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
 
       await port.setPassword({}, 'new-pass', 'user-42');
 

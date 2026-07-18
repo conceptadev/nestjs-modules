@@ -1,5 +1,5 @@
 import { AccessControl } from 'accesscontrol';
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';

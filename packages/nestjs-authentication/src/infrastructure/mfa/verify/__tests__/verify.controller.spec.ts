@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type VerifyService } from '../../../../application/services/verify/verify.service';
 import { type VerifyUpdateDto } from '../dto/verify-update.dto';
@@ -22,7 +22,8 @@ describe(VerifyControllerFixture.name, () => {
 
   describe('send', () => {
     it('should call send method of VerifyService', async () => {
-      const verifySendSpy = jest.spyOn(verifyService, 'send');
+      void verifyService.send;
+      const verifySendSpy = vi.spyOn(verifyService, 'send');
 
       await controller.send({}, dto);
 
@@ -32,7 +33,8 @@ describe(VerifyControllerFixture.name, () => {
 
   describe('confirm', () => {
     it('should call confirmUser method of VerifyService', async () => {
-      const confirmUserSpy = jest
+      void verifyService.confirmUser;
+      const confirmUserSpy = vi
         .spyOn(verifyService, 'confirmUser')
         .mockResolvedValue(null);
 
@@ -47,7 +49,8 @@ describe(VerifyControllerFixture.name, () => {
     });
 
     it('should call confirmUser method of VerifyService', async () => {
-      const confirmUserSpy = jest
+      void verifyService.confirmUser;
+      const confirmUserSpy = vi
         .spyOn(verifyService, 'confirmUser')
         .mockResolvedValue({
           id: '1',

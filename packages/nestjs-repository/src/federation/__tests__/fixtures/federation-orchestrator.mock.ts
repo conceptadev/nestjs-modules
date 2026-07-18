@@ -1,3 +1,5 @@
+import { vi, type Mocked, type Mock } from 'vitest';
+
 import { type PlainLiteralObject } from '@nestjs/common';
 import { type ModuleRef } from '@nestjs/core';
 
@@ -14,7 +16,7 @@ import { type FederatedRelation } from '../../federation.types';
 // ═══════════════════════════════════════════════════════════════════════════
 
 export type MockRepo<T extends PlainLiteralObject = PlainLiteralObject> =
-  jest.Mocked<RepositoryInterface<T>>;
+  Mocked<RepositoryInterface<T>>;
 
 export interface TestRoot {
   id: number;
@@ -80,7 +82,7 @@ export function mockTestRepo<T extends PlainLiteralObject = PlainLiteralObject>(
 export function mockOrchestrator(peerRepos: Record<string, MockRepo<any>>): {
   orchestrator: FederationOrchestrator;
   registry: RepositoryRegistryService;
-  moduleRef: { get: jest.Mock };
+  moduleRef: { get: Mock };
 } {
   const registry = new RepositoryRegistryService();
 
@@ -96,7 +98,7 @@ export function mockOrchestrator(peerRepos: Record<string, MockRepo<any>>): {
 
   // Mock ModuleRef.get to resolve peer repos by dynamic token
   const moduleRef = {
-    get: jest.fn((token: string) => {
+    get: vi.fn((token: string) => {
       for (const [entityName, repo] of Object.entries(peerRepos)) {
         if (token === getDynamicRepositoryToken(entityName)) {
           return repo;

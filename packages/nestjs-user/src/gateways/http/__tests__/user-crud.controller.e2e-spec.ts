@@ -1,4 +1,5 @@
 import supertest from 'supertest';
+import { type MockInstance } from 'vitest';
 
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -18,7 +19,7 @@ import { FakeAuthInterceptorFixture } from './fixtures/fake-auth.interceptor.fix
 describe('UserCrudController (e2e)', () => {
   let app: INestApplication;
   let seedingSource: SeedingSource;
-  let txSpy: jest.SpyInstance;
+  let txSpy: MockInstance;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -28,7 +29,7 @@ describe('UserCrudController (e2e)', () => {
     await app.init();
 
     const txScope = app.get(TransactionScope);
-    txSpy = jest.spyOn(txScope, 'run');
+    txSpy = vi.spyOn(txScope, 'run');
 
     seedingSource = new SeedingSource({
       dataSource: app.get(getDataSourceToken()),
@@ -44,7 +45,7 @@ describe('UserCrudController (e2e)', () => {
   });
 
   afterEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     return app ? await app.close() : undefined;
   });
 

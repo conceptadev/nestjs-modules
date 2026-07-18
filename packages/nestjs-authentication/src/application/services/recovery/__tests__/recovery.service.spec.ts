@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { RecoveryPolicy } from '../../../../domain/policies/recovery.policy';
 import { type OtpPort } from '../../../../domain/ports/otp.port';
@@ -51,7 +51,8 @@ describe(RecoveryService, () => {
 
   describe(RecoveryService.prototype.recoverLogin, () => {
     it('should send login recovery', async () => {
-      jest.spyOn(userPort, 'getByEmail').mockResolvedValue(UserFixture);
+      void userPort.getByEmail;
+      vi.spyOn(userPort, 'getByEmail').mockResolvedValue(UserFixture);
 
       const result = await recoveryService.recoverLogin({}, UserFixture.email);
 
@@ -72,8 +73,10 @@ describe(RecoveryService, () => {
 
   describe(RecoveryService.prototype.recoverPassword, () => {
     it('should send password recovery', async () => {
-      jest.spyOn(userPort, 'getByEmail').mockResolvedValue(UserFixture);
-      jest.spyOn(otpPort, 'create').mockResolvedValue({
+      void userPort.getByEmail;
+      vi.spyOn(userPort, 'getByEmail').mockResolvedValue(UserFixture);
+      void otpPort.create;
+      vi.spyOn(otpPort, 'create').mockResolvedValue({
         category: 'auth-recovery',
         type: 'uuid',
         passcode: 'GOOD_PASSCODE',
@@ -107,9 +110,10 @@ describe(RecoveryService, () => {
 
   describe(RecoveryService.prototype.validatePasscode, () => {
     it('should call otp validator', async () => {
-      jest
-        .spyOn(otpPort, 'validate')
-        .mockResolvedValue({ assigneeId: UserFixture.id });
+      void otpPort.validate;
+      vi.spyOn(otpPort, 'validate').mockResolvedValue({
+        assigneeId: UserFixture.id,
+      });
 
       await recoveryService.validatePasscode({}, 'GOOD_PASSCODE');
 
@@ -120,16 +124,18 @@ describe(RecoveryService, () => {
     });
 
     it('should validate good passcode', async () => {
-      jest
-        .spyOn(otpPort, 'validate')
-        .mockResolvedValue({ assigneeId: UserFixture.id });
+      void otpPort.validate;
+      vi.spyOn(otpPort, 'validate').mockResolvedValue({
+        assigneeId: UserFixture.id,
+      });
 
       const otp = await recoveryService.validatePasscode({}, 'GOOD_PASSCODE');
       expect(otp).toEqual({ assigneeId: UserFixture.id });
     });
 
     it('should not validate bad passcode', async () => {
-      jest.spyOn(otpPort, 'validate').mockResolvedValue(null);
+      void otpPort.validate;
+      vi.spyOn(otpPort, 'validate').mockResolvedValue(null);
 
       const otp = await recoveryService.validatePasscode({}, 'BAD_PASSCODE');
       expect(otp).toBeNull();
@@ -138,11 +144,14 @@ describe(RecoveryService, () => {
 
   describe(RecoveryService.prototype.updatePassword, () => {
     it('should call password port setPassword', async () => {
-      jest
-        .spyOn(otpPort, 'validate')
-        .mockResolvedValue({ assigneeId: UserFixture.id });
-      jest.spyOn(userPort, 'getById').mockResolvedValue(UserFixture);
-      jest.spyOn(userPort, 'getByEmail').mockResolvedValue(UserFixture);
+      void otpPort.validate;
+      vi.spyOn(otpPort, 'validate').mockResolvedValue({
+        assigneeId: UserFixture.id,
+      });
+      void userPort.getById;
+      vi.spyOn(userPort, 'getById').mockResolvedValue(UserFixture);
+      void userPort.getByEmail;
+      vi.spyOn(userPort, 'getByEmail').mockResolvedValue(UserFixture);
 
       await recoveryService.updatePassword(
         {},
@@ -159,11 +168,14 @@ describe(RecoveryService, () => {
     });
 
     it('should send success email', async () => {
-      jest
-        .spyOn(otpPort, 'validate')
-        .mockResolvedValue({ assigneeId: UserFixture.id });
-      jest.spyOn(userPort, 'getById').mockResolvedValue(UserFixture);
-      jest.spyOn(userPort, 'getByEmail').mockResolvedValue(UserFixture);
+      void otpPort.validate;
+      vi.spyOn(otpPort, 'validate').mockResolvedValue({
+        assigneeId: UserFixture.id,
+      });
+      void userPort.getById;
+      vi.spyOn(userPort, 'getById').mockResolvedValue(UserFixture);
+      void userPort.getByEmail;
+      vi.spyOn(userPort, 'getByEmail').mockResolvedValue(UserFixture);
 
       await recoveryService.updatePassword(
         {},
@@ -181,11 +193,14 @@ describe(RecoveryService, () => {
     });
 
     it('should update password', async () => {
-      jest
-        .spyOn(otpPort, 'validate')
-        .mockResolvedValue({ assigneeId: UserFixture.id });
-      jest.spyOn(userPort, 'getById').mockResolvedValue(UserFixture);
-      jest.spyOn(userPort, 'getByEmail').mockResolvedValue(UserFixture);
+      void otpPort.validate;
+      vi.spyOn(otpPort, 'validate').mockResolvedValue({
+        assigneeId: UserFixture.id,
+      });
+      void userPort.getById;
+      vi.spyOn(userPort, 'getById').mockResolvedValue(UserFixture);
+      void userPort.getByEmail;
+      vi.spyOn(userPort, 'getByEmail').mockResolvedValue(UserFixture);
 
       const user = await recoveryService.updatePassword(
         {},
@@ -197,7 +212,8 @@ describe(RecoveryService, () => {
     });
 
     it('should fail to update password', async () => {
-      jest.spyOn(otpPort, 'validate').mockResolvedValue(null);
+      void otpPort.validate;
+      vi.spyOn(otpPort, 'validate').mockResolvedValue(null);
 
       const user = await recoveryService.updatePassword(
         {},

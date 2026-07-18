@@ -1,10 +1,12 @@
+import { type MockInstance } from 'vitest';
+
 import { JwtPolicy } from '../jwt.policy';
 
 describe(JwtPolicy.name, () => {
-  let emitWarningSpy: jest.SpyInstance;
+  let emitWarningSpy: MockInstance<typeof process.emitWarning>;
 
   beforeEach(() => {
-    emitWarningSpy = jest
+    emitWarningSpy = vi
       .spyOn(process, 'emitWarning')
       .mockImplementation(() => undefined);
   });

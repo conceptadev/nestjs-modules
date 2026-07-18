@@ -1,3 +1,5 @@
+import { type Mock } from 'vitest';
+
 import {
   createMockOtpEntity,
   createMockOtpRepository,
@@ -66,7 +68,7 @@ describe(ValidateOtpHandler.name, () => {
       createMockOtpEntity({ expirationDate: new Date('2099-01-01') }),
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
-    (mockSettings.types['uuid'].validator as jest.Mock).mockReturnValue(false);
+    (mockSettings.types['uuid'].validator as Mock).mockReturnValue(false);
 
     const query = new ValidateOtpQuery(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',

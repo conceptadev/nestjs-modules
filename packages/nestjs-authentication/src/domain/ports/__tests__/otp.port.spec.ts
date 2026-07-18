@@ -84,11 +84,11 @@ describe(OtpPort.name, () => {
       providers: [
         {
           provide: CommandBus,
-          useValue: { execute: jest.fn() },
+          useValue: { execute: vi.fn() },
         },
         {
           provide: QueryBus,
-          useValue: { execute: jest.fn() },
+          useValue: { execute: vi.fn() },
         },
       ],
     }).compile();
@@ -108,7 +108,7 @@ describe(OtpPort.name, () => {
         active: true,
         assigneeId: 'user-1',
       };
-      jest.spyOn(commandBus, 'execute').mockResolvedValue(mockOtp);
+      vi.spyOn(commandBus, 'execute').mockResolvedValue(mockOtp);
 
       const otp: AuthenticationOtpCreatableInterface = {
         category: 'test',
@@ -131,7 +131,7 @@ describe(OtpPort.name, () => {
   describe('validate', () => {
     it('should dispatch ValidateOtpQuery via queryBus', async () => {
       const mockAssignee = { assigneeId: 'user-1' };
-      jest.spyOn(queryBus, 'execute').mockResolvedValue(mockAssignee);
+      vi.spyOn(queryBus, 'execute').mockResolvedValue(mockAssignee);
 
       const result = await port.validate({}, 'userOtp', {
         category: 'test',
@@ -145,7 +145,7 @@ describe(OtpPort.name, () => {
     });
 
     it('should return null when OTP not found', async () => {
-      jest.spyOn(queryBus, 'execute').mockResolvedValue(null);
+      vi.spyOn(queryBus, 'execute').mockResolvedValue(null);
 
       const result = await port.validate({}, 'userOtp', {
         category: 'test',
@@ -158,7 +158,7 @@ describe(OtpPort.name, () => {
 
   describe('clear', () => {
     it('should dispatch ClearOtpCommand via commandBus', async () => {
-      jest.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
+      vi.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
 
       await port.clear({}, 'userOtp', {
         category: 'test',

@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type JwtPort } from '../../../../domain/ports/jwt.port';
 import { VerifyAccessTokenQuery } from '../../impl/verify-access-token.query';
@@ -12,7 +12,8 @@ describe(VerifyAccessTokenHandler.name, () => {
 
   beforeEach(() => {
     jwtPort = mock<JwtPort>();
-    jest.spyOn(jwtPort, 'verifyAccessToken').mockResolvedValue(decoded);
+    void jwtPort.verifyAccessToken;
+    vi.spyOn(jwtPort, 'verifyAccessToken').mockResolvedValue(decoded);
     handler = new VerifyAccessTokenHandler(jwtPort);
   });
 
@@ -23,7 +24,8 @@ describe(VerifyAccessTokenHandler.name, () => {
   });
 
   it('should throw error on verify failure', async () => {
-    jest.spyOn(jwtPort, 'verifyAccessToken').mockRejectedValue(new Error());
+    void jwtPort.verifyAccessToken;
+    vi.spyOn(jwtPort, 'verifyAccessToken').mockRejectedValue(new Error());
     const query = new VerifyAccessTokenQuery({}, token);
     await expect(handler.execute(query)).rejects.toThrow();
   });

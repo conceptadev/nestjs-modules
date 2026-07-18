@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -7,8 +7,8 @@ import { AuthGuard as PassportAuthGuard } from '@nestjs/passport';
 import { GuardsPolicy } from '../../domain/policies/guards.policy';
 import { AuthGuard } from '../auth.guard';
 
-jest.mock('@nestjs/passport', () => ({
-  AuthGuard: jest.fn().mockImplementation(() => jest.fn()),
+vi.mock('@nestjs/passport', () => ({
+  AuthGuard: vi.fn().mockImplementation(() => vi.fn()),
 }));
 
 describe(AuthGuard.name, () => {
@@ -26,7 +26,7 @@ describe(AuthGuard.name, () => {
   });
 
   it('should always activate if guards are disabled globally', () => {
-    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
+    vi.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
 
     const Guard = AuthGuard('local', { canDisable: true });
     const guardInstance = new Guard(
@@ -46,8 +46,7 @@ describe(AuthGuard.name, () => {
   });
 
   it('should respect enable guard and disabled from reflector callback', () => {
-    jest
-      .spyOn(reflector, 'get')
+    vi.spyOn(reflector, 'get')
       .mockReturnValueOnce(true)
       .mockReturnValueOnce(undefined);
     const Guard = AuthGuard('local', { canDisable: true });
@@ -59,7 +58,7 @@ describe(AuthGuard.name, () => {
   });
 
   it('should respect guards.disable callback', () => {
-    jest.spyOn(reflector, 'get').mockReturnValue(undefined);
+    vi.spyOn(reflector, 'get').mockReturnValue(undefined);
     const Guard = AuthGuard('local', { canDisable: true });
     const guardInstance = new Guard(
       new GuardsPolicy({ enable: true, disable: () => true }),

@@ -13,7 +13,7 @@ describe('password configuration', () => {
 
   afterEach(async () => {
     process.env = envOriginal;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe(passwordDefaultConfig.name, () => {

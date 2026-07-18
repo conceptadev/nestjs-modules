@@ -20,7 +20,7 @@ describe(CreateUserHandler.name, () => {
   let handler: CreateUserHandler;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     handler = new CreateUserHandler(
       userRepository,
       commandBus,

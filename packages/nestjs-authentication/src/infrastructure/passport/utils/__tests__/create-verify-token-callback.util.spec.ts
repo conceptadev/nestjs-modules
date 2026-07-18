@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type JwtPort } from '../../../../domain/ports/jwt.port';
 import { createVerifyTokenCallback } from '../create-verify-token-callback.util';
@@ -13,7 +13,7 @@ describe('createVerifyTokenCallback', () => {
     it('should verify via verifyAccessToken and invoke done with decoded token', async () => {
       const jwtPort = mock<JwtPort>();
       jwtPort.verifyAccessToken.mockResolvedValue(decoded);
-      const done = jest.fn();
+      const done = vi.fn();
 
       createVerifyTokenCallback(jwtPort, 'access')(token, done);
       await flush();
@@ -28,7 +28,7 @@ describe('createVerifyTokenCallback', () => {
       const jwtPort = mock<JwtPort>();
       const err = new Error('invalid signature');
       jwtPort.verifyAccessToken.mockRejectedValue(err);
-      const done = jest.fn();
+      const done = vi.fn();
 
       createVerifyTokenCallback(jwtPort, 'access')(token, done);
       await flush();
@@ -41,7 +41,7 @@ describe('createVerifyTokenCallback', () => {
     it('should verify via verifyRefreshToken and invoke done with decoded token', async () => {
       const jwtPort = mock<JwtPort>();
       jwtPort.verifyRefreshToken.mockResolvedValue(decoded);
-      const done = jest.fn();
+      const done = vi.fn();
 
       createVerifyTokenCallback(jwtPort, 'refresh')(token, done);
       await flush();
@@ -56,7 +56,7 @@ describe('createVerifyTokenCallback', () => {
       const jwtPort = mock<JwtPort>();
       const err = new Error('expired');
       jwtPort.verifyRefreshToken.mockRejectedValue(err);
-      const done = jest.fn();
+      const done = vi.fn();
 
       createVerifyTokenCallback(jwtPort, 'refresh')(token, done);
       await flush();
@@ -68,7 +68,7 @@ describe('createVerifyTokenCallback', () => {
   it('should return a callback synchronously without throwing on rejection', () => {
     const jwtPort = mock<JwtPort>();
     jwtPort.verifyAccessToken.mockRejectedValue(new Error('boom'));
-    const done = jest.fn();
+    const done = vi.fn();
 
     expect(() =>
       createVerifyTokenCallback(jwtPort, 'access')(token, done),

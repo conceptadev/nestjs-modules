@@ -4,8 +4,8 @@ import { PassportStrategy } from '@nestjs/passport';
 
 import { PassportStrategyFactory } from '../passport-strategy.factory';
 
-jest.mock('@nestjs/passport', () => ({
-  PassportStrategy: jest.fn().mockImplementation((strategy, name) => ({
+vi.mock('@nestjs/passport', () => ({
+  PassportStrategy: vi.fn().mockImplementation((strategy, name) => ({
     strategy,
     name,
   })),

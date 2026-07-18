@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type RecoveryService } from '../../../../application/services/recovery/recovery.service';
 import { type RecoveryRecoverLoginDto } from '../dto/recovery-recover-login.dto';
@@ -24,7 +24,8 @@ describe(RecoveryController.name, () => {
 
   describe('recoverLogin', () => {
     it('should call recoverLogin method of RecoveryService', async () => {
-      const recoverLoginSpy = jest.spyOn(recoveryService, 'recoverLogin');
+      void recoveryService.recoverLogin;
+      const recoverLoginSpy = vi.spyOn(recoveryService, 'recoverLogin');
 
       await controller.recoverLogin({}, dto);
 
@@ -34,7 +35,8 @@ describe(RecoveryController.name, () => {
 
   describe('recoverPassword', () => {
     it('should call recoverPassword method of RecoveryService', async () => {
-      const recoverPasswordSpy = jest.spyOn(recoveryService, 'recoverPassword');
+      void recoveryService.recoverPassword;
+      const recoverPasswordSpy = vi.spyOn(recoveryService, 'recoverPassword');
 
       await controller.recoverPassword({}, dto);
 
@@ -44,7 +46,8 @@ describe(RecoveryController.name, () => {
 
   describe('validatePasscode', () => {
     it('should call validatePasscode method of RecoveryService', async () => {
-      const validatePasscodeSpy = jest
+      void recoveryService.validatePasscode;
+      const validatePasscodeSpy = vi
         .spyOn(recoveryService, 'validatePasscode')
         .mockResolvedValue(null);
 
@@ -58,7 +61,8 @@ describe(RecoveryController.name, () => {
     });
 
     it('should call validatePasscode method of RecoveryService', async () => {
-      const validatePasscodeSpy = jest
+      void recoveryService.validatePasscode;
+      const validatePasscodeSpy = vi
         .spyOn(recoveryService, 'validatePasscode')
         .mockResolvedValue({
           assigneeId: '1',
@@ -75,7 +79,8 @@ describe(RecoveryController.name, () => {
 
   describe('updatePassword', () => {
     it('should call updatePassword method of RecoveryService', async () => {
-      const updatePasswordSpy = jest
+      void recoveryService.updatePassword;
+      const updatePasswordSpy = vi
         .spyOn(recoveryService, 'updatePassword')
         .mockResolvedValue(null);
 
@@ -90,7 +95,8 @@ describe(RecoveryController.name, () => {
     });
 
     it('should call updatePassword method of RecoveryService', async () => {
-      const updatePasswordSpy = jest
+      void recoveryService.updatePassword;
+      const updatePasswordSpy = vi
         .spyOn(recoveryService, 'updatePassword')
         .mockResolvedValue({
           id: '1',

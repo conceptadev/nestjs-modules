@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type AuthorizationPayloadInterface } from '../../../../domain/interfaces/authorization-payload.interface';
 import { JwtStrategyPolicy } from '../../../../domain/policies/jwt-strategy.policy';
@@ -34,7 +34,8 @@ describe(JwtStrategy, () => {
 
   describe(JwtStrategy.prototype.validate, () => {
     it('should return user', async () => {
-      jest.spyOn(userPort, 'getBySubject').mockImplementationOnce(async () => {
+      void userPort.getBySubject;
+      vi.spyOn(userPort, 'getBySubject').mockImplementationOnce(async () => {
         return user;
       });
       const userResponse = await jwtStrategy.validate(authorizationPayload, {});
@@ -42,7 +43,8 @@ describe(JwtStrategy, () => {
     });
 
     it('should throw error', async () => {
-      jest.spyOn(userPort, 'getBySubject').mockImplementationOnce(() => {
+      void userPort.getBySubject;
+      vi.spyOn(userPort, 'getBySubject').mockImplementationOnce(() => {
         return new Promise((resolve) => {
           resolve(null);
         });

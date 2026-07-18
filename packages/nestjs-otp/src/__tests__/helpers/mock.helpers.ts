@@ -1,4 +1,4 @@
-import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
 import { EventContextHost } from '@concepta/nestjs-core';
 import {
@@ -70,8 +70,8 @@ export function createMockOtpSettings(): OtpSettingsInterface {
   return {
     types: {
       uuid: {
-        generator: jest.fn().mockReturnValue('generated-passcode'),
-        validator: jest.fn().mockReturnValue(true),
+        generator: vi.fn().mockReturnValue('generated-passcode'),
+        validator: vi.fn().mockReturnValue(true),
       },
     },
     duplicateStrategy: 'ALLOW',

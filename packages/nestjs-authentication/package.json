@@ -42,8 +42,8 @@
     "@types/passport-local": "^1.0.38",
     "@types/passport-strategy": "^0.2.38",
     "express": "^4.21.0",
-    "jest-mock-extended": "^4.0.0",
-    "supertest": "^6.3.4"
+    "supertest": "^6.3.4",
+    "vitest-mock-extended": "^4.0.0"
   },
   "peerDependencies": {
     "class-transformer": "*",

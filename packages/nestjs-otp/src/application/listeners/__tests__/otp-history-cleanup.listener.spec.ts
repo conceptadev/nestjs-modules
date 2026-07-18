@@ -22,7 +22,7 @@ describe(OtpHistoryCleanupListener.name, () => {
     const mockTx = createMockTransaction();
     mockSettings = createMockOtpSettings();
     historyCleanup = new OtpHistoryCleanupService(mockResolver);
-    jest.spyOn(historyCleanup, 'cleanup').mockResolvedValue();
+    vi.spyOn(historyCleanup, 'cleanup').mockResolvedValue();
 
     listener = new OtpHistoryCleanupListener(
       mockTx.transaction,

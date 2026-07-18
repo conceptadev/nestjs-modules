@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 
-import { type MockProxy, mock } from 'jest-mock-extended';
+import { type MockProxy, mock } from 'vitest-mock-extended';
 
 import { type CommandBus } from '@nestjs/cqrs';
 
@@ -22,7 +22,8 @@ describe(RefreshControllerFixture, () => {
 
   beforeEach(async () => {
     commandBus = mock<CommandBus>();
-    jest.spyOn(commandBus, 'execute').mockResolvedValue(response);
+    void commandBus.execute;
+    vi.spyOn(commandBus, 'execute').mockResolvedValue(response);
     controller = new RefreshControllerFixture(commandBus);
   });
 

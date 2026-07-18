@@ -1,4 +1,5 @@
-import { of, throwError } from 'rxjs';
+import { lastValueFrom, of, throwError } from 'rxjs';
+import { type Mocked } from 'vitest';
 
 import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -14,6 +15,7 @@ import {
   TransactionFactoryRegistry,
   TRANSACTION_FACTORY_REGISTRY,
 } from './transaction-factory-registry';
+import { TransactionManager } from './transaction-manager';
 import { TransactionScope } from './transaction-scope';
 import { TransactionalRunner } from './transactional-runner';
 import { Transactional } from './transactional.decorator';
@@ -21,7 +23,7 @@ import { Transactional } from './transactional.decorator';
 describe(TransactionalRunner.name, () => {
   let runner: TransactionalRunner;
   let mockRegistry: TransactionFactoryRegistry;
-  let mockFactory: jest.Mocked<TransactionFactoryInterface>;
+  let mockFactory: Mocked<TransactionFactoryInterface>;
   let mockTransaction: TransactionInterface;
 
   const createMockTransaction = (): TransactionInterface => {
@@ -32,17 +34,17 @@ describe(TransactionalRunner.name, () => {
         return isActive;
       },
       isDirty: false,
-      start: jest.fn().mockImplementation(async () => {
+      start: vi.fn().mockImplementation(async () => {
         isActive = true;
       }),
-      commit: jest.fn().mockImplementation(async () => {
+      commit: vi.fn().mockImplementation(async () => {
         isActive = false;
       }),
-      rollback: jest.fn().mockImplementation(async () => {
+      rollback: vi.fn().mockImplementation(async () => {
         isActive = false;
       }),
-      markDirty: jest.fn(),
-      getClient: jest.fn(),
+      markDirty: vi.fn(),
+      getClient: vi.fn(),
     };
   };
 
@@ -59,11 +61,11 @@ describe(TransactionalRunner.name, () => {
       switchToHttp: () => ({
         getRequest: () => ({ [Symbol.for('APP_CONTEXT_KEY')]: ctx }),
       }),
-      getArgs: jest.fn(),
-      getArgByIndex: jest.fn(),
-      switchToRpc: jest.fn(),
-      switchToWs: jest.fn(),
-      getType: jest.fn(),
+      getArgs: vi.fn(),
+      getArgByIndex: vi.fn(),
+      switchToRpc: vi.fn(),
+      switchToWs: vi.fn(),
+      getType: vi.fn(),
     } as unknown as ExecutionContext;
   }
 
@@ -71,7 +73,7 @@ describe(TransactionalRunner.name, () => {
     mockTransaction = createMockTransaction();
 
     mockFactory = {
-      create: jest.fn().mockReturnValue(mockTransaction),
+      create: vi.fn().mockReturnValue(mockTransaction),
     };
 
     mockRegistry = new TransactionFactoryRegistry();
@@ -97,7 +99,7 @@ describe(TransactionalRunner.name, () => {
   });
 
   describe('run', () => {
-    it('should call operation without transaction when no @Transactional', (done) => {
+    it('should call operation without transaction when no @Transactional', async () => {
       class PlainController {}
 
       function handlerWithoutDecorator() {
@@ -108,17 +110,13 @@ describe(TransactionalRunner.name, () => {
         handlerWithoutDecorator,
         PlainController,
       );
-      const operation = jest.fn().mockReturnValue(of('result'));
+      const operation = vi.fn().mockReturnValue(of('result'));
 
-      runner.run(context, operation).subscribe({
-        next: (result) => {
-          expect(result).toBe('result');
-        },
-        complete: done,
-      });
+      const result = await lastValueFrom(runner.run(context, operation));
+      expect(result).toBe('result');
     });
 
-    it('should wrap operation in transaction when @Transactional present', (done) => {
+    it('should wrap operation in transaction when @Transactional present', async () => {
       class TestHandler {
         @Transactional()
         handle() {
@@ -128,17 +126,13 @@ describe(TransactionalRunner.name, () => {
 
       const handler = new TestHandler();
       const context = createMockExecutionContext(handler.handle, TestHandler);
-      const operation = jest.fn().mockReturnValue(of('result'));
+      const operation = vi.fn().mockReturnValue(of('result'));
 
-      runner.run(context, operation).subscribe({
-        next: (result) => {
-          expect(result).toBe('result');
-        },
-        complete: done,
-      });
+      const result = await lastValueFrom(runner.run(context, operation));
+      expect(result).toBe('result');
     });
 
-    it('should handle errors from operation', (done) => {
+    it('should handle errors from operation', async () => {
       class TestHandler {
         @Transactional()
         handle() {
@@ -149,17 +143,14 @@ describe(TransactionalRunner.name, () => {
       const handler = new TestHandler();
       const context = createMockExecutionContext(handler.handle, TestHandler);
       const error = new Error('Operation failed');
-      const operation = jest.fn().mockReturnValue(throwError(() => error));
+      const operation = vi.fn().mockReturnValue(throwError(() => error));
 
-      runner.run(context, operation).subscribe({
-        error: (err) => {
-          expect(err).toBe(error);
-          done();
-        },
-      });
+      await expect(lastValueFrom(runner.run(context, operation))).rejects.toBe(
+        error,
+      );
     });
 
-    it('should use class-level @Transactional for methods without decorator', (done) => {
+    it('should use class-level @Transactional for methods without decorator', async () => {
       @Transactional()
       class TransactionalController {
         handle() {
@@ -172,17 +163,13 @@ describe(TransactionalRunner.name, () => {
         ctrl.handle,
         TransactionalController,
       );
-      const operation = jest.fn().mockReturnValue(of('result'));
+      const operation = vi.fn().mockReturnValue(of('result'));
 
-      runner.run(context, operation).subscribe({
-        next: (result) => {
-          expect(result).toBe('result');
-        },
-        complete: done,
-      });
+      const result = await lastValueFrom(runner.run(context, operation));
+      expect(result).toBe('result');
     });
 
-    it('should respect @Transactional(false) override on method when class has @Transactional', (done) => {
+    it('should respect @Transactional(false) override on method when class has @Transactional', async () => {
       @Transactional()
       class TransactionalController {
         @Transactional(false)
@@ -196,17 +183,13 @@ describe(TransactionalRunner.name, () => {
         ctrl.handle,
         TransactionalController,
       );
-      const operation = jest.fn().mockReturnValue(of('result'));
+      const operation = vi.fn().mockReturnValue(of('result'));
 
-      runner.run(context, operation).subscribe({
-        next: (result) => {
-          expect(result).toBe('result');
-        },
-        complete: done,
-      });
+      const result = await lastValueFrom(runner.run(context, operation));
+      expect(result).toBe('result');
     });
 
-    it('should use readOnly option from decorator', (done) => {
+    it('should use readOnly option from decorator', async () => {
       class TestHandler {
         @Transactional({ readOnly: true })
         handle() {
@@ -216,15 +199,17 @@ describe(TransactionalRunner.name, () => {
 
       const handler = new TestHandler();
       const context = createMockExecutionContext(handler.handle, TestHandler);
-      const operation = jest.fn().mockReturnValue(of('result'));
+      const operation = vi.fn().mockReturnValue(of('result'));
 
-      runner.run(context, operation).subscribe({
-        next: () => {
-          // readOnly transactions rollback instead of commit
-          expect(mockTransaction.rollback).toHaveBeenCalled();
-        },
-        complete: done,
-      });
+      // Spy at the TransactionManager level — rollbackAll() is called even
+      // when no transactions were started (it iterates an empty map).
+      const rollbackAllSpy = vi.spyOn(
+        TransactionManager.prototype,
+        'rollbackAll',
+      );
+      await lastValueFrom(runner.run(context, operation));
+      expect(rollbackAllSpy).toHaveBeenCalled();
+      rollbackAllSpy.mockRestore();
     });
   });
 });

@@ -1,4 +1,4 @@
-import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
 import { type ExecutionContext } from '@nestjs/common';
 import { type Reflector } from '@nestjs/core';
@@ -19,7 +19,7 @@ describe('OtpContextOverlay', () => {
     overlay = new OtpContextOverlay(reflector);
 
     mockRequest = {};
-    const handler = jest.fn();
+    const handler = vi.fn();
     const target = class TestController {};
     mockContext = {
       getHandler: () => handler,

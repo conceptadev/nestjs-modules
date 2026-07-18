@@ -50,7 +50,7 @@ describe(FederatedOAuthService, () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('sign', () => {

@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type EventPublisher } from '@nestjs/cqrs';
 
@@ -29,13 +29,18 @@ describe(IssueAuthenticatedResponseHandler.name, () => {
     jwtPolicy = mock<JwtPolicy>();
     eventPublisher = mock<EventPublisher>();
 
-    jest.spyOn(jwtPort, 'signAccessToken').mockResolvedValue(accessTokenStr);
-    jest.spyOn(jwtPort, 'signRefreshToken').mockResolvedValue(refreshTokenStr);
-    jest.spyOn(jwtPolicy, 'getAccessExpiry').mockReturnValue(accessExp);
-    jest.spyOn(jwtPolicy, 'getRefreshExpiry').mockReturnValue(refreshExp);
-    jest
-      .spyOn(eventPublisher, 'mergeObjectContext')
-      .mockImplementation((agg) => agg as Token);
+    void jwtPort.signAccessToken;
+    vi.spyOn(jwtPort, 'signAccessToken').mockResolvedValue(accessTokenStr);
+    void jwtPort.signRefreshToken;
+    vi.spyOn(jwtPort, 'signRefreshToken').mockResolvedValue(refreshTokenStr);
+    void jwtPolicy.getAccessExpiry;
+    vi.spyOn(jwtPolicy, 'getAccessExpiry').mockReturnValue(accessExp);
+    void jwtPolicy.getRefreshExpiry;
+    vi.spyOn(jwtPolicy, 'getRefreshExpiry').mockReturnValue(refreshExp);
+    void eventPublisher.mergeObjectContext;
+    vi.spyOn(eventPublisher, 'mergeObjectContext').mockImplementation(
+      (agg) => agg as Token,
+    );
 
     handler = new IssueAuthenticatedResponseHandler(
       jwtPort,

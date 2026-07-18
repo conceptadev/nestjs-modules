@@ -68,7 +68,7 @@ describe('TypeOrmRepository (relations)', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('resolveJoinClauses', () => {

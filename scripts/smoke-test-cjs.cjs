@@ -18,8 +18,7 @@ const { join } = require('path');
 // @nestjs/config@12 ships only an "import" export condition; no "require".
 // Node 25 can load ESM via require() natively, but ERR_PACKAGE_PATH_NOT_EXPORTED
 // is thrown before it gets to load the file. This hook catches that error for
-// @nestjs/* packages and manually resolves via the "import" condition — same
-// logic as scripts/jest-resolver.cjs.
+// @nestjs/* packages and manually resolves via the "import" condition.
 const _origResolveFilename = Module._resolveFilename.bind(Module);
 Module._resolveFilename = function patchedResolve(request, parent, isMain, options) {
   try {
@@ -123,8 +122,9 @@ for (const { dir, export: exportName } of PACKAGES) {
   }
 
   // 4. Load each subpath entry and verify it loads without error.
-  // ./testing subpaths use @jest/globals and can only run inside Jest — files are
-  // already verified to exist on disk in step 2, so loading is skipped here.
+  // ./testing subpaths use vitest/vitest-mock-extended and can only run inside a
+  // Vitest test run — files are already verified to exist on disk in step 2, so
+  // loading is skipped here.
   for (const [subpath, entry] of Object.entries(pkg.exports ?? {})) {
     if (subpath === '.' || subpath === './testing') continue;
     const jsFile = entry?.require?.default;

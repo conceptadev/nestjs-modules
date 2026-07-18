@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import 'jest-extended';
 import { CrudQueryBuilder } from '../crud-query.builder';
 import { CrudQueryValidatorException } from '../exceptions/crud-query-validator.exception';
 import { type CrudQueryBuilderOptionsInterface } from '../interfaces/crud-query-builder-options.interface';

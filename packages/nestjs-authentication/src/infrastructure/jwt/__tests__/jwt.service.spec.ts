@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { Token } from '../../../domain/aggregates/token.aggregate';
 import { JwtPolicy } from '../../../domain/policies/jwt.policy';
@@ -43,7 +43,8 @@ describe(JwtService, () => {
 
   describe(JwtService.prototype.signAccessToken, () => {
     it('should sign with JWT claims from token', async () => {
-      jest.spyOn(nestJwtService, 'signAsync').mockResolvedValue(signedToken);
+      void nestJwtService.signAsync;
+      vi.spyOn(nestJwtService, 'signAsync').mockResolvedValue(signedToken);
 
       const result = await jwtService.signAccessToken(accessToken);
 
@@ -60,7 +61,8 @@ describe(JwtService, () => {
     });
 
     it('should include scope claim when scopes are present', async () => {
-      jest.spyOn(nestJwtService, 'signAsync').mockResolvedValue(signedToken);
+      void nestJwtService.signAsync;
+      vi.spyOn(nestJwtService, 'signAsync').mockResolvedValue(signedToken);
 
       await jwtService.signRefreshToken(refreshToken);
 
@@ -71,14 +73,16 @@ describe(JwtService, () => {
     });
 
     it('should throw when signAsync rejects', async () => {
-      jest.spyOn(nestJwtService, 'signAsync').mockRejectedValue(new Error());
+      void nestJwtService.signAsync;
+      vi.spyOn(nestJwtService, 'signAsync').mockRejectedValue(new Error());
       await expect(jwtService.signAccessToken(accessToken)).rejects.toThrow();
     });
   });
 
   describe(JwtService.prototype.signRefreshToken, () => {
     it('should sign with refresh options (secret, no expiresIn)', async () => {
-      jest.spyOn(nestJwtService, 'signAsync').mockResolvedValue(signedToken);
+      void nestJwtService.signAsync;
+      vi.spyOn(nestJwtService, 'signAsync').mockResolvedValue(signedToken);
 
       const result = await jwtService.signRefreshToken(refreshToken);
 
@@ -92,7 +96,8 @@ describe(JwtService, () => {
 
   describe(JwtService.prototype.verifyAccessToken, () => {
     it('should verify with access options', async () => {
-      jest.spyOn(nestJwtService, 'verifyAsync').mockResolvedValue(decoded);
+      void nestJwtService.verifyAsync;
+      vi.spyOn(nestJwtService, 'verifyAsync').mockResolvedValue(decoded);
       const result = await jwtService.verifyAccessToken(signedToken);
       expect(result).toEqual(decoded);
       expect(nestJwtService.verifyAsync).toHaveBeenCalledWith(signedToken, {
@@ -101,14 +106,16 @@ describe(JwtService, () => {
     });
 
     it('should throw when verifyAsync rejects', async () => {
-      jest.spyOn(nestJwtService, 'verifyAsync').mockRejectedValue(new Error());
+      void nestJwtService.verifyAsync;
+      vi.spyOn(nestJwtService, 'verifyAsync').mockRejectedValue(new Error());
       await expect(jwtService.verifyAccessToken(signedToken)).rejects.toThrow();
     });
   });
 
   describe(JwtService.prototype.verifyRefreshToken, () => {
     it('should verify with refresh options', async () => {
-      jest.spyOn(nestJwtService, 'verifyAsync').mockResolvedValue(decoded);
+      void nestJwtService.verifyAsync;
+      vi.spyOn(nestJwtService, 'verifyAsync').mockResolvedValue(decoded);
       const result = await jwtService.verifyRefreshToken(signedToken);
       expect(result).toEqual(decoded);
       expect(nestJwtService.verifyAsync).toHaveBeenCalledWith(signedToken, {

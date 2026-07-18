@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type PlainLiteralObject } from '@nestjs/common';
 import { Command, type CommandBus, Query, type QueryBus } from '@nestjs/cqrs';
@@ -94,7 +94,8 @@ describe(TokenPort.name, () => {
   describe('issueAccessToken', () => {
     it('should dispatch IssueAccessTokenCommand via commandBus', async () => {
       const expectedToken = 'access-token-123';
-      jest.spyOn(commandBus, 'execute').mockResolvedValue(expectedToken);
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockResolvedValue(expectedToken);
 
       const result = await port.issueAccessToken({}, { sub: 'user-1' });
 
@@ -105,7 +106,8 @@ describe(TokenPort.name, () => {
     });
 
     it('should create correct command type', async () => {
-      jest.spyOn(commandBus, 'execute').mockResolvedValue('token');
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockResolvedValue('token');
 
       await port.issueAccessToken({}, { sub: 'user-1' });
 
@@ -118,7 +120,8 @@ describe(TokenPort.name, () => {
   describe('issueRefreshToken', () => {
     it('should dispatch IssueRefreshTokenCommand via commandBus', async () => {
       const expectedToken = 'refresh-token-123';
-      jest.spyOn(commandBus, 'execute').mockResolvedValue(expectedToken);
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockResolvedValue(expectedToken);
 
       const result = await port.issueRefreshToken({}, { sub: 'user-1' });
 
@@ -132,7 +135,8 @@ describe(TokenPort.name, () => {
   describe('verifyAccessToken', () => {
     it('should dispatch VerifyAccessTokenQuery via queryBus', async () => {
       const decoded = { sub: 'user-1', iat: 123 };
-      jest.spyOn(queryBus, 'execute').mockResolvedValue(decoded);
+      void queryBus.execute;
+      vi.spyOn(queryBus, 'execute').mockResolvedValue(decoded);
 
       const result = await port.verifyAccessToken({}, 'jwt-token');
 
@@ -143,7 +147,8 @@ describe(TokenPort.name, () => {
     });
 
     it('should create correct query type', async () => {
-      jest.spyOn(queryBus, 'execute').mockResolvedValue({});
+      void queryBus.execute;
+      vi.spyOn(queryBus, 'execute').mockResolvedValue({});
 
       await port.verifyAccessToken({}, 'jwt-token');
 
@@ -156,7 +161,8 @@ describe(TokenPort.name, () => {
   describe('verifyRefreshToken', () => {
     it('should dispatch VerifyRefreshTokenQuery via queryBus', async () => {
       const decoded = { sub: 'user-1', iat: 456 };
-      jest.spyOn(queryBus, 'execute').mockResolvedValue(decoded);
+      void queryBus.execute;
+      vi.spyOn(queryBus, 'execute').mockResolvedValue(decoded);
 
       const result = await port.verifyRefreshToken({}, 'refresh-jwt');
 

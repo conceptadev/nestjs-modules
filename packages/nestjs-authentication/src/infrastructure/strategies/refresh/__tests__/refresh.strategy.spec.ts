@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type AuthorizationPayloadInterface } from '../../../../domain/interfaces/authorization-payload.interface';
 import { RefreshStrategyPolicy } from '../../../../domain/policies/refresh-strategy.policy';
@@ -41,7 +41,8 @@ describe(RefreshStrategy, () => {
       sub: USERNAME,
     };
 
-    jest.spyOn(userPort, 'getBySubject').mockResolvedValue(user);
+    void userPort.getBySubject;
+    vi.spyOn(userPort, 'getBySubject').mockResolvedValue(user);
   });
 
   describe(RefreshStrategy.prototype.validate, () => {
@@ -54,7 +55,8 @@ describe(RefreshStrategy, () => {
     });
 
     it(`should throw UnauthorizedException`, async () => {
-      jest.spyOn(userPort, 'getBySubject').mockResolvedValue(null);
+      void userPort.getBySubject;
+      vi.spyOn(userPort, 'getBySubject').mockResolvedValue(null);
 
       const t = () =>
         refreshStrategy.validate(authorizationPayloadInterface, {});

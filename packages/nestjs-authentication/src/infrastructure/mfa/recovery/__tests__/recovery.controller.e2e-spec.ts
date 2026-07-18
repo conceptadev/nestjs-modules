@@ -15,15 +15,15 @@ describe('RecoveryController (e2e)', () => {
   let app: INestApplication;
 
   const mockRecoveryService = {
-    recoverLogin: jest.fn().mockResolvedValue(undefined),
-    recoverPassword: jest.fn().mockResolvedValue(undefined),
-    validatePasscode: jest.fn(),
-    updatePassword: jest.fn(),
-    revokeAllUserPasswordRecoveries: jest.fn().mockResolvedValue(undefined),
+    recoverLogin: vi.fn().mockResolvedValue(undefined),
+    recoverPassword: vi.fn().mockResolvedValue(undefined),
+    validatePasscode: vi.fn(),
+    updatePassword: vi.fn(),
+    revokeAllUserPasswordRecoveries: vi.fn().mockResolvedValue(undefined),
   };
 
   beforeEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModuleFixture],

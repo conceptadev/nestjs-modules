@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type PasswordCreationService } from '../../../../domain/services/password-creation.service';
 import { type PasswordValidationService } from '../../../../domain/services/password-validation.service';

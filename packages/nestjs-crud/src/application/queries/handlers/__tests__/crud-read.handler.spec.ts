@@ -24,7 +24,7 @@ describe('CrudReadHandler', () => {
       const context = mockCrudContext<TestEntity>();
       const entity: TestEntity = { id: '1', name: 'Alice' };
 
-      jest.spyOn(adapter, 'read').mockResolvedValueOnce(entity);
+      vi.spyOn(adapter, 'read').mockResolvedValueOnce(entity);
 
       const result = await handler.execute(new CrudReadQuery(context));
 
@@ -37,7 +37,7 @@ describe('CrudReadHandler', () => {
       const context = mockCrudContext<TestEntity>();
       const httpError = new BadRequestException('Invalid request');
 
-      jest.spyOn(adapter, 'read').mockRejectedValueOnce(httpError);
+      vi.spyOn(adapter, 'read').mockRejectedValueOnce(httpError);
 
       await expect(handler.execute(new CrudReadQuery(context))).rejects.toThrow(
         httpError,
@@ -48,9 +48,9 @@ describe('CrudReadHandler', () => {
       const handler = new CrudReadHandler<TestEntity>(adapter);
       const context = mockCrudContext<TestEntity>();
 
-      jest
-        .spyOn(adapter, 'read')
-        .mockRejectedValueOnce(new Error('database timeout'));
+      vi.spyOn(adapter, 'read').mockRejectedValueOnce(
+        new Error('database timeout'),
+      );
 
       await expect(handler.execute(new CrudReadQuery(context))).rejects.toThrow(
         CrudQueryException,
@@ -61,14 +61,14 @@ describe('CrudReadHandler', () => {
       const handler = new CrudReadHandler<TestEntity>(adapter);
       const context = mockCrudContext<TestEntity>();
 
-      jest
-        .spyOn(adapter, 'read')
-        .mockRejectedValueOnce(new Error('connection lost'));
-      jest.spyOn(adapter, 'entityName').mockReturnValue('TestEntity');
+      vi.spyOn(adapter, 'read').mockRejectedValueOnce(
+        new Error('connection lost'),
+      );
+      vi.spyOn(adapter, 'entityName').mockReturnValue('TestEntity');
 
       try {
         await handler.execute(new CrudReadQuery(context));
-        fail('Expected CrudQueryException to be thrown');
+        throw new Error('Expected CrudQueryException to be thrown');
       } catch (e) {
         expect(e).toBeInstanceOf(CrudQueryException);
         expect((e as CrudQueryException).context.entityName).toEqual(

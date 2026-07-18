@@ -1,4 +1,4 @@
-import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
 import { UserPasswordHistoryViolationException } from '../../exceptions/user-password-history-violation.exception';
 import { type UserPasswordPort } from '../../ports/user-password.port';
@@ -14,7 +14,7 @@ describe(UserCredentialsCollection.name, () => {
     mockDeep<UserPasswordPort>();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('notReused', () => {

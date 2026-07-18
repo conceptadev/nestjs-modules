@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { JwtStrategyPolicy } from '../../../../domain/policies/jwt-strategy.policy';
 import { type UserPort } from '../../../../domain/ports/user.port';
@@ -20,14 +20,16 @@ describe(ValidateTokenHandler.name, () => {
     });
 
     it('should return true when user is found', async () => {
-      jest.spyOn(userPort, 'getBySubject').mockResolvedValue(user as never);
+      void userPort.getBySubject;
+      vi.spyOn(userPort, 'getBySubject').mockResolvedValue(user as never);
       const query = new ValidateTokenQuery({}, payload);
       const result = await handler.execute(query);
       expect(result).toBe(true);
     });
 
     it('should return false when user is not found', async () => {
-      jest.spyOn(userPort, 'getBySubject').mockResolvedValue(null);
+      void userPort.getBySubject;
+      vi.spyOn(userPort, 'getBySubject').mockResolvedValue(null);
       const query = new ValidateTokenQuery({}, payload);
       const result = await handler.execute(query);
       expect(result).toBe(false);

@@ -18,7 +18,7 @@ describe(InvitationModule.name, () => {
   });
 
   afterEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     await testModule.close();
   });
 

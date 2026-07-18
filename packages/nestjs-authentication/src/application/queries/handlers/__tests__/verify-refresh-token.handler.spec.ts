@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type JwtPort } from '../../../../domain/ports/jwt.port';
 import { VerifyRefreshTokenQuery } from '../../impl/verify-refresh-token.query';
@@ -12,7 +12,8 @@ describe(VerifyRefreshTokenHandler.name, () => {
 
   beforeEach(() => {
     jwtPort = mock<JwtPort>();
-    jest.spyOn(jwtPort, 'verifyRefreshToken').mockResolvedValue(decoded);
+    void jwtPort.verifyRefreshToken;
+    vi.spyOn(jwtPort, 'verifyRefreshToken').mockResolvedValue(decoded);
     handler = new VerifyRefreshTokenHandler(jwtPort);
   });
 
@@ -23,7 +24,8 @@ describe(VerifyRefreshTokenHandler.name, () => {
   });
 
   it('should throw error on verify failure', async () => {
-    jest.spyOn(jwtPort, 'verifyRefreshToken').mockRejectedValue(new Error());
+    void jwtPort.verifyRefreshToken;
+    vi.spyOn(jwtPort, 'verifyRefreshToken').mockRejectedValue(new Error());
     const query = new VerifyRefreshTokenQuery({}, token);
     await expect(handler.execute(query)).rejects.toThrow();
   });

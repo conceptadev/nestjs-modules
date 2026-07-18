@@ -1,3 +1,5 @@
+import { type Mocked } from 'vitest';
+
 import {
   createMockUserEntity,
   createMockUserRepository,
@@ -17,7 +19,7 @@ const mockUser = toUserDomain(createMockUserEntity());
 
 describe(GetUserHandler.name, () => {
   let handler: GetUserHandler;
-  let repo: jest.Mocked<UserRepositoryInterface>;
+  let repo: Mocked<UserRepositoryInterface>;
 
   beforeEach(() => {
     repo = createMockUserRepository();
@@ -40,7 +42,7 @@ describe(GetUserHandler.name, () => {
 
 describe(GetUserByEmailHandler.name, () => {
   let handler: GetUserByEmailHandler;
-  let repo: jest.Mocked<UserRepositoryInterface>;
+  let repo: Mocked<UserRepositoryInterface>;
 
   beforeEach(() => {
     repo = createMockUserRepository();
@@ -70,7 +72,7 @@ describe(GetUserByEmailHandler.name, () => {
 
 describe(GetUserByUsernameHandler.name, () => {
   let handler: GetUserByUsernameHandler;
-  let repo: jest.Mocked<UserRepositoryInterface>;
+  let repo: Mocked<UserRepositoryInterface>;
 
   beforeEach(() => {
     repo = createMockUserRepository();
@@ -100,7 +102,7 @@ describe(GetUserByUsernameHandler.name, () => {
 
 describe(GetUserBySubjectHandler.name, () => {
   let handler: GetUserBySubjectHandler;
-  let repo: jest.Mocked<UserRepositoryInterface>;
+  let repo: Mocked<UserRepositoryInterface>;
 
   beforeEach(() => {
     repo = createMockUserRepository();

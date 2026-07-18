@@ -67,7 +67,7 @@ describe.each([
   });
 
   afterEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     return app ? await app.close() : undefined;
   });
 

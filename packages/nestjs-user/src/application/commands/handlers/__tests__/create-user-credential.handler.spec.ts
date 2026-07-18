@@ -16,7 +16,7 @@ describe(CreateUserCredentialHandler.name, () => {
   let handler: CreateUserCredentialHandler;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     userCredentialsService.setPassword.mockResolvedValue(mockCredentials);
     handler = new CreateUserCredentialHandler(userCredentialsService, txScope);
   });

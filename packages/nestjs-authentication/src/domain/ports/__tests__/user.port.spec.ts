@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type PlainLiteralObject } from '@nestjs/common';
 import { Command, type CommandBus, Query, type QueryBus } from '@nestjs/cqrs';
@@ -106,7 +106,8 @@ describe(UserPort.name, () => {
 
   describe('getById', () => {
     it('should dispatch GetByIdQuery via queryBus', async () => {
-      jest.spyOn(queryBus, 'execute').mockResolvedValue(mockUser);
+      void queryBus.execute;
+      vi.spyOn(queryBus, 'execute').mockResolvedValue(mockUser);
 
       const result = await port.getById({}, 'user-1');
 
@@ -120,7 +121,8 @@ describe(UserPort.name, () => {
     });
 
     it('should return null when user not found', async () => {
-      jest.spyOn(queryBus, 'execute').mockResolvedValue(null);
+      void queryBus.execute;
+      vi.spyOn(queryBus, 'execute').mockResolvedValue(null);
 
       const result = await port.getById({}, 'unknown');
 
@@ -130,7 +132,8 @@ describe(UserPort.name, () => {
 
   describe('getBySubject', () => {
     it('should dispatch GetBySubjectQuery via queryBus', async () => {
-      jest.spyOn(queryBus, 'execute').mockResolvedValue(mockUser);
+      void queryBus.execute;
+      vi.spyOn(queryBus, 'execute').mockResolvedValue(mockUser);
 
       const result = await port.getBySubject({}, 'user-1');
 
@@ -143,7 +146,8 @@ describe(UserPort.name, () => {
 
   describe('getByUsername', () => {
     it('should dispatch GetByUsernameQuery via queryBus', async () => {
-      jest.spyOn(queryBus, 'execute').mockResolvedValue(mockUser);
+      void queryBus.execute;
+      vi.spyOn(queryBus, 'execute').mockResolvedValue(mockUser);
 
       const result = await port.getByUsername({}, 'testuser');
 
@@ -156,7 +160,8 @@ describe(UserPort.name, () => {
 
   describe('getByEmail', () => {
     it('should dispatch GetByEmailQuery via queryBus', async () => {
-      jest.spyOn(queryBus, 'execute').mockResolvedValue(mockUser);
+      void queryBus.execute;
+      vi.spyOn(queryBus, 'execute').mockResolvedValue(mockUser);
 
       const result = await port.getByEmail({}, 'test@example.com');
 

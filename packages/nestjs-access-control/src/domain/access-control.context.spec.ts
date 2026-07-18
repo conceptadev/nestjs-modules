@@ -1,5 +1,5 @@
 import { AccessControl } from 'accesscontrol';
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import {
   type ArgumentsHost,

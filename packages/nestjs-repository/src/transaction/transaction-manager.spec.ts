@@ -1,3 +1,5 @@
+import { type Mock } from 'vitest';
+
 import { type TransactionInterface } from './interfaces/transaction.interface';
 import { TransactionFactoryRegistry } from './transaction-factory-registry';
 import { TransactionManager } from './transaction-manager';
@@ -10,20 +12,20 @@ describe(TransactionManager.name, () => {
     overrides: Partial<{
       isActive: boolean;
       isDirty: boolean;
-      start: jest.Mock;
-      commit: jest.Mock;
-      rollback: jest.Mock;
-      markDirty: jest.Mock;
-      getClient: jest.Mock;
+      start: Mock;
+      commit: Mock;
+      rollback: Mock;
+      markDirty: Mock;
+      getClient: Mock;
     }> = {},
   ): TransactionInterface => ({
     isActive: false,
     isDirty: false,
-    start: jest.fn(),
-    commit: jest.fn(),
-    rollback: jest.fn(),
-    markDirty: jest.fn(),
-    getClient: jest.fn(),
+    start: vi.fn(),
+    commit: vi.fn(),
+    rollback: vi.fn(),
+    markDirty: vi.fn(),
+    getClient: vi.fn(),
     ...overrides,
   });
 
@@ -310,7 +312,7 @@ describe(TransactionManager.name, () => {
     });
 
     it('should clear callbacks after flush', async () => {
-      const fn = jest.fn();
+      const fn = vi.fn();
       manager.onCommit(fn);
 
       await manager.flushOnCommitCallbacks();
@@ -320,7 +322,7 @@ describe(TransactionManager.name, () => {
     });
 
     it('should not execute callbacks until flushed', () => {
-      const fn = jest.fn();
+      const fn = vi.fn();
       manager.onCommit(fn);
 
       expect(fn).not.toHaveBeenCalled();
@@ -363,7 +365,7 @@ describe(TransactionManager.name, () => {
     });
 
     it('should clear callbacks after flush', async () => {
-      const fn = jest.fn();
+      const fn = vi.fn();
       manager.onRollback(fn);
 
       await manager.flushOnRollbackCallbacks();
@@ -373,7 +375,7 @@ describe(TransactionManager.name, () => {
     });
 
     it('should not execute callbacks until flushed', () => {
-      const fn = jest.fn();
+      const fn = vi.fn();
       manager.onRollback(fn);
 
       expect(fn).not.toHaveBeenCalled();

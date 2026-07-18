@@ -1,5 +1,5 @@
-import { mockDeep } from 'jest-mock-extended';
 import { type DataSource, type Repository } from 'typeorm';
+import { mockDeep } from 'vitest-mock-extended';
 
 import { getDataSourceToken } from '@nestjs/typeorm';
 
@@ -177,7 +177,7 @@ describe('typeorm-repository.util', () => {
     });
 
     it('should create provider with factory function', () => {
-      const mockFactory = jest.fn();
+      const mockFactory = vi.fn();
       const options: TypeOrmProviderOptionsInterface = {
         key: 'test-entity',
         entity: TestEntity,
@@ -191,7 +191,7 @@ describe('typeorm-repository.util', () => {
     });
 
     it('factory provider should use DataSource token for injection', () => {
-      const mockFactory = jest.fn();
+      const mockFactory = vi.fn();
       const options: TypeOrmProviderOptionsInterface = {
         key: 'test-entity',
         entity: TestEntity,
@@ -218,7 +218,7 @@ describe('typeorm-repository.util', () => {
     });
 
     it('factory provider should inject optional HookResolverService', () => {
-      const mockFactory = jest.fn();
+      const mockFactory = vi.fn();
       const options: TypeOrmProviderOptionsInterface = {
         key: 'test-entity',
         entity: TestEntity,
@@ -236,7 +236,7 @@ describe('typeorm-repository.util', () => {
         target: TestEntity,
         metadata: { name: 'TestEntity', targetName: 'TestEntity', columns: [] },
       } as unknown as Repository<TestEntity>;
-      const mockFactory = jest.fn().mockReturnValue(mockRepo);
+      const mockFactory = vi.fn().mockReturnValue(mockRepo);
 
       const options: TypeOrmProviderOptionsInterface = {
         key: 'test-entity',
@@ -314,7 +314,7 @@ describe('typeorm-repository.util', () => {
         target: TestEntity,
         metadata: { name: 'TestEntity', targetName: 'TestEntity', columns: [] },
       } as unknown as Repository<TestEntity>;
-      const mockFactory = jest.fn().mockReturnValue(mockRepo);
+      const mockFactory = vi.fn().mockReturnValue(mockRepo);
 
       const options: TypeOrmProviderOptionsInterface = {
         key: 'test-entity',
@@ -344,7 +344,7 @@ describe('typeorm-repository.util', () => {
         target: TestEntity,
         metadata: { name: 'TestEntity', targetName: 'TestEntity', columns: [] },
       } as unknown as Repository<TestEntity>;
-      const mockFactory = jest.fn().mockReturnValue(mockRepo);
+      const mockFactory = vi.fn().mockReturnValue(mockRepo);
 
       const options: TypeOrmProviderOptionsInterface = {
         key: 'test-entity',

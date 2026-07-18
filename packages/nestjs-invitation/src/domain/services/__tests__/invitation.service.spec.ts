@@ -1,4 +1,4 @@
-import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
 import { AppContextHost } from '@concepta/nestjs-core';
 
@@ -27,7 +27,7 @@ describe(InvitationService.name, () => {
   const mockUser = { id: 'test-user-id', email: 'test@example.com' };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     mockRepo = createMockInvitationRepository();
 

@@ -21,7 +21,7 @@ describe(SetUserPasswordHandler.name, () => {
   let handler: SetUserPasswordHandler;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     commandBus.execute.mockResolvedValue(mockCredentials);
     handler = new SetUserPasswordHandler(userRepository, commandBus, txScope);
   });

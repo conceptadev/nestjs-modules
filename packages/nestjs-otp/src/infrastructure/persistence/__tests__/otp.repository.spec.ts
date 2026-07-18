@@ -250,7 +250,7 @@ describe(OtpRepository.name, () => {
       mockRepository.upsert.mockResolvedValue(entity);
 
       const otp = toOtpDomain(entity);
-      const stampSpy = jest.spyOn(otp, 'stampUpdated');
+      const stampSpy = vi.spyOn(otp, 'stampUpdated');
 
       await repo.save(ctx, otp);
 

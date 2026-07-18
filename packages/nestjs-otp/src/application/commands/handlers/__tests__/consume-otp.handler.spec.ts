@@ -1,3 +1,5 @@
+import { type Mock } from 'vitest';
+
 import {
   createMockEventPublisher,
   createMockOtpEntity,
@@ -125,7 +127,7 @@ describe(ConsumeOtpHandler.name, () => {
       createMockOtpEntity({ expirationDate: new Date('2099-01-01') }),
     );
     mockRepo.findActiveByPasscode.mockResolvedValue(otp);
-    (mockSettings.types['uuid'].validator as jest.Mock).mockReturnValue(false);
+    (mockSettings.types['uuid'].validator as Mock).mockReturnValue(false);
 
     const command = new ConsumeOtpCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       category: 'test-category',

@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { NotAnErrorException } from '@concepta/nestjs-core';
 
@@ -15,7 +15,7 @@ describe(JwtPassportStrategy, () => {
       jwtFromRequest: () => 'rawToken',
       verifyToken: () => true,
     });
-    verifyCallback = jest.fn();
+    verifyCallback = vi.fn();
     jwtStrategy = new JwtPassportStrategy(jwtStrategyOptions, verifyCallback);
   });
 
@@ -27,25 +27,24 @@ describe(JwtPassportStrategy, () => {
     });
 
     it('should throw when jwtFromRequest returns empty string', () => {
-      jest.spyOn(jwtStrategyOptions, 'jwtFromRequest').mockReturnValue('');
+      void jwtStrategyOptions.jwtFromRequest;
+      vi.spyOn(jwtStrategyOptions, 'jwtFromRequest').mockReturnValue('');
       expect(() => jwtStrategy.authenticate(req)).toThrow();
     });
 
     it('should throw when verifyToken throws a standard Error', () => {
-      jest
-        .spyOn(jwtStrategyOptions, 'verifyToken')
-        .mockImplementationOnce(() => {
-          throw new Error();
-        });
+      void jwtStrategyOptions.verifyToken;
+      vi.spyOn(jwtStrategyOptions, 'verifyToken').mockImplementationOnce(() => {
+        throw new Error();
+      });
       expect(() => jwtStrategy.authenticate(req)).toThrow();
     });
 
     it('should throw when verifyToken throws a NotAnErrorException', () => {
-      jest
-        .spyOn(jwtStrategyOptions, 'verifyToken')
-        .mockImplementationOnce(() => {
-          throw new NotAnErrorException(new Error());
-        });
+      void jwtStrategyOptions.verifyToken;
+      vi.spyOn(jwtStrategyOptions, 'verifyToken').mockImplementationOnce(() => {
+        throw new NotAnErrorException(new Error());
+      });
       expect(() => jwtStrategy.authenticate(req)).toThrow();
     });
   });

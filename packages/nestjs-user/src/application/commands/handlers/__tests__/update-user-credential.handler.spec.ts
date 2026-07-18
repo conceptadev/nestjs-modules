@@ -14,7 +14,7 @@ describe(UpdateUserCredentialHandler.name, () => {
   let handler: UpdateUserCredentialHandler;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     handler = new UpdateUserCredentialHandler(userCredentialsService, txScope);
   });
 

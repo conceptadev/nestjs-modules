@@ -122,7 +122,7 @@ describe(CacheRepository.name, () => {
       mockRepoInterface.upsert.mockResolvedValue(mockEntity);
 
       const cache = toCacheDomain(mockEntity);
-      const stampSpy = jest.spyOn(cache, 'stampUpdated');
+      const stampSpy = vi.spyOn(cache, 'stampUpdated');
 
       await repo.save(ctx, cache);
 
@@ -183,7 +183,7 @@ describe(CacheRepository.name, () => {
       mockRepoInterface.softDelete.mockResolvedValue(undefined as never);
 
       const cache = toCacheDomain(mockEntity);
-      const stampSpy = jest.spyOn(cache, 'stampDeleted');
+      const stampSpy = vi.spyOn(cache, 'stampDeleted');
 
       await repo.softRemove(ctx, cache);
 

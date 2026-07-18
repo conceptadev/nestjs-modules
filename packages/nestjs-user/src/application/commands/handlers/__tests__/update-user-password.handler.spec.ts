@@ -19,7 +19,7 @@ describe(UpdateUserPasswordHandler.name, () => {
   let handler: UpdateUserPasswordHandler;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     handler = new UpdateUserPasswordHandler(
       userRepository,
       commandBus,

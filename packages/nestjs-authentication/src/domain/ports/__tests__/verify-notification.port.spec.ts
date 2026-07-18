@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type PlainLiteralObject } from '@nestjs/common';
 import { Command, type CommandBus } from '@nestjs/cqrs';
@@ -38,7 +38,8 @@ describe(VerifyNotificationPort.name, () => {
 
   describe('sendVerify', () => {
     it('should dispatch command via commandBus', () => {
-      jest.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
 
       port.sendVerify({}, 'me@mail.com', {
         passcode: 'abc123',

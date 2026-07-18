@@ -315,17 +315,17 @@ describe('ConfigurableCrudBuilder', () => {
 
     it('should use custom resolver when specified', () => {
       class CustomResolver implements CrudResolverInterface {
-        static decorateQueryHandler = jest.fn();
-        static decorateCommandHandler = jest.fn();
-        list = jest.fn();
-        read = jest.fn();
-        create = jest.fn();
-        createBatch = jest.fn();
-        update = jest.fn();
-        replace = jest.fn();
-        delete = jest.fn();
-        softDelete = jest.fn();
-        restore = jest.fn();
+        static decorateQueryHandler = vi.fn();
+        static decorateCommandHandler = vi.fn();
+        list = vi.fn();
+        read = vi.fn();
+        create = vi.fn();
+        createBatch = vi.fn();
+        update = vi.fn();
+        replace = vi.fn();
+        delete = vi.fn();
+        softDelete = vi.fn();
+        restore = vi.fn();
       }
 
       const builder = new ConfigurableCrudBuilder<TestEntity>({
@@ -441,7 +441,7 @@ describe('ConfigurableCrudBuilder', () => {
       const transform: ConfigurableCrudOptionsTransformer<
         TestEntity,
         PlainLiteralObject
-      > = jest.fn((options) => options);
+      > = vi.fn((options) => options);
       builder.setExtras({ customPath: 'custom' }, transform);
 
       const result = builder.build();
@@ -572,15 +572,15 @@ describe('ConfigurableCrudBuilder', () => {
       const mockBatchDto = { bulk: [mockDto] };
 
       const mockResolver: CrudResolverInterface = {
-        list: jest.fn().mockResolvedValue({ data: [] }),
-        read: jest.fn().mockResolvedValue(mockDto),
-        create: jest.fn().mockResolvedValue(mockDto),
-        createBatch: jest.fn().mockResolvedValue([mockDto]),
-        update: jest.fn().mockResolvedValue(mockDto),
-        replace: jest.fn().mockResolvedValue(mockDto),
-        delete: jest.fn().mockResolvedValue(null),
-        softDelete: jest.fn().mockResolvedValue(null),
-        restore: jest.fn().mockResolvedValue(null),
+        list: vi.fn().mockResolvedValue({ data: [] }),
+        read: vi.fn().mockResolvedValue(mockDto),
+        create: vi.fn().mockResolvedValue(mockDto),
+        createBatch: vi.fn().mockResolvedValue([mockDto]),
+        update: vi.fn().mockResolvedValue(mockDto),
+        replace: vi.fn().mockResolvedValue(mockDto),
+        delete: vi.fn().mockResolvedValue(null),
+        softDelete: vi.fn().mockResolvedValue(null),
+        restore: vi.fn().mockResolvedValue(null),
       };
 
       const instance = { crudResolver: mockResolver };

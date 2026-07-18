@@ -29,7 +29,7 @@ describe('assertCacheId', () => {
   it('should include typeof in error message', () => {
     try {
       assertCacheId(42);
-      fail('Expected CacheException');
+      throw new Error('Expected CacheException');
     } catch (e) {
       expect(e).toBeInstanceOf(CacheException);
       expect((e as CacheException).message).toContain('number');

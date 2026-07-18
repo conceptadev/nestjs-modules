@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 
-import { mock } from 'jest-mock-extended';
+import { type MockInstance } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 import { type ExecutionContext } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -15,7 +16,7 @@ import { UserModuleFixture } from './fixtures/user.module.fixture';
 describe(JwtGuard, () => {
   let context: ExecutionContext;
   let jwtGuard: JwtGuard;
-  let spyCanActivate: jest.SpyInstance;
+  let spyCanActivate: MockInstance;
   let user: ReferenceIdInterface;
 
   beforeEach(async () => {
@@ -25,7 +26,7 @@ describe(JwtGuard, () => {
       imports: [UserModuleFixture],
     }).compile();
     jwtGuard = moduleRef.get<JwtGuard>(JwtGuard);
-    spyCanActivate = jest
+    spyCanActivate = vi
       .spyOn(JwtGuard.prototype, 'canActivate')
       .mockImplementation(() => true);
     user = { id: randomUUID() };

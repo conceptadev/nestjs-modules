@@ -33,9 +33,9 @@ jobs:
       - name: Process Test Results
         uses: dorny/test-reporter@v1
         with:
-          name: Jest Tests
+          name: Unit Tests
           path: "junit.xml"
-          reporter: jest-junit
+          reporter: java-junit
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
         with:

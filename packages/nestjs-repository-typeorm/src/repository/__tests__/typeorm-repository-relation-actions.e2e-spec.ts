@@ -66,7 +66,7 @@ describe('TypeOrmRepository relation actions (e2e)', () => {
     });
 
     afterEach(async () => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       await moduleFixture.close();
     });
 
@@ -151,7 +151,7 @@ describe('TypeOrmRepository relation actions (e2e)', () => {
     });
 
     afterEach(async () => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       await moduleFixture.close();
     });
 

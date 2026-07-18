@@ -1,15 +1,16 @@
-import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
 import { type DataSource, type EntityManager, type QueryRunner } from 'typeorm';
+import { type Mock } from 'vitest';
+import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
 import { TypeOrmTransaction } from './typeorm-transaction';
 import { TypeOrmTransactionFactory } from './typeorm-transaction.factory';
 
 interface MockQueryRunner {
-  connect: jest.Mock;
-  startTransaction: jest.Mock;
-  commitTransaction: jest.Mock;
-  rollbackTransaction: jest.Mock;
-  release: jest.Mock;
+  connect: Mock;
+  startTransaction: Mock;
+  commitTransaction: Mock;
+  rollbackTransaction: Mock;
+  release: Mock;
   isTransactionActive: boolean;
   manager: EntityManager | undefined;
 }
@@ -24,11 +25,11 @@ describe(TypeOrmTransaction.name, () => {
     mockEntityManager = mockDeep<EntityManager>();
 
     mockQueryRunner = {
-      connect: jest.fn().mockResolvedValue(undefined),
-      startTransaction: jest.fn().mockResolvedValue(undefined),
-      commitTransaction: jest.fn().mockResolvedValue(undefined),
-      rollbackTransaction: jest.fn().mockResolvedValue(undefined),
-      release: jest.fn().mockResolvedValue(undefined),
+      connect: vi.fn().mockResolvedValue(undefined),
+      startTransaction: vi.fn().mockResolvedValue(undefined),
+      commitTransaction: vi.fn().mockResolvedValue(undefined),
+      rollbackTransaction: vi.fn().mockResolvedValue(undefined),
+      release: vi.fn().mockResolvedValue(undefined),
       isTransactionActive: false,
       manager: mockEntityManager,
     };

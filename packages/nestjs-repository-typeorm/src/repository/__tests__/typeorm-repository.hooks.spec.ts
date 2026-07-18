@@ -437,7 +437,7 @@ describe('TypeOrmRepository Hooks', () => {
 
   afterEach(async () => {
     allHooks.callLog = [];
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     await moduleFixture.close();
   });
 

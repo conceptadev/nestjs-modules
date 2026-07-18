@@ -43,7 +43,7 @@ describe('RouterController (e2e)', () => {
   describe(RouterControllerFixture.prototype.login, () => {
     it('should call the Auth Router guard and return successfully when provider is specified', async () => {
       const googleGuard = guardsRecord.google;
-      const guardSpy = jest.spyOn(googleGuard, 'canActivate');
+      const guardSpy = vi.spyOn(googleGuard, 'canActivate');
 
       await supertest(app.getHttpServer())
         .get('/auth-router/login?provider=google')
@@ -74,7 +74,7 @@ describe('RouterController (e2e)', () => {
   describe(RouterControllerFixture.prototype.callback, () => {
     it('should call the Auth Router guard and return success response when provider is specified', async () => {
       const googleGuard = guardsRecord.google;
-      const guardSpy = jest.spyOn(googleGuard, 'canActivate');
+      const guardSpy = vi.spyOn(googleGuard, 'canActivate');
 
       const response = await supertest(app.getHttpServer())
         .get('/auth-router/callback?provider=google')

@@ -18,7 +18,7 @@ describe(RemoveUserHandler.name, () => {
   let handler: RemoveUserHandler;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     handler = new RemoveUserHandler(userRepository, txScope, eventPublisher);
   });
 

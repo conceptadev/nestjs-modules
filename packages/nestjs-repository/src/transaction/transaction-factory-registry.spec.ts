@@ -5,8 +5,8 @@ import { TransactionFactoryRegistry } from './transaction-factory-registry';
 
 describe(TransactionFactoryRegistry.name, () => {
   let registry: TransactionFactoryRegistry;
-  let mockFactory: jest.Mocked<TransactionFactoryInterface>;
-  let mockTransaction: jest.Mocked<TransactionInterface>;
+  let mockFactory: TransactionFactoryInterface;
+  let mockTransaction: TransactionInterface;
 
   beforeEach(() => {
     registry = new TransactionFactoryRegistry();
@@ -14,15 +14,15 @@ describe(TransactionFactoryRegistry.name, () => {
     mockTransaction = {
       isActive: false,
       isDirty: false,
-      start: jest.fn(),
-      commit: jest.fn(),
-      rollback: jest.fn(),
-      markDirty: jest.fn(),
-      getClient: jest.fn(),
+      start: vi.fn(),
+      commit: vi.fn(),
+      rollback: vi.fn(),
+      markDirty: vi.fn(),
+      getClient: vi.fn(),
     };
 
     mockFactory = {
-      create: jest.fn().mockReturnValue(mockTransaction),
+      create: vi.fn().mockReturnValue(mockTransaction),
     };
   });
 
@@ -34,7 +34,7 @@ describe(TransactionFactoryRegistry.name, () => {
 
     it('should skip if key already exists', () => {
       const secondFactory: TransactionFactoryInterface = {
-        create: jest.fn(),
+        create: vi.fn(),
       };
 
       registry.register('typeorm:default', mockFactory);
@@ -62,7 +62,7 @@ describe(TransactionFactoryRegistry.name, () => {
   describe('getAll', () => {
     it('should return copy of all factories', () => {
       const secondFactory: TransactionFactoryInterface = {
-        create: jest.fn(),
+        create: vi.fn(),
       };
 
       registry.register('typeorm:default', mockFactory);

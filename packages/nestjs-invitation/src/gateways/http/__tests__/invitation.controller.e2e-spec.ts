@@ -63,7 +63,7 @@ describe('InvitationController (e2e)', () => {
   });
 
   afterEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     if (app) await app.close();
   });
 

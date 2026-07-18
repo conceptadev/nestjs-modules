@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { type ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -9,8 +9,8 @@ import { RefreshUnauthorizedException } from '../exceptions/refresh-unauthorized
 import { REFRESH_STRATEGY_NAME } from '../refresh.constants';
 import { RefreshGuard } from '../refresh.guard';
 
-jest.mock('@nestjs/passport', () => ({
-  AuthGuard: jest.fn().mockImplementation(() => jest.fn()),
+vi.mock('@nestjs/passport', () => ({
+  AuthGuard: vi.fn().mockImplementation(() => vi.fn()),
 }));
 
 describe(RefreshGuard.name, () => {
@@ -71,7 +71,7 @@ describe(RefreshGuard.name, () => {
 
   describe('canActivate', () => {
     it('should delegate to the passport canActivate', () => {
-      const spy = jest
+      const spy = vi
         .spyOn(RefreshGuard.prototype, 'canActivate')
         .mockReturnValue(true);
 

@@ -1,5 +1,5 @@
 import { AccessControl } from 'accesscontrol';
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import {
   type ArgumentsHost,
@@ -150,7 +150,7 @@ describe(CheckAccessHandler.name, () => {
         { provide: Reflector, useValue: reflector },
         {
           provide: QueryBus,
-          useValue: { execute: jest.fn().mockResolvedValue(['role1']) },
+          useValue: { execute: vi.fn().mockResolvedValue(['role1']) },
         },
       ],
     }).compile();
@@ -164,7 +164,7 @@ describe(CheckAccessHandler.name, () => {
   });
 
   afterEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('handler provider', () => {
@@ -256,7 +256,7 @@ describe(CheckAccessHandler.name, () => {
 
   describe('canActivate', () => {
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('should allow activation (no acl applied)', async () => {
@@ -304,7 +304,7 @@ describe(CheckAccessHandler.name, () => {
       context.getHandler.mockReturnValue(controller.getOwnQueryPass);
       context.switchToHttp.mockReturnValue(argsHost);
 
-      const querySpy = jest.spyOn(testQueryServicePass, 'canAccess');
+      const querySpy = vi.spyOn(testQueryServicePass, 'canAccess');
 
       const canActivate: boolean = await handler.execute(
         new CheckAccessQuery(context),
@@ -322,7 +322,7 @@ describe(CheckAccessHandler.name, () => {
       context.getHandler.mockReturnValue(controller.getOwnQueryFail);
       context.switchToHttp.mockReturnValue(argsHost);
 
-      const querySpy = jest.spyOn(testQueryServiceFail, 'canAccess');
+      const querySpy = vi.spyOn(testQueryServiceFail, 'canAccess');
 
       const canActivate: boolean = await handler.execute(
         new CheckAccessQuery(context),
@@ -358,7 +358,7 @@ describe(CheckAccessHandler.name, () => {
         executionContext: context,
       });
 
-      const querySpy = jest.spyOn(testQueryServicePass, 'canAccess');
+      const querySpy = vi.spyOn(testQueryServicePass, 'canAccess');
 
       const canActivate: boolean = await handler.execute(
         new CheckAccessQuery(context),
@@ -392,7 +392,7 @@ describe(CheckAccessHandler.name, () => {
         executionContext: context,
       });
 
-      const querySpy = jest.spyOn(testQueryServicePass, 'canAccess');
+      const querySpy = vi.spyOn(testQueryServicePass, 'canAccess');
 
       const canActivate: boolean = await handler.execute(
         new CheckAccessQuery(context),
@@ -411,7 +411,7 @@ describe(CheckAccessHandler.name, () => {
       context.getHandler.mockReturnValue(controller.getOneOwnQueryPass);
       context.switchToHttp.mockReturnValue(argsHost);
 
-      const querySpy = jest.spyOn(testQueryServicePass, 'canAccess');
+      const querySpy = vi.spyOn(testQueryServicePass, 'canAccess');
 
       const expectedAccessControlContext = new AccessControlContext({
         request: {

@@ -42,7 +42,7 @@ describe(TypeOrmRepository, () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should be loaded', () => {
@@ -297,7 +297,7 @@ describe(TypeOrmRepository, () => {
     });
 
     it('should throw RepositoryQueryException on error', async () => {
-      jest.spyOn(testRepository['repo'], 'find').mockImplementationOnce(() => {
+      vi.spyOn(testRepository['repo'], 'find').mockImplementationOnce(() => {
         throw new Error();
       });
 
@@ -326,11 +326,9 @@ describe(TypeOrmRepository, () => {
     });
 
     it('should throw RepositoryQueryException on error', async () => {
-      jest
-        .spyOn(testRepository['repo'], 'findOne')
-        .mockImplementationOnce(() => {
-          throw new Error();
-        });
+      vi.spyOn(testRepository['repo'], 'findOne').mockImplementationOnce(() => {
+        throw new Error();
+      });
 
       await expect(testRepository.findOne({})).rejects.toThrow(
         RepositoryQueryException,

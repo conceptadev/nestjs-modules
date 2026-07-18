@@ -65,13 +65,11 @@ describe('AuthLocalController (e2e)', () => {
   it('POST auth/login username not found with custom message', async () => {
     const validateUserService = app.get(LocalService);
 
-    jest
-      .spyOn(validateUserService, 'validateUser')
-      .mockImplementationOnce(() => {
-        throw new LocalInvalidCredentialsException({
-          safeMessage: 'Custom invalid credentials message',
-        });
+    vi.spyOn(validateUserService, 'validateUser').mockImplementationOnce(() => {
+      throw new LocalInvalidCredentialsException({
+        safeMessage: 'Custom invalid credentials message',
       });
+    });
 
     await supertest(app.getHttpServer())
       .post('/auth/login')

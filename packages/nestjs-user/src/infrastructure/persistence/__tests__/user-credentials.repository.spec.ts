@@ -1,4 +1,4 @@
-import { mock, type MockProxy } from 'jest-mock-extended';
+import { mock, type MockProxy } from 'vitest-mock-extended';
 
 import { type RepositoryInterface } from '@concepta/nestjs-repository';
 
@@ -29,7 +29,7 @@ describe(UserCredentialsRepository.name, () => {
   let repository: UserCredentialsRepository;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     repository = new UserCredentialsRepository(
       innerRepo,
       new UserCredentialsMapper(),
@@ -99,7 +99,7 @@ describe(UserCredentialsRepository.name, () => {
       innerRepo.upsert.mockResolvedValue(mockEntity);
 
       const entry = credentialsMapper.toDomain(mockEntity);
-      const stampSpy = jest.spyOn(entry, 'stampUpdated');
+      const stampSpy = vi.spyOn(entry, 'stampUpdated');
 
       await repository.save({}, entry);
 

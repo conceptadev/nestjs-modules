@@ -29,19 +29,19 @@ describe(TransactionScope.name, () => {
       get isDirty() {
         return isDirty;
       },
-      start: jest.fn().mockImplementation(async () => {
+      start: vi.fn().mockImplementation(async () => {
         isActive = true;
       }),
-      commit: jest.fn().mockImplementation(async () => {
+      commit: vi.fn().mockImplementation(async () => {
         isActive = false;
       }),
-      rollback: jest.fn().mockImplementation(async () => {
+      rollback: vi.fn().mockImplementation(async () => {
         isActive = false;
       }),
-      markDirty: jest.fn().mockImplementation(() => {
+      markDirty: vi.fn().mockImplementation(() => {
         isDirty = true;
       }),
-      getClient: jest.fn(),
+      getClient: vi.fn(),
     };
   };
 
@@ -69,7 +69,7 @@ describe(TransactionScope.name, () => {
   describe('run with SUPPORTS propagation (default)', () => {
     it('should auto-define TrxCtx and run lifecycle', async () => {
       const ctx = new AppContextHost();
-      const operation = jest.fn().mockResolvedValue('result');
+      const operation = vi.fn().mockResolvedValue('result');
 
       const result = await transaction.run(ctx, operation);
 
@@ -86,7 +86,7 @@ describe(TransactionScope.name, () => {
 
     it('should accept a plain object and coerce via AppContextHost.from()', async () => {
       const ctx = {};
-      const operation = jest.fn().mockResolvedValue('result');
+      const operation = vi.fn().mockResolvedValue('result');
 
       const result = await transaction.run(ctx, operation);
 
@@ -124,7 +124,7 @@ describe(TransactionScope.name, () => {
       const txScope = moduleRef.get<TransactionScope>(TransactionScope);
       const ctx = new AppContextHost();
 
-      const operation = jest.fn().mockResolvedValue('result');
+      const operation = vi.fn().mockResolvedValue('result');
       const result = await txScope.run(ctx, operation);
 
       expect(result).toBe('result');
@@ -135,7 +135,7 @@ describe(TransactionScope.name, () => {
   describe('run with MANDATORY propagation', () => {
     it('should run when factories are registered', async () => {
       const ctx = new AppContextHost();
-      const operation = jest.fn().mockResolvedValue('result');
+      const operation = vi.fn().mockResolvedValue('result');
 
       const result = await transaction.run(ctx, operation, {
         propagation: 'MANDATORY',
@@ -163,7 +163,7 @@ describe(TransactionScope.name, () => {
       const txScope = moduleRef.get<TransactionScope>(TransactionScope);
       const ctx = new AppContextHost();
 
-      const operation = jest.fn().mockResolvedValue('result');
+      const operation = vi.fn().mockResolvedValue('result');
 
       await expect(
         txScope.run(ctx, operation, { propagation: 'MANDATORY' }),
@@ -267,7 +267,7 @@ describe(TransactionScope.name, () => {
   describe('timeout handling', () => {
     it('should throw TransactionTimeoutException on timeout', async () => {
       const ctx = new AppContextHost();
-      const operation = jest
+      const operation = vi
         .fn()
         .mockImplementation(
           async () => new Promise((resolve) => setTimeout(resolve, 200)),
@@ -282,7 +282,7 @@ describe(TransactionScope.name, () => {
   describe('onCommit / onRollback callbacks', () => {
     it('should flush onCommit callbacks after successful commit', async () => {
       const ctx = new AppContextHost();
-      const callback = jest.fn();
+      const callback = vi.fn();
 
       await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
         txCtx.trx.onCommit(callback);
@@ -294,7 +294,7 @@ describe(TransactionScope.name, () => {
 
     it('should flush onRollback callbacks after error rollback', async () => {
       const ctx = new AppContextHost();
-      const callback = jest.fn();
+      const callback = vi.fn();
 
       await expect(
         transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
@@ -308,7 +308,7 @@ describe(TransactionScope.name, () => {
 
     it('should not flush onCommit callbacks on rollback', async () => {
       const ctx = new AppContextHost();
-      const commitCb = jest.fn();
+      const commitCb = vi.fn();
 
       await expect(
         transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
@@ -322,7 +322,7 @@ describe(TransactionScope.name, () => {
 
     it('should not flush onRollback callbacks on commit', async () => {
       const ctx = new AppContextHost();
-      const rollbackCb = jest.fn();
+      const rollbackCb = vi.fn();
 
       await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
         txCtx.trx.onRollback(rollbackCb);

@@ -1,4 +1,5 @@
-import { mockDeep, type DeepMockProxy } from 'jest-mock-extended';
+import { type Mocked } from 'vitest';
+import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
 import { type EventPublisher } from '@nestjs/cqrs';
 
@@ -22,8 +23,8 @@ import { UserMapper } from '../../infrastructure/persistence/user.mapper';
 
 export function createMockTxScope(): DeepMockProxy<TransactionScope> {
   const trxHandle = {
-    onCommit: jest.fn(),
-    onRollback: jest.fn(),
+    onCommit: vi.fn(),
+    onRollback: vi.fn(),
   };
 
   const mockHost = new AppContextHost();
@@ -41,28 +42,28 @@ export function createMockTxScope(): DeepMockProxy<TransactionScope> {
 export function createMockEventPublisher(): DeepMockProxy<EventPublisher> {
   const publisher = mockDeep<EventPublisher>();
   publisher.mergeObjectContext.mockImplementation((obj) => {
-    obj.commit = jest.fn();
-    obj.uncommit = jest.fn();
+    obj.commit = vi.fn();
+    obj.uncommit = vi.fn();
     return obj;
   });
   return publisher;
 }
 
-export function createMockUserRepository(): jest.Mocked<UserRepositoryInterface> {
+export function createMockUserRepository(): Mocked<UserRepositoryInterface> {
   return {
-    get: jest.fn(),
-    findByEmail: jest.fn(),
-    findByUsername: jest.fn(),
-    save: jest.fn(),
-    remove: jest.fn(),
+    get: vi.fn(),
+    findByEmail: vi.fn(),
+    findByUsername: vi.fn(),
+    save: vi.fn(),
+    remove: vi.fn(),
   };
 }
 
-export function createMockUserCredentialsRepository(): jest.Mocked<UserCredentialsRepositoryInterface> {
+export function createMockUserCredentialsRepository(): Mocked<UserCredentialsRepositoryInterface> {
   return {
-    findActiveByUserId: jest.fn(),
-    findByUserId: jest.fn(),
-    save: jest.fn(),
+    findActiveByUserId: vi.fn(),
+    findByUserId: vi.fn(),
+    save: vi.fn(),
   };
 }
 

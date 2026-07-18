@@ -6,8 +6,10 @@
     "outDir": "./dist/cjs",
     "typeRoots": [
       "./node_modules/@types",
-      "../../node_modules/@types"
-    ]
+      "../../node_modules/@types",
+      "../../node_modules"
+    ],
+    "types": ["node", "vitest/globals"]
   },
   "include": ["src/**/*.ts"]
 }

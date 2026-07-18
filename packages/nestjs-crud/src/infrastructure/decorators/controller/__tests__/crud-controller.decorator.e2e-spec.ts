@@ -43,20 +43,20 @@ describe('#crud', () => {
 
     // Mock CrudResolver for testing decorator behavior
     const mockCrudResolver = {
-      list: jest.fn().mockResolvedValue({
+      list: vi.fn().mockResolvedValue({
         data: [],
         count: 0,
         total: 0,
         page: 1,
         pageCount: 0,
       }),
-      read: jest.fn().mockResolvedValue({ id: 1 }),
-      create: jest.fn().mockResolvedValue({ id: 1 }),
-      createBatch: jest.fn().mockResolvedValue([{ id: 1 }, { id: 2 }]),
-      update: jest.fn().mockResolvedValue({ id: 1 }),
-      replace: jest.fn().mockResolvedValue({ id: 1 }),
-      delete: jest.fn().mockResolvedValue({ id: 1 }),
-      restore: jest.fn().mockResolvedValue({ id: 1 }),
+      read: vi.fn().mockResolvedValue({ id: 1 }),
+      create: vi.fn().mockResolvedValue({ id: 1 }),
+      createBatch: vi.fn().mockResolvedValue([{ id: 1 }, { id: 2 }]),
+      update: vi.fn().mockResolvedValue({ id: 1 }),
+      replace: vi.fn().mockResolvedValue({ id: 1 }),
+      delete: vi.fn().mockResolvedValue({ id: 1 }),
+      restore: vi.fn().mockResolvedValue({ id: 1 }),
     };
 
     @CrudController({
@@ -149,93 +149,60 @@ describe('#crud', () => {
     });
 
     afterAll(async () => {
-      app.close();
+      await app.close();
     });
 
     describe('#list', () => {
-      it('should return status 200', (done) => {
-        request(server)
-          .get('/test')
-          .end((_, res) => {
-            expect(res.status).toEqual(200);
-            done();
-          });
+      it('should return status 200', async () => {
+        await request(server).get('/test').expect(200);
       });
-      it('should return status 400', (done) => {
+      it('should return status 400', async () => {
         const query = qb.setFilter(['foo', WhereOperator.GT]).query();
-        request(server)
-          .get('/test')
-          .query(query)
-          .end((_, res) => {
-            const expected = {
-              statusCode: 400,
-              errorCode: 'CRUD_CONTEXT_ERROR',
-            };
-            expect(res.status).toEqual(400);
-            expect(res.body).toMatchObject(expected);
-            done();
-          });
+        const expected = {
+          statusCode: 400,
+          errorCode: 'CRUD_CONTEXT_ERROR',
+        };
+        const res = await request(server).get('/test').query(query).expect(400);
+        expect(res.body).toMatchObject(expected);
       });
     });
 
     describe('#read', () => {
-      it('should return status 200', (done) => {
-        request(server)
-          .get('/test/1')
-          .end((_, res) => {
-            expect(res.status).toEqual(200);
-            done();
-          });
+      it('should return status 200', async () => {
+        await request(server).get('/test/1').expect(200);
       });
-      it('should return status 400', (done) => {
-        request(server)
-          .get('/test/invalid')
-          .end((_, res) => {
-            const expected = {
-              statusCode: 400,
-              errorCode: 'CRUD_CONTEXT_ERROR',
-            };
-            expect(res.status).toEqual(400);
-            expect(res.body).toMatchObject(expected);
-            done();
-          });
+      it('should return status 400', async () => {
+        const expected = {
+          statusCode: 400,
+          errorCode: 'CRUD_CONTEXT_ERROR',
+        };
+        const res = await request(server).get('/test/invalid').expect(400);
+        expect(res.body).toMatchObject(expected);
       });
     });
 
     describe('#createBase', () => {
-      it('should return status 201', (done) => {
+      it('should return status 201', async () => {
         const send: TestModelDto = {
           firstName: 'firstName',
           lastName: 'lastName',
           email: 'test@test.com',
           age: 15,
         };
-        request(server)
-          .post('/test')
-          .send(send)
-          .end((_, res) => {
-            expect(res.status).toEqual(201);
-            done();
-          });
+        await request(server).post('/test').send(send).expect(201);
       });
-      it('should return status 400', (done) => {
+      it('should return status 400', async () => {
         const send: TestModelDto = {
           firstName: 'firstName',
           lastName: 'lastName',
           email: 'test@test.com',
         };
-        request(server)
-          .post('/test')
-          .send(send)
-          .end((_, res) => {
-            expect(res.status).toEqual(400);
-            done();
-          });
+        await request(server).post('/test').send(send).expect(400);
       });
     });
 
     describe('#createBatch', () => {
-      it('should return status 201', (done) => {
+      it('should return status 201', async () => {
         const send: CrudCreateBatchInterface<TestModelDto> = {
           bulk: [
             {
@@ -252,30 +219,18 @@ describe('#crud', () => {
             },
           ],
         };
-        request(server)
-          .post('/test/bulk')
-          .send(send)
-          .end((_, res) => {
-            expect(res.status).toEqual(201);
-            done();
-          });
+        await request(server).post('/test/bulk').send(send).expect(201);
       });
-      it('should return status 400', (done) => {
+      it('should return status 400', async () => {
         const send: CrudCreateBatchInterface<TestModelDto> = {
           bulk: [],
         };
-        request(server)
-          .post('/test/bulk')
-          .send(send)
-          .end((_, res) => {
-            expect(res.status).toEqual(400);
-            done();
-          });
+        await request(server).post('/test/bulk').send(send).expect(400);
       });
     });
 
     describe('#replace', () => {
-      it('should return status 200', (done) => {
+      it('should return status 200', async () => {
         const send: TestModelDto = {
           id: 1,
           firstName: 'firstName',
@@ -283,32 +238,20 @@ describe('#crud', () => {
           email: 'test@test.com',
           age: 15,
         };
-        request(server)
-          .put('/test/1')
-          .send(send)
-          .end((_, res) => {
-            expect(res.status).toEqual(200);
-            done();
-          });
+        await request(server).put('/test/1').send(send).expect(200);
       });
-      it('should return status 400', (done) => {
+      it('should return status 400', async () => {
         const send: TestModelDto = {
           firstName: 'firstName',
           lastName: 'lastName',
           email: 'test@test.com',
         };
-        request(server)
-          .put('/test/1')
-          .send(send)
-          .end((_, res) => {
-            expect(res.status).toEqual(400);
-            done();
-          });
+        await request(server).put('/test/1').send(send).expect(400);
       });
     });
 
     describe('#update', () => {
-      it('should return status 200', (done) => {
+      it('should return status 200', async () => {
         const send: TestModelDto = {
           id: 1,
           firstName: 'firstName',
@@ -316,38 +259,21 @@ describe('#crud', () => {
           email: 'test@test.com',
           age: 15,
         };
-        request(server)
-          .patch('/test/1')
-          .send(send)
-          .end((_, res) => {
-            expect(res.status).toEqual(200);
-            done();
-          });
+        await request(server).patch('/test/1').send(send).expect(200);
       });
-      it('should return status 400', (done) => {
+      it('should return status 400', async () => {
         const send: TestModelDto = {
           firstName: 'firstName',
           lastName: 'lastName',
           email: 'test@test.com',
         };
-        request(server)
-          .patch('/test/1')
-          .send(send)
-          .end((_, res) => {
-            expect(res.status).toEqual(400);
-            done();
-          });
+        await request(server).patch('/test/1').send(send).expect(400);
       });
     });
 
     describe('#delete', () => {
-      it('should return status 204', (done) => {
-        request(server)
-          .delete('/test/1')
-          .end((_, res) => {
-            expect(res.status).toEqual(204);
-            done();
-          });
+      it('should return status 204', async () => {
+        await request(server).delete('/test/1').expect(204);
       });
     });
   });

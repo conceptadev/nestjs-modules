@@ -16,14 +16,14 @@ describe('VerifyController (e2e)', () => {
   let app: INestApplication;
 
   const mockVerifyService = {
-    send: jest.fn().mockResolvedValue(undefined),
-    confirmUser: jest.fn(),
-    validatePasscode: jest.fn(),
-    revokeAllUserVerifyToken: jest.fn().mockResolvedValue(undefined),
+    send: vi.fn().mockResolvedValue(undefined),
+    confirmUser: vi.fn(),
+    validatePasscode: vi.fn(),
+    revokeAllUserVerifyToken: vi.fn().mockResolvedValue(undefined),
   };
 
   beforeEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModuleFixture],

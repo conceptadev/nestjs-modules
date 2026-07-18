@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 
 import * as classValidator from 'class-validator';
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import { BadRequestException, HttpStatus } from '@nestjs/common';
 
@@ -51,38 +51,40 @@ describe(LocalStrategy.name, () => {
       username: 'test',
       active: true,
     };
-    jest.resetAllMocks();
-    jest.spyOn(userPort, 'getByUsername').mockResolvedValue(user);
+    vi.resetAllMocks();
+    void userPort.getByUsername;
+    vi.spyOn(userPort, 'getByUsername').mockResolvedValue(user);
   });
 
   describe(LocalStrategy.prototype.validate, () => {
     it('should return user', async () => {
-      jest.spyOn(passwordPort, 'validate').mockResolvedValue(true);
+      void passwordPort.validate;
+      vi.spyOn(passwordPort, 'validate').mockResolvedValue(true);
 
       const result = await localStrategy.validate({}, USERNAME, PASSWORD);
       expect(result.id).toBe(user.id);
     });
 
     it('should fail to validate user', async () => {
-      jest
-        .spyOn(validateUserService, 'validateUser')
-        .mockImplementationOnce((_ctx, _dto: LocalValidateUserInterface) => {
+      vi.spyOn(validateUserService, 'validateUser').mockImplementationOnce(
+        (_ctx, _dto: LocalValidateUserInterface) => {
           return null as unknown as Promise<ReferenceIdInterface<string>>;
-        });
+        },
+      );
 
       const t = () => localStrategy.validate({}, USERNAME, PASSWORD);
       await expect(t).rejects.toThrow(LocalInvalidCredentialsException);
     });
 
     it('should fail to validate user with custom message', async () => {
-      jest
-        .spyOn(validateUserService, 'validateUser')
-        .mockImplementation((_ctx, _dto: LocalValidateUserInterface) => {
+      vi.spyOn(validateUserService, 'validateUser').mockImplementation(
+        (_ctx, _dto: LocalValidateUserInterface) => {
           throw new LocalInvalidCredentialsException({
             message: 'Custom message',
             safeMessage: 'Custom safe message',
           });
-        });
+        },
+      );
 
       const call = localStrategy.validate({}, USERNAME, PASSWORD);
 
@@ -97,11 +99,11 @@ describe(LocalStrategy.name, () => {
     });
 
     it('should fail with internal server error', async () => {
-      jest
-        .spyOn(validateUserService, 'validateUser')
-        .mockImplementation((_ctx, _dto: LocalValidateUserInterface) => {
+      vi.spyOn(validateUserService, 'validateUser').mockImplementation(
+        (_ctx, _dto: LocalValidateUserInterface) => {
           throw new Error('This is really bad');
-        });
+        },
+      );
 
       const call = localStrategy.validate({}, USERNAME, PASSWORD);
 
@@ -122,23 +124,25 @@ describe(LocalStrategy.name, () => {
     });
 
     it('should throw BadRequest on validateOrReject', async () => {
-      jest
-        .spyOn(classValidator, 'validateOrReject')
-        .mockRejectedValueOnce(BadRequestException);
+      vi.spyOn(classValidator, 'validateOrReject').mockRejectedValueOnce(
+        BadRequestException,
+      );
 
       const t = () => localStrategy.validate({}, USERNAME, PASSWORD);
       await expect(t).rejects.toThrow(LocalInvalidLoginDataException);
     });
 
     it('should return no user on userPort.getByUsername', async () => {
-      jest.spyOn(userPort, 'getByUsername').mockResolvedValue(null);
+      void userPort.getByUsername;
+      vi.spyOn(userPort, 'getByUsername').mockResolvedValue(null);
 
       const t = () => localStrategy.validate({}, USERNAME, PASSWORD);
       await expect(t).rejects.toThrow(LocalInvalidCredentialsException);
     });
 
     it('should be invalid on passwordPort.validate', async () => {
-      jest.spyOn(passwordPort, 'validate').mockResolvedValue(false);
+      void passwordPort.validate;
+      vi.spyOn(passwordPort, 'validate').mockResolvedValue(false);
 
       const t = () => localStrategy.validate({}, USERNAME, PASSWORD);
       await expect(t).rejects.toThrow(LocalInvalidCredentialsException);

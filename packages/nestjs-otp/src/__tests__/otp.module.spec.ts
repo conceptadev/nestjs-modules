@@ -19,7 +19,7 @@ describe(OtpModule.name, () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('module', () => {

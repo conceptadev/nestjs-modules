@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 
 import supertest from 'supertest';
+import { type MockInstance } from 'vitest';
 
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -22,7 +23,7 @@ describe('RoleCrudController (e2e)', () => {
   let seedingSource: SeedingSource;
   let userFactory: UserFactoryFixture;
   let user: UserEntityFixture;
-  let txSpy: jest.SpyInstance;
+  let txSpy: MockInstance;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -32,7 +33,7 @@ describe('RoleCrudController (e2e)', () => {
     await app.init();
 
     const txScope = app.get(TransactionScope);
-    txSpy = jest.spyOn(txScope, 'run');
+    txSpy = vi.spyOn(txScope, 'run');
 
     seedingSource = new SeedingSource({
       dataSource: app.get(getDataSourceToken()),
@@ -52,7 +53,7 @@ describe('RoleCrudController (e2e)', () => {
   });
 
   afterEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     return app ? await app.close() : undefined;
   });
 

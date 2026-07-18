@@ -1,5 +1,5 @@
-import { mock } from 'jest-mock-extended';
 import { firstValueFrom, of } from 'rxjs';
+import { mock } from 'vitest-mock-extended';
 
 import { type CallHandler, type ExecutionContext } from '@nestjs/common';
 
