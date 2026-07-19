@@ -1,6 +1,6 @@
 {
   "name": "@concepta/nestjs-repository-typeorm",
-  "version": "8.0.0-alpha.7",
+  "version": "8.0.0-alpha.8",
   "description": "Rockets NestJS TypeORM Repository Module",
   "type": "module",
   "main": "./dist/index.js",
@@ -15,8 +15,8 @@
     "!dist/**/__fixtures__/**"
   ],
   "dependencies": {
-    "@concepta/nestjs-core": "^8.0.0-alpha.7",
-    "@concepta/nestjs-repository": "8.0.0-alpha.7",
+    "@concepta/nestjs-core": "^8.0.0-alpha.8",
+    "@concepta/nestjs-repository": "8.0.0-alpha.8",
     "@nestjs/common": "12.0.0-alpha.5",
     "@nestjs/typeorm": "^11.0.0",
     "@tsyche/membrane": "^0.7.0"

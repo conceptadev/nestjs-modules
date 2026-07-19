@@ -1,6 +1,6 @@
 {
   "name": "@concepta/nestjs-authentication",
-  "version": "8.0.0-alpha.7",
+  "version": "8.0.0-alpha.8",
   "description": "Rockets NestJS Authentication",
   "type": "module",
   "main": "./dist/index.js",
@@ -15,9 +15,9 @@
     "!dist/**/__fixtures__/**"
   ],
   "dependencies": {
-    "@concepta/nestjs-core": "^8.0.0-alpha.7",
-    "@concepta/nestjs-password": "8.0.0-alpha.7",
-    "@concepta/nestjs-user": "8.0.0-alpha.7",
+    "@concepta/nestjs-core": "^8.0.0-alpha.8",
+    "@concepta/nestjs-password": "8.0.0-alpha.8",
+    "@concepta/nestjs-user": "8.0.0-alpha.8",
     "@nestjs/common": "12.0.0-alpha.5",
     "@nestjs/config": "12.0.0-next.0",
     "@nestjs/core": "12.0.0-alpha.5",
@@ -33,8 +33,8 @@
     "passport-strategy": "^1.0.0"
   },
   "devDependencies": {
-    "@concepta/nestjs-crud": "8.0.0-alpha.7",
-    "@concepta/nestjs-otp": "8.0.0-alpha.7",
+    "@concepta/nestjs-crud": "8.0.0-alpha.8",
+    "@concepta/nestjs-otp": "8.0.0-alpha.8",
     "@nestjs/testing": "12.0.0-alpha.5",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
