@@ -9,13 +9,18 @@ import {
 } from '@nestjs/swagger';
 import { Test } from '@nestjs/testing';
 
+import { standardSchemaConverter } from '@concepta/nestjs-core';
+
 import { CrudModule } from '../crud.module.js';
+import { CrudController } from '../infrastructure/decorators/controller/crud-controller.decorator.js';
+import { CrudCreate } from '../infrastructure/decorators/operations/crud-create.decorator.js';
 
 import { type OperationObject, type ParameterObject } from './openapi-types.js';
 
-import { PhotoPaginatedDtoFixture } from '../__fixtures__/photo/dto/photo-paginated.dto.fixture.js';
-import { PhotoDtoFixture } from '../__fixtures__/photo/dto/photo.dto.fixture.js';
 import { PhotoControllerFixture } from '../__fixtures__/photo/photo.controller.fixture.js';
+import { photoCreateSchema } from '../__fixtures__/photo/schemas/photo-create.schema.fixture.js';
+import { photoPaginatedSchema } from '../__fixtures__/photo/schemas/photo-paginated.schema.fixture.js';
+import { photoSchema } from '../__fixtures__/photo/schemas/photo.schema.fixture.js';
 
 const ARTIFACT_DIR = join(__dirname, '__artifacts__');
 
@@ -55,6 +60,7 @@ describe('CrudModule swagger document', () => {
     doc = SwaggerModule.createDocument(
       app,
       new DocumentBuilder().setTitle('Crud Probe').setVersion('1.0').build(),
+      { standardSchemaConverter },
     );
 
     mkdirSync(ARTIFACT_DIR, { recursive: true });
@@ -145,42 +151,110 @@ describe('CrudModule swagger document', () => {
   });
 
   // ── Request bodies ─────────────────────────────────────────────────────
+  // Schema-based request bodies are always documented INLINE, never as a
+  // named-component $ref — `crud-init-api-body.decorator.ts` converts them
+  // via the schema's raw `~standard.jsonSchema` bridge directly (Nest's
+  // `ApiBody`, unlike `ApiResponse`, has no `standardSchema` option to
+  // route through the document-level `standardSchemaConverter`), matching
+  // the same inline-body behavior already established for `cache`'s
+  // schema-based POST request body (see
+  // `cache-crud.swagger.e2e-spec.ts`). So these assert the inline object
+  // shape (photoSchema's fields) rather than a "Photo" name/ref, which
+  // never appears for a request body regardless of rename.
   describe('request bodies', () => {
     it.each<[string, string, string]>([
       ['Create', '/photo', 'post'],
       ['Update', '/photo/{id}', 'patch'],
       ['Replace', '/photo/{id}', 'put'],
     ])(
-      '%s has requestBody referencing PhotoDtoFixture',
+      '%s has an inline requestBody shaped like photoSchema',
       (_op, path, method) => {
         const rb = getOp(doc, path, method)?.requestBody;
-        expect(JSON.stringify(rb)).toContain('PhotoDtoFixture');
+        const rbJson = JSON.stringify(rb);
+        expect(rbJson).toContain('"name"');
+        expect(rbJson).toContain('"isPublished"');
+        expect(rbJson).not.toContain('$ref');
       },
     );
   });
 
   // ── Response schemas ───────────────────────────────────────────────────
   describe('response schemas', () => {
-    it('List 200 references PhotoPaginatedDtoFixture', () => {
+    it('List 200 references PhotoPaginated', () => {
       const resp = getOp(doc, '/photo', 'get')?.responses?.['200'];
-      expect(JSON.stringify(resp)).toContain('PhotoPaginatedDtoFixture');
+      expect(JSON.stringify(resp)).toContain('PhotoPaginated');
     });
 
-    it('Read 200 references PhotoDtoFixture', () => {
+    it('Read 200 references Photo', () => {
       const resp = getOp(doc, '/photo/{id}', 'get')?.responses?.['200'];
-      expect(JSON.stringify(resp)).toContain('PhotoDtoFixture');
+      expect(JSON.stringify(resp)).toContain('Photo');
     });
   });
 
   // ── Component schemas ──────────────────────────────────────────────────
-  // The fixture uses PhotoDtoFixture as the controller-level request body,
-  // so CrudInitApiBody registers that type in addition to the response types.
+  // The fixture uses photoSchema as the controller-level request body, so
+  // CrudInitApiBody registers that component in addition to the response
+  // types.
   describe('components.schemas', () => {
-    it.each([PhotoDtoFixture.name, PhotoPaginatedDtoFixture.name])(
-      'registers %s',
-      (name) => {
-        expect(doc.components?.schemas?.[name]).toBeDefined();
-      },
+    it.each(['Photo', 'PhotoPaginated'])('registers %s', (name) => {
+      expect(doc.components?.schemas?.[name]).toBeDefined();
+    });
+  });
+});
+
+// ── Placeholder stripping (regression) ───────────────────────────────────
+// When an operation decorator has no local `request.body`, it applies a
+// placeholder `@CrudApiBody()` which would otherwise render as a
+// `{ type: 'string' }` request body. `CrudInitApiBody` must strip that
+// placeholder whenever a body schema resolves from the metadata hierarchy,
+// so handwritten controllers relying on the controller-level `request.body`
+// never document a stray string-typed body.
+describe('CrudModule swagger placeholder stripping', () => {
+  @CrudController({
+    path: 'probe',
+    entity: 'Probe',
+    request: { body: photoCreateSchema },
+    response: { resource: photoSchema, paginated: photoPaginatedSchema },
+  })
+  class ProbeControllerFixture {
+    // deliberately NO local request.body — the placeholder ApiBody applied
+    // by @CrudCreate must be stripped in favor of the controller-level schema
+    @CrudCreate()
+    async create() {
+      return undefined;
+    }
+  }
+
+  let app: INestApplication;
+  let doc: OpenAPIObject;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [CrudModule.forRoot({})],
+      controllers: [ProbeControllerFixture],
+    }).compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+
+    doc = SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder().setTitle('Probe').setVersion('1.0').build(),
+      { standardSchemaConverter },
     );
+  });
+
+  afterAll(async () => {
+    await app?.close();
+  });
+
+  it('documents the resolved schema, not the string placeholder', () => {
+    const rb = getOp(doc, '/probe', 'post')?.requestBody;
+    const rbJson = JSON.stringify(rb);
+    // resolved photoCreateSchema shape is present
+    expect(rbJson).toContain('"name"');
+    expect(rbJson).toContain('"isPublished"');
+    // the bare string placeholder is gone
+    expect(rbJson).not.toContain('"schema":{"type":"string"}');
   });
 });

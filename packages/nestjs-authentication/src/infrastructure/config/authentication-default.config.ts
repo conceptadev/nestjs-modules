@@ -2,7 +2,7 @@ import { ExtractJwt } from 'passport-jwt';
 
 import { registerAs } from '@nestjs/config';
 
-import { LocalLoginDto } from '../strategies/local/dto/local-login.dto.js';
+import { localLoginSchema } from '../strategies/local/schemas/local-login.schema.js';
 
 import {
   type AuthenticationMfaSettingsInterface,
@@ -28,7 +28,7 @@ export const authenticationDefaultConfig = registerAs(
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       },
       local: {
-        loginDto: LocalLoginDto,
+        loginSchema: localLoginSchema,
         usernameField: process.env['AUTH_LOCAL_USERNAME_FIELD'] ?? 'username',
         passwordField: process.env['AUTH_LOCAL_PASSWORD_FIELD'] ?? 'password',
       },

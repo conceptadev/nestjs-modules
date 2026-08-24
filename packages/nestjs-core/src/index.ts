@@ -10,9 +10,16 @@ export {
 // Core
 export { DomainFactory } from './domain/factories/domain-factory.interface.js';
 
-// DTOs
-export { AuditDto } from './infrastructure/dtos/audit.dto.js';
-export { ReferenceIdDto } from './infrastructure/dtos/reference-id.dto.js';
+// Schemas (Zod / Standard Schema)
+export { auditSchema } from './infrastructure/schemas/audit.schema.js';
+export { referenceIdSchema } from './infrastructure/schemas/reference-id.schema.js';
+export { conformsTo } from './infrastructure/schemas/conforms-to.util.js';
+export {
+  withOpenApi,
+  withNamedComponent,
+  standardSchemaConverter,
+  isStandardSchema,
+} from './infrastructure/schemas/open-api.util.js';
 
 // Module utilities
 export { createSettingsProvider } from './infrastructure/utils/create-settings-provider.js';
@@ -37,7 +44,6 @@ export { NotAnErrorException } from './domain/exceptions/not-an-error.exception.
 // Utility types and functions
 export { DeepPartial } from './domain/utils/deep-partial.js';
 export { mapNonErrorToException } from './infrastructure/utils/map-non-error-to-exception.util.js';
-export { mapHttpStatus } from './infrastructure/utils/map-http-status.util.js';
 export { toMilliseconds } from './infrastructure/utils/to-milliseconds.js';
 
 // Reference types
@@ -75,9 +81,6 @@ export { AuditInterface } from './domain/audit/interfaces/audit.interface.js';
 
 // exception types
 export { RuntimeExceptionContext } from './domain/exceptions/exception.types.js';
-
-// filters
-export { ExceptionsFilter } from './gateways/http/filters/exceptions.filter.js';
 
 // exception interfaces
 export { RuntimeExceptionOptions } from './domain/exceptions/interfaces/runtime-exception-options.interface.js';

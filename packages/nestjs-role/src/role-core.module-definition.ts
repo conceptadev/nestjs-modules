@@ -3,11 +3,8 @@ import {
   type DynamicModule,
   type Provider,
 } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
-
-import { createSettingsProvider } from '@concepta/nestjs-core';
 
 import { AssignRoleHandler } from './application/commands/handlers/assign-role.handler.js';
 import { AssignRolesHandler } from './application/commands/handlers/assign-roles.handler.js';
@@ -25,8 +22,6 @@ import { IsAssignedRolesHandler } from './application/queries/handlers/is-assign
 import { RoleContextOverlay } from './gateways/role-context.overlay.js';
 import { type RoleExtrasInterface } from './infrastructure/config/interfaces/role-extras.interface.js';
 import { type RoleOptionsInterface } from './infrastructure/config/interfaces/role-options.interface.js';
-import { type RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface.js';
-import { roleDefaultConfig } from './infrastructure/config/role-default.config.js';
 import { RoleAssignmentRepositoryResolver } from './infrastructure/persistence/role-assignment-repository.resolver.js';
 import { RoleAssignmentMapper } from './infrastructure/persistence/role-assignment.mapper.js';
 import { RoleRepositoryResolver } from './infrastructure/persistence/role-repository.resolver.js';
@@ -35,7 +30,6 @@ import {
   ROLE_ASSIGNMENT_CUSTOM_REPOSITORY_TOKEN,
   ROLE_ASSIGNMENT_REPOSITORY_RESOLVER_TOKEN,
   ROLE_CUSTOM_REPOSITORY_TOKEN,
-  ROLE_MODULE_SETTINGS_TOKEN,
   ROLE_REPOSITORY_RESOLVER_TOKEN,
 } from './role.constants.js';
 
@@ -69,27 +63,21 @@ function definitionTransform(
       providers: [...providers, ...(overrideProviders ?? [])],
       repositories,
     }),
-    exports: [ConfigModule, RAW_OPTIONS_TOKEN, ...createRoleExports()],
+    exports: [RAW_OPTIONS_TOKEN, ...createRoleExports()],
   };
 }
 
 export function createRoleImports(options: {
   imports: DynamicModule['imports'];
 }): DynamicModule['imports'] {
-  return [
-    ...(options.imports || []),
-    ConfigModule.forFeature(roleDefaultConfig),
-    CqrsModule.forRoot(),
-  ];
+  return [...(options.imports || []), CqrsModule.forRoot()];
 }
 
 export function createRoleProviders(options: {
-  overrides?: RoleCoreOptions;
   providers?: Provider[];
   repositories?: RoleExtrasInterface['repositories'];
 }): Provider[] {
   return [
-    createRoleSettingsProvider(options.overrides),
     RoleMapper,
     RoleAssignmentMapper,
     {
@@ -131,16 +119,5 @@ export function createRoleProviders(options: {
 export function createRoleExports(): Required<
   Pick<DynamicModule, 'exports'>
 >['exports'] {
-  return [ROLE_MODULE_SETTINGS_TOKEN, RoleMapper, RoleAssignmentMapper];
-}
-
-export function createRoleSettingsProvider(
-  optionsOverrides?: RoleCoreOptions,
-): Provider {
-  return createSettingsProvider<RoleSettingsInterface, RoleOptionsInterface>({
-    settingsToken: ROLE_MODULE_SETTINGS_TOKEN,
-    optionsToken: RAW_OPTIONS_TOKEN,
-    settingsKey: roleDefaultConfig.KEY,
-    optionsOverrides,
-  });
+  return [RoleMapper, RoleAssignmentMapper];
 }

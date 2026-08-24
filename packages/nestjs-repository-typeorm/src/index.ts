@@ -11,6 +11,6 @@ export { TypeOrmTransactionFactory } from './transaction/typeorm-transaction.fac
 
 // base entities
 export { AuditPostgresEntity } from './entities/audit/audit-postgres.entity.js';
-export { AuditSqlLiteEntity } from './entities/audit/audit-sqlite.entity.js';
+export { AuditSqliteEntity } from './entities/audit/audit-sqlite.entity.js';
 export { CommonPostgresEntity } from './entities/common/common-postgres.entity.js';
 export { CommonSqliteEntity } from './entities/common/common-sqlite.entity.js';

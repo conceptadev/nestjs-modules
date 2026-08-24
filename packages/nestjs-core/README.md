@@ -27,6 +27,7 @@ utilities**.
   - [Consuming Hooks](#consuming-hooks)
 - [Context System](#context-system)
 - [Exceptions](#exceptions)
+- [Schemas & OpenAPI](#schemas--openapi)
 - [Event Context](#event-context)
 - [Aggregate](#aggregate-conceptanestjs-coreaggregate-subpath)
 - [Testing](#testing-conceptanestjs-coretesting-subpath)
@@ -38,25 +39,28 @@ utilities**.
 yarn add @concepta/nestjs-core
 ```
 
+### Requirements
+
+ESM-only — no CJS build is published. Requires Node `>= 22.12` and
+NestJS 12 (currently alpha).
+
 ### Subpath exports
 
 | Import path | What it provides |
 | --- | --- |
-| `@concepta/nestjs-core` | Full public surface: hooks, context, exceptions, references, utilities, enums, DTOs. |
-| `@concepta/nestjs-core/aggregate` | `DomainAggregate`, `DomainMapper`, `DomainAggregateDto`, `AggregateMetaInterface`. |
+| `@concepta/nestjs-core` | Full public surface: hooks, context, exceptions, references, utilities, enums, schemas (`auditSchema`, `referenceIdSchema`, `conformsTo`, `withOpenApi`, `withNamedComponent`, `standardSchemaConverter`, `isStandardSchema`). |
+| `@concepta/nestjs-core/aggregate` | `DomainAggregate`, `DomainMapper`, `domainAggregateSchema`, `AggregateMetaInterface`. |
 | `@concepta/nestjs-core/testing` | `createMockEventPublisher`, `createMockCommandBus`, `createMockQueryBus`. |
 
 ### Dependencies
 
 Direct dependencies: `@nestjs/common`, `@nestjs/core`, `@nestjs/swagger`,
-`ms`, `rxjs`.
+`ms`, `rxjs`, `zod` (^4.4.3).
 
 ### Peer Dependencies
 
 | Package | Required | Notes |
 | --- | --- | --- |
-| `class-transformer` | Yes | DTO serialization |
-| `class-validator` | Yes | DTO validation |
 | `rxjs` | Yes | Observable support |
 | `@nestjs/cqrs` | No | Only if using CQRS patterns |
 
@@ -96,7 +100,7 @@ export class AppModule {}
 | --- | --- |
 | `forRoot(options?)` | Synchronous global registration. `global: true` by default. |
 | `forRootAsync(options)` | Asynchronous global registration. |
-| `register(options?)` | Synchronous non-global registration (manual scope control). |
+| `register(options)` | Synchronous non-global registration (manual scope control). `options` is required — only `forRoot` defaults it to `{}`. |
 | `registerAsync(options)` | Asynchronous non-global registration. |
 
 ## Hook Feature
@@ -283,8 +287,12 @@ Subclasses implement `ref` (the `OverlayRef` token) and `attach()` (where
 
 ### RuntimeException
 
-`RuntimeException` extends `Error` and adds HTTP status, safe message, and
-structured context. Subclass it to define module-specific error codes.
+`RuntimeException` extends NestJS `HttpException` and adds a machine-readable
+error code, safe message, and structured context. Subclass it to define
+module-specific error codes. Because it is an `HttpException`, subclasses get
+`getStatus()` and `getResponse()` for free, and the wire body is composed
+lazily in an overridden `getResponse()` — so it always reflects the final
+`errorCode` assigned by subclass constructors.
 
 ```ts
 import { RuntimeException } from '@concepta/nestjs-core';
@@ -320,28 +328,92 @@ Key options (`RuntimeExceptionOptions`):
 | --- | --- | --- |
 | `message` | `string` | Internal (developer-facing) message. Supports `%s` via `util.format`. |
 | `messageParams` | `unknown[]` | Interpolation values for `message`. |
-| `safeMessage` | `string` | User-facing message. Returned in HTTP responses for 4xx status codes. |
+| `safeMessage` | `string` | User-facing message. When set, it is used in the HTTP response body at any status. |
 | `safeMessageParams` | `unknown[]` | Interpolation values for `safeMessage`. |
 | `httpStatus` | `HttpStatus` | HTTP status code. Defaults to `500`. |
 | `originalError` | `unknown` | Original error cause (wrapped into context). |
 
-### ExceptionsFilter
+### HTTP Responses
 
-Register `ExceptionsFilter` globally to translate both `RuntimeException` and
-NestJS `HttpException` into a consistent response body:
+No filter registration is needed. `RuntimeException` subclasses are
+`HttpException`s, so NestJS's built-in exception handling renders the body
+returned by `getResponse()`:
 
-```ts
-import { ExceptionsFilter } from '@concepta/nestjs-core';
-import { APP_FILTER } from '@nestjs/core';
-
-// In your app module providers:
-{ provide: APP_FILTER, useClass: ExceptionsFilter }
+```json
+{
+  "statusCode": 404,
+  "message": "Resource not found",
+  "errorCode": "MY_NOT_FOUND_ERROR",
+  "error": "Not Found"
+}
 ```
 
-Response body shape: `{ statusCode, errorCode, message, timestamp }`.
+`error` is the HTTP status text (omitted for unknown status codes). Message
+resolution: when `safeMessage` is set, it is always used; without one,
+statuses `>= 500` fall back to `'Internal Server Error'` (never the internal
+message), and 4xx statuses use `message`.
 
-For `RuntimeException`: if the status is `>= 500`, `message` is the
-`safeMessage` (or a fallback string) — never the internal message.
+## Schemas & OpenAPI
+
+Zod v4 / Standard Schema schemas replace the former DTO classes. Base
+schemas are composed into concrete entity schemas via `.extend()`:
+
+| Export | Fields |
+| --- | --- |
+| `auditSchema` | `dateCreated`, `dateUpdated`, `dateDeleted` |
+| `referenceIdSchema` | `id` |
+| `domainAggregateSchema` (from `./aggregate`) | audit fields + `id` + `version` |
+
+### Interface Conformance
+
+`conformsTo<Interface>()(schema)` is a compile-time assertion that a schema's
+inferred output is assignable to a domain interface — replacing the old
+`class Dto implements Interface` guarantee. Extra fields on the schema are
+allowed; missing fields, wrong types, or optional-vs-nullable mismatches
+fail to compile.
+
+```ts
+import { conformsTo, domainAggregateSchema } from '@concepta/nestjs-core';
+import { z } from 'zod';
+
+export const cacheSchema = conformsTo<CacheInterface>()(
+  domainAggregateSchema.extend({
+    key: z.string(),
+    data: z.string().nullable(),
+  }),
+);
+```
+
+### OpenAPI Wiring
+
+`withOpenApi(schema, id?)` attaches the `~standard.jsonSchema` extension so
+`@nestjs/swagger` can render the schema as OpenAPI. It returns a **new**
+schema instance (like Zod's other builder methods) — always use the return
+value, never the schema passed in.
+
+`withNamedComponent(schema, id)` additionally registers the schema in a
+process-wide named-component registry, so every endpoint referencing the
+same schema instance `$ref`s a single `components.schemas` entry. Component
+ids are bare entity names (e.g. `Cache`). It throws at module-load time if
+the id is already registered. Same caveat: use the return value.
+
+`isStandardSchema(value)` is a type guard narrowing an `unknown` value to a
+Zod (Standard Schema) schema.
+
+Wire the converter when creating the OpenAPI document:
+
+```ts
+import { standardSchemaConverter } from '@concepta/nestjs-core';
+
+const document = SwaggerModule.createDocument(app, config, {
+  standardSchemaConverter,
+});
+```
+
+Schemas registered via `withNamedComponent` render as named
+`components.schemas` entries; any other schema falls through to the native
+Standard Schema path and is inlined (this is how request body schemas are
+documented automatically, with no decorator needed).
 
 ## Event Context
 
@@ -371,7 +443,7 @@ properties cannot be mutated.
 import {
   DomainAggregate,
   DomainMapper,
-  DomainAggregateDto,
+  domainAggregateSchema,
   AggregateMetaInterface,
 } from '@concepta/nestjs-core/aggregate';
 ```
@@ -530,14 +602,13 @@ const moduleRef = await Test.createTestingModule({
 
 | Export | Description |
 | --- | --- |
-| `RuntimeException` | Base domain exception. Extends `Error`. Accepts `httpStatus`, `safeMessage`, `messageParams`, `originalError`. |
+| `RuntimeException` | Base domain exception. Extends NestJS `HttpException`; composes the wire body `{ statusCode, message, errorCode, error? }` lazily in `getResponse()`. Accepts `httpStatus`, `safeMessage`, `messageParams`, `originalError`. |
 | `RuntimeExceptionInterface` | Interface for `RuntimeException`. |
 | `RuntimeExceptionOptions` | Options bag for the `RuntimeException` constructor. |
-| `RuntimeExceptionContext` | Type of the `context` property on `RuntimeException`. |
-| `ExceptionContext` | Alias for `RuntimeExceptionContext`. |
+| `RuntimeExceptionContext` | Type of the `context` property on `RuntimeException`. Defined as `ExceptionContext & { originalError?: Error }`. |
+| `ExceptionContext` | Base context shape: `Record<string, unknown> & { originalError?: unknown }`. Extended by `RuntimeExceptionContext`. |
 | `ExceptionInterface` | Minimal interface: `errorCode`, `httpStatus`, `safeMessage`. |
 | `NotAnErrorException` | Wraps a non-`Error` value (e.g. a string or object) into an `Error`. Used internally by `mapNonErrorToException`. |
-| `ExceptionsFilter` | `@Catch()` filter. Translates `RuntimeException` and `HttpException` into `{ statusCode, errorCode, message, timestamp }`. |
 
 ### Event Context Exports
 
@@ -581,7 +652,7 @@ const moduleRef = await Test.createTestingModule({
 
 | Export | Description |
 | --- | --- |
-| `ActionEnum` | Enum of CRUD action names (`Create`, `Read`, `Update`, `Delete`). |
+| `ActionEnum` | Enum of CRUD action names (`CREATE`, `READ`, `UPDATE`, `DELETE`). |
 | `Operation` | String-literal union of all operation names. |
 | `ReadOperations` | String-literal union of read-only operation names. |
 | `WriteOperations` | String-literal union of write operation names. |
@@ -589,7 +660,6 @@ const moduleRef = await Test.createTestingModule({
 | `ReadOperation` | Branded string for a read operation value. |
 | `WriteOperation` | Branded string for a write operation value. |
 | `MutateOperation` | Branded string for a mutating operation value. |
-| `ExceptionContext` | Type alias for `RuntimeExceptionContext` (operation context shape). |
 
 ### Utilities and Module Helpers
 
@@ -597,15 +667,24 @@ const moduleRef = await Test.createTestingModule({
 | --- | --- |
 | `createSettingsProvider` | Factory that creates a NestJS `Provider` wiring module options to a settings token, with optional transformer support. |
 | `mapNonErrorToException` | Converts any non-`Error` value to a `NotAnErrorException`; passes through real `Error` instances unchanged. |
-| `mapHttpStatus` | Maps an HTTP status code to its string error-code constant. |
 | `toMilliseconds` | Converts a duration string (e.g. `'1h'`) or number to milliseconds via the `ms` library. |
 | `DeepPartial<T>` | Recursive `Partial<T>`. |
 | `DomainFactory<Creatable, Domain>` | Interface enforcing `create` and `createWithId` static factory signatures on domain aggregate classes. |
 | `AssigneeRelationInterface` | Interface for entities that hold an `assignee` relation (`{ assignee: ReferenceIdInterface }`). |
 | `ModuleOptionsSettingsInterface<T>` | Interface for module options that include a `settings` block and optional `settingsTransform`. |
 | `ModuleOptionsControllerInterface` | Interface for module options that control whether HTTP endpoints are enabled. |
-| `AuditDto` | DTO class exposing audit fields (`dateCreated`, `dateUpdated`, `dateDeleted`). |
-| `ReferenceIdDto` | DTO class exposing a single `id` field. |
+
+### Schemas and OpenAPI Utilities
+
+| Export | Description |
+| --- | --- |
+| `auditSchema` | Zod schema for audit fields (`dateCreated`, `dateUpdated`, `dateDeleted`). Composed into entity schemas via `.extend()`. |
+| `referenceIdSchema` | Zod schema exposing a single `id` field. Composed into entity schemas via `.extend()`. |
+| `conformsTo<Interface>()` | Compile-time assertion that a schema's inferred output conforms to a domain interface. |
+| `withOpenApi(schema, id?)` | Attaches the `~standard.jsonSchema` extension for OpenAPI conversion. Returns a new schema instance — use the return value. |
+| `withNamedComponent(schema, id)` | Registers a named, reusable `components.schemas` entry. Throws on duplicate id. Use the return value. |
+| `standardSchemaConverter` | Document-level converter for `SwaggerModule.createDocument(app, config, { standardSchemaConverter })`. |
+| `isStandardSchema(value)` | Type guard: `true` if `value` is a Standard Schema (Zod) schema. |
 
 ### Subpath: `./aggregate`
 
@@ -613,7 +692,7 @@ const moduleRef = await Test.createTestingModule({
 | --- | --- |
 | `DomainAggregate<T>` | Abstract aggregate base extending `@nestjs/cqrs` `AggregateRoot`. |
 | `DomainMapper<Entity, Props, Agg>` | Abstract mapper base. Implement `createAggregate(entity)`. |
-| `DomainAggregateDto` | DTO class exposing `id`, `version`, and audit fields. |
+| `domainAggregateSchema` | Zod schema exposing `id`, `version`, and audit fields. Composed into entity schemas via `.extend()`. |
 | `AggregateMetaInterface` | Interface for aggregate audit timestamps: `dateCreated`, `dateUpdated`, `dateDeleted`. |
 
 ### Subpath: `./testing`

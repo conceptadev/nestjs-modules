@@ -1,6 +1,9 @@
-import { type PlainLiteralObject, type Type } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
-import { type CrudValidationOptions } from '../../../crud.types.js';
+import {
+  type CrudSchema,
+  type CrudValidationOptions,
+} from '../../../crud.types.js';
 import { type CrudParamsOptionsInterface } from '../../interfaces/crud-params-options.interface.js';
 
 /**
@@ -15,14 +18,14 @@ export interface CrudRequestConfig<T extends PlainLiteralObject> {
   params?: CrudParamsOptionsInterface<T>;
 
   /**
-   * DTO type for single-entity request bodies.
+   * Schema for single-entity request bodies.
    */
-  body?: Type;
+  body?: CrudSchema;
 
   /**
-   * DTO type for batch request bodies.
+   * Schema for batch request bodies.
    */
-  bodyBatch?: Type;
+  bodyBatch?: CrudSchema;
 
   /**
    * Validation options for request processing.

@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ExceptionsFilter } from '@concepta/nestjs-core';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
@@ -28,11 +26,6 @@ import { UserEntityFixture } from './entities/user-entity.fixture.js';
     CacheModule.forFeature(['userCache']),
   ],
   controllers: [],
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: ExceptionsFilter,
-    },
-  ],
+  providers: [],
 })
 export class AppModuleFixture {}

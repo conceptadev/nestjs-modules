@@ -10,7 +10,7 @@ import {
 } from '@concepta/nestjs-crud';
 
 import { InvitationAcceptableInterface } from '../../../../domain/interfaces/invitation-acceptable.interface.js';
-import { InvitationAcceptDto } from '../../../../infrastructure/dtos/invitation-accept.dto.js';
+import { invitationAcceptSchema } from '../../../../infrastructure/schemas/invitation-accept.schema.js';
 import { INVITATION_MODULE_DEFAULT_ENTITY_KEY } from '../../../../invitation.constants.js';
 import { AcceptInvitationRequestHandler } from '../../commands/handlers/accept-invitation-request.handler.js';
 import { AcceptInvitationRequest } from '../../commands/impl/accept-invitation.request.js';
@@ -31,11 +31,11 @@ export class InvitationAcceptanceController {
     path: ':code',
     command: AcceptInvitationRequest,
     commandHandler: AcceptInvitationRequestHandler,
-    request: { body: InvitationAcceptDto },
+    request: { body: invitationAcceptSchema },
   })
   async acceptInvitation(
     @Ctx(CrudCtx) context: CrudContextInterface<InvitationAcceptableInterface>,
-    @CrudBody() dto: InvitationAcceptDto,
+    @CrudBody() dto: InvitationAcceptableInterface,
   ): Promise<void> {
     await this.commandBus.execute(new AcceptInvitationRequest(context, dto));
   }

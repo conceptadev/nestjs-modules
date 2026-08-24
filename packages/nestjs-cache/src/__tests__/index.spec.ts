@@ -3,7 +3,7 @@ import {
   Cache,
   CacheRepository,
   CacheRepositoryResolver,
-  CacheCreateDto,
+  cacheCreateSchema,
   UpsertCacheCommand,
   ClearCachesByAssigneeCommand,
   CreateCacheCommand,
@@ -43,8 +43,8 @@ describe('index', () => {
     expect(CacheRepositoryResolver).toBeInstanceOf(Function);
   });
 
-  it('should export CacheCreateDto', () => {
-    expect(CacheCreateDto).toBeInstanceOf(Function);
+  it('should export cacheCreateSchema', () => {
+    expect(cacheCreateSchema.meta).toBeInstanceOf(Function);
   });
 
   it('should export domain commands', () => {

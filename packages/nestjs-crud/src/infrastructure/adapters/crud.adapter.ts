@@ -18,11 +18,11 @@ import {
   type WhereCondition,
 } from '@concepta/nestjs-repository';
 
-import { type CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface.js';
-import { type CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface.js';
 import { type CrudContextOptionsInterface } from '../interceptors/interfaces/crud-context-options.interface.js';
 import { type CrudContextInterface } from '../interceptors/interfaces/crud-context.interface.js';
+import { type CrudCreateBatchInterface } from '../interfaces/crud-create-batch.interface.js';
 import { type CrudParamsOptionsInterface } from '../interfaces/crud-params-options.interface.js';
+import { type CrudResponsePaginatedInterface } from '../interfaces/crud-response-paginated.interface.js';
 import { SConditionConverter } from '../request/crud-scondition.converter.js';
 import { type CrudParsedQueryInterface } from '../request/interfaces/crud-parsed-query.interface.js';
 import { type CrudQueryOptionsInterface } from '../request/interfaces/crud-query-options.interface.js';
@@ -252,7 +252,7 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
    * Create one entity.
    *
    * @param context - The CRUD context interface.
-   * @param dto - The DTO containing the entity data to create.
+   * @param dto - The request body containing the entity data to create.
    */
   async create(
     context: CrudContextInterface<Entity>,
@@ -271,7 +271,7 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
    * Create many entities in batch.
    *
    * @param context - The CRUD context interface.
-   * @param dto - The DTO containing the bulk array of entities to create.
+   * @param dto - The request body containing the bulk array of entities to create.
    * @returns A promise resolving to an array of created entities.
    */
   async createBatch(
@@ -301,7 +301,7 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
    * Update one entity.
    *
    * @param context - The CRUD context interface.
-   * @param dto - The DTO containing the updated entity data.
+   * @param dto - The request body containing the updated entity data.
    * @returns A promise resolving to the updated entity.
    */
   async update(
@@ -318,7 +318,7 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
    * Replace one entity.
    *
    * @param context - The CRUD context interface.
-   * @param dto - The DTO containing the replacement entity data.
+   * @param dto - The request body containing the replacement entity data.
    * @returns A promise resolving to the replaced entity.
    */
   async replace(

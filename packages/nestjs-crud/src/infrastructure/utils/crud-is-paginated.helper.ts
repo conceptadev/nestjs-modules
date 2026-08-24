@@ -1,4 +1,4 @@
-import { type CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface.js';
+import { type CrudResponsePaginatedInterface } from '../interfaces/crud-response-paginated.interface.js';
 
 export function crudIsPaginatedHelper(
   response: object,

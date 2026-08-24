@@ -10,7 +10,7 @@ queries, and domain events.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-role)](https://www.npmjs.com/package/@concepta/nestjs-role)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-role%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -23,7 +23,7 @@ queries, and domain events.
 - [Queries](#queries)
 - [Domain Events](#domain-events)
 - [CRUD Gateway (Optional)](#crud-gateway-optional)
-- [DTOs](#dtos)
+- [Schemas](#schemas)
 - [Exceptions](#exceptions)
 - [Seeding (Optional)](#seeding-optional)
 - [Entry Points](#entry-points)
@@ -34,6 +34,9 @@ queries, and domain events.
 yarn add @concepta/nestjs-role
 ```
 
+This package is ESM-only and requires Node.js >= 22.12 and NestJS 12
+(currently alpha).
+
 ### Dependencies
 
 | Package | Notes |
@@ -42,7 +45,6 @@ yarn add @concepta/nestjs-role
 | `@concepta/nestjs-repository` | Repository abstraction and transaction scope |
 | `@nestjs/common` | NestJS core |
 | `@nestjs/core` | Module reference and reflection |
-| `@nestjs/config` | Configuration module |
 | `@nestjs/cqrs` | CQRS command/query/event bus |
 | `@nestjs/swagger` | OpenAPI decorator support |
 
@@ -50,10 +52,8 @@ yarn add @concepta/nestjs-role
 
 | Package | Required | Notes |
 | --- | --- | --- |
-| `class-transformer` | Yes | DTO serialization |
-| `class-validator` | Yes | Request body validation |
 | `typeorm` | No | Only when using TypeORM repository driver |
-| `@concepta/nestjs-crud` | No | Only when using the CRUD HTTP gateway |
+| `@concepta/nestjs-crud` | Yes | The main entry imports `paginatedSchema` from it |
 | `@concepta/typeorm-seeding` | No | Only when using database seeding |
 | `@faker-js/faker` | No | Only when using the seed factory |
 
@@ -115,14 +115,8 @@ import { RoleModule } from '@concepta/nestjs-role';
       ],
     }),
 
-    // Register the role module with assignment mappings
-    RoleModule.forRoot({
-      settings: {
-        assignments: {
-          user: { entityKey: 'user-role' },
-        },
-      },
-    }),
+    // Register the role module globally
+    RoleModule.forRoot({}),
 
     // Register repository providers for your entity keys
     RoleModule.forFeature({
@@ -173,23 +167,17 @@ export class MyService {
 Global registration. Required once per application.
 
 ```ts
-RoleModule.forRoot({
-  settings: {
-    assignments: {
-      user: { entityKey: 'user-role' },
-      org: { entityKey: 'org-role' },
-    },
-  },
-})
+RoleModule.forRoot({})
 
 // Async with factory
 RoleModule.forRootAsync({
-  useFactory: async (configService) => ({
-    settings: configService.get('role'),
-  }),
-  inject: [ConfigService],
+  useFactory: async () => ({}),
 })
 ```
+
+Entity namespacing is NOT configured here — it is handled per-feature via
+`RoleModule.forFeature({ roleEntityKey, assignmentEntityKeys })` plus the
+`RoleNamespace` decorator (see [Context Overlay](#context-overlay)).
 
 ### register / registerAsync
 
@@ -224,15 +212,13 @@ interface RoleExtrasInterface {
   };
 }
 
-interface RoleOptionsInterface {
-  settings?: RoleSettingsInterface;
-}
-
-interface RoleSettingsInterface {
-  // Maps logical assignment names to entity keys
-  assignments: Record<string, { entityKey: string }>;
-}
+interface RoleOptionsInterface {}
 ```
+
+`RoleOptionsInterface` is currently empty — entity keys are supplied
+through `RoleModule.forFeature()` and resolved per-request via the
+`RoleNamespace` decorator and context overlay (see
+[Context Overlay](#context-overlay)).
 
 `forFeature()` accepts entity key configuration for repository provider
 creation:
@@ -302,7 +288,8 @@ default repository implementations.
 - **Domain** — Aggregate roots (`Role`, `RoleAssignment`) encapsulate business
   rules and emit domain events.
 - **Infrastructure** — Repositories with DI-injected mappers (`RoleMapper`,
-  `RoleAssignmentMapper`), DTOs, configuration, and provider factories.
+  `RoleAssignmentMapper`), Zod schemas, configuration, and provider
+  factories.
 
 ## Context Overlay
 
@@ -495,13 +482,13 @@ import { Operation } from '@concepta/nestjs-core';
 import { CrudModule, CrudCqrsResolver } from '@concepta/nestjs-crud';
 import {
   RoleInterface,
-  RoleCreateDto,
-  RoleUpdateDto,
-  RoleDto,
+  roleCreateSchema,
+  roleUpdateSchema,
+  roleSchema,
+  rolePaginatedSchema,
   RoleNamespace,
 } from '@concepta/nestjs-role';
 import {
-  RolePaginatedDto,
   ListRolesRequest,
   ListRolesRequestHandler,
   ReadRoleRequest,
@@ -528,10 +515,10 @@ const ROLE_ENTITY_KEY = 'role';
           resolver: CrudCqrsResolver,
           transactional: true,
           extraDecorators: [RoleNamespace({ name: ROLE_ENTITY_KEY })],
-          request: { body: RoleCreateDto },
+          request: { body: roleCreateSchema },
           response: {
-            resource: RoleDto,
-            paginated: RolePaginatedDto,
+            resource: roleSchema,
+            paginated: rolePaginatedSchema,
           },
         },
         operations: [
@@ -547,19 +534,19 @@ const ROLE_ENTITY_KEY = 'role';
           },
           {
             operation: Operation.Create,
-            request: { body: RoleCreateDto },
+            request: { body: roleCreateSchema },
             command: CreateRoleRequest,
             commandHandler: CreateRoleRequestHandler,
           },
           {
             operation: Operation.Update,
-            request: { body: RoleUpdateDto },
+            request: { body: roleUpdateSchema },
             command: UpdateRoleRequest,
             commandHandler: UpdateRoleRequestHandler,
           },
           {
             operation: Operation.Replace,
-            request: { body: RoleCreateDto },
+            request: { body: roleCreateSchema },
             command: ReplaceRoleRequest,
             commandHandler: ReplaceRoleRequestHandler,
           },
@@ -575,6 +562,14 @@ const ROLE_ENTITY_KEY = 'role';
 })
 export class RoleHttpModule {}
 ```
+
+Note that all role schemas — including `rolePaginatedSchema` and
+`roleAssignmentPaginatedSchema` — live in the MAIN entry
+(`@concepta/nestjs-role`); only the request/handler classes and batch
+schemas come from `optional/crud`. Builder-generated controllers derive
+request body validation from `operations[].request.body` automatically; a
+handwritten `@CrudController` class would need an explicit
+`@CrudBody({ schema })` for runtime validation.
 
 This generates the following endpoints:
 
@@ -604,30 +599,38 @@ HTTP Request
   → Transaction commits → Events published
 ```
 
-## DTOs
+## Schemas
 
-### Core DTOs (always available)
+All schemas are Zod v4 objects (Standard Schema compatible), replacing the
+legacy class-validator DTO classes.
+
+### Core Schemas (always available)
 
 Exported from `@concepta/nestjs-role`:
 
-| DTO | Implements | Fields |
+| Schema | Conforms To | Fields |
 | --- | --- | --- |
-| `RoleDto` | `RoleInterface` | `id`, `name`, `description`, audit fields |
-| `RoleCreateDto` | `RoleCreatableInterface` | `name`, `description` |
-| `RoleUpdateDto` | `Pick<RoleUpdatableInterface, 'name' \| 'description'>` | `name`, `description` |
-| `RoleAssignmentDto` | `RoleAssignmentInterface` | `id`, `roleId`, `assigneeId`, audit fields |
-| `RoleAssignmentCreateDto` | `RoleAssignmentCreatableInterface` | `roleId`, `assigneeId` |
+| `roleSchema` | `RoleInterface` | `id`, `name`, `description`, audit fields (named OpenAPI component `Role`) |
+| `roleCreateSchema` | `RoleCreatableInterface` | `name`, `description` |
+| `roleUpdateSchema` | `RoleUpdatableInterface` | `name`, `description` |
+| `rolePaginatedSchema` | — | Paginated role list response |
+| `roleAssignmentSchema` | `RoleAssignmentInterface` | `id`, `roleId`, `assigneeId`, audit fields |
+| `roleAssignmentCreateSchema` | `RoleAssignmentCreatableInterface` | `roleId`, `assigneeId` |
+| `roleAssignmentPaginatedSchema` | — | Paginated assignment list response |
 
-### CRUD DTOs (optional)
+`roleCreateSchema` and `roleUpdateSchema` apply `.default('')` to both
+`name` and `description` — omitted fields become empty strings rather than
+producing a 400. This preserves the legacy DTO behavior and is documented
+(intentional) behavior.
+
+### CRUD Schemas (optional)
 
 Exported from `@concepta/nestjs-role/optional/crud`:
 
-| DTO | Extends | Purpose |
-| --- | --- | --- |
-| `RolePaginatedDto` | `CrudResponsePaginatedDto<RoleDto>` | Paginated role list response |
-| `RoleAssignmentPaginatedDto` | `CrudResponsePaginatedDto<RoleAssignmentDto>` | Paginated assignment list response |
-| `RoleCreateBatchDto` | `CrudCreateBatchDto<RoleCreatableInterface>` | Bulk role creation |
-| `RoleAssignmentCreateBatchDto` | `CrudCreateBatchDto<RoleAssignmentCreatableInterface>` | Bulk assignment creation |
+| Schema | Purpose |
+| --- | --- |
+| `roleCreateBatchSchema` | Bulk role creation request |
+| `roleAssignmentCreateBatchSchema` | Bulk assignment creation request |
 
 ## Exceptions
 
@@ -641,7 +644,10 @@ Exported from `@concepta/nestjs-role/optional/crud`:
 | `RoleEntityNotFoundException` | — | `ROLE_ENTITY_NOT_FOUND_ERROR` | `{ entityName }` |
 
 All exceptions extend `RoleException`, which extends `RuntimeException` from
-`@concepta/nestjs-core`.
+`@concepta/nestjs-core`. `RuntimeException` extends NestJS's
+`HttpException`, so no exception filter registration is needed — errors
+serialize over the wire as `{ statusCode, message, errorCode, error? }`
+(no `timestamp`).
 
 ## Seeding (Optional)
 
@@ -656,7 +662,7 @@ import { RoleFactory } from '@concepta/nestjs-role/optional/seeding';
 
 | Import Path | Contents |
 | --- | --- |
-| `@concepta/nestjs-role` | Module, aggregates, commands, queries, events, handlers, DTOs, repositories, exceptions, domain interfaces, types |
-| `@concepta/nestjs-role/optional/crud` | CRUD request/handler classes, paginated DTOs, batch DTOs |
+| `@concepta/nestjs-role` | Module, aggregates, commands, queries, events, handlers, schemas (including paginated), repositories, context overlay, exceptions, domain interfaces |
+| `@concepta/nestjs-role/optional/crud` | CRUD request/handler classes, batch schemas |
 | `@concepta/nestjs-role/optional/typeorm` | `RoleSqliteEntity`, `RolePostgresEntity`, `RoleAssignmentSqliteEntity`, `RoleAssignmentPostgresEntity` |
 | `@concepta/nestjs-role/optional/seeding` | `RoleFactory` |

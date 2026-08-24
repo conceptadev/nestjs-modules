@@ -1,8 +1,8 @@
 import { mock } from 'vitest-mock-extended';
 
+import { type RecoveryRecoverLoginParamsInterface } from '../../../../application/services/recovery/interfaces/recovery-recover-login-params.interface.js';
+import { type RecoveryUpdatePasswordParamsInterface } from '../../../../application/services/recovery/interfaces/recovery-update-password-params.interface.js';
 import { type RecoveryService } from '../../../../application/services/recovery/recovery.service.js';
-import { type RecoveryRecoverLoginDto } from '../dto/recovery-recover-login.dto.js';
-import { type RecoveryUpdatePasswordDto } from '../dto/recovery-update-password.dto.js';
 import { RecoveryOtpInvalidException } from '../exceptions/recovery-otp-invalid.exception.js';
 
 import { RecoveryController } from './fixtures/recovery.controller.fixture.js';
@@ -10,10 +10,10 @@ import { RecoveryController } from './fixtures/recovery.controller.fixture.js';
 describe(RecoveryController.name, () => {
   let controller: RecoveryController;
   let recoveryService: RecoveryService;
-  const dto: RecoveryRecoverLoginDto = {
+  const dto: RecoveryRecoverLoginParamsInterface = {
     email: 'test@example.com',
   };
-  const passwordDto: RecoveryUpdatePasswordDto = {
+  const passwordDto: RecoveryUpdatePasswordParamsInterface = {
     passcode: '123456',
     newPassword: 'newPassword',
   };

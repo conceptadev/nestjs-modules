@@ -29,8 +29,6 @@
     "vitest-mock-extended": "^4.0.0"
   },
   "peerDependencies": {
-    "class-transformer": "*",
-    "class-validator": "*",
     "typeorm": "^0.3.0"
   },
   "exports": {

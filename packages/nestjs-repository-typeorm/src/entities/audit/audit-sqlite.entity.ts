@@ -14,9 +14,9 @@ import {
 } from '@concepta/nestjs-core';
 
 /**
- * Audit SqlLite
+ * Audit Sqlite
  */
-export abstract class AuditSqlLiteEntity implements AuditInterface {
+export abstract class AuditSqliteEntity implements AuditInterface {
   /**
    * Date created.
    */

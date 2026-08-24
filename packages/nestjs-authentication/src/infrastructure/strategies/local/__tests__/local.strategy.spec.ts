@@ -1,9 +1,8 @@
 import { randomUUID } from 'crypto';
 
-import * as classValidator from 'class-validator';
 import { mock } from 'vitest-mock-extended';
 
-import { BadRequestException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
 import { type ReferenceIdInterface } from '@concepta/nestjs-core';
 
@@ -16,11 +15,11 @@ import {
   type AuthenticationUserResult,
   type UserPort,
 } from '../../../../domain/ports/user.port.js';
-import { LocalLoginDto } from '../dto/local-login.dto.js';
 import { LocalInvalidCredentialsException } from '../exceptions/local-invalid-credentials.exception.js';
 import { LocalInvalidLoginDataException } from '../exceptions/local-invalid-login-data.exception.js';
 import { LocalException } from '../exceptions/local.exception.js';
 import { LocalStrategy } from '../local.strategy.js';
+import { localLoginSchema } from '../schemas/local-login.schema.js';
 
 describe(LocalStrategy.name, () => {
   const USERNAME = 'username';
@@ -35,7 +34,7 @@ describe(LocalStrategy.name, () => {
 
   beforeEach(async () => {
     policy = new LocalStrategyPolicy({
-      loginDto: LocalLoginDto,
+      loginSchema: localLoginSchema,
       usernameField: USERNAME,
       passwordField: PASSWORD,
     });
@@ -123,9 +122,9 @@ describe(LocalStrategy.name, () => {
       await expect(t).rejects.toThrow();
     });
 
-    it('should throw BadRequest on validateOrReject', async () => {
-      vi.spyOn(classValidator, 'validateOrReject').mockRejectedValueOnce(
-        BadRequestException,
+    it('should throw BadRequest when login schema validation fails', async () => {
+      vi.spyOn(localLoginSchema['~standard'], 'validate').mockResolvedValueOnce(
+        { issues: [{ message: 'invalid' }] },
       );
 
       const t = () => localStrategy.validate({}, USERNAME, PASSWORD);

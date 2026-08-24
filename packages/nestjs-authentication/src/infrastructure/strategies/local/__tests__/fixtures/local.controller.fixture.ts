@@ -1,8 +1,8 @@
-import { Controller, Post, UseGuards } from '@nestjs/common';
+import { Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import {
   ApiBody,
-  ApiOkResponse,
+  ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -12,9 +12,19 @@ import { AuthenticatedResponseInterface } from '../../../../../domain/interfaces
 import { AuthenticatedUserInterface } from '../../../../../domain/interfaces/authenticated-user.interface.js';
 import { AuthPublic } from '../../../../decorators/auth-public.decorator.js';
 import { AuthUser } from '../../../../decorators/auth-user.decorator.js';
-import { AuthenticationResponseDto } from '../../../../dtos/authenticated-response.dto.js';
-import { LocalLoginDto } from '../../dto/local-login.dto.js';
+import { authenticationResponseSchema } from '../../../../schemas/authentication-response.schema.js';
 import { LocalGuard } from '../../local.guard.js';
+import { localLoginSchema } from '../../schemas/local-login.schema.js';
+
+const localLoginBodySchema = localLoginSchema['~standard'].jsonSchema?.input?.({
+  target: 'openapi-3.0',
+});
+
+if (!localLoginBodySchema) {
+  throw new Error(
+    'localLoginSchema is missing its OpenAPI bridge — wrap it with withOpenApi() first.',
+  );
+}
 
 /**
  * Auth Local controller
@@ -30,12 +40,13 @@ export class LocalControllerFixture {
    * Login
    */
   @ApiBody({
-    type: LocalLoginDto,
-    description: 'DTO containing username and password.',
+    schema: localLoginBodySchema,
+    description: 'Schema containing username and password.',
   })
-  @ApiOkResponse({
-    type: AuthenticationResponseDto,
-    description: 'DTO containing an access token and a refresh token.',
+  @ApiResponse({
+    status: HttpStatus.OK,
+    standardSchema: authenticationResponseSchema,
+    description: 'Schema containing an access token and a refresh token.',
   })
   @ApiUnauthorizedResponse()
   @Post()

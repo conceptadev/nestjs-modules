@@ -25,9 +25,9 @@ import {
 } from '@concepta/nestjs-user';
 
 import { InvitationInterface } from '../../../../domain/interfaces/invitation.interface.js';
-import { InvitationCreateDto } from '../../../../infrastructure/dtos/invitation-create.dto.js';
-import { InvitationPaginatedDto } from '../../../../infrastructure/dtos/invitation-paginated.dto.js';
-import { InvitationDto } from '../../../../infrastructure/dtos/invitation.dto.js';
+import { invitationCreateSchema } from '../../../../infrastructure/schemas/invitation-create.schema.js';
+import { invitationPaginatedSchema } from '../../../../infrastructure/schemas/invitation-paginated.schema.js';
+import { invitationSchema } from '../../../../infrastructure/schemas/invitation.schema.js';
 import { INVITATION_MODULE_DEFAULT_ENTITY_KEY } from '../../../../invitation.constants.js';
 import { InvitationModule } from '../../../../invitation.module.js';
 import { AcceptInvitationRequestHandler } from '../../commands/handlers/accept-invitation-request.handler.js';
@@ -133,10 +133,10 @@ const USER_OTP_ENTITY_KEY = 'user-otp';
           path: 'invitation',
           resolver: CrudCqrsResolver,
           transactional: true,
-          request: { body: InvitationCreateDto },
+          request: { body: invitationCreateSchema },
           response: {
-            resource: InvitationDto,
-            paginated: InvitationPaginatedDto,
+            resource: invitationSchema,
+            paginated: invitationPaginatedSchema,
           },
         },
         operations: [
@@ -152,7 +152,7 @@ const USER_OTP_ENTITY_KEY = 'user-otp';
           },
           {
             operation: Operation.Create,
-            request: { body: InvitationCreateDto },
+            request: { body: invitationCreateSchema },
             command: CreateInvitationRequest,
             commandHandler: CreateInvitationRequestHandler,
           },

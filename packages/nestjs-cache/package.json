@@ -39,7 +39,8 @@
     "@nestjs/config": "12.0.0-next.0",
     "@nestjs/core": "12.0.0-alpha.5",
     "@nestjs/cqrs": "^11.0.0",
-    "@nestjs/swagger": "12.0.0-alpha.2"
+    "@nestjs/swagger": "12.0.0-alpha.2",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@concepta/nestjs-crud": "8.0.0-alpha.8",
@@ -56,8 +57,6 @@
     "@concepta/nestjs-crud": "8.0.0-alpha.8",
     "@concepta/typeorm-seeding": "^4.0.0",
     "@faker-js/faker": "^8.4.1",
-    "class-transformer": "*",
-    "class-validator": "*",
     "typeorm": "^0.3.0"
   },
   "peerDependenciesMeta": {

@@ -2,21 +2,24 @@ import { Operation } from '@concepta/nestjs-core';
 
 import { ConfigurableCrudBuilder } from '../../infrastructure/utils/configurable-crud.builder.js';
 import { CRUD_TEST_PHOTO_CCB_ENTITY_NAME } from '../crud-test.constants.js';
-import { PhotoCreateBatchDtoFixture } from '../photo/dto/photo-create-batch.dto.fixture.js';
-import { PhotoCreateDtoFixture } from '../photo/dto/photo-create.dto.fixture.js';
-import { PhotoPaginatedDtoFixture } from '../photo/dto/photo-paginated.dto.fixture.js';
-import { PhotoUpdateDtoFixture } from '../photo/dto/photo-update.dto.fixture.js';
-import { PhotoDtoFixture } from '../photo/dto/photo.dto.fixture.js';
 import { type PhotoEntityInterfaceFixture } from '../photo/interfaces/photo-entity.interface.fixture.js';
+import {
+  photoCreateBatchResponseSchema,
+  photoCreateBatchSchema,
+} from '../photo/schemas/photo-create-batch.schema.fixture.js';
+import { photoCreateSchema } from '../photo/schemas/photo-create.schema.fixture.js';
+import { photoPaginatedSchema } from '../photo/schemas/photo-paginated.schema.fixture.js';
+import { photoUpdateSchema } from '../photo/schemas/photo-update.schema.fixture.js';
+import { photoSchema } from '../photo/schemas/photo.schema.fixture.js';
 
 const crudBuilder = new ConfigurableCrudBuilder<PhotoEntityInterfaceFixture>({
   controller: {
     path: 'photo',
     entity: CRUD_TEST_PHOTO_CCB_ENTITY_NAME,
-    request: { body: PhotoDtoFixture },
+    request: { body: photoSchema },
     response: {
-      resource: PhotoDtoFixture,
-      paginated: PhotoPaginatedDtoFixture,
+      resource: photoSchema,
+      paginated: photoPaginatedSchema,
     },
   },
   operations: [
@@ -24,19 +27,22 @@ const crudBuilder = new ConfigurableCrudBuilder<PhotoEntityInterfaceFixture>({
     { operation: Operation.Read },
     {
       operation: Operation.CreateBatch,
-      request: { bodyBatch: PhotoCreateBatchDtoFixture },
+      request: { bodyBatch: photoCreateBatchSchema },
+      response: {
+        serialization: { resource: photoCreateBatchResponseSchema },
+      },
     },
     {
       operation: Operation.Create,
-      request: { body: PhotoCreateDtoFixture },
+      request: { body: photoCreateSchema },
     },
     {
       operation: Operation.Update,
-      request: { body: PhotoUpdateDtoFixture },
+      request: { body: photoUpdateSchema },
     },
     {
       operation: Operation.Replace,
-      request: { body: PhotoUpdateDtoFixture },
+      request: { body: photoUpdateSchema },
     },
     { operation: Operation.Delete },
     { operation: Operation.SoftDelete, path: 'soft/:id' },

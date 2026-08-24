@@ -1,28 +1,21 @@
-import {
-  instanceToPlain,
-  plainToInstance,
-  ClassTransformOptions,
-} from 'class-transformer';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { from, Observable } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+import { type z } from 'zod';
 
 import {
   CallHandler,
   ExecutionContext,
-  Inject,
+  Injectable,
   NestInterceptor,
   PlainLiteralObject,
   StreamableFile,
-  Type,
 } from '@nestjs/common';
-import { isFunction, isObject } from '@nestjs/common/utils/shared.utils';
+import { isObject } from '@nestjs/common/utils/shared.utils';
 
-import { CRUD_MODULE_SETTINGS_TOKEN } from '../../crud.constants.js';
-import { CrudModuleSettingsInterface } from '../config/interfaces/crud-module-settings.interface.js';
-import { CrudInvalidResponseDto } from '../dtos/crud-invalid-response.dto.js';
-import { CrudResponsePaginatedDto } from '../dtos/crud-response-paginated.dto.js';
-import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface.js';
+import { isStandardSchema } from '@concepta/nestjs-core';
+
 import { CrudException } from '../exceptions/crud.exception.js';
+import { CrudResponsePaginatedInterface } from '../interfaces/crud-response-paginated.interface.js';
 import { CrudSerializationOptionsInterface } from '../interfaces/crud-serialization-options.interface.js';
 import { CrudMetaview } from '../services/crud-metaview.service.js';
 import { crudIsPaginatedHelper } from '../utils/crud-is-paginated.helper.js';
@@ -31,14 +24,11 @@ type ResponseType =
   | (PlainLiteralObject & CrudResponsePaginatedInterface)
   | Array<PlainLiteralObject>;
 
+@Injectable()
 export class CrudSerializeInterceptor<
   T extends PlainLiteralObject = PlainLiteralObject,
 > implements NestInterceptor {
-  constructor(
-    @Inject(CRUD_MODULE_SETTINGS_TOKEN)
-    private settings: CrudModuleSettingsInterface,
-    private reflectionService: CrudMetaview<T>,
-  ) {}
+  constructor(private reflectionService: CrudMetaview<T>) {}
 
   /**
    * @internal
@@ -47,10 +37,16 @@ export class CrudSerializeInterceptor<
     // get the options
     const options = this.getOptions(context);
 
-    // serialize the response
+    // serialize the response — schema-based serialization
+    // (this.toSchema) can be async, so resolve uniformly via mergeMap
+    // rather than map.
     return next
       .handle()
-      .pipe(map((response: ResponseType) => this.serialize(response, options)));
+      .pipe(
+        mergeMap((response: ResponseType) =>
+          from(Promise.resolve(this.serialize(response, options))),
+        ),
+      );
   }
 
   /**
@@ -59,48 +55,52 @@ export class CrudSerializeInterceptor<
   protected serialize(
     response: ResponseType,
     options: CrudSerializationOptionsInterface,
-  ) {
+  ): unknown | Promise<unknown> {
     // reasons to bail
     if (!isObject(response) || response instanceof StreamableFile) {
       // return response untouched
       return response;
     }
 
-    // determine the type to use
-    const type =
+    // determine the schema to use
+    const schema =
       !Array.isArray(response) && crudIsPaginatedHelper(response) === true
-        ? options?.paginatedType
-        : options?.type;
+        ? options?.paginated
+        : options?.resource;
 
-    // must have a dto type
-    if (type !== undefined && isFunction(type)) {
-      // convert each object to DTO type, then convert back to plain object
-      return this.toPlain(
-        this.toInstance(type, response, options?.toInstanceOptions),
-        options?.toPlainOptions,
-      );
-    } else {
-      // this should never happen, but needed just in
-      // case somebody removes the defaults
+    // this should never happen, but needed just in case somebody
+    // removes the response resource/paginated schema configuration
+    if (schema === undefined || !isStandardSchema(schema)) {
       throw new CrudException({
-        message: 'Impossible to serialize data without a DTO type.',
+        message: 'Impossible to serialize data without a response schema.',
       });
     }
+
+    return this.toSchema(schema, response);
   }
 
-  protected toInstance(
-    type: Type,
-    targetObject: ResponseType,
-    options?: ClassTransformOptions,
-  ): Type {
-    return plainToInstance(type, targetObject, options);
-  }
-
-  protected toPlain(
-    instance: Type,
-    options?: ClassTransformOptions,
-  ): Record<string, unknown> {
-    return instanceToPlain(instance, options);
+  /**
+   * Shapes a response through a Zod (Standard Schema) schema — the schema
+   * parse strips unknown/underscore-prefixed keys. Fail-closed: our own
+   * code returning a shape that doesn't match its DECLARED response schema
+   * is a server bug, not a client error, so this throws a `CrudException`
+   * (a `RuntimeException`, 500 by default) — never a raw, unnormalized
+   * `Error` — matching what `StandardSchemaSerializerInterceptor` would
+   * otherwise throw directly.
+   */
+  protected async toSchema(
+    schema: z.ZodType,
+    response: ResponseType,
+  ): Promise<unknown> {
+    const result = await schema['~standard'].validate(response);
+    if (result.issues) {
+      throw new CrudException({
+        message: 'Response failed schema validation: %s',
+        messageParams: [result.issues.map((issue) => issue.message).join('; ')],
+        originalError: new Error(JSON.stringify(result.issues)),
+      });
+    }
+    return result.value;
   }
 
   protected getOptions(
@@ -109,36 +109,21 @@ export class CrudSerializeInterceptor<
     const target = context.getClass();
     const handler = context.getHandler();
 
-    // get serialization options
-    const options =
-      this.reflectionService.getAllSerializationOptions(target, handler) ?? {};
-
-    // is the type missing?
-    if (!options?.type) {
-      // yes, set it from response resource
-      options.type =
-        this.reflectionService.getResponseResource(target, handler) ??
-        CrudInvalidResponseDto;
-    }
-
-    // is the paginated type missing?
-    if (!options?.paginatedType) {
-      // yes, set it from response paginated
-      options.paginatedType =
-        this.reflectionService.getResponsePaginated(target, handler) ??
-        CrudResponsePaginatedDto;
-    }
+    // get serialization options — this is the actual stored decorator
+    // metadata object (returned by reference, not a copy), so it must
+    // never be mutated here; build and return a fresh object instead
+    const options = this.reflectionService.getAllSerializationOptions(
+      target,
+      handler,
+    );
 
     return {
-      ...options,
-      toInstanceOptions: {
-        ...(this.settings?.serialization?.toInstanceOptions ?? {}),
-        ...(options.toInstanceOptions ?? {}),
-      },
-      toPlainOptions: {
-        ...(this.settings?.serialization?.toPlainOptions ?? {}),
-        ...(options.toPlainOptions ?? {}),
-      },
+      resource:
+        options?.resource ??
+        this.reflectionService.getResponseResource(target, handler),
+      paginated:
+        options?.paginated ??
+        this.reflectionService.getResponsePaginated(target, handler),
     };
   }
 }

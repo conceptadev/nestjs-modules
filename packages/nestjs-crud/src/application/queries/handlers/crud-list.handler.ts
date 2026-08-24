@@ -1,7 +1,7 @@
 import { HttpException, type PlainLiteralObject } from '@nestjs/common';
 
-import { type CrudResponsePaginatedInterface } from '../../../infrastructure/dtos/interfaces/crud-response-paginated.interface.js';
 import { CrudQueryException } from '../../../infrastructure/exceptions/crud-query.exception.js';
+import { type CrudResponsePaginatedInterface } from '../../../infrastructure/interfaces/crud-response-paginated.interface.js';
 import { type CrudListQuery } from '../impl/crud-list.query.js';
 
 import { CrudQueryBaseHandler } from './crud-query-base.handler.js';

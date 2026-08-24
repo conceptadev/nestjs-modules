@@ -48,7 +48,7 @@ export { OAuthAuthenticateOptionsInterface } from './infrastructure/config/inter
 export { OAuthParamsInterface } from './infrastructure/config/interfaces/oauth-params.interface.js';
 export { OAuthRequestInterface } from './infrastructure/config/interfaces/oauth-request.interface.js';
 
-export { AuthenticationResponseDto } from './infrastructure/dtos/authenticated-response.dto.js';
+export { authenticationResponseSchema } from './infrastructure/schemas/authentication-response.schema.js';
 
 export {
   AuthGuardOptions,
@@ -96,7 +96,7 @@ export { LocalGuard } from './infrastructure/strategies/local/local.guard.js';
 export { LocalValidateUserInterface } from './application/services/local/interfaces/local-validate-user.interface.js';
 export { LocalServiceInterface } from './application/services/local/interfaces/local-service.interface.js';
 export { LocalCredentialsInterface } from './infrastructure/strategies/local/interfaces/local-credentials.interface.js';
-export { LocalLoginDto } from './infrastructure/strategies/local/dto/local-login.dto.js';
+export { localLoginSchema } from './infrastructure/strategies/local/schemas/local-login.schema.js';
 export { LocalException } from './infrastructure/strategies/local/exceptions/local.exception.js';
 export { LocalUsernameNotFoundException } from './application/exceptions/local-username-not-found.exception.js';
 export { LocalUserInactiveException } from './application/exceptions/local-user-inactive.exception.js';
@@ -106,24 +106,28 @@ export { LocalInvalidLoginDataException } from './infrastructure/strategies/loca
 export { LocalInvalidCredentialsException } from './infrastructure/strategies/local/exceptions/local-invalid-credentials.exception.js';
 
 // auth-refresh feature
-export { RefreshDto } from './infrastructure/strategies/refresh/dto/refresh.dto.js';
+export { refreshSchema } from './infrastructure/strategies/refresh/schemas/refresh.schema.js';
 export { RefreshGuard } from './infrastructure/strategies/refresh/refresh.guard.js';
 export { RefreshException } from './infrastructure/strategies/refresh/exceptions/refresh.exception.js';
 export { RefreshUnauthorizedException } from './infrastructure/strategies/refresh/exceptions/refresh-unauthorized.exception.js';
 
 // auth-recovery feature
 export { RecoveryService } from './application/services/recovery/recovery.service.js';
-export { RecoveryRecoverLoginDto } from './infrastructure/mfa/recovery/dto/recovery-recover-login.dto.js';
-export { RecoveryRecoverPasswordDto } from './infrastructure/mfa/recovery/dto/recovery-recover-password.dto.js';
-export { RecoveryUpdatePasswordDto } from './infrastructure/mfa/recovery/dto/recovery-update-password.dto.js';
-export { RecoveryValidatePasscodeDto } from './infrastructure/mfa/recovery/dto/recovery-validate-passcode.dto.js';
+export { recoveryRecoverLoginSchema } from './infrastructure/mfa/recovery/schemas/recovery-recover-login.schema.js';
+export { recoveryRecoverPasswordSchema } from './infrastructure/mfa/recovery/schemas/recovery-recover-password.schema.js';
+export { recoveryUpdatePasswordSchema } from './infrastructure/mfa/recovery/schemas/recovery-update-password.schema.js';
+export { recoveryValidatePasscodeSchema } from './infrastructure/mfa/recovery/schemas/recovery-validate-passcode.schema.js';
+export { RecoveryRecoverLoginParamsInterface } from './application/services/recovery/interfaces/recovery-recover-login-params.interface.js';
+export { RecoveryRecoverPasswordParamsInterface } from './application/services/recovery/interfaces/recovery-recover-password-params.interface.js';
+export { RecoveryUpdatePasswordParamsInterface } from './application/services/recovery/interfaces/recovery-update-password-params.interface.js';
+export { RecoveryValidatePasscodeParamsInterface } from './application/services/recovery/interfaces/recovery-validate-passcode-params.interface.js';
 export { RecoveryException } from './infrastructure/mfa/recovery/exceptions/recovery.exception.js';
 export { RecoveryOtpInvalidException } from './infrastructure/mfa/recovery/exceptions/recovery-otp-invalid.exception.js';
 
 // auth-verify feature
 export { VerifyService } from './application/services/verify/verify.service.js';
-export { VerifyDto } from './infrastructure/mfa/verify/dto/verify.dto.js';
-export { VerifyUpdateDto } from './infrastructure/mfa/verify/dto/verify-update.dto.js';
+export { verifySchema } from './infrastructure/mfa/verify/schemas/verify.schema.js';
+export { verifyUpdateSchema } from './infrastructure/mfa/verify/schemas/verify-update.schema.js';
 export { VerifyConfirmParamsInterface } from './application/services/verify/interfaces/verify-confirm-params.interface.js';
 export { VerifySendParamsInterface } from './application/services/verify/interfaces/verify-send-params.interface.js';
 export { VerifyException } from './infrastructure/mfa/verify/exceptions/verify.exception.js';
@@ -144,6 +148,7 @@ export {
   JwtPolicy,
   JwtPolicySettingsInterface,
 } from './domain/policies/jwt.policy.js';
+export { TokenOptionsInterface } from './domain/interfaces/token-options.interface.js';
 export {
   JwtStrategyPolicy,
   JwtStrategyPolicySettingsInterface,
@@ -186,6 +191,7 @@ export {
   GetUserBySubjectQueryInterface,
   GetUserByUsernameQueryInterface,
   GetUserByEmailQueryInterface,
+  UpdateUserCommandInterface,
 } from './domain/ports/user.port.js';
 export {
   PasswordPort,

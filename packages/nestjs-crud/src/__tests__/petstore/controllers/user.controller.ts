@@ -1,3 +1,5 @@
+import { type z } from 'zod';
+
 import { Inject } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -17,16 +19,18 @@ import { CrudCtx } from '../../../infrastructure/interceptors/crud-context.overl
 import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface.js';
 import { CrudAdapterResolver } from '../../../infrastructure/resolvers/crud-adapter.resolver.js';
 import { CrudResolverInterface } from '../../../infrastructure/resolvers/interfaces/crud-resolver.interface.js';
-import { User } from '../dto/user.dto.js';
+import { userSchema } from '../schemas/user.schema.js';
+
+type UserType = z.infer<typeof userSchema>;
 
 @CrudController({
   path: 'user',
   entity: 'User',
   request: {
-    body: User,
+    body: userSchema,
     params: { username: { field: 'username', type: 'string', primary: true } },
   },
-  response: { resource: User },
+  response: { resource: userSchema },
 })
 @ApiTags('user')
 export class UserController {
@@ -41,7 +45,8 @@ export class UserController {
   })
   async createUser(
     @Ctx(CrudCtx) ctx: CrudContextInterface,
-    @CrudBody() dto: User,
+    // See pet.controller.ts's addPet for why `{ schema }` is required here.
+    @CrudBody({ schema: userSchema }) dto: UserType,
   ) {
     return this.crudResolver.create(ctx, dto);
   }
@@ -62,7 +67,8 @@ export class UserController {
   })
   async updateUser(
     @Ctx(CrudCtx) ctx: CrudContextInterface,
-    @CrudBody() dto: User,
+    // See pet.controller.ts's addPet for why `{ schema }` is required here.
+    @CrudBody({ schema: userSchema }) dto: UserType,
   ) {
     return this.crudResolver.replace(ctx, dto);
   }

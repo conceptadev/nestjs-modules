@@ -8,7 +8,7 @@ export interface AuthenticationOptionsExtrasInterface extends Pick<
 > {
   /**
    * APP_GUARD configuration. Set to `false` to disable the global guard.
-   * Only applies when `settings.jwt` is configured.
+   * Only applies when `settings.strategies.jwt` is configured.
    */
   appGuard?: false | CanActivate;
 

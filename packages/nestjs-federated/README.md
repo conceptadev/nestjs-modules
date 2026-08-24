@@ -8,7 +8,7 @@ Authenticate via federated login (OAuth providers like GitHub, Google, Apple).
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-federated)](https://www.npmjs.com/package/@concepta/nestjs-federated)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-federated%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -54,6 +54,9 @@ IDs and Client Secrets. Refer to the provider-specific auth modules:
 ```sh
 yarn add @concepta/nestjs-federated
 ```
+
+This package is ESM-only and requires Node.js >= 22.12 and NestJS 12
+(currently alpha).
 
 For TypeORM entity base classes (optional):
 
@@ -184,8 +187,12 @@ Your custom repository must implement `IdentityRepositoryInterface`.
 | `FindIdentityByProviderQuery` | Query | CQRS query to find identity by provider + subject |
 | `IdentityRepositoryInterface` | Interface | Contract for custom repository implementations |
 | `FederatedCredentialsInterface` | Interface | User credentials shape (`id`, `email`, `username`) |
-| `IdentityDto` | DTO | Serialization DTO for identity records |
-| `IdentityCreateDto` | DTO | Validation DTO for identity creation |
+| `identitySchema` | Schema | Zod schema for identity records (serialization) |
+| `identityCreateSchema` | Schema | Zod schema for identity creation (validation) |
+| `FederatedException` | Exception | Base exception (extends `RuntimeException`, which extends NestJS's `HttpException` — no filter needed; wire body `{ statusCode, message, errorCode, error? }`) |
+| `IdentityCreateUserException` | Exception | User creation via the user port failed |
+| `IdentityFindUserException` | Exception | User lookup via the user port failed |
+| `IdentityUserRelationshipException` | Exception | Identity record has no valid user relationship |
 
 #### Optional TypeORM Exports
 
@@ -208,7 +215,7 @@ The module follows DDD/Clean Architecture:
 - **Application layer**: `CreateIdentityCommand` and
   `FindIdentityByProviderQuery` with their handlers
 - **Infrastructure layer**: TypeORM entity base classes, repository
-  implementation, mapper, DTOs, provider factories
+  implementation, mapper, Zod schemas, provider factories
 
 ### The Sign Flow
 

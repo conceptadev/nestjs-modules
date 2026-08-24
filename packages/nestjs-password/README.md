@@ -10,7 +10,7 @@ checking via four domain services and a configurable policy.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-password)](https://www.npmjs.com/package/@concepta/nestjs-password)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-password%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -30,11 +30,14 @@ checking via four domain services and a configurable policy.
 yarn add @concepta/nestjs-password
 ```
 
+Requirements: the package is **ESM-only** (no CommonJS build), targets
+**Node.js >= 22.12**, and runs on **NestJS 12** (currently alpha).
+
 ### Dependencies
 
 | Package | Notes |
 | --- | --- |
-| `@concepta/nestjs-core` | Core interfaces (`PasswordStorageInterface`, `PasswordPlainInterface`) and utilities |
+| `@concepta/nestjs-core` | `RuntimeException` base class, reference types, utilities |
 | `@nestjs/common` | NestJS core |
 | `@nestjs/core` | NestJS core |
 | `@nestjs/config` | Configuration module |
@@ -107,20 +110,27 @@ interface PasswordSettingsInterface {
 ```text
 Application (Commands)
   |
-Domain (Services, Policy, Exceptions)
+Domain (Services, Policy, Exceptions, CryptUtil)
   |
-Infrastructure (Config, CryptUtil)
+Infrastructure (Config)
 ```
 
 - **Domain** -- `PasswordPolicy` (configurable policy), four domain services,
-  domain exceptions, `CryptUtil` (bcrypt abstraction)
+  domain exceptions, `CryptUtil` (bcrypt abstraction; internal — not exported
+  from the package barrel)
 - **Application** -- 4 commands dispatched via `@nestjs/cqrs`
 - **Infrastructure** -- Configuration with environment variable support
 
+Password primitives are defined and exported by **this package**:
+`PasswordPlainInterface`, `PasswordPlainCurrentInterface`,
+`PasswordStorageInterface`, `PasswordUpdateInterface`, and the
+`isPasswordStorage` type guard.
+
 ## Password Policy
 
-`PasswordPolicy` encapsulates configurable password rules. It is registered
-as a NestJS provider and injected into services.
+`PasswordPolicy` encapsulates configurable password rules (its settings
+constructor argument is typed as `PasswordPolicySettings`, also exported). It
+is registered as a NestJS provider and injected into services.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -138,6 +148,11 @@ as a NestJS provider and injected into services.
 | `VeryStrong` | 4 | Very strong password |
 
 ## Domain Services
+
+Each service has a matching exported contract interface:
+`PasswordCreationServiceInterface`, `PasswordStorageServiceInterface`,
+`PasswordValidationServiceInterface`, and `PasswordStrengthServiceInterface` —
+implement one of these to swap in a custom provider.
 
 ### PasswordCreationService
 
@@ -220,7 +235,11 @@ const isValid = await this.commandBus.execute<
 | `PasswordUsedRecentlyException` | Password matches a recent credential in history |
 
 All exceptions extend `PasswordException`, which extends `RuntimeException`
-from `@concepta/nestjs-core`.
+from `@concepta/nestjs-core`. `RuntimeException` extends Nest's
+`HttpException`, so no exception filter registration is needed — password
+exceptions render on the wire as
+`{ statusCode, message, errorCode, error? }` bodies (errorCode
+`PASSWORD_ERROR` unless a subclass overrides it).
 
 ## Environment Variables
 

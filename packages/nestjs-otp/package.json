@@ -34,7 +34,9 @@
     "@nestjs/common": "12.0.0-alpha.5",
     "@nestjs/config": "12.0.0-next.0",
     "@nestjs/core": "12.0.0-alpha.5",
-    "@nestjs/cqrs": "^11.0.0"
+    "@nestjs/cqrs": "^11.0.0",
+    "@standard-schema/spec": "^1.0.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.8",
@@ -47,8 +49,6 @@
   "peerDependencies": {
     "@concepta/typeorm-seeding": "^4.0.0",
     "@faker-js/faker": "^8.4.1",
-    "class-transformer": "*",
-    "class-validator": "*",
     "rxjs": "^7.1.0",
     "typeorm": "^0.3.0"
   },

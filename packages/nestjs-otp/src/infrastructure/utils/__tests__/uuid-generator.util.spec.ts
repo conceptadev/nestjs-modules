@@ -1,4 +1,4 @@
-import { isUUID } from 'class-validator';
+import { z } from 'zod';
 
 import { uuidGeneratorUtil } from '../uuid-generator.util.js';
 
@@ -6,7 +6,7 @@ describe(uuidGeneratorUtil.name, () => {
   it('should return a valid UUID', () => {
     const result = uuidGeneratorUtil();
 
-    expect(isUUID(result, '4')).toBe(true);
+    expect(z.uuid({ version: 'v4' }).safeParse(result).success).toBe(true);
   });
 
   it('should return a unique value on each call', () => {

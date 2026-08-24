@@ -15,22 +15,28 @@ import { CrudUpdate } from '../../infrastructure/decorators/operations/crud-upda
 import { CrudBody } from '../../infrastructure/decorators/params/crud-body.decorator.js';
 import { CrudCtx } from '../../infrastructure/interceptors/crud-context.overlay.js';
 import { CrudContextInterface } from '../../infrastructure/interceptors/interfaces/crud-context.interface.js';
+import { CrudCreateBatchInterface } from '../../infrastructure/interfaces/crud-create-batch.interface.js';
 import { CrudAdapterResolver } from '../../infrastructure/resolvers/crud-adapter.resolver.js';
 import { CrudResolverInterface } from '../../infrastructure/resolvers/interfaces/crud-resolver.interface.js';
 import { ConfigurableCrudBuilder } from '../../infrastructure/utils/configurable-crud.builder.js';
 import { CRUD_TEST_PHOTO_CCB_CUSTOM_ENTITY_NAME } from '../crud-test.constants.js';
-import { PhotoCreateBatchDtoFixture } from '../photo/dto/photo-create-batch.dto.fixture.js';
-import { PhotoCreateDtoFixture } from '../photo/dto/photo-create.dto.fixture.js';
-import { PhotoPaginatedDtoFixture } from '../photo/dto/photo-paginated.dto.fixture.js';
-import { PhotoUpdateDtoFixture } from '../photo/dto/photo-update.dto.fixture.js';
-import { PhotoDtoFixture } from '../photo/dto/photo.dto.fixture.js';
+import { PhotoCreatableInterfaceFixture } from '../photo/interfaces/photo-creatable.interface.fixture.js';
 import { PhotoEntityInterfaceFixture } from '../photo/interfaces/photo-entity.interface.fixture.js';
+import { PhotoUpdatableInterfaceFixture } from '../photo/interfaces/photo-updatable.interface.fixture.js';
+import {
+  photoCreateBatchResponseSchema,
+  photoCreateBatchSchema,
+} from '../photo/schemas/photo-create-batch.schema.fixture.js';
+import { photoCreateSchema } from '../photo/schemas/photo-create.schema.fixture.js';
+import { photoPaginatedSchema } from '../photo/schemas/photo-paginated.schema.fixture.js';
+import { photoUpdateSchema } from '../photo/schemas/photo-update.schema.fixture.js';
+import { photoSchema } from '../photo/schemas/photo.schema.fixture.js';
 
 @CrudController({
   path: 'photo',
   entity: CRUD_TEST_PHOTO_CCB_CUSTOM_ENTITY_NAME,
-  request: { body: PhotoDtoFixture },
-  response: { resource: PhotoDtoFixture, paginated: PhotoPaginatedDtoFixture },
+  request: { body: photoSchema },
+  response: { resource: photoSchema, paginated: photoPaginatedSchema },
 })
 export class PhotoCcbCustomControllerFixture {
   constructor(
@@ -54,38 +60,50 @@ export class PhotoCcbCustomControllerFixture {
     return this.crudResolver.read(ctx);
   }
 
-  @CrudCreateBatch()
+  @CrudCreateBatch({
+    request: { bodyBatch: photoCreateBatchSchema },
+    response: {
+      serialization: { resource: photoCreateBatchResponseSchema },
+    },
+  })
   async createBatch(
     @Ctx(CrudCtx)
     ctx: CrudContextInterface<PhotoEntityInterfaceFixture>,
-    @CrudBody() dto: PhotoCreateBatchDtoFixture,
+    // Explicit schema — validation would also resolve from this operation's
+    // `request.body`/`bodyBatch` fallback; passing it here pins it on the
+    // parameter itself.
+    @CrudBody({ schema: photoCreateBatchSchema })
+    dto: CrudCreateBatchInterface<PhotoCreatableInterfaceFixture>,
   ) {
     return this.crudResolver.createBatch(ctx, dto);
   }
 
-  @CrudCreate({ request: { body: PhotoCreateDtoFixture } })
+  @CrudCreate({ request: { body: photoCreateSchema } })
   async create(
     @Ctx(CrudCtx)
     ctx: CrudContextInterface<PhotoEntityInterfaceFixture>,
-    @CrudBody() dto: PhotoCreateDtoFixture,
+    @CrudBody({ schema: photoCreateSchema })
+    dto: PhotoCreatableInterfaceFixture,
   ) {
     return this.crudResolver.create(ctx, dto);
   }
 
-  @CrudUpdate({ request: { body: PhotoUpdateDtoFixture } })
+  @CrudUpdate({ request: { body: photoUpdateSchema } })
   async update(
     @Ctx(CrudCtx)
     ctx: CrudContextInterface<PhotoEntityInterfaceFixture>,
-    @CrudBody() dto: PhotoUpdateDtoFixture,
+    @CrudBody({ schema: photoUpdateSchema })
+    dto: PhotoUpdatableInterfaceFixture,
   ) {
     return this.crudResolver.update(ctx, dto);
   }
 
-  @CrudReplace({ request: { body: PhotoUpdateDtoFixture } })
+  @CrudReplace({ request: { body: photoUpdateSchema } })
   async replace(
     @Ctx(CrudCtx)
     ctx: CrudContextInterface<PhotoEntityInterfaceFixture>,
-    @CrudBody() dto: PhotoUpdateDtoFixture,
+    @CrudBody({ schema: photoUpdateSchema })
+    dto: PhotoUpdatableInterfaceFixture,
   ) {
     return this.crudResolver.replace(ctx, dto);
   }

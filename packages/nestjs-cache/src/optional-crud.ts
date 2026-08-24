@@ -1,5 +1,5 @@
-// dto
-export { CachePaginatedDto } from './infrastructure/dtos/cache-paginated.dto.js';
+// schemas (Zod / Standard Schema)
+export { cachePaginatedSchema } from './infrastructure/schemas/cache-paginated.schema.js';
 
 // requests
 export { CreateCacheRequest } from './gateways/http/commands/impl/create-cache.request.js';

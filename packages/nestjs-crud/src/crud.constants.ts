@@ -1,7 +1,3 @@
-import { type ClassTransformOptions } from 'class-transformer';
-
-import { type ValidationPipeOptions } from '@nestjs/common';
-
 import { type CrudParamsOptionsInterface } from './infrastructure/interfaces/crud-params-options.interface.js';
 
 export const CRUD_MODULE_SETTINGS_TOKEN = 'CRUD_MODULE_SETTINGS_TOKEN';
@@ -128,18 +124,6 @@ export const CRUD_MODULE_DEFAULT_PARAMS_OPTIONS: CrudParamsOptionsInterface<{
 }> = {
   id: { field: 'id', type: 'string', primary: true },
 };
-
-export const CRUD_MODULE_DEFAULT_TRANSFORM_OPTIONS: ClassTransformOptions = {
-  strategy: 'excludeAll',
-  excludeExtraneousValues: true,
-  excludePrefixes: ['_', '__'],
-};
-
-export const CRUD_MODULE_DEFAULT_VALIDATION_PIPE_OPTIONS: ValidationPipeOptions =
-  {
-    transform: true,
-    transformOptions: CRUD_MODULE_DEFAULT_TRANSFORM_OPTIONS,
-  };
 
 // CQRS tokens
 export const CRUD_CONTEXT_PROVIDER_TOKEN = Symbol(

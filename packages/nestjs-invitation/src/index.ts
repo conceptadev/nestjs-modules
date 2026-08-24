@@ -66,12 +66,12 @@ export { InvitationOtpSettingsInterface } from './domain/interfaces/invitation-o
 export { InvitationSettingsInterface } from './interfaces/options/invitation-settings.interface.js';
 export { InvitationOptionsInterface } from './interfaces/options/invitation-options.interface.js';
 
-// DTOs
-export { InvitationDto } from './infrastructure/dtos/invitation.dto.js';
-export { InvitationPaginatedDto } from './infrastructure/dtos/invitation-paginated.dto.js';
-export { InvitationCreateDto } from './infrastructure/dtos/invitation-create.dto.js';
-export { InvitationCreateByEmailDto } from './infrastructure/dtos/invitation-create-by-email.dto.js';
-export { InvitationAcceptDto } from './infrastructure/dtos/invitation-accept.dto.js';
+// schemas (Zod / Standard Schema)
+export { invitationSchema } from './infrastructure/schemas/invitation.schema.js';
+export { invitationPaginatedSchema } from './infrastructure/schemas/invitation-paginated.schema.js';
+export { invitationCreateSchema } from './infrastructure/schemas/invitation-create.schema.js';
+export { invitationCreateByEmailSchema } from './infrastructure/schemas/invitation-create-by-email.schema.js';
+export { invitationAcceptSchema } from './infrastructure/schemas/invitation-accept.schema.js';
 
 // exceptions
 export { InvitationException } from './domain/exceptions/invitation.exception.js';

@@ -10,7 +10,7 @@ build modes: fully generated, pre-decorated, and hybrid.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-crud)](https://www.npmjs.com/package/@concepta/nestjs-crud)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-crud%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -24,6 +24,7 @@ build modes: fully generated, pre-decorated, and hybrid.
 - [Query String Parameters](#query-string-parameters)
 - [Paginated Response](#paginated-response)
 - [Serialization and Validation](#serialization-and-validation)
+- [OpenAPI Documents](#openapi-documents)
 - [Resolvers](#resolvers)
 - [CQRS Integration](#cqrs-integration)
 - [Specifications and Hooks](#specifications-and-hooks)
@@ -36,29 +37,32 @@ build modes: fully generated, pre-decorated, and hybrid.
 yarn add @concepta/nestjs-crud
 ```
 
+This package is **ESM-only** and targets **NestJS 12 (alpha)** on
+**Node >= 22.12**. Request and response shapes are defined with **Zod v4**
+schemas (Standard Schema) — `zod` is a direct dependency.
+
 ### Dependencies
 
 | Package | Notes |
 | --- | --- |
-| `@concepta/nestjs-core` | Core interfaces, utilities, and hook system |
+| `@concepta/nestjs-core` | Core interfaces, utilities, schema helpers, and hook system |
 | `@concepta/nestjs-repository` | Repository abstraction layer |
 | `@nestjs/common` | NestJS core |
 | `@nestjs/core` | Module reference and reflection |
 | `@nestjs/swagger` | OpenAPI decorator support |
+| `zod` | Schema validation and serialization (Standard Schema) |
 
 ### Peer Dependencies
 
 | Package | Required | Notes |
 | --- | --- | --- |
-| `class-transformer` | Yes | Response serialization and DTO transformation |
-| `class-validator` | Yes | Request body validation |
 | `rxjs` | Yes | Interceptor pipeline |
 | `@concepta/nestjs-repository-typeorm` | No | TypeORM repository driver |
 | `@nestjs/cqrs` | No | Only when using `CrudCqrsResolver` |
 
 ## Quick Start
 
-Define an entity, DTOs, and register a fully generated CRUD endpoint.
+Define an entity, Zod schemas, and register a fully generated CRUD endpoint.
 
 ### Entity
 
@@ -84,45 +88,59 @@ export class PhotoEntity {
 }
 ```
 
-### DTOs
+### Schemas
+
+Request and response shapes are Zod schemas. Helpers from
+`@concepta/nestjs-core`:
+
+- `conformsTo<Interface>()(schema)` — pins a schema to a TypeScript interface
+  at compile time (no runtime effect)
+- `withNamedComponent(schema, id)` — registers the schema as a named OpenAPI
+  component (bare component id, e.g. `Photo`)
+- `withOpenApi(schema)` — enables OpenAPI JSON schema output for schemas
+  documented inline (typically request bodies)
 
 ```ts
-import { Exclude, Expose, Type } from 'class-transformer';
-import { IsString, IsUUID, IsNumber, IsOptional } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { CrudResponsePaginatedDto } from '@concepta/nestjs-crud';
+import { z } from 'zod';
+import {
+  conformsTo,
+  referenceIdSchema,
+  withNamedComponent,
+  withOpenApi,
+} from '@concepta/nestjs-core';
+import { paginatedSchema } from '@concepta/nestjs-crud';
 
-@Exclude()
-export class PhotoDto {
-  @ApiProperty() @Expose() @IsUUID()
-  id: string = '';
+export const photoSchema = withNamedComponent(
+  conformsTo<PhotoEntity>()(
+    referenceIdSchema.extend({
+      name: z.string(),
+      description: z.string(),
+      views: z.number(),
+      deletedAt: z.date().nullable(),
+    }),
+  ),
+  'Photo',
+);
 
-  @ApiProperty() @Expose() @IsString()
-  name: string = '';
+export const photoCreateSchema = withOpenApi(
+  photoSchema.pick({
+    name: true,
+    description: true,
+  }),
+);
 
-  @ApiProperty() @Expose() @IsString()
-  description: string = '';
+export const photoUpdateSchema = withOpenApi(
+  photoSchema.pick({
+    name: true,
+    description: true,
+    views: true,
+  }),
+);
 
-  @ApiProperty() @Expose() @IsNumber()
-  views: number = 0;
-}
-
-@Exclude()
-export class PhotoCreateDto {
-  @ApiProperty() @Expose() @IsString()
-  name: string = '';
-
-  @ApiProperty() @Expose() @IsString() @IsOptional()
-  description: string = '';
-}
-
-@Exclude()
-export class PhotoPaginatedDto extends CrudResponsePaginatedDto<PhotoDto> {
-  @ApiProperty({ type: [PhotoDto], isArray: true })
-  @Expose()
-  @Type(() => PhotoDto)
-  data: PhotoDto[] = [];
-}
+export const photoPaginatedSchema = withNamedComponent(
+  paginatedSchema(photoSchema),
+  'PhotoPaginated',
+);
 ```
 
 ### Feature Module
@@ -145,16 +163,16 @@ import { CrudModule } from '@concepta/nestjs-crud';
         controller: {
           path: 'photos',
           entity: 'photo',
-          request: { body: PhotoDto },
+          request: { body: photoSchema },
           response: {
-            resource: PhotoDto,
-            paginated: PhotoPaginatedDto,
+            resource: photoSchema,
+            paginated: photoPaginatedSchema,
           },
         },
         operations: [
           { operation: Operation.List },
           { operation: Operation.Read },
-          { operation: Operation.Create, request: { body: PhotoCreateDto } },
+          { operation: Operation.Create, request: { body: photoCreateSchema } },
           { operation: Operation.Update },
           { operation: Operation.Delete },
         ],
@@ -220,14 +238,19 @@ CrudModule.forFeature<PhotoEntity>({
     controller: {
       path: 'photos',
       entity: 'photo',
-      request: { body: PhotoDto },
-      response: { resource: PhotoDto, paginated: PhotoPaginatedDto },
+      request: {
+        body: photoSchema,
+        params: {
+          id: { field: 'id', type: 'uuid', primary: true },
+        },
+      },
+      response: { resource: photoSchema, paginated: photoPaginatedSchema },
     },
     operations: [
       { operation: Operation.List },
       { operation: Operation.Read },
-      { operation: Operation.Create, request: { body: PhotoCreateDto } },
-      { operation: Operation.Update, request: { body: PhotoUpdateDto } },
+      { operation: Operation.Create, request: { body: photoCreateSchema } },
+      { operation: Operation.Update, request: { body: photoUpdateSchema } },
       { operation: Operation.Delete },
       { operation: Operation.SoftDelete, path: 'soft/:id' },
       { operation: Operation.Restore, path: 'restore/:id' },
@@ -235,6 +258,10 @@ CrudModule.forFeature<PhotoEntity>({
   },
 })
 ```
+
+Per-operation `request.body` schemas override the controller-level schema —
+for example, a stricter create schema is enforced only on the Create route
+while other operations keep the controller default.
 
 ### register / registerAsync
 
@@ -276,6 +303,38 @@ Database Driver (TypeORM, etc.)
 - **CrudAdapter** — Wraps a `RepositoryInterface` and adds pagination,
   field filtering, where-clause building, and entity preparation.
 
+### CRUD Context
+
+`CrudContextOverlay` defines the parsed CRUD context as an overlay on the
+request context. In hand-written controller methods, unwrap it by passing
+the `CrudCtx` overlay reference to the `@Ctx()` parameter decorator:
+
+```ts
+@CrudList()
+async list(@Ctx(CrudCtx) ctx: CrudContextInterface<PhotoEntity>) {
+  return this.resolver.list(ctx);
+}
+```
+
+### Injecting the CRUD Adapter
+
+`InjectCrudAdapter(name)` injects the adapter registered for an entity key
+by `CrudModule.forFeature()` — useful for reusing CRUD semantics from
+services:
+
+```ts
+import { Injectable } from '@nestjs/common';
+import { CrudAdapter, InjectCrudAdapter } from '@concepta/nestjs-crud';
+
+@Injectable()
+export class SomeService {
+  constructor(
+    @InjectCrudAdapter('photo')
+    protected readonly crudAdapter: CrudAdapter<PhotoEntity>,
+  ) {}
+}
+```
+
 ### Operation-to-Repository Mapping
 
 | Operation | Adapter Method | Repository Method |
@@ -307,14 +366,24 @@ const builder = new ConfigurableCrudBuilder<PhotoEntity>({
   controller: {
     path: 'photos',
     entity: 'photo',
-    request: { body: PhotoDto },
-    response: { resource: PhotoDto, paginated: PhotoPaginatedDto },
+    request: { body: photoSchema },
+    response: {
+      resource: photoSchema,
+      paginated: photoPaginatedSchema,
+    },
   },
   operations: [
     { operation: Operation.List },
     { operation: Operation.Read },
-    { operation: Operation.Create, request: { body: PhotoCreateDto } },
-    { operation: Operation.Update, request: { body: PhotoUpdateDto } },
+    {
+      operation: Operation.CreateBatch,
+      request: { bodyBatch: photoCreateBatchSchema },
+      response: {
+        serialization: { resource: photoCreateBatchResponseSchema },
+      },
+    },
+    { operation: Operation.Create, request: { body: photoCreateSchema } },
+    { operation: Operation.Update, request: { body: photoUpdateSchema } },
     { operation: Operation.Delete },
   ],
 });
@@ -323,7 +392,12 @@ const { controllers, providers } = builder.build();
 ```
 
 Or use `CrudModule.forFeature()` which wraps the builder internally
-(see [Module Registration](#module-registration)).
+(see [Module Registration](#module-registration)). The batch schemas are
+defined in [Batch Create Schema](#batch-create-schema).
+
+Generated controllers derive `@CrudBody({ schema })` metadata automatically
+from each operation's `request.body` / `request.bodyBatch`, so schema
+validation is wired without any hand-written code.
 
 ### Pre-Decorated
 
@@ -339,6 +413,7 @@ import {
   CrudRead,
   CrudCreate,
   CrudBody,
+  CrudCtx,
   CrudAdapterResolver,
   CrudResolverInterface,
   CrudContextInterface,
@@ -347,8 +422,8 @@ import {
 @CrudController({
   path: 'photos',
   entity: 'photo',
-  request: { body: PhotoDto },
-  response: { resource: PhotoDto, paginated: PhotoPaginatedDto },
+  request: { body: photoSchema },
+  response: { resource: photoSchema, paginated: photoPaginatedSchema },
 })
 export class PhotoController {
   constructor(
@@ -357,19 +432,19 @@ export class PhotoController {
   ) {}
 
   @CrudList()
-  async list(@Ctx() ctx: CrudContextInterface<PhotoEntity>) {
+  async list(@Ctx(CrudCtx) ctx: CrudContextInterface<PhotoEntity>) {
     return this.resolver.list(ctx);
   }
 
   @CrudRead()
-  async read(@Ctx() ctx: CrudContextInterface<PhotoEntity>) {
+  async read(@Ctx(CrudCtx) ctx: CrudContextInterface<PhotoEntity>) {
     return this.resolver.read(ctx);
   }
 
-  @CrudCreate({ request: { body: PhotoCreateDto } })
+  @CrudCreate({ request: { body: photoCreateSchema } })
   async create(
-    @Ctx() ctx: CrudContextInterface<PhotoEntity>,
-    @CrudBody() dto: PhotoCreateDto,
+    @Ctx(CrudCtx) ctx: CrudContextInterface<PhotoEntity>,
+    @CrudBody({ schema: photoCreateSchema }) dto: PhotoCreatable,
   ) {
     return this.resolver.create(ctx, dto);
   }
@@ -381,6 +456,18 @@ CrudModule.forFeature<PhotoEntity>({
 })
 ```
 
+Two rules for hand-written controllers:
+
+- Pass the `CrudCtx` overlay reference to `@Ctx(...)` — a bare `@Ctx()`
+  yields the raw application context, not the `CrudContextInterface`
+  defined by `CrudContextOverlay`.
+- Supply a body schema for validation: either explicitly via
+  `@CrudBody({ schema })`, or by setting `request.body` (or `bodyBatch`) on
+  the operation decorator — the validation pipe resolves
+  `@CrudBody({ schema })` first, then falls back to the operation's own
+  `request.body`. The controller-level `request.body` default is never used
+  for validation (it is typically the full entity schema).
+
 ### Hybrid
 
 Provide a base class and an operations array. Existing methods are augmented
@@ -390,8 +477,8 @@ with decorator metadata; missing methods are generated.
 @CrudController({
   path: 'photos',
   entity: 'photo',
-  request: { body: PhotoDto },
-  response: { resource: PhotoDto, paginated: PhotoPaginatedDto },
+  request: { body: photoSchema },
+  response: { resource: photoSchema, paginated: photoPaginatedSchema },
 })
 export class PhotoController {
   constructor(
@@ -400,7 +487,7 @@ export class PhotoController {
   ) {}
 
   @CrudList()
-  async list(@Ctx() ctx: CrudContextInterface<PhotoEntity>) {
+  async list(@Ctx(CrudCtx) ctx: CrudContextInterface<PhotoEntity>) {
     // Custom list logic
     return this.resolver.list(ctx);
   }
@@ -413,11 +500,15 @@ CrudModule.forFeature<PhotoEntity>({
     operations: [
       { operation: Operation.List },
       { operation: Operation.Read },
-      { operation: Operation.Create, request: { body: PhotoCreateDto } },
+      { operation: Operation.Create, request: { body: photoCreateSchema } },
     ],
   },
 })
 ```
+
+Methods generated from the `operations` array derive `@CrudBody({ schema })`
+automatically from `request.body` / `request.bodyBatch` — only methods you
+write yourself need the explicit parameter decorators.
 
 ### Comparison
 
@@ -447,22 +538,38 @@ and operation metadata.
 
 ### Operation Options
 
-All operation decorators accept a common options object:
+All operation decorators (and `operations[]` config entries) accept a common
+options object:
 
 ```ts
 {
   path?: string | string[];
+  methodName?: string;                    // Target/created method name (config only)
   request?: {
-    body?: Type;                          // DTO for body validation
-    bodyBatch?: Type;                     // DTO for batch body (CreateBatch)
-    validation?: CrudValidationOptions;
+    params?: CrudParamsOptionsInterface;  // URL param config
+    body?: CrudSchema;                    // z.ZodType — single-entity body schema
+    bodyBatch?: CrudSchema;               // z.ZodType — batch body schema (CreateBatch)
+    validation?: StandardSchemaValidationPipeOptions | false;
   };
   response?: {
-    serialization?: CrudSerializationOptions;
+    resource?: CrudSchema;                // z.ZodType — single resource response
+    paginated?: CrudSchema;               // z.ZodType — paginated response
+    serialization?: CrudSerializationOptionsInterface;
     returnDeleted?: boolean;              // Delete/SoftDelete only
     returnRestored?: boolean;             // Restore only
   };
   transactional?: boolean | TransactionalOptions;
+
+  // Query operations (List, Read):
+  query?: Type<CrudQueryInterface>;
+  queryHandler?: Type<CrudQueryHandlerInterface>;
+
+  // Command operations (Create, Update, Replace, Delete, ...):
+  command?: Type<CrudCommandInterface>;
+  commandHandler?: Type<CrudCommandHandlerInterface>;
+
+  extraDecorators?: ReturnType<typeof applyDecorators>[];
+
   api?: {
     operation?: ApiOperationOptions;
     query?: ApiQueryOptions[];
@@ -472,6 +579,19 @@ All operation decorators accept a common options object:
   };
 }
 ```
+
+- `CrudSchema` is `z.ZodType` — every request/response shape is a Zod
+  (Standard Schema) schema.
+- `validation` merges into the `StandardSchemaValidationPipe` used for
+  `@CrudBody()` schemas. Available keys: `transform`,
+  `validateCustomDecorators`, `validateOptions`, `errorHttpStatusCode`,
+  `exceptionFactory`. Pass `false` to disable validation for the body
+  (it is still bound, just unvalidated).
+- `response.serialization` is `CrudSerializationOptionsInterface`:
+  `{ resource?: CrudSchema; paginated?: CrudSchema }` — schema
+  overrides for response serialization.
+- `methodName` targets (or names) a specific controller method in
+  hybrid/generated mode, allowing multiple operations of the same type.
 
 ### Delete/Restore Response Behavior
 
@@ -501,8 +621,8 @@ Method-level settings override controller-level defaults.
 | `@CrudExclude(columns)` | Blacklist columns from queries |
 | `@CrudPersist(columns)` | Always include these columns in select |
 | `@CrudCache(seconds)` | Cache duration (pass `false` to disable) |
-| `@CrudSerialize(options)` | Serialization options (class-transformer) |
-| `@CrudValidate(options)` | Validation pipe options |
+| `@CrudSerialize(options)` | Serialization schema overrides (`{ resource?, paginated? }`) |
+| `@CrudValidate(options)` | `StandardSchemaValidationPipeOptions` or `false` to disable |
 | `@CrudReturnDeleted(bool)` | Return entity body on delete |
 | `@CrudReturnRestored(bool)` | Return entity body on restore |
 
@@ -512,8 +632,8 @@ Method-level settings override controller-level defaults.
 @CrudController({
   path: 'photos',
   entity: 'photo',
-  request: { body: PhotoDto },
-  response: { resource: PhotoDto, paginated: PhotoPaginatedDto },
+  request: { body: photoSchema },
+  response: { resource: photoSchema, paginated: photoPaginatedSchema },
 })
 export class PhotoController {
   @CrudList()
@@ -521,13 +641,13 @@ export class PhotoController {
   @CrudMaxLimit(100)
   @CrudSort([{ field: 'createdAt', order: 'DESC' }])
   @CrudAllow(['name', 'description', 'createdAt'])
-  async list(@Ctx() ctx: CrudContextInterface<PhotoEntity>) {
+  async list(@Ctx(CrudCtx) ctx: CrudContextInterface<PhotoEntity>) {
     return this.resolver.list(ctx);
   }
 
   @CrudDelete()
   @CrudReturnDeleted(true)
-  async delete(@Ctx() ctx: CrudContextInterface<PhotoEntity>) {
+  async delete(@Ctx(CrudCtx) ctx: CrudContextInterface<PhotoEntity>) {
     return this.resolver.delete(ctx);
   }
 }
@@ -620,31 +740,72 @@ List operations return a paginated response:
 
 ```ts
 interface CrudResponsePaginatedInterface<T> {
-  data: T[];        // Items on current page
-  limit: number;    // Items per page
-  count: number;    // Items on current page (data.length)
-  total: number;    // Total items across all pages
-  page: number;     // Current page (1-indexed)
+  data: T[];         // Items on current page
+  limit: number;     // Items per page
+  count: number;     // Items on current page (data.length)
+  total: number;     // Total items across all pages
+  page: number;      // Current page (1-indexed)
   pageCount: number; // Total number of pages
+  metrics?: CrudResponseMetrics; // Fetch metrics (federated responses only)
+}
+
+interface CrudResponseMetrics {
+  totalFetched: number; // Rows fetched
+  totalValid: number;   // Rows that passed post-fetch checks
+  fetchCalls: number;   // Fetch calls made
+  duration: number;     // Fetch duration in milliseconds
 }
 ```
 
-### Creating a Paginated DTO
+Both interfaces are exported from `@concepta/nestjs-crud`. `metrics` is only
+present on federated responses.
 
-Extend `CrudResponsePaginatedDto` and override the `data` property with your
-resource DTO type:
+### Paginated Response Schema
+
+Wrap your resource schema with the `paginatedSchema` factory and register it
+as a named OpenAPI component:
 
 ```ts
-import { Exclude, Expose, Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
-import { CrudResponsePaginatedDto } from '@concepta/nestjs-crud';
+import { withNamedComponent } from '@concepta/nestjs-core';
+import { paginatedSchema } from '@concepta/nestjs-crud';
 
-@Exclude()
-export class PhotoPaginatedDto extends CrudResponsePaginatedDto<PhotoDto> {
-  @ApiProperty({ type: [PhotoDto], isArray: true })
-  @Expose()
-  @Type(() => PhotoDto)
-  data: PhotoDto[] = [];
+export const photoPaginatedSchema = withNamedComponent(
+  paginatedSchema(photoSchema),
+  'PhotoPaginated',
+);
+```
+
+`paginatedSchema(itemSchema)` produces the `{ data, limit, count, total,
+page, pageCount }` envelope with `data: z.array(itemSchema)`. It
+intentionally omits `metrics`.
+
+### Batch Create Schema
+
+`createBatchSchema(itemSchema)` builds the request body schema for
+`Operation.CreateBatch` — an object with a `bulk` array requiring at least
+one item (`.min(1)`):
+
+```ts
+import { withOpenApi } from '@concepta/nestjs-core';
+import { createBatchSchema } from '@concepta/nestjs-crud';
+
+export const photoCreateBatchSchema = withOpenApi(
+  createBatchSchema(photoCreateSchema),
+);
+
+// Response shape for CreateBatch — a bare array of created resources.
+// Schema serialization validates the response verbatim, so the batch
+// operation must supply an array schema via response.serialization.resource.
+export const photoCreateBatchResponseSchema = z.array(photoSchema);
+```
+
+Pass them on the CreateBatch operation:
+
+```ts
+{
+  operation: Operation.CreateBatch,
+  request: { bodyBatch: photoCreateBatchSchema },
+  response: { serialization: { resource: photoCreateBatchResponseSchema } },
 }
 ```
 
@@ -652,39 +813,44 @@ export class PhotoPaginatedDto extends CrudResponsePaginatedDto<PhotoDto> {
 
 ### Serialization
 
-The CRUD module uses `class-transformer` with an exclude-all strategy. Only
-properties marked with `@Expose()` are included in responses.
+Responses are serialized by parsing them through the resolved Zod response
+schema. `CrudSerializeInterceptor` picks the paginated schema
+(`response.paginated` / `serialization.paginated`) for paginated
+payloads and the resource schema (`response.resource` /
+`serialization.resource`) otherwise, then runs the schema's `.parse()` on the
+outgoing payload.
 
-```ts
-@Exclude()
-export class PhotoDto {
-  @Expose() @IsUUID()
-  id: string = '';
+Serialization is fail-closed:
 
-  @Expose() @IsString()
-  name: string = '';
+- Keys not declared in the schema are stripped — undeclared fields never
+  leak into responses.
+- If the payload does not satisfy the schema, parsing throws instead of
+  returning a partially-valid response.
+- If no response schema resolves at all, the interceptor throws a
+  `CrudException` rather than returning unserialized data.
 
-  // Not @Expose() — excluded from response
-  internalField: string = '';
-}
-```
-
-`CrudSerializeInterceptor` applies the transform automatically. The resource
-DTO is resolved from `@CrudResponseResource()` (or the controller-level
-`response.resource`).
+Operation-level `response.serialization` (`{ resource, paginated }`)
+overrides the controller-level `response.resource` / `response.paginated`
+schemas, per route.
 
 ### Validation
 
-Request bodies are validated via `class-validator`. The DTO specified in
-`request.body` is passed to NestJS's `ValidationPipe`.
+Request bodies declared with `@CrudBody({ schema })` are validated by a
+per-parameter `StandardSchemaValidationPipe` running the Zod schema. The
+default `exceptionFactory` prefixes each issue message with its field path,
+producing field-identifying `400 Bad Request` messages such as:
 
-Override validation options per-route:
+```text
+name: Too big: expected string to have <=10 characters
+```
+
+Override pipe options per-route via `request.validation`:
 
 ```ts
 @CrudCreate({
   request: {
-    body: PhotoCreateDto,
-    validation: { whitelist: true, forbidNonWhitelisted: true },
+    body: photoCreateSchema,
+    validation: { errorHttpStatusCode: 422 },
   },
 })
 ```
@@ -692,8 +858,48 @@ Override validation options per-route:
 Or with the route decorator:
 
 ```ts
-@CrudValidate({ whitelist: true, forbidNonWhitelisted: true })
+@CrudValidate({ errorHttpStatusCode: 422 })
 ```
+
+Available options (`StandardSchemaValidationPipeOptions` from
+`@nestjs/common`): `transform`, `validateCustomDecorators`,
+`validateOptions`, `errorHttpStatusCode`, `exceptionFactory`. The
+class-validator era options (`whitelist`, `forbidNonWhitelisted`, etc.) no
+longer exist — undeclared keys are handled by the schemas themselves.
+
+Pass `validation: false` (or `@CrudValidate(false)`) to disable validation
+for that body — the parameter is still bound, just unvalidated.
+
+In hand-written controllers, the validation schema resolves from
+`@CrudBody({ schema })` first, falling back to the operation decorator's own
+`request.body`/`bodyBatch`; the controller-level `request.body` default is
+never used for validation. Builder-generated and hybrid-generated methods
+derive `@CrudBody({ schema })` automatically from `operations[].request.body`.
+
+## OpenAPI Documents
+
+Pass the `standardSchemaConverter` from `@concepta/nestjs-core` when
+creating the swagger document so Zod schemas are converted to OpenAPI
+component schemas:
+
+```ts
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { standardSchemaConverter } from '@concepta/nestjs-core';
+
+const doc = SwaggerModule.createDocument(
+  app,
+  new DocumentBuilder().setTitle('API').setVersion('1.0').build(),
+  { standardSchemaConverter },
+);
+```
+
+Schemas wrapped with `withNamedComponent(schema, 'Photo')` register under
+bare component ids (`Photo`, `PhotoPaginated`); schemas wrapped with
+`withOpenApi(schema)` are documented inline (typical for request bodies).
+
+Per-operation `request.body`/`bodyBatch` overrides take precedence over the
+controller-level default in the generated docs, so PATCH/PUT document their
+own narrower schemas.
 
 ## Resolvers
 
@@ -781,7 +987,10 @@ Or with the decorator:
 ```ts
 @CrudCreate()
 @CrudCommandHandler(CustomCreateHandler)
-async create(@Ctx() ctx, @CrudBody() dto) { ... }
+async create(
+  @Ctx(CrudCtx) ctx: CrudContextInterface<PhotoEntity>,
+  @CrudBody({ schema: photoCreateSchema }) dto: PhotoCreatable,
+) { ... }
 ```
 
 ## Specifications and Hooks
@@ -880,7 +1089,7 @@ export class PhotoController { ... }
 export class PhotoController {
   @CrudDelete()
   @UseHooks({ hook: AdminAuditHook, spec: CrudSpec.isDelete() })
-  async delete(@Ctx() ctx) { ... }
+  async delete(@Ctx(CrudCtx) ctx) { ... }
 }
 ```
 
@@ -943,4 +1152,4 @@ Hook method decorators from `@concepta/nestjs-repository`:
 
 | Import Path | Contents |
 | --- | --- |
-| `@concepta/nestjs-crud` | Module, adapter, decorators, resolvers, CQRS queries/commands/handlers, DTOs, specifications, exceptions |
+| `@concepta/nestjs-crud` | Module, adapter, decorators, resolvers, CQRS queries/commands/handlers, schema factories (`paginatedSchema`, `createBatchSchema`), specifications, exceptions |

@@ -9,7 +9,7 @@ entries keyed by `key`, `type`, and `assigneeId` with optional TTL expiration.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-cache)](https://www.npmjs.com/package/@concepta/nestjs-cache)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-cache%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -21,8 +21,9 @@ entries keyed by `key`, `type`, and `assigneeId` with optional TTL expiration.
 - [Queries](#queries)
 - [Domain Events](#domain-events)
 - [Cache Aggregate](#cache-aggregate)
+- [Expiration Policy](#expiration-policy)
 - [Repository](#repository)
-- [DTOs](#dtos)
+- [Schemas](#schemas)
 - [Exceptions](#exceptions)
 - [HTTP Controller with CRUD Module](#http-controller-with-crud-module)
 - [Entry Points](#entry-points)
@@ -35,17 +36,19 @@ entries keyed by `key`, `type`, and `assigneeId` with optional TTL expiration.
 yarn add @concepta/nestjs-cache
 ```
 
+This package is **ESM-only** and targets **NestJS 12 (alpha)** on
+**Node >= 22.12**.
+
 ### Dependencies
 
 `@nestjs/cqrs` is a direct dependency (used for `CommandBus`, `QueryBus`,
-`EventBus`).
+`EventBus`). `zod` is a direct dependency — request/response shapes are
+Zod v4 (Standard Schema) schemas.
 
 ### Peer Dependencies
 
 | Package | Required | Notes |
 | --- | --- | --- |
-| `class-transformer` | Yes | DTO serialization |
-| `class-validator` | Yes | DTO validation |
 | `typeorm` | No | Only if using the TypeORM repository adapter |
 | `@concepta/nestjs-crud` | No | Only if using the HTTP gateway layer |
 | `@concepta/typeorm-seeding` | No | Only for database seeding |
@@ -160,7 +163,7 @@ Application (Commands / Queries)
   |
 Domain (Cache aggregate, Events)
   |
-Infrastructure (Repository, Mapper, DTOs, Config)
+Infrastructure (Repository, Mapper, Schemas, Config)
 ```
 
 - **Domain** -- `Cache` aggregate extending `DomainAggregate<CacheInterface>`,
@@ -168,7 +171,7 @@ Infrastructure (Repository, Mapper, DTOs, Config)
 - **Application** -- 7 commands and 3 queries dispatched via `@nestjs/cqrs`
 - **Infrastructure** -- `CacheRepository` with ctx-first signatures,
   `CacheMapper` for entity-to-aggregate conversion (DI-injected),
-  `CacheRepositoryResolver` for multi-tenancy, DTOs
+  `CacheRepositoryResolver` for multi-tenancy, Zod schemas
 - **Gateway** -- HTTP request handlers bridging `@concepta/nestjs-crud`
   to domain commands
 
@@ -328,6 +331,29 @@ cache.extend(eventContext, expirationDate);
 const plain = cache.toPlain();
 ```
 
+## Expiration Policy
+
+`CacheExpirationPolicy` (exported with its `CacheExpirationSettings`
+interface) converts `expiresIn` time spans into concrete expiration dates.
+It is provided in DI from the module settings, so the module's default
+`expiresIn` is used when a request does not supply one.
+
+```ts
+interface CacheExpirationSettings {
+  expiresIn?: string | null;
+}
+
+class CacheExpirationPolicy {
+  constructor(settings?: CacheExpirationSettings);
+  get defaultExpiresIn(): string | null;
+  resolveExpirationDate(expiresIn?: string | null): Date | null;
+}
+```
+
+`resolveExpirationDate()` resolves the given time span (falling back to the
+default) into a `Date`, or `null` when no expiration applies. An invalid
+time span throws `CacheInvalidExpiredDateException`.
+
 ## Repository
 
 `CacheRepository` uses a ctx-first calling convention for multi-tenancy
@@ -357,16 +383,23 @@ const cache = await cacheRepo.get(ctx, id);
 `CacheRepositoryResolver` looks up the repository by entity key. Entity keys
 are registered via `CacheModule.forFeature()`.
 
-## DTOs
+## Schemas
 
-| DTO | Fields |
-| --- | --- |
-| `CacheCreateDto` | key, data, type, expiresIn, assigneeId |
-| `CacheUpdateDto` | data, expiresIn |
-| `CacheDto` | Full entity (key, data, type, expiresIn, assigneeId, expirationDate, + common entity fields) |
+Request and response shapes are Zod v4 (Standard Schema) schemas.
+
+| Schema | Entry Point | Fields |
+| --- | --- | --- |
+| `cacheCreateSchema` | main | key, type, assigneeId, data (optional, nullable), expiresIn (optional, nullable) |
+| `cacheUpdateSchema` | main | data (optional, nullable), expiresIn (optional, nullable) |
+| `cacheSchema` | main | Full entity response (key, type, data, assigneeId, expirationDate, + common entity fields) |
+| `cachePaginatedSchema` | `optional/crud` | Paginated envelope wrapping `cacheSchema` |
 
 The `expiresIn` field accepts time span strings: `'60'`, `'2 days'`, `'10h'`,
 `'7d'`.
+
+`expiresIn` is request-only: the response schema `cacheSchema` intentionally
+omits it. The domain converts `expiresIn` into the computed `expirationDate`,
+which is what persisted entities and responses carry.
 
 ## Exceptions
 
@@ -383,20 +416,29 @@ Use `@concepta/nestjs-crud` to expose cache operations as REST endpoints. The
 gateway request/handler classes are exported from
 `@concepta/nestjs-cache/optional/crud`.
 
+The CRUD gateway needs the surrounding modules registered as well:
+`CqrsModule.forRoot()`, `CrudModule.forRoot()` (with `CrudCqrsResolver` as
+the default resolver), `CoreModule.forRoot()` (context overlays), and a
+`RepositoryModule.forFeature()` mapping the entity key to your cache entity
+class.
+
 ```ts
 import { Module } from '@nestjs/common';
-import { Operation } from '@concepta/nestjs-core';
-import { CacheInterface } from '@concepta/nestjs-cache';
+import { CqrsModule } from '@nestjs/cqrs';
+import { CoreModule, Operation } from '@concepta/nestjs-core';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
+import { RepositoryModule } from '@concepta/nestjs-repository';
+import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 import {
+  CacheInterface,
   CacheModule,
-  CacheCreateDto,
-  CacheUpdateDto,
-  CacheDto,
   CacheNamespace,
+  cacheCreateSchema,
+  cacheUpdateSchema,
+  cacheSchema,
 } from '@concepta/nestjs-cache';
 import {
-  CachePaginatedDto,
+  cachePaginatedSchema,
   CreateCacheRequest,
   CreateCacheRequestHandler,
   UpdateCacheRequest,
@@ -413,6 +455,16 @@ import {
 
 @Module({
   imports: [
+    CqrsModule.forRoot(),
+    RepositoryModule.forRoot({}),
+    CrudModule.forRoot({
+      defaultResolver: CrudCqrsResolver,
+    }),
+    CoreModule.forRoot(),
+    RepositoryModule.forFeature({
+      module: TypeOrmRepositoryModule,
+      entities: [{ key: 'userCache', entity: UserCacheEntity }],
+    }),
     CacheModule.forFeature(['userCache']),
     CrudModule.forFeature<CacheInterface>({
       crud: {
@@ -422,10 +474,10 @@ import {
           resolver: CrudCqrsResolver,
           transactional: true,
           extraDecorators: [CacheNamespace({ name: 'userCache' })],
-          request: { body: CacheCreateDto },
+          request: { body: cacheCreateSchema },
           response: {
-            resource: CacheDto,
-            paginated: CachePaginatedDto,
+            resource: cacheSchema,
+            paginated: cachePaginatedSchema,
           },
         },
         operations: [
@@ -441,19 +493,19 @@ import {
           },
           {
             operation: Operation.Create,
-            request: { body: CacheCreateDto },
+            request: { body: cacheCreateSchema },
             command: CreateCacheRequest,
             commandHandler: CreateCacheRequestHandler,
           },
           {
             operation: Operation.Update,
-            request: { body: CacheUpdateDto },
+            request: { body: cacheUpdateSchema },
             command: UpdateCacheRequest,
             commandHandler: UpdateCacheRequestHandler,
           },
           {
             operation: Operation.Replace,
-            request: { body: CacheCreateDto },
+            request: { body: cacheCreateSchema },
             command: ReplaceCacheRequest,
             commandHandler: ReplaceCacheRequestHandler,
           },
@@ -479,16 +531,29 @@ true` to wrap each operation in a database transaction.
 in a parent module for `forFeature()` to resolve its dependencies.
 
 This is a minimal example. `CrudModule.forFeature()` supports additional
-options including custom resolvers, route guards, serialization groups,
-and per-operation overrides. See the `@concepta/nestjs-crud` documentation
-for the full API.
+options including custom resolvers, route guards, schema-based per-operation
+serialization overrides, and per-operation request overrides. See the
+`@concepta/nestjs-crud` documentation for the full API.
+
+### OpenAPI
+
+Create the swagger document with the `standardSchemaConverter` from
+`@concepta/nestjs-core`:
+
+```ts
+SwaggerModule.createDocument(app, config, { standardSchemaConverter });
+```
+
+The cache schemas register as bare OpenAPI component ids: `Cache`
+(`cacheSchema`) and `CachePaginated` (`cachePaginatedSchema`). Request body
+schemas are documented inline.
 
 ## Entry Points
 
 | Import Path | Contents |
 | --- | --- |
-| `@concepta/nestjs-cache` | Module, aggregate, commands, queries, events, handlers, DTOs, repository, exceptions, domain interfaces |
-| `@concepta/nestjs-cache/optional/crud` | CRUD request/handler classes, paginated DTO |
+| `@concepta/nestjs-cache` | Module, aggregate, commands, queries, events, handlers, schemas, expiration policy, repository, exceptions, domain interfaces |
+| `@concepta/nestjs-cache/optional/crud` | CRUD request/handler classes, paginated schema |
 | `@concepta/nestjs-cache/optional/typeorm` | `CacheSqliteEntity`, `CachePostgresEntity` |
 | `@concepta/nestjs-cache/optional/seeding` | `CacheFactory` |
 

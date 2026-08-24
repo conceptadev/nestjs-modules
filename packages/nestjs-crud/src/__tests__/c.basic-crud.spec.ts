@@ -1,13 +1,12 @@
-import { isUUID } from 'class-validator';
 import request from 'supertest';
 import { DataSource } from 'typeorm';
+import { z } from 'zod';
 
 import { Inject, INestApplication } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 
-import { ExceptionsFilter, Ctx } from '@concepta/nestjs-core';
+import { Ctx } from '@concepta/nestjs-core';
 import { RepositoryModule, Transactional } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
@@ -51,14 +50,15 @@ import {
   CRUD_TEST_DEVICE_ENTITY_NAME,
 } from '../__fixtures__/crud-test.constants.js';
 import { CompanyEntity } from '../__fixtures__/typeorm/company/company.entity.js';
-import { CompanyCreateBatchDto } from '../__fixtures__/typeorm/company/dto/company-create-batch.dto.js';
-import { CompanyCreateDto } from '../__fixtures__/typeorm/company/dto/company-create.dto.js';
-import { CompanyPaginatedDto } from '../__fixtures__/typeorm/company/dto/company-paginated.dto.js';
-import { CompanyUpdateDto } from '../__fixtures__/typeorm/company/dto/company-update.dto.js';
-import { CompanyDto } from '../__fixtures__/typeorm/company/dto/company.dto.js';
+import { companyCreateBatchResponseSchema } from '../__fixtures__/typeorm/company/schemas/company-create-batch-response.schema.js';
+import { companyCreateBatchSchema } from '../__fixtures__/typeorm/company/schemas/company-create-batch.schema.js';
+import { companyCreateSchema } from '../__fixtures__/typeorm/company/schemas/company-create.schema.js';
+import { companyPaginatedSchema } from '../__fixtures__/typeorm/company/schemas/company-paginated.schema.js';
+import { companyUpdateSchema } from '../__fixtures__/typeorm/company/schemas/company-update.schema.js';
+import { companySchema } from '../__fixtures__/typeorm/company/schemas/company.schema.js';
 import { DeviceEntity } from '../__fixtures__/typeorm/device/device.entity.js';
-import { DeviceCreateDto } from '../__fixtures__/typeorm/device/dto/device-create.dto.js';
-import { DeviceDto } from '../__fixtures__/typeorm/device/dto/device.dto.js';
+import { deviceCreateSchema } from '../__fixtures__/typeorm/device/schemas/device-create.schema.js';
+import { deviceSchema } from '../__fixtures__/typeorm/device/schemas/device.schema.js';
 import { ormSqliteConfig } from '../__fixtures__/typeorm/orm.sqlite.config.js';
 import { ProjectEntity } from '../__fixtures__/typeorm/project/project.entity.js';
 import { Seeds } from '../__fixtures__/typeorm/seeds.js';
@@ -137,8 +137,8 @@ describe('#crud-typeorm', () => {
       path: 'companies0',
       entity: CRUD_TEST_COMPANY_ENTITY_NAME,
       adapter: CrudAdapter,
-      request: { body: CompanyDto },
-      response: { resource: CompanyDto, paginated: CompanyPaginatedDto },
+      request: { body: companySchema },
+      response: { resource: companySchema, paginated: companyPaginatedSchema },
     })
     @CrudLimit(3)
     class CompaniesController0 {
@@ -168,7 +168,6 @@ describe('#crud-typeorm', () => {
         ],
         controllers: [CompaniesController0],
         providers: [
-          { provide: APP_FILTER, useClass: ExceptionsFilter },
           createCrudAdapterProvider({
             entity: CRUD_TEST_COMPANY_ENTITY_NAME,
             adapter: CrudAdapter,
@@ -216,8 +215,8 @@ describe('#crud-typeorm', () => {
       path: 'companies',
       entity: CRUD_TEST_COMPANY_ENTITY_NAME,
       adapter: CrudAdapter,
-      request: { body: CompanyDto },
-      response: { resource: CompanyDto, paginated: CompanyPaginatedDto },
+      request: { body: companySchema },
+      response: { resource: companySchema, paginated: companyPaginatedSchema },
     })
     class CompaniesController {
       constructor(
@@ -246,7 +245,6 @@ describe('#crud-typeorm', () => {
         ],
         controllers: [CompaniesController],
         providers: [
-          { provide: APP_FILTER, useClass: ExceptionsFilter },
           createCrudAdapterProvider({
             entity: CRUD_TEST_COMPANY_ENTITY_NAME,
             adapter: CrudAdapter,
@@ -334,7 +332,7 @@ describe('#crud-typeorm', () => {
       entity: CRUD_TEST_COMPANY_ENTITY_NAME,
       adapter: CrudAdapter,
       request: {
-        body: CompanyDto,
+        body: companySchema,
         params: {
           id: {
             field: 'id',
@@ -343,7 +341,7 @@ describe('#crud-typeorm', () => {
           },
         },
       },
-      response: { resource: CompanyDto, paginated: CompanyPaginatedDto },
+      response: { resource: companySchema, paginated: companyPaginatedSchema },
     })
     class CompaniesController {
       constructor(
@@ -364,7 +362,8 @@ describe('#crud-typeorm', () => {
       @CrudCreate({ command: CompanyOps.CrudCreateCommand })
       create(
         @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
-        @CrudBody() dto: CompanyCreateDto,
+        @CrudBody({ schema: companyCreateSchema })
+        dto: z.infer<typeof companyCreateSchema>,
       ) {
         return this.crudResolver.create(context, dto);
       }
@@ -372,10 +371,14 @@ describe('#crud-typeorm', () => {
       @CrudCreateBatch({
         path: 'bulk',
         command: CompanyOps.CrudCreateBatchCommand,
+        response: {
+          serialization: { resource: companyCreateBatchResponseSchema },
+        },
       })
       createBatch(
         @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
-        @CrudBody() dto: CompanyCreateBatchDto,
+        @CrudBody({ schema: companyCreateBatchSchema })
+        dto: z.infer<typeof companyCreateBatchSchema>,
       ) {
         return this.crudResolver.createBatch(context, dto);
       }
@@ -383,7 +386,8 @@ describe('#crud-typeorm', () => {
       @CrudUpdate({ command: CompanyOps.CrudUpdateCommand })
       update(
         @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
-        @CrudBody() dto: CompanyUpdateDto,
+        @CrudBody({ schema: companyUpdateSchema })
+        dto: z.infer<typeof companyUpdateSchema>,
       ) {
         return this.crudResolver.update(context, dto);
       }
@@ -391,7 +395,8 @@ describe('#crud-typeorm', () => {
       @CrudReplace({ command: CompanyOps.CrudReplaceCommand })
       replace(
         @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
-        @CrudBody() dto: CompanyCreateDto,
+        @CrudBody({ schema: companyCreateSchema })
+        dto: z.infer<typeof companyCreateSchema>,
       ) {
         return this.crudResolver.replace(context, dto);
       }
@@ -446,7 +451,7 @@ describe('#crud-typeorm', () => {
       entity: CRUD_TEST_DEVICE_ENTITY_NAME,
       adapter: CrudAdapter,
       request: {
-        body: DeviceDto,
+        body: deviceSchema,
         params: {
           deviceKey: {
             field: 'deviceKey',
@@ -455,7 +460,7 @@ describe('#crud-typeorm', () => {
           },
         },
       },
-      response: { resource: DeviceDto },
+      response: { resource: deviceSchema },
     })
     class DevicesController {
       constructor(
@@ -468,7 +473,8 @@ describe('#crud-typeorm', () => {
       })
       create(
         @Ctx(CrudCtx) context: CrudContextInterface<DeviceEntity>,
-        @CrudBody() dto: DeviceCreateDto,
+        @CrudBody({ schema: deviceCreateSchema })
+        dto: z.infer<typeof deviceCreateSchema>,
       ) {
         return this.crudResolver.create(context, dto);
       }
@@ -491,7 +497,6 @@ describe('#crud-typeorm', () => {
         ],
         controllers: [CompaniesController, DevicesController],
         providers: [
-          { provide: APP_FILTER, useClass: ExceptionsFilter },
           createCrudAdapterProvider({
             entity: CRUD_TEST_COMPANY_ENTITY_NAME,
             adapter: CrudAdapter,
@@ -873,7 +878,7 @@ describe('#crud-typeorm', () => {
           deviceKey: expect.any(String),
           description: 'Test device',
         });
-        expect(isUUID(res.body.deviceKey)).toBe(true);
+        expect(z.uuid().safeParse(res.body.deviceKey).success).toBe(true);
       });
     });
   });
@@ -892,12 +897,12 @@ describe('#crud-typeorm', () => {
       entity: CRUD_TEST_COMPANY_ENTITY_NAME,
       adapter: CrudAdapter,
       request: {
-        body: CompanyDto,
+        body: companySchema,
         params: {
           id: { field: 'id', type: 'number', primary: true },
         },
       },
-      response: { resource: CompanyDto },
+      response: { resource: companySchema },
     })
     class TxCompaniesController {
       constructor(
@@ -909,7 +914,8 @@ describe('#crud-typeorm', () => {
       @Transactional()
       async create(
         @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
-        @CrudBody() dto: CompanyCreateDto,
+        @CrudBody({ schema: companyCreateSchema })
+        dto: z.infer<typeof companyCreateSchema>,
       ) {
         // Record whether trx was set by the interceptor
         trxWasSet = (context as unknown as { trx: unknown }).trx !== null;
@@ -923,7 +929,8 @@ describe('#crud-typeorm', () => {
       @Transactional()
       async createWithError(
         @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
-        @CrudBody() dto: CompanyCreateDto,
+        @CrudBody({ schema: companyCreateSchema })
+        dto: z.infer<typeof companyCreateSchema>,
       ) {
         await this.crudResolver.create(context, dto);
         // Throw error after create to trigger rollback
@@ -933,11 +940,26 @@ describe('#crud-typeorm', () => {
       @CrudCreate({
         path: 'multiple-with-error',
         command: CompanyOps.CrudCreateCommand,
+        // This handler returns { first, second, third } (three whole
+        // companies), not a single companySchema-shaped resource, so the
+        // controller-level response.resource schema doesn't apply here —
+        // give this operation its own matching response schema, same
+        // reasoning as the CreateBatch array response above.
+        response: {
+          serialization: {
+            resource: z.object({
+              first: companySchema,
+              second: companySchema,
+              third: companySchema,
+            }),
+          },
+        },
       })
       @Transactional()
       async createMultipleWithError(
         @Ctx(CrudCtx) context: CrudContextInterface<CompanyEntity>,
-        @CrudBody() dto: CompanyCreateDto,
+        @CrudBody({ schema: companyCreateSchema })
+        dto: z.infer<typeof companyCreateSchema>,
       ) {
         // Create first entity - get back the created entity with ID
         const first = await this.crudResolver.create<CompanyEntity>(context, {
@@ -985,7 +1007,6 @@ describe('#crud-typeorm', () => {
         ],
         controllers: [TxCompaniesController],
         providers: [
-          { provide: APP_FILTER, useClass: ExceptionsFilter },
           createCrudAdapterProvider({
             entity: CRUD_TEST_COMPANY_ENTITY_NAME,
             adapter: CrudAdapter,

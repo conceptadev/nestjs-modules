@@ -3,9 +3,9 @@ import { ModuleRef } from '@nestjs/core';
 
 import { DeepPartial } from '@concepta/nestjs-core';
 
-import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface.js';
-import { CrudResponsePaginatedInterface } from '../dtos/interfaces/crud-response-paginated.interface.js';
 import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface.js';
+import { CrudCreateBatchInterface } from '../interfaces/crud-create-batch.interface.js';
+import { CrudResponsePaginatedInterface } from '../interfaces/crud-response-paginated.interface.js';
 
 import { CrudResolverInterface } from './interfaces/crud-resolver.interface.js';
 

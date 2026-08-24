@@ -1,10 +1,6 @@
-import { type ClassTransformOptions } from 'class-transformer';
-
-import { type Type } from '@nestjs/common';
+import { type CrudSchema } from '../../crud.types.js';
 
 export interface CrudSerializationOptionsInterface {
-  type?: Type;
-  paginatedType?: Type;
-  toInstanceOptions?: ClassTransformOptions;
-  toPlainOptions?: ClassTransformOptions;
+  resource?: CrudSchema;
+  paginated?: CrudSchema;
 }

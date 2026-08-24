@@ -10,7 +10,7 @@ password validation).
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-user)](https://www.npmjs.com/package/@concepta/nestjs-user)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-user%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -23,7 +23,7 @@ password validation).
 - [Domain Events](#domain-events)
 - [Password Management](#password-management)
 - [CRUD Gateway (Optional)](#crud-gateway-optional)
-- [DTOs](#dtos)
+- [Schemas](#schemas)
 - [Exceptions](#exceptions)
 - [Environment Variables](#environment-variables)
 - [Seeding (Optional)](#seeding-optional)
@@ -34,6 +34,9 @@ password validation).
 ```sh
 yarn add @concepta/nestjs-user
 ```
+
+This package is ESM-only and requires Node.js >= 22.12 and NestJS 12
+(currently alpha).
 
 ### Dependencies
 
@@ -49,10 +52,8 @@ yarn add @concepta/nestjs-user
 
 | Package | Required | Notes |
 | --- | --- | --- |
-| `class-transformer` | Yes | DTO serialization |
-| `class-validator` | Yes | Request body validation |
 | `typeorm` | No | Only when using TypeORM repository driver |
-| `@concepta/nestjs-crud` | No | Only when using the CRUD HTTP gateway |
+| `@concepta/nestjs-crud` | Yes | The main entry imports `paginatedSchema` from it |
 | `@concepta/typeorm-seeding` | No | Only when using database seeding |
 | `@faker-js/faker` | No | Only when using the seed factory |
 
@@ -67,7 +68,12 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
-import { PasswordModule } from '@concepta/nestjs-password';
+import {
+  CreatePasswordCommand,
+  PasswordModule,
+  ValidateCurrentPasswordCommand,
+  ValidatePasswordHistoryCommand,
+} from '@concepta/nestjs-password';
 import { UserModule } from '@concepta/nestjs-user';
 
 @Module({
@@ -88,6 +94,13 @@ import { UserModule } from '@concepta/nestjs-user';
       entities: {
         user: 'user',
         credentials: 'user-credentials',
+      },
+      ports: {
+        password: {
+          createCommand: CreatePasswordCommand,
+          validateCurrentCommand: ValidateCurrentPasswordCommand,
+          validateHistoryCommand: ValidatePasswordHistoryCommand,
+        },
       },
       settings: {
         password: {
@@ -128,6 +141,9 @@ interface UserExtrasInterface {
 
 interface UserOptionsInterface {
   settings?: UserSettingsInterface;
+  ports?: {
+    password?: UserPasswordPortSettings;
+  };
 }
 
 interface UserSettingsInterface {
@@ -136,11 +152,30 @@ interface UserSettingsInterface {
     requireCurrent?: boolean;  // Require current password on update (default: false)
   };
 }
+
+interface UserPasswordPortSettings {
+  createCommand: Type<CreatePasswordCommandInterface>;
+  validateCurrentCommand: Type<ValidateCurrentPasswordCommandInterface>;
+  validateHistoryCommand?: Type<ValidatePasswordHistoryCommandInterface>;
+}
 ```
+
+The `ports.password` commands are dispatched by `UserPasswordPort` (exported
+from the main entry along with `CreatePasswordCommandInterface`,
+`ValidateCurrentPasswordCommandInterface`, and
+`ValidatePasswordHistoryCommandInterface`) to hash and validate passwords.
+`@concepta/nestjs-password` ships compatible commands
+(`CreatePasswordCommand`, `ValidateCurrentPasswordCommand`,
+`ValidatePasswordHistoryCommand`), or you can supply your own implementations
+of the command interfaces. When `validateHistoryCommand` is omitted, history
+validation always passes.
 
 When `entities.credentials` is omitted, credential-related providers
 (`UserCredentialsService`, password policy, credential command handlers)
-are not registered.
+are not registered. When `entities.credentials` IS configured,
+`ports.password` is required — the module throws at bootstrap
+(`UserModule: ports.password is required when credentials entity is
+configured`) if it is missing.
 
 ## Architecture Overview
 
@@ -151,7 +186,7 @@ Application (Commands / Queries / Listeners)
   |
 Domain (User + UserCredentials aggregates, Events, Services, Policies)
   |
-Infrastructure (Repositories, Mappers, DTOs, Config)
+Infrastructure (Repositories, Mappers, Schemas, Config)
 ```
 
 - **Domain** -- `User` aggregate extending `DomainAggregate<UserInterface>`,
@@ -161,7 +196,7 @@ Infrastructure (Repositories, Mappers, DTOs, Config)
 - **Application** -- 7 commands and 4 queries dispatched via `@nestjs/cqrs`
 - **Infrastructure** -- `UserRepository` and `UserCredentialsRepository` with
   ctx-first signatures, `UserMapper` and `UserCredentialsMapper` for
-  entity-to-aggregate conversion (DI-injected), DTOs, config
+  entity-to-aggregate conversion (DI-injected), Zod schemas, config
 - **Gateway** -- HTTP request handlers bridging `@concepta/nestjs-crud`
   to domain commands (optional)
 
@@ -236,6 +271,8 @@ on transaction success and uncommitted on rollback.
 | --- | --- | --- | --- |
 | `SetUserPasswordCommand` | `ctx, userId, password` | `void` | Set initial password (fails if active credentials exist) |
 | `UpdateUserPasswordCommand` | `ctx, userId, passwordDto` | `void` | Update password with policy enforcement |
+| `CreateUserCredentialCommand` | `ctx, userId, password` | `UserCredentials` | Create credentials for a user (handled by `CreateUserCredentialHandler`) |
+| `UpdateUserCredentialCommand` | `ctx, userId, passwordDto` | `void` | Rotate credentials with policy enforcement (handled by `UpdateUserCredentialHandler`) |
 
 ### Dispatching a Command
 
@@ -336,18 +373,151 @@ import {
 | Delete | `DeleteUserRequest` | `DeleteUserRequestHandler` |
 | Update Password | `UpdateUserPasswordRequest` | `UpdateUserPasswordRequestHandler` |
 
-## DTOs
+### Wiring Example
 
-### Core DTOs
+Schemas are passed to `CrudModule.forFeature()` for request validation and
+response serialization:
 
-| DTO | Extends | Fields |
+```ts
+import { Module } from '@nestjs/common';
+import { Operation } from '@concepta/nestjs-core';
+import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
+import {
+  UserInterface,
+  userCreateSchema,
+  userUpdateSchema,
+  userPasswordUpdateSchema,
+  userSchema,
+  userPaginatedSchema,
+} from '@concepta/nestjs-user';
+import {
+  CreateUserRequest,
+  CreateUserRequestHandler,
+  UpdateUserRequest,
+  UpdateUserRequestHandler,
+  DeleteUserRequest,
+  DeleteUserRequestHandler,
+  UpdateUserPasswordRequest,
+  UpdateUserPasswordRequestHandler,
+  ListUsersRequest,
+  ListUsersRequestHandler,
+  ReadUserRequest,
+  ReadUserRequestHandler,
+} from '@concepta/nestjs-user/optional/crud';
+
+@Module({
+  imports: [
+    // ... CoreModule, CqrsModule, RepositoryModule, PasswordModule,
+    //     UserModule, CrudModule.forRoot({ defaultResolver: CrudCqrsResolver })
+
+    CrudModule.forFeature<UserInterface>({
+      crud: {
+        controller: {
+          entity: 'user',
+          path: 'user',
+          resolver: CrudCqrsResolver,
+          transactional: true,
+          request: { body: userCreateSchema },
+          response: {
+            resource: userSchema,
+            paginated: userPaginatedSchema,
+          },
+        },
+        operations: [
+          {
+            operation: Operation.List,
+            query: ListUsersRequest,
+            queryHandler: ListUsersRequestHandler,
+          },
+          {
+            operation: Operation.Read,
+            query: ReadUserRequest,
+            queryHandler: ReadUserRequestHandler,
+          },
+          {
+            operation: Operation.Create,
+            request: { body: userCreateSchema },
+            command: CreateUserRequest,
+            commandHandler: CreateUserRequestHandler,
+          },
+          {
+            operation: Operation.Update,
+            request: { body: userUpdateSchema },
+            command: UpdateUserRequest,
+            commandHandler: UpdateUserRequestHandler,
+          },
+          {
+            operation: Operation.Delete,
+            command: DeleteUserRequest,
+            commandHandler: DeleteUserRequestHandler,
+          },
+        ],
+      },
+    }),
+
+    // Password update controller (PATCH /password/:id)
+    CrudModule.forFeature({
+      crud: {
+        controller: {
+          entity: 'user',
+          path: 'password',
+          resolver: CrudCqrsResolver,
+          transactional: true,
+          request: { body: userPasswordUpdateSchema },
+          response: { resource: userSchema },
+        },
+        operations: [
+          {
+            operation: Operation.Update,
+            request: { body: userPasswordUpdateSchema },
+            command: UpdateUserPasswordRequest,
+            commandHandler: UpdateUserPasswordRequestHandler,
+          },
+        ],
+      },
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+Builder-generated controllers derive request body validation from
+`operations[].request.body` automatically. If you write a `@CrudController`
+class by hand instead, supply the schema either on the operation decorator's
+`request.body` or explicitly via `@CrudBody({ schema })` — the validation
+pipe resolves the explicit schema first, then the operation's own
+`request.body`.
+
+## Schemas
+
+All schemas are Zod v4 objects (Standard Schema compatible), replacing the
+legacy class-validator DTO classes.
+
+### Core Schemas
+
+| Schema | Entry | Fields |
 | --- | --- | --- |
-| `UserDto` | `DomainAggregateDto` | `id`, `email`, `username`, `active`, `version`, audit fields |
-| `UserCreateDto` | -- | `username`, `email`, optional `active`, optional `password`, `passwordHash`, `passwordSalt` |
-| `UserUpdateDto` | -- | `id`, optional `email`, optional `active` |
-| `UserPasswordDto` | -- | `password` (min 8 chars) |
-| `UserPasswordUpdateDto` | `UserPasswordDto` | `password`, optional `passwordCurrent` |
-| `UserPaginatedDto` | `CrudResponsePaginatedDto<UserDto>` | Paginated user list response |
+| `userSchema` | main | `id`, `email`, `username`, `active`, `version`, audit fields (named OpenAPI component `User`) |
+| `userCreateSchema` | main | `username`, `email` (validated email), optional `active`, optional `password` (plaintext, min 8 chars) |
+| `userUpdateSchema` | main | optional `email` (validated email), optional `active` |
+| `userPasswordSchema` | main | `password` (min 8 chars) |
+| `userPasswordUpdateSchema` | main | `password` (min 8 chars), optional `passwordCurrent` |
+| `userPasswordHashSchema` | main | `passwordHash` (kept for API parity; not wired to any CRUD operation) |
+| `userPaginatedSchema` | main (also re-exported from `optional/crud`) | Paginated user list response (named OpenAPI component `UserPaginated`) |
+| `userCreateBatchSchema` | `optional/crud` | Batch create request (`bulk` array of `userCreateSchema`) |
+
+Notes:
+
+- `userCreateSchema` accepts a plaintext `password` — `passwordHash` and
+  `passwordSalt` are NOT public input anymore. This is a deliberate bug fix:
+  the legacy `UserCreateDto` exposed `passwordHash` (never a valid external
+  input — hashes are always computed internally via `UserPasswordPort`) and
+  silently stripped `password`, so creating a user through the HTTP CRUD
+  endpoint never actually set a password. With the schema, `password` works
+  end-to-end.
+- `userUpdateSchema` has no `id` field — the route param is authoritative
+  (the update handler reads `id` from `context.params.id`, never from the
+  body).
 
 ## Exceptions
 
@@ -360,7 +530,9 @@ import {
 | `UserPasswordHistoryViolationException` | 400 | `USER_PASSWORD_HISTORY_VIOLATION` |
 
 All exceptions extend `UserException`, which extends `RuntimeException` from
-`@concepta/nestjs-core`.
+`@concepta/nestjs-core`. `RuntimeException` extends NestJS's `HttpException`,
+so no exception filter registration is needed — errors serialize over the
+wire as `{ statusCode, message, errorCode, error? }` (no `timestamp`).
 
 ## Environment Variables
 
@@ -387,7 +559,7 @@ import { UserFactory } from '@concepta/nestjs-user/optional/seeding';
 
 | Import Path | Contents |
 | --- | --- |
-| `@concepta/nestjs-user` | Module, aggregates, commands, queries, events, handlers, DTOs, repositories, exceptions, domain interfaces |
-| `@concepta/nestjs-user/optional/crud` | CRUD request/handler classes, paginated DTO |
+| `@concepta/nestjs-user` | Module, aggregates, commands, queries, events, handlers, schemas, repositories, ports, exceptions, domain interfaces |
+| `@concepta/nestjs-user/optional/crud` | CRUD request/handler classes, `userPaginatedSchema`, `userCreateBatchSchema` |
 | `@concepta/nestjs-user/optional/typeorm` | `UserSqliteEntity`, `UserPostgresEntity`, `UserCredentialSqliteEntity`, `UserCredentialPostgresEntity` |
 | `@concepta/nestjs-user/optional/seeding` | `UserFactory`, `UserCredentialFactory`, `UserSeeder` |

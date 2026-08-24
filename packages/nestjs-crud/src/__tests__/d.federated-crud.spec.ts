@@ -2,11 +2,10 @@ import request from 'supertest';
 import { DataSource } from 'typeorm';
 
 import { Inject, INestApplication } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 
-import { ExceptionsFilter, Ctx } from '@concepta/nestjs-core';
+import { Ctx } from '@concepta/nestjs-core';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
@@ -31,8 +30,8 @@ import {
   CRUD_TEST_USER_ENTITY_NAME,
 } from '../__fixtures__/crud-test.constants.js';
 import { CompanyEntity } from '../__fixtures__/typeorm/company/company.entity.js';
-import { CompanyPaginatedDto } from '../__fixtures__/typeorm/company/dto/company-paginated.dto.js';
-import { CompanyDto } from '../__fixtures__/typeorm/company/dto/company.dto.js';
+import { companyPaginatedSchema } from '../__fixtures__/typeorm/company/schemas/company-paginated.schema.js';
+import { companySchema } from '../__fixtures__/typeorm/company/schemas/company.schema.js';
 import { ormSqliteConfig } from '../__fixtures__/typeorm/orm.sqlite.config.js';
 import { Seeds } from '../__fixtures__/typeorm/seeds.js';
 import { UserEntity } from '../__fixtures__/typeorm/users/user.entity.js';
@@ -70,7 +69,7 @@ describe('#federated-crud', () => {
     path: 'companies',
     entity: CRUD_TEST_COMPANY_ENTITY_NAME,
     adapter: CrudAdapter,
-    response: { resource: CompanyDto, paginated: CompanyPaginatedDto },
+    response: { resource: companySchema, paginated: companyPaginatedSchema },
   })
   @CrudJoin([{ relation: 'users' }])
   @CrudSort([{ field: 'id', order: 'ASC' }])
@@ -109,7 +108,6 @@ describe('#federated-crud', () => {
       ],
       controllers: [CompaniesController],
       providers: [
-        { provide: APP_FILTER, useClass: ExceptionsFilter },
         createCrudAdapterProvider({
           entity: CRUD_TEST_COMPANY_ENTITY_NAME,
           adapter: CrudAdapter,

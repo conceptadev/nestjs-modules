@@ -11,7 +11,7 @@ export type PropagationBehavior =
 export interface TransactionalOptions {
   /**
    * Transaction propagation behavior.
-   * Defaults to 'REQUIRED'.
+   * Defaults to 'SUPPORTS'.
    */
   propagation?: PropagationBehavior;
 
@@ -20,12 +20,6 @@ export interface TransactionalOptions {
    * Defaults to false.
    */
   readOnly?: boolean;
-
-  /**
-   * Exception types that should NOT trigger rollback.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  noRollbackFor?: Array<new (...args: any[]) => Error>;
 
   /**
    * Transaction timeout in milliseconds.

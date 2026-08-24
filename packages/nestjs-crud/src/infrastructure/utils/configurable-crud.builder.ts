@@ -28,13 +28,13 @@ import { CrudUpdate } from '../decorators/operations/crud-update.decorator.js';
 import { CrudBody } from '../decorators/params/crud-body.decorator.js';
 import { CrudCommandHandler } from '../decorators/routes/crud-command-handler.decorator.js';
 import { CrudQueryHandler } from '../decorators/routes/crud-query-handler.decorator.js';
-import { CrudCreateBatchInterface } from '../dtos/interfaces/crud-create-batch.interface.js';
 import { CrudCtx } from '../interceptors/crud-context.overlay.js';
 import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface.js';
 import {
   CrudControllerClassOptionsInterface,
   CrudControllerOptionsInterface,
 } from '../interfaces/crud-controller-options.interface.js';
+import { CrudCreateBatchInterface } from '../interfaces/crud-create-batch.interface.js';
 import {
   CrudRouteCommandOptionsInterface,
   CrudRouteQueryOptionsInterface,
@@ -355,12 +355,11 @@ export class ConfigurableCrudBuilder<
 
     // Apply CrudBody to second parameter if operation requires body
     if (isBodyOperation(operation)) {
-      const bodyDto = op.request?.body;
-      CrudBody({ validation: bodyDto ? { expectedType: bodyDto } : undefined })(
-        proto,
-        methodName,
-        1,
-      );
+      const bodySchema =
+        operation === Operation.CreateBatch
+          ? op.request?.bodyBatch
+          : op.request?.body;
+      CrudBody({ schema: bodySchema })(proto, methodName, 1);
     }
 
     // Apply handler overrides if specified

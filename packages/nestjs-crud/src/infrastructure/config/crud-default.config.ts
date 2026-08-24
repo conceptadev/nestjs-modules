@@ -1,9 +1,6 @@
 import { registerAs } from '@nestjs/config';
 
-import {
-  CRUD_MODULE_DEFAULT_SETTINGS_TOKEN,
-  CRUD_MODULE_DEFAULT_TRANSFORM_OPTIONS,
-} from '../../crud.constants.js';
+import { CRUD_MODULE_DEFAULT_SETTINGS_TOKEN } from '../../crud.constants.js';
 
 import { type CrudModuleSettingsInterface } from './interfaces/crud-module-settings.interface.js';
 
@@ -12,10 +9,5 @@ import { type CrudModuleSettingsInterface } from './interfaces/crud-module-setti
  */
 export const crudDefaultConfig = registerAs(
   CRUD_MODULE_DEFAULT_SETTINGS_TOKEN,
-  (): CrudModuleSettingsInterface => ({
-    serialization: {
-      toInstanceOptions: CRUD_MODULE_DEFAULT_TRANSFORM_OPTIONS,
-      toPlainOptions: CRUD_MODULE_DEFAULT_TRANSFORM_OPTIONS,
-    },
-  }),
+  (): CrudModuleSettingsInterface => ({}),
 );

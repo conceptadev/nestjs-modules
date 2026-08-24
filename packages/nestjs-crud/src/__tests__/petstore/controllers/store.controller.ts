@@ -1,3 +1,5 @@
+import { type z } from 'zod';
+
 import { Inject } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -15,16 +17,18 @@ import { CrudCtx } from '../../../infrastructure/interceptors/crud-context.overl
 import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface.js';
 import { CrudAdapterResolver } from '../../../infrastructure/resolvers/crud-adapter.resolver.js';
 import { CrudResolverInterface } from '../../../infrastructure/resolvers/interfaces/crud-resolver.interface.js';
-import { Order } from '../dto/order.dto.js';
+import { orderSchema } from '../schemas/order.schema.js';
+
+type OrderType = z.infer<typeof orderSchema>;
 
 @CrudController({
   path: 'store/order',
   entity: 'Order',
   request: {
-    body: Order,
+    body: orderSchema,
     params: { orderId: { field: 'orderId', type: 'number', primary: true } },
   },
-  response: { resource: Order },
+  response: { resource: orderSchema },
 })
 @ApiTags('store')
 export class StoreController {
@@ -39,7 +43,8 @@ export class StoreController {
   })
   async placeOrder(
     @Ctx(CrudCtx) ctx: CrudContextInterface,
-    @CrudBody() dto: Order,
+    // See pet.controller.ts's addPet for why `{ schema }` is required here.
+    @CrudBody({ schema: orderSchema }) dto: OrderType,
   ) {
     return this.crudResolver.create(ctx, dto);
   }

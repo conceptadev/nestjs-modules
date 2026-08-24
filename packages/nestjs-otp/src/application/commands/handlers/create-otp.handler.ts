@@ -10,15 +10,16 @@ import {
 import { Otp } from '../../../domain/aggregates/otp.js';
 import { OtpLimitReachedException } from '../../../domain/exceptions/otp-limit-reached.exception.js';
 import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception.js';
+import { OtpCreatableInterface } from '../../../domain/interfaces/otp-creatable.interface.js';
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface.js';
 import { OtpRepositoryInterface } from '../../../domain/repositories/otp-repository.interface.js';
 import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface.js';
-import { OtpCreateDto } from '../../../infrastructure/dtos/otp-create.dto.js';
+import { otpCreateSchema } from '../../../infrastructure/schemas/otp-create.schema.js';
 import {
   OTP_MODULE_SETTINGS_TOKEN,
   OTP_REPOSITORY_RESOLVER_TOKEN,
 } from '../../../otp.constants.js';
-import { validateOtpDto } from '../../utils/validate-otp-dto.util.js';
+import { validateOtpSchema } from '../../utils/validate-otp-schema.util.js';
 import { CreateOtpCommand } from '../impl/create-otp.command.js';
 
 @CommandHandler(CreateOtpCommand)
@@ -45,7 +46,11 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
       throw new OtpTypeNotDefinedException(dto.type);
     }
 
-    const validatedDto = await validateOtpDto(OtpCreateDto, dto);
+    const validatedDto = await validateOtpSchema(
+      'OtpCreate',
+      otpCreateSchema,
+      dto,
+    );
     const { assigneeId, category, type, expiresIn } = validatedDto;
 
     const otpRepo = this.repositoryResolver.resolve(namespace);
@@ -103,7 +108,7 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
 
   protected async validateRateLimit(params: {
     otpRepo: OtpRepositoryInterface;
-    dto: OtpCreateDto;
+    dto: OtpCreatableInterface;
     ctx: TransactionContextInterface;
     rateSeconds?: number;
     rateThreshold?: number;

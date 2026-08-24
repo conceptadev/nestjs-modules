@@ -5,7 +5,6 @@ import { Operation } from '@concepta/nestjs-core';
 import { CrudCreateBatchHandler } from '../../../application/commands/handlers/crud-create-batch.handler.js';
 import { CrudCreateBatchCommand } from '../../../application/commands/impl/crud-create-batch.command.js';
 import { CRUD_MODULE_ROUTE_CREATE_MANY_DEFAULT_PATH } from '../../../crud.constants.js';
-import { type CrudValidationOptions } from '../../../crud.types.js';
 import { type CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface.js';
 import { getTransactionalDecorators } from '../../utils/get-transactional-decorators.js';
 import { CrudApiBody } from '../openapi/crud-api-body.decorator.js';
@@ -14,6 +13,7 @@ import { CrudApiResponse } from '../openapi/crud-api-response.decorator.js';
 import { CrudCommandHandler } from '../routes/crud-command-handler.decorator.js';
 import { CrudCommand } from '../routes/crud-command.decorator.js';
 import { CrudOperation } from '../routes/crud-operation.decorator.js';
+import { CrudRequestBodyBatch } from '../routes/crud-request-body-batch.decorator.js';
 import { CrudSerialize } from '../routes/crud-serialize.decorator.js';
 import { CrudValidate } from '../routes/crud-validate.decorator.js';
 
@@ -35,10 +35,7 @@ export const CrudCreateBatch = <
     transactional,
   } = { ...options };
 
-  const bodyBatchDto = request?.bodyBatch;
-  const validation: CrudValidationOptions<T> = bodyBatchDto
-    ? { ...request?.validation, expectedType: bodyBatchDto }
-    : request?.validation;
+  const bodyBatchSchema = request?.bodyBatch;
 
   return applyDecorators(
     Post(path),
@@ -51,13 +48,20 @@ export const CrudCreateBatch = <
       handler: commandHandler,
       handlerTemplate: CrudCreateBatchHandler,
     }),
-    CrudValidate(validation),
+    // Store this operation's body schema at method level so it overrides the
+    // controller-level default for validation and docs resolution.
+    ...(bodyBatchSchema === undefined
+      ? []
+      : [CrudRequestBodyBatch(bodyBatchSchema)]),
+    CrudValidate(request?.validation),
     CrudSerialize(response?.serialization),
     CrudApiOperation(api?.operation),
-    CrudApiBody({
-      type: bodyBatchDto,
-      ...api?.body,
-    }),
+    // Schema-based bodies are documented by crud-init-api-body.decorator.ts's
+    // manual ApiBody injection instead of this placeholder-based mechanism
+    // (see that file for why — dynamically-generated methods never get
+    // design:paramtypes, so swagger can't auto-detect a schema-bearing Body
+    // param the way it does for handwritten controllers).
+    ...(bodyBatchSchema === undefined ? [CrudApiBody({ ...api?.body })] : []),
     CrudApiResponse(api?.response),
     ...getTransactionalDecorators(transactional),
   );

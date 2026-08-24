@@ -12,7 +12,7 @@
 
 # High — NestJS 12 upgrade cleanup (temporary shims to remove)
 
-  * **When NestJS 12 GA ships**: Replace all `12.0.0-alpha.*` / `12.0.0-next.*` pins in every package.json with `^12.0.0` semver ranges, then run `yarn test` + `yarn test:e2e`. Also audit ~10 source files importing the internal path `@nestjs/common/utils/shared.utils` — resolves today via v12's wildcard `./*` export but is an undocumented internal that could be removed at GA; migrate each import to a public equivalent (e.g. `isObject` → a local utility or `class-transformer`). Files: nestjs-core `exceptions.filter.ts`, nestjs-crud (7 files: adapter, serialize-interceptor, validation, query-builder, query-parser, scondition-converter, crud-query.validator), nestjs-repository `repository-adapter.ts`.
+  * **When NestJS 12 GA ships**: Replace all `12.0.0-alpha.*` / `12.0.0-next.*` pins in every package.json with `^12.0.0` semver ranges, then run `yarn test` + `yarn test:e2e`. Also audit ~9 source files importing the internal path `@nestjs/common/utils/shared.utils` — resolves today via v12's wildcard `./*` export but is an undocumented internal that could be removed at GA; migrate each import to a public equivalent (e.g. `isObject` → a local utility). Files: nestjs-crud (7 files: adapter, serialize-interceptor, validation, query-builder, query-parser, scondition-converter, crud-query.validator), nestjs-repository `repository-adapter.ts`.
 
   * **When non-v8 packages are migrated to NestJS 12**: Full restore checklist — per package:
     1. Root `package.json` `workspaces` array — add dir (or revert to glob `packages/*` when all are migrated)
@@ -30,6 +30,8 @@
 
 # Nice To Have
   * Optional exports patterns are different across the modules
+  * `roleCreateSchema`/`roleUpdateSchema` allow empty `name`/`description` via `.default('')` — a faithful reproduction of the v7 class defaults; consider requiring a non-empty `name`.
+  * Per-operation `api.body` (`ApiBodyOptions` overrides: description, examples, `required`) is silently dropped for schema-based request bodies — needs metadata plumbing to carry the options alongside the per-operation schema into `CrudInitApiBody` (root cause documented in the migration plan's post-Phase-4 audit).
   * Add an ESLint `import/extensions` rule as a belt-and-suspenders guard for the `nodenext`
     `.js`-extension requirement on relative imports (`eslint-plugin-import` is already a
     configured dependency, no conflicting rule exists). Not essential — `tsc` itself already

@@ -12,12 +12,14 @@ import {
 } from '@concepta/nestjs-repository';
 
 import { TestCrudAdapter } from '../../../__fixtures__/crud/adapters/test-crud.adapter.js';
-import { TestModelDto } from '../../../__fixtures__/crud/models/test.model.js';
+import { TestModel } from '../../../__fixtures__/crud/models/test.model.js';
+import { testModelSchema } from '../../../__fixtures__/crud/schemas/test-model.schema.js';
 import { CrudModule } from '../../../crud.module.js';
 import { CrudController } from '../../decorators/controller/crud-controller.decorator.js';
 import { CrudList } from '../../decorators/operations/crud-list.decorator.js';
 import { CrudRead } from '../../decorators/operations/crud-read.decorator.js';
 import { CrudQueryBuilder } from '../../request/crud-query.builder.js';
+import { paginatedSchema } from '../../schemas/crud-response-paginated.schema.js';
 import { CrudCtx } from '../crud-context.overlay.js';
 import { CrudContextInterface } from '../interfaces/crud-context.interface.js';
 
@@ -33,22 +35,18 @@ describe('#crud', () => {
       },
     },
     response: {
-      resource: TestModelDto,
-      serialization: {
-        toInstanceOptions: {
-          excludeExtraneousValues: false,
-          strategy: 'exposeAll',
-        },
-        toPlainOptions: {
-          excludeExtraneousValues: false,
-          strategy: 'exposeAll',
-        },
-      },
+      resource: testModelSchema,
+      // TestController has two @CrudList operations, so
+      // apply-api-response.decorator.ts requires a matching (both-Zod)
+      // paginated type even though these routes never actually return a
+      // paginated shape (see below) — the mismatch check fires at
+      // decoration time, unconditional on real response content.
+      paginated: paginatedSchema(testModelSchema),
     },
   })
   class TestController {
     @CrudList({ path: '/query' })
-    async query(@Ctx(CrudCtx) ctx: CrudContextInterface<TestModelDto>) {
+    async query(@Ctx(CrudCtx) ctx: CrudContextInterface<TestModel>) {
       return { query: ctx.withCrud().query };
     }
 
@@ -74,22 +72,12 @@ describe('#crud', () => {
       },
     },
     response: {
-      resource: TestModelDto,
-      serialization: {
-        toInstanceOptions: {
-          excludeExtraneousValues: false,
-          strategy: 'exposeAll',
-        },
-        toPlainOptions: {
-          excludeExtraneousValues: false,
-          strategy: 'exposeAll',
-        },
-      },
+      resource: testModelSchema,
     },
   })
   class Test2Controller {
     @CrudRead({ path: 'normal/:id' })
-    async normal(@Ctx(CrudCtx) ctx: CrudContextInterface<TestModelDto>) {
+    async normal(@Ctx(CrudCtx) ctx: CrudContextInterface<TestModel>) {
       return { params: ctx.withCrud().params };
     }
 
@@ -102,7 +90,7 @@ describe('#crud', () => {
       path: 'other2/:id/twoParams/:someParam',
     })
     async twoParams(
-      @Ctx(CrudCtx) ctx: CrudContextInterface<TestModelDto>,
+      @Ctx(CrudCtx) ctx: CrudContextInterface<TestModel>,
       @Param('someParam', ParseIntPipe) _p: number,
     ) {
       return { params: ctx.withCrud().params };
@@ -119,10 +107,10 @@ describe('#crud', () => {
         {
           provide: TestCrudAdapter,
           useFactory: () => {
-            const mockRepo: RepositoryInterface<TestModelDto> = {
+            const mockRepo: RepositoryInterface<TestModel> = {
               metadata: {
                 name: 'TestModel',
-                type: TestModelDto,
+                type: TestModel,
                 columns: [
                   { name: 'id', isPrimary: true, isRemoveDate: false },
                   { name: 'firstName', isPrimary: false, isRemoveDate: false },
@@ -173,11 +161,11 @@ describe('#crud', () => {
       const page = 2;
       const limit = 10;
       const fields = ['a', 'b', 'c'];
-      const sorts: OrderSortKeyArr<TestModelDto>[] = [
+      const sorts: OrderSortKeyArr<TestModel>[] = [
         ['firstName', 'ASC'],
         ['lastName', 'DESC'],
       ];
-      const filters: WhereConditionArr<TestModelDto>[] = [
+      const filters: WhereConditionArr<TestModel>[] = [
         ['id', 'in', [1, 2, 3]],
         ['firstName', 'eq', 'John'],
         ['lastName', 'nnull'],

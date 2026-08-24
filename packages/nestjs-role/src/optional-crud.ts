@@ -1,8 +1,6 @@
-// dto
-export { RolePaginatedDto } from './infrastructure/dtos/role-paginated.dto.js';
-export { RoleAssignmentPaginatedDto } from './infrastructure/dtos/role-assignment-paginated.dto.js';
-export { RoleCreateBatchDto } from './infrastructure/dtos/role-create-batch.dto.js';
-export { RoleAssignmentCreateBatchDto } from './infrastructure/dtos/role-assignment-create-batch.dto.js';
+// schemas (Zod / Standard Schema)
+export { roleCreateBatchSchema } from './infrastructure/schemas/role-create-batch.schema.js';
+export { roleAssignmentCreateBatchSchema } from './infrastructure/schemas/role-assignment-create-batch.schema.js';
 
 // role requests
 export { CreateRoleRequest } from './gateways/http/commands/impl/create-role.request.js';

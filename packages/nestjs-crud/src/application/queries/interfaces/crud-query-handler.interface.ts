@@ -1,7 +1,7 @@
 import { type PlainLiteralObject } from '@nestjs/common';
 
 import { type CrudAdapter } from '../../../infrastructure/adapters/crud.adapter.js';
-import { type CrudResponsePaginatedInterface } from '../../../infrastructure/dtos/interfaces/crud-response-paginated.interface.js';
+import { type CrudResponsePaginatedInterface } from '../../../infrastructure/interfaces/crud-response-paginated.interface.js';
 
 import { type CrudQueryInterface } from './crud-query.interface.js';
 

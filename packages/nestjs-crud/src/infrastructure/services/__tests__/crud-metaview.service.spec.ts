@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { CrudJoin } from '../../decorators/routes/crud-join.decorator.js';
 import { CrudRequestBodyBatch } from '../../decorators/routes/crud-request-body-batch.decorator.js';
 import { CrudRequestBody } from '../../decorators/routes/crud-request-body.decorator.js';
@@ -11,64 +13,64 @@ describe('CrudMetaview', () => {
 
   describe('getValidationOptions', () => {
     it('should resolve from handler then class when handler is provided', () => {
-      @CrudValidate({ always: true })
+      @CrudValidate({ transform: true })
       class TestController {
-        @CrudValidate({ whitelist: true })
+        @CrudValidate({ validateCustomDecorators: true })
         testMethod() {}
       }
 
       const handler = TestController.prototype.testMethod;
       const result = metaview.getValidationOptions(TestController, handler);
-      expect(result).toEqual({ whitelist: true });
+      expect(result).toEqual({ validateCustomDecorators: true });
     });
 
     it('should fall back to class when handler has no metadata', () => {
-      @CrudValidate({ always: true })
+      @CrudValidate({ transform: true })
       class TestController {
         testMethod() {}
       }
 
       const handler = TestController.prototype.testMethod;
       const result = metaview.getValidationOptions(TestController, handler);
-      expect(result).toEqual({ always: true });
+      expect(result).toEqual({ transform: true });
     });
 
     it('should resolve from target when handler is omitted', () => {
-      @CrudValidate({ always: true })
+      @CrudValidate({ transform: true })
       class TestController {
         testMethod() {}
       }
 
       const result = metaview.getValidationOptions(TestController);
-      expect(result).toEqual({ always: true });
+      expect(result).toEqual({ transform: true });
     });
   });
 
   describe('getRequestBodyBatch', () => {
     it('should resolve batch body type from method', () => {
-      class BatchDto {}
+      const batchSchema = z.object({});
 
       class TestController {
-        @CrudRequestBodyBatch(BatchDto)
+        @CrudRequestBodyBatch(batchSchema)
         testMethod() {}
       }
 
       const handler = TestController.prototype.testMethod;
       const result = metaview.getRequestBodyBatch(TestController, handler);
-      expect(result).toBe(BatchDto);
+      expect(result).toBe(batchSchema);
     });
 
     it('should resolve batch body type from class', () => {
-      class BatchDto {}
+      const batchSchema = z.object({});
 
-      @CrudRequestBodyBatch(BatchDto)
+      @CrudRequestBodyBatch(batchSchema)
       class TestController {
         testMethod() {}
       }
 
       const handler = TestController.prototype.testMethod;
       const result = metaview.getRequestBodyBatch(TestController, handler);
-      expect(result).toBe(BatchDto);
+      expect(result).toBe(batchSchema);
     });
 
     it('should return undefined when not decorated', () => {
@@ -107,16 +109,16 @@ describe('CrudMetaview', () => {
 
   describe('getRequestBody', () => {
     it('should resolve body type from method', () => {
-      class BodyDto {}
+      const bodySchema = z.object({});
 
       class TestController {
-        @CrudRequestBody(BodyDto)
+        @CrudRequestBody(bodySchema)
         testMethod() {}
       }
 
       const handler = TestController.prototype.testMethod;
       const result = metaview.getRequestBody(TestController, handler);
-      expect(result).toBe(BodyDto);
+      expect(result).toBe(bodySchema);
     });
 
     it('should return undefined when not decorated', () => {
@@ -132,16 +134,16 @@ describe('CrudMetaview', () => {
 
   describe('getResponseResource', () => {
     it('should resolve response type from method', () => {
-      class ResourceDto {}
+      const resourceSchema = z.object({});
 
       class TestController {
-        @CrudResponseResource(ResourceDto)
+        @CrudResponseResource(resourceSchema)
         testMethod() {}
       }
 
       const handler = TestController.prototype.testMethod;
       const result = metaview.getResponseResource(TestController, handler);
-      expect(result).toBe(ResourceDto);
+      expect(result).toBe(resourceSchema);
     });
 
     it('should return undefined when not decorated', () => {

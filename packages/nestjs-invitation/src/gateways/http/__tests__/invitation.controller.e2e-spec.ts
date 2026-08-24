@@ -8,10 +8,9 @@ import { getDataSourceToken } from '@nestjs/typeorm';
 
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
+import { type InvitationAcceptableInterface } from '../../../domain/interfaces/invitation-acceptable.interface.js';
 import { type InvitationCreatableInterface } from '../../../domain/interfaces/invitation-creatable.interface.js';
 import { InvitationOtpPort } from '../../../domain/ports/invitation-otp.port.js';
-import { type InvitationAcceptDto } from '../../../infrastructure/dtos/invitation-accept.dto.js';
-import { type InvitationDto } from '../../../infrastructure/dtos/invitation.dto.js';
 import { type InvitationEntityInterface } from '../../../infrastructure/persistence/interfaces/invitation-entity.interface.js';
 import { InvitationFactory } from '../../../seeding/invitation.factory.js';
 
@@ -90,12 +89,14 @@ describe('InvitationController (e2e)', () => {
       const { code } = invitation;
       const otp = await otpPort.create({}, orgCategory, user.id);
 
+      const body: InvitationAcceptableInterface = {
+        passcode: otp.passcode,
+        payload: { newPassword: 'hOdv2A2h%' },
+      };
+
       await supertest(app.getHttpServer())
         .patch(`/invitation-acceptance/${code}`)
-        .send({
-          passcode: otp.passcode,
-          payload: { newPassword: 'hOdv2A2h%' },
-        } as InvitationAcceptDto)
+        .send(body)
         .expect(200);
     });
   });
@@ -123,13 +124,31 @@ describe('InvitationController (e2e)', () => {
       const { code } = invitation;
       const otp = await otpPort.create({}, userCategory, user.id);
 
+      const body: InvitationAcceptableInterface = {
+        passcode: otp.passcode,
+        payload: { newPassword: 'hOdv2A2h%' },
+      };
+
       await supertest(app.getHttpServer())
         .patch(`/invitation-acceptance/${code}`)
-        .send({
-          passcode: otp.passcode,
-          payload: { newPassword: 'hOdv2A2h%' },
-        } as InvitationAcceptDto)
+        .send(body)
         .expect(200);
+    });
+
+    // Regression: the acceptance controller uses a bare `@CrudBody()` and
+    // relies on the operation decorator's `request.body` schema to wire
+    // validation — an invalid payload must 400, not reach the handler.
+    it('PATCH /invitation-acceptance/:code (invalid body is rejected)', async () => {
+      const { code } = invitation;
+
+      const response = await supertest(app.getHttpServer())
+        .patch(`/invitation-acceptance/${code}`)
+        .send({ payload: { newPassword: 'hOdv2A2h%' } })
+        .expect(400);
+
+      expect(response.body.message).toEqual([
+        expect.stringContaining('passcode'),
+      ]);
     });
 
     it('GET /invitation', async () => {
@@ -137,9 +156,25 @@ describe('InvitationController (e2e)', () => {
         .get('/invitation')
         .expect(200);
 
-      const invitationResponse = response.body.data as InvitationDto[];
+      const invitationResponse: InvitationEntityInterface[] =
+        response.body.data;
 
       expect(invitationResponse.length).toEqual(1);
+    });
+
+    // regression: the seeded invitation never sets `constraints`, so the
+    // persisted (nullable) column reads back as `null`, not `undefined` —
+    // the response schema must accept `null` here or the fail-closed
+    // serializer 500s on every list/read of a constraints-less invitation.
+    it('GET /invitation (constraints column is null, not undefined)', async () => {
+      const response = await supertest(app.getHttpServer())
+        .get('/invitation')
+        .expect(200);
+
+      const invitationResponse: InvitationEntityInterface[] =
+        response.body.data;
+
+      expect(invitationResponse[0]?.constraints).toBeNull();
     });
 
     it('GET /invitation/:id', async () => {
@@ -154,7 +189,7 @@ describe('InvitationController (e2e)', () => {
         .get(`/invitation/${created.id}`)
         .expect(200);
 
-      const invitationResponse = response.body as InvitationDto;
+      const invitationResponse: InvitationEntityInterface = response.body;
       expect(invitationResponse.category).toEqual(userCategory);
     });
 
@@ -180,11 +215,12 @@ describe('InvitationController (e2e)', () => {
 const createInvitation = async (
   app: INestApplication,
   dto: InvitationCreatableInterface,
-): Promise<InvitationDto> => {
+): Promise<InvitationEntityInterface> => {
   const response = await supertest(app.getHttpServer())
     .post('/invitation')
     .send(dto)
     .expect(201);
 
-  return response.body as InvitationDto;
+  const invitation: InvitationEntityInterface = response.body;
+  return invitation;
 };

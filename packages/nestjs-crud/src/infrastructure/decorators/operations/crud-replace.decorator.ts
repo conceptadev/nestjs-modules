@@ -5,7 +5,6 @@ import { Operation } from '@concepta/nestjs-core';
 import { CrudReplaceHandler } from '../../../application/commands/handlers/crud-replace.handler.js';
 import { CrudReplaceCommand } from '../../../application/commands/impl/crud-replace.command.js';
 import { CRUD_MODULE_ROUTE_ID_DEFAULT_PATH } from '../../../crud.constants.js';
-import { type CrudValidationOptions } from '../../../crud.types.js';
 import { type CrudRouteCommandOptionsInterface } from '../../interfaces/crud-route-ctlr-options.interface.js';
 import { getTransactionalDecorators } from '../../utils/get-transactional-decorators.js';
 import { CrudApiBody } from '../openapi/crud-api-body.decorator.js';
@@ -15,6 +14,7 @@ import { CrudApiResponse } from '../openapi/crud-api-response.decorator.js';
 import { CrudCommandHandler } from '../routes/crud-command-handler.decorator.js';
 import { CrudCommand } from '../routes/crud-command.decorator.js';
 import { CrudOperation } from '../routes/crud-operation.decorator.js';
+import { CrudRequestBody } from '../routes/crud-request-body.decorator.js';
 import { CrudSerialize } from '../routes/crud-serialize.decorator.js';
 import { CrudValidate } from '../routes/crud-validate.decorator.js';
 
@@ -34,10 +34,7 @@ export const CrudReplace = <T extends PlainLiteralObject = PlainLiteralObject>(
     transactional,
   } = { ...options };
 
-  const bodyDto = request?.body;
-  const validation: CrudValidationOptions<T> = bodyDto
-    ? { ...request?.validation, expectedType: bodyDto }
-    : request?.validation;
+  const bodySchema = request?.body;
 
   return applyDecorators(
     Put(path),
@@ -47,14 +44,19 @@ export const CrudReplace = <T extends PlainLiteralObject = PlainLiteralObject>(
       handler: commandHandler,
       handlerTemplate: CrudReplaceHandler<T>,
     }),
-    CrudValidate(validation),
+    // Store this operation's body schema at method level so it overrides the
+    // controller-level default for validation and docs resolution.
+    ...(bodySchema === undefined ? [] : [CrudRequestBody(bodySchema)]),
+    CrudValidate(request?.validation),
     CrudSerialize(response?.serialization),
     CrudApiOperation(api?.operation),
     CrudApiParam(api?.params),
-    CrudApiBody({
-      type: bodyDto,
-      ...api?.body,
-    }),
+    // Schema-based bodies are documented by crud-init-api-body.decorator.ts's
+    // manual ApiBody injection instead of this placeholder-based mechanism
+    // (see that file for why — dynamically-generated methods never get
+    // design:paramtypes, so swagger can't auto-detect a schema-bearing Body
+    // param the way it does for handwritten controllers).
+    ...(bodySchema === undefined ? [CrudApiBody({ ...api?.body })] : []),
     CrudApiResponse(api?.response),
     ...getTransactionalDecorators(transactional),
   );

@@ -1,7 +1,7 @@
 # Rockets NestJS Invitation
 
-Invite users by email with OTP-based acceptance, automatic email delivery, and
-event-driven lifecycle management.
+Invite users by email with OTP-based acceptance, notification dispatch through
+consumer-supplied ports, and event-driven lifecycle management.
 
 ## Project
 
@@ -9,7 +9,7 @@ event-driven lifecycle management.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-invitation)](https://www.npmjs.com/package/@concepta/nestjs-invitation)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-invitation%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -23,7 +23,7 @@ event-driven lifecycle management.
 - [Commands](#commands)
 - [Queries](#queries)
 - [Domain Events](#domain-events)
-- [DTOs](#dtos)
+- [Schemas](#schemas)
 - [Exceptions](#exceptions)
 - [HTTP Gateway](#http-gateway)
 - [Entry Points](#entry-points)
@@ -51,12 +51,15 @@ event-driven lifecycle management.
 - Optional clear-on-create behavior
 - Optional rate limiting (rateSeconds + rateThreshold)
 
-### Email Delivery
+### Notification Dispatch
 
-- Send invitation email with passcode and expiration
-- Send acceptance confirmation email
-- Handlebars template support with configurable templates
-- Configurable sender address and base URL
+- The module sends NOTHING itself — listeners dispatch commands through
+  `InvitationNotificationPort`, whose command classes are supplied by the
+  consumer (see [Ports](#ports))
+- Invitation notification command carries the passcode and expiration
+- Acceptance confirmation command dispatched on accept
+- The consumer's `@CommandHandler`s decide the transport (email, SMS, push)
+  and resolve addresses/templates from their own module settings
 
 ### User Resolution
 
@@ -72,8 +75,10 @@ event-driven lifecycle management.
   (carries optional payload for downstream listeners)
 - `InvitationRevokedEvent` -- fired on revocation
 - `InvitationRemovedEvent` -- fired on deletion
-- Auto-send email on dispatch via `InvitationDispatchedListener`
-- Auto-send acceptance confirmation via `InvitationAcceptedListener`
+- `InvitationDispatchedListener` dispatches the invitation notification
+  command via the notification port
+- `InvitationAcceptedListener` dispatches the acceptance confirmation
+  command via the notification port
 - Auto-clear OTPs on revocation via `InvitationRevokedListener`
 
 ### Auto-Revocation
@@ -107,7 +112,6 @@ event-driven lifecycle management.
 
 ### Configurable Settings
 
-- Email: sender address, base URL, invitation template, accepted template
 - OTP: namespace, type, expiration, clear-on-create, rate limiting
 
 ---
@@ -118,12 +122,14 @@ event-driven lifecycle management.
 yarn add @concepta/nestjs-invitation
 ```
 
+This package is ESM-only and requires Node.js >= 22.12 and NestJS 12
+(currently alpha).
+
 ### Peer Dependencies
 
 | Package | Required | Notes |
 | --- | --- | --- |
-| `class-transformer` | Yes | DTO serialization |
-| `class-validator` | Yes | DTO validation |
+| `@concepta/nestjs-crud` | Yes | The main entry imports `paginatedSchema` from it |
 | `rxjs` | Yes | NestJS requirement |
 | `typeorm` | No | Only if using the TypeORM repository adapter |
 | `@concepta/nestjs-repository-typeorm` | No | Only if using the TypeORM repository adapter |
@@ -139,10 +145,6 @@ import { InvitationModule } from '@concepta/nestjs-invitation';
   imports: [
     InvitationModule.register({
       settings: {
-        email: {
-          from: 'invitations@example.com',
-          baseUrl: 'https://app.example.com',
-        },
         otp: {
           namespace: 'user-otp',
           type: 'uuid',
@@ -150,9 +152,20 @@ import { InvitationModule } from '@concepta/nestjs-invitation';
         },
       },
       ports: {
-        otp: { /* InvitationOtpPortSettings */ },
-        user: { /* InvitationUserPortSettings */ },
-        notification: { /* InvitationNotificationPortSettings */ },
+        otp: {
+          createCommand: CreateOtpCommand,       // e.g. from @concepta/nestjs-otp
+          consumeCommand: ConsumeOtpCommand,
+          clearCommand: ClearOtpsCommand,
+          validateQuery: ValidateOtpQuery,
+        },
+        user: {
+          getByIdQuery: GetUserQuery,            // e.g. from @concepta/nestjs-user
+          getByEmailQuery: GetUserByEmailQuery,
+        },
+        notification: {
+          sendInvitationCommand: MySendInvitationCommand,  // consumer-authored
+          sendAcceptedCommand: MySendAcceptedCommand,
+        },
       },
     }),
   ],
@@ -211,14 +224,14 @@ Application (Commands / Queries / Listeners)
   |
 Domain (Invitation aggregate, Events, Ports, Policies)
   |
-Infrastructure (Repository, Mapper, DTOs, Config)
+Infrastructure (Repository, Mapper, Schemas, Config)
 ```
 
 | Layer | Directory | Responsibility |
 | --- | --- | --- |
 | Domain | `domain/` | Aggregate, events, ports, policies, repository interface |
 | Application | `application/` | Command/query handlers, event listeners, exceptions |
-| Infrastructure | `infrastructure/` | DTOs, persistence (repository, mapper, entities), config |
+| Infrastructure | `infrastructure/` | Schemas, persistence (repository, mapper, entities), config |
 | Gateways | `gateways/` | HTTP request handlers (REST endpoints) |
 
 ## Aggregate
@@ -422,14 +435,14 @@ snapshot.
 | Event | Emitted When | Built-in Listener |
 | --- | --- | --- |
 | `InvitationCreatedEvent` | `Invitation.create()` | -- |
-| `InvitationDispatchedEvent` | `Invitation.dispatch()` | `InvitationDispatchedListener` -- sends invitation email |
-| `InvitationAcceptedEvent` | `Invitation.accept()` | `InvitationAcceptedListener` -- sends accepted email |
+| `InvitationDispatchedEvent` | `Invitation.dispatch()` | `InvitationDispatchedListener` -- dispatches invitation notification command via notification port |
+| `InvitationAcceptedEvent` | `Invitation.accept()` | `InvitationAcceptedListener` -- dispatches acceptance notification command via notification port |
 | `InvitationRevokedEvent` | `Invitation.revoke()` | `InvitationRevokedListener` -- clears OTPs |
 | `InvitationRemovedEvent` | `Invitation.remove()` | -- |
 
 `InvitationDispatchedEvent` carries OTP metadata (`passcode`, `tokenExp`)
 via `EventContextHost` meta. The `InvitationDispatchedListener` extracts
-this metadata and passes it to the email port.
+this metadata and passes it to the notification port.
 
 ### Handling an Event
 
@@ -462,15 +475,18 @@ export class ActivateUserOnInvitationAccepted
 
 Register the listener as a provider in your module to start receiving events.
 
-## DTOs
+## Schemas
 
-| DTO | Fields | Purpose |
+All schemas are Zod v4 objects (Standard Schema compatible), replacing the
+legacy class-validator DTO classes. All are exported from the main entry.
+
+| Schema | Fields | Purpose |
 | --- | --- | --- |
-| `InvitationDto` | id, code, category, userId, active, constraints, timestamps | Full invitation representation |
-| `InvitationCreateDto` | category, userId, code, constraints? | Create by user ID |
-| `InvitationCreateByEmailDto` | email, category, constraints? | Create by email |
-| `InvitationAcceptDto` | passcode, payload? | Accept invitation |
-| `InvitationPaginatedDto` | data: InvitationDto[] | Paginated response wrapper |
+| `invitationSchema` | id, code, category, userId, active, constraints, timestamps | Full invitation representation (response resource) |
+| `invitationCreateSchema` | category, userId, code, constraints? | Create by user ID |
+| `invitationCreateByEmailSchema` | email (validated email), category, constraints? | Create by email |
+| `invitationAcceptSchema` | passcode, payload? | Accept invitation |
+| `invitationPaginatedSchema` | data: invitationSchema[] + pagination meta | Paginated response wrapper |
 
 ## Exceptions
 
@@ -482,6 +498,12 @@ Register the listener as a provider in your module to start receiving events.
 | `InvitationNotFoundException` | 404 | `INVITATION_NOT_FOUND_ERROR` |
 | `InvitationUserUndefinedException` | -- | `INVITATION_USER_UNDEFINED_ERROR` |
 | `InvitationNotAcceptedException` | 400 | `INVITATION_NOT_ACCEPTED_ERROR` |
+
+All exceptions extend `InvitationException`, which extends
+`RuntimeException` from `@concepta/nestjs-core`. `RuntimeException` extends
+NestJS's `HttpException`, so no exception filter registration is needed —
+errors serialize over the wire as `{ statusCode, message, errorCode, error? }`
+(no `timestamp`).
 
 ## HTTP Gateway
 
@@ -509,14 +531,17 @@ import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import {
   InvitationInterface,
   InvitationModule,
-  InvitationDto,
-  InvitationCreateDto,
-  InvitationAcceptDto,
-  InvitationPaginatedDto,
+  invitationSchema,
+  invitationCreateSchema,
+  invitationPaginatedSchema,
   CreateInvitationRequest,
   CreateInvitationRequestHandler,
-  AcceptInvitationRequest,
-  AcceptInvitationRequestHandler,
+  DeleteInvitationRequest,
+  DeleteInvitationRequestHandler,
+  ListInvitationsRequest,
+  ListInvitationsRequestHandler,
+  ReadInvitationRequest,
+  ReadInvitationRequestHandler,
 } from '@concepta/nestjs-invitation';
 
 @Module({
@@ -529,21 +554,33 @@ import {
           path: 'invitation',
           resolver: CrudCqrsResolver,
           transactional: true,
-          request: { body: InvitationCreateDto },
-          response: { resource: InvitationDto, paginated: InvitationPaginatedDto },
+          request: { body: invitationCreateSchema },
+          response: {
+            resource: invitationSchema,
+            paginated: invitationPaginatedSchema,
+          },
         },
         operations: [
           {
+            operation: Operation.List,
+            query: ListInvitationsRequest,
+            queryHandler: ListInvitationsRequestHandler,
+          },
+          {
+            operation: Operation.Read,
+            query: ReadInvitationRequest,
+            queryHandler: ReadInvitationRequestHandler,
+          },
+          {
             operation: Operation.Create,
-            request: { body: InvitationCreateDto },
+            request: { body: invitationCreateSchema },
             command: CreateInvitationRequest,
             commandHandler: CreateInvitationRequestHandler,
           },
           {
-            operation: Operation.Update,
-            request: { body: InvitationAcceptDto },
-            command: AcceptInvitationRequest,
-            commandHandler: AcceptInvitationRequestHandler,
+            operation: Operation.Delete,
+            command: DeleteInvitationRequest,
+            commandHandler: DeleteInvitationRequestHandler,
           },
         ],
       },
@@ -553,29 +590,86 @@ import {
 export class InvitationFeatureModule {}
 ```
 
+Builder-generated controllers derive request body validation from
+`operations[].request.body` automatically.
+
+### Handwritten Acceptance Controller
+
+Acceptance is exposed through a handwritten `@CrudController` class rather
+than a generated one. Handwritten controllers must supply the schema
+explicitly for runtime validation — either on the operation decorator's
+`request.body` or via `@CrudBody({ schema })`:
+
+```ts
+import { CommandBus } from '@nestjs/cqrs';
+import { Ctx } from '@concepta/nestjs-core';
+import {
+  CrudBody,
+  CrudContextInterface,
+  CrudController,
+  CrudCtx,
+  CrudUpdate,
+} from '@concepta/nestjs-crud';
+import {
+  AcceptInvitationRequest,
+  AcceptInvitationRequestHandler,
+  InvitationAcceptableInterface,
+  invitationAcceptSchema,
+} from '@concepta/nestjs-invitation';
+
+@CrudController({
+  path: 'invitation-acceptance',
+  entity: 'invitation',
+  request: {
+    params: {
+      code: { field: 'code', type: 'string' },
+    },
+  },
+})
+export class InvitationAcceptanceController {
+  constructor(private readonly commandBus: CommandBus) {}
+
+  @CrudUpdate({
+    path: ':code',
+    command: AcceptInvitationRequest,
+    commandHandler: AcceptInvitationRequestHandler,
+    request: { body: invitationAcceptSchema },
+  })
+  async acceptInvitation(
+    @Ctx(CrudCtx) context: CrudContextInterface<InvitationAcceptableInterface>,
+    @CrudBody() dto: InvitationAcceptableInterface,
+  ): Promise<void> {
+    await this.commandBus.execute(new AcceptInvitationRequest(context, dto));
+  }
+}
+```
+
+Register `AcceptInvitationRequestHandler` as a provider and the controller in
+`controllers` of your module.
+
 ## Entry Points
 
 | Import Path | Contents |
 | --- | --- |
-| `@concepta/nestjs-invitation` | Module, aggregate, commands, queries, events, handlers, ports, policies, DTOs, repository, mapper, exceptions |
+| `@concepta/nestjs-invitation` | Module, aggregate, commands, queries, events, handlers, ports, policies, schemas, repository, mapper, exceptions, gateway request/handler classes |
 | `@concepta/nestjs-invitation/optional/typeorm` | `InvitationSqliteEntity`, `InvitationPostgresEntity` |
+| `@concepta/nestjs-invitation/optional/seeding` | `InvitationFactory` |
 
 ## Seeding
 
 An `InvitationFactory` is available for test seeding:
 
-The `InvitationFactory` class is available for test seeding in the package's
-`src/seeding/invitation.factory.ts` source. It generates random `code` and
-`category` values using `crypto.randomUUID()` and `faker.person.jobType()`.
+```ts
+import { InvitationFactory } from '@concepta/nestjs-invitation/optional/seeding';
+```
+
+It generates random `code` and `category` values using
+`crypto.randomUUID()` and `faker.person.jobType()`.
 
 ## Default Configuration
 
 | Setting | Default |
 | --- | --- |
-| `email.from` | `no-reply@dispostable.com` |
-| `email.baseUrl` | `http://localhost:3000` |
-| `email.templates.invitation.subject` | `Access Invitation` |
-| `email.templates.invitationAccepted.subject` | `Invitation Accepted` |
 | `otp.namespace` | `user-otp` |
 | `otp.type` | `uuid` |
 | `otp.expiresIn` | `7d` |

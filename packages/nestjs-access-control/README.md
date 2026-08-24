@@ -8,7 +8,7 @@ Advanced access control guard for NestJS with optional per-request filtering.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-access-control)](https://www.npmjs.com/package/@concepta/nestjs-access-control)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-access-control%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 # Table of Contents
 
@@ -83,6 +83,9 @@ yarn add @concepta/nestjs-access-control
 npm install @concepta/nestjs-access-control
 ```
 
+Requirements: the package is **ESM-only** (no CommonJS build), targets
+**Node.js >= 22.12**, and runs on **NestJS 12** (currently alpha).
+
 ## Basic Setup
 
 To set up the `@concepta/nestjs-access-control` module, you need to
@@ -97,11 +100,10 @@ These are very rough examples. We intend to improve them ASAP.
 
 ### Simple User Entity
 
-Define a simple User entity using TypeORM and class-transformer.
+Define a simple User entity using TypeORM.
 
 ```typescript
 import { Entity, Column, ManyToMany, Unique } from 'typeorm';
-import { Exclude } from 'class-transformer';
 import { Role } from '../auth/role.entity';
 
 @Entity()
@@ -111,11 +113,9 @@ export class User {
   username!: string;
 
   @Column()
-  @Exclude()
   password!: string;
 
   @Column()
-  @Exclude()
   salt!: string;
 
   @ManyToMany(() => Role, (role) => role.users, {
@@ -125,6 +125,12 @@ export class User {
   roles!: Role[];
 }
 ```
+
+> Entities are plain classes — in the v8 stack, response shaping is
+> schema-based at the controller layer (Zod/Standard Schema response
+> serialization), not entity-decorator-based. Keep sensitive fields such as
+> `password` and `salt` out of your response schemas instead of decorating
+> the entity.
 
 ### Your custom ACL rules
 
@@ -271,9 +277,8 @@ import {
 } from '@concepta/nestjs-access-control';
 
 import { UserResource } from './user.types';
-import { UserCreateDto } from './dto/user-create.dto';
-import { UserCreateManyDto } from './dto/user-create-many.dto';
-import { UserUpdateDto } from './dto/user-update.dto';
+import { UserCreatableInterface } from './interfaces/user-creatable.interface';
+import { UserUpdatableInterface } from './interfaces/user-updatable.interface';
 
 /**
  * User controller.
@@ -301,7 +306,7 @@ export class UserController {
    * Create many
    */
   @AccessControlCreateMany(AppResource.UserList)
-  async createMany(@Body() userCreateManyDto: UserCreateManyDto) {
+  async createMany(@Body() users: UserCreatableInterface[]) {
     // ...
   }
 
@@ -309,7 +314,7 @@ export class UserController {
    * Create one
    */
   @AccessControlCreateOne(AppResource.User)
-  async createOne(@Body() userCreateDto: UserCreateDto) {
+  async createOne(@Body() user: UserCreatableInterface) {
     // ...
   }
 
@@ -319,7 +324,7 @@ export class UserController {
   @AccessControlUpdateOne(AppResource.User)
   async updateOne(
     @Param('id') userId: string,
-    @Body() userUpdateDto: UserUpdateDto,
+    @Body() user: UserUpdatableInterface,
   ) {
     // ...
   }
@@ -391,21 +396,29 @@ To create a custom query service, follow these steps:
 // Action is the enum from the accesscontrol library itself
 import { Action } from 'accesscontrol';
 //...
+function getId(value: unknown): string | undefined {
+  return typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    typeof value.id === 'string'
+    ? value.id
+    : undefined;
+}
+
+function hasPassword(value: unknown): boolean {
+  return typeof value === 'object' && value !== null && 'password' in value;
+}
+
 export class MyUserAccessQueryService implements CanAccess {
   async canAccess(context: AccessControlContext): Promise<boolean> {
     const { resource, action } = context.getQuery();
 
     if (resource === AppResource.User && action === Action.UPDATE) {
-      const userAuthorizedDto = plainToInstance(UserDto, context.getUser());
+      const authorizedUserId = getId(context.getUser());
+      const paramsId = getId(context.getRequest('params'));
 
-      const params = context.getRequest('params');
-      const userParamDto = plainToInstance(UserDto, params);
-
-      const body = context.getRequest('body');
-      const userPasswordDto = plainToInstance(UserPasswordDto, body);
-
-      if (userParamDto.id && userPasswordDto?.password) {
-        return userParamDto.id === userAuthorizedDto.id;
+      if (paramsId && hasPassword(context.getRequest('body'))) {
+        return paramsId === authorizedUserId;
       }
     }
 
@@ -439,7 +452,7 @@ export class UserController {
   })
   async updateOne(
     @Param('id') userId: string,
-    @Body() userUpdateDto: UserUpdateDto,
+    @Body() user: UserUpdatableInterface,
   ) {
     // ...
   }
@@ -660,8 +673,8 @@ to protect the route that handles the creation of a single resource.
 ```typescript
   @Post()
   @AccessControlCreateOne(AppResource.User)
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  create(@Body() user: UserCreatableInterface) {
+    return this.userService.create(user);
   }
 ```
 
@@ -690,8 +703,8 @@ to protect the route that handles the updating of a single resource.
 ```typescript
   @Put(':id')
   @AccessControlUpdateOne(AppResource.User)
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(id, updateUserDto);
+  update(@Param('id') id: string, @Body() user: UserUpdatableInterface) {
+    return this.userService.update(id, user);
   }
 ```
 
@@ -811,8 +824,8 @@ to protect the route that handles the creation of multiple resources.
 //...
   @Post('bulk')
   @AccessControlCreateMany(AppResource.User)
-  createMany(@Body() createUsersDto: CreateUsersDto) {
-    return this.userService.createMany(createUsersDto);
+  createMany(@Body() users: UserCreatableInterface[]) {
+    return this.userService.createMany(users);
   }
 //...
 ```
@@ -850,6 +863,18 @@ protect the route that handles the reading of multiple resources.
 //...
 ```
 
+## Other Grant Decorators
+
+Two more grant shortcut decorators are exported:
+
+- `@AccessControlReplaceOne(resource)` — for full-replace (PUT) endpoints;
+  a shortcut that delegates to `@AccessControlUpdateOne`, so it checks the
+  `update` grant.
+- `@AccessControlRecoverOne(resource)` — for soft-delete recovery endpoints
+  (see the `recoverOne` handler in the tutorial controller example); a
+  shortcut that delegates to `@AccessControlCreateOne`, so it checks the
+  `create` grant.
+
 ## Reference
 
 ### NestJS AuthGuard Pattern
@@ -861,6 +886,11 @@ check the [official NestJS documentation](https://docs.nestjs.com/guards#access-
 
 For more details on the `accesscontrol` module,
 check the [official accesscontrol documentation](https://www.npmjs.com/package/accesscontrol).
+
+### Deprecated Exports
+
+- `AccessControllerException` — deprecated shim kept for v7 consumer
+  compatibility; it will be removed once external callers migrate off it.
 
 ## Explanation
 
@@ -931,21 +961,16 @@ authorized to access the resource.
 
 1. **canAccess Method**:
 
-- This method is used to determine if a user can access a
-  particular resource.
+- `canAccess(context)` is the **only** method declared by the `CanAccess`
+  interface — all custom authorization logic goes inside it.
 - You can add custom logic to check the user's role and the action
-  they want to perform.
+  they want to perform, using `context.getQuery()`, `context.getUser()`,
+  and `context.getRequest()`.
 - For example, you might allow users with a 'manager' role to read
-  and update data, but restrict 'employee' roles to only read data.
-
-1. **canUpdatePassword Method**:
-
-- This method is used to control whether a user can update their password.
-- You can add custom logic to ensure that users can only update their own
-  passwords.
-- For example, you might check if the user is trying to update their own
-  password and deny the request if they are trying to update someone
-  else's password.
+  and update data, but restrict 'employee' roles to only read data — or,
+  as in the [custom query service example](#creating-a-custom-access-query-service),
+  ensure a user can only update their own password by comparing the route
+  parameter id with the authenticated user's id.
 
 ### How AccessControlGuard Works
 
@@ -1010,6 +1035,9 @@ perform specific actions.
 #### Global vs Feature-Specific Registration
 
 - **Global Registration**: Makes the module available throughout the
-  entire application.
+  entire application (`forRoot()` / `forRootAsync()`).
 - **Feature-Specific Registration**: Allows the module to be registered
-  only for specific features or modules within the application.
+  only for specific features or modules within the application
+  (`register()` / `registerAsync()`). A `forFeature()` static method also
+  exists — it creates a standalone set of access control providers
+  (imports, providers, exports) for use in sub-modules.

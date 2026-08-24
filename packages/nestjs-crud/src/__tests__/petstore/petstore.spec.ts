@@ -9,6 +9,8 @@ import {
 } from '@nestjs/swagger';
 import { Test } from '@nestjs/testing';
 
+import { standardSchemaConverter } from '@concepta/nestjs-core';
+
 import { CrudModule } from '../../crud.module.js';
 import {
   type OperationObject,
@@ -58,6 +60,7 @@ describe('Petstore3 CRUD-fits replication', () => {
     doc = SwaggerModule.createDocument(
       app,
       new DocumentBuilder().setTitle('Petstore').setVersion('1.0.27').build(),
+      { standardSchemaConverter },
     );
 
     mkdirSync(ARTIFACT_DIR, { recursive: true });
@@ -214,7 +217,7 @@ describe('Petstore3 CRUD-fits replication', () => {
       ['placeOrder', '/store/order', 'post'],
       ['updateUser', '/user/{username}', 'put'],
       ['createUser', '/user', 'post'],
-    ])('%s has requestBody referencing its DTO', (_name, path, method) => {
+    ])('%s has requestBody referencing its schema', (_name, path, method) => {
       const rb = getOp(doc, path, method)?.requestBody;
       expect(rb).toBeDefined();
     });

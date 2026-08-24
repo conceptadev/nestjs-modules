@@ -4,10 +4,10 @@ import {
   Patch,
   PlainLiteralObject,
   Post,
+  StandardSchemaValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiBody,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -15,10 +15,12 @@ import {
 
 import { Ctx } from '@concepta/nestjs-core';
 
+import { VerifyConfirmParamsInterface } from '../../../../../application/services/verify/interfaces/verify-confirm-params.interface.js';
+import { VerifySendParamsInterface } from '../../../../../application/services/verify/interfaces/verify-send-params.interface.js';
 import { VerifyService } from '../../../../../application/services/verify/verify.service.js';
 import { AuthPublic } from '../../../../decorators/auth-public.decorator.js';
-import { VerifyUpdateDto } from '../../dto/verify-update.dto.js';
-import { VerifyDto } from '../../dto/verify.dto.js';
+import { verifyUpdateSchema } from '../../schemas/verify-update.schema.js';
+import { verifySchema } from '../../schemas/verify.schema.js';
 
 @Controller('auth/verify')
 @AuthPublic({ classLevel: true })
@@ -30,34 +32,34 @@ export class VerifyControllerFixture {
     summary:
       'Send Verify account email by providing an email that will receive link to confirm account.',
   })
-  @ApiBody({
-    type: VerifyDto,
-    description: 'DTO of email verify.',
-  })
   @ApiOkResponse()
   @Post('/send')
   async send(
     @Ctx() ctx: PlainLiteralObject,
-    @Body() verifyDto: VerifyDto,
+    @Body({
+      schema: verifySchema,
+      pipes: [new StandardSchemaValidationPipe()],
+    })
+    verifyParams: VerifySendParamsInterface,
   ): Promise<void> {
-    await this.verifyService.send(ctx, { email: verifyDto.email });
+    await this.verifyService.send(ctx, { email: verifyParams.email });
   }
 
   @ApiOperation({
     summary: 'confirm email providing passcode.',
-  })
-  @ApiBody({
-    type: VerifyUpdateDto,
-    description: 'DTO of verify email.',
   })
   @ApiOkResponse()
   @ApiBadRequestResponse()
   @Patch('/confirm')
   async confirm(
     @Ctx() ctx: PlainLiteralObject,
-    @Body() verifyUpdateDto: VerifyUpdateDto,
+    @Body({
+      schema: verifyUpdateSchema,
+      pipes: [new StandardSchemaValidationPipe()],
+    })
+    verifyUpdateParams: VerifyConfirmParamsInterface,
   ): Promise<void> {
-    const { passcode } = verifyUpdateDto;
+    const { passcode } = verifyUpdateParams;
 
     await this.verifyService.confirmUser(ctx, { passcode });
   }

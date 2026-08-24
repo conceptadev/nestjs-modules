@@ -1,6 +1,11 @@
+import { STATUS_CODES } from 'http';
 import { format } from 'util';
 
-import { HttpStatus } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  type HttpExceptionBody,
+} from '@nestjs/common';
 
 import { mapNonErrorToException } from '../../infrastructure/utils/map-non-error-to-exception.util.js';
 
@@ -8,13 +13,55 @@ import { type RuntimeExceptionContext } from './exception.types.js';
 import { type RuntimeExceptionOptions } from './interfaces/runtime-exception-options.interface.js';
 import { type RuntimeExceptionInterface } from './interfaces/runtime-exception.interface.js';
 
+/**
+ * Public body message used for 5xx responses when no `safeMessage` was
+ * provided — mirrors Nest's own default so a suppressed message reads
+ * identically to a generic Nest 500.
+ */
+const SAFE_MESSAGE_FALLBACK = 'Internal Server Error';
+
+/**
+ * Base runtime exception for the whole monorepo. Rebased onto Nest's native
+ * `HttpException` (rather than bare `Error` + a custom `ExceptionsFilter`
+ * translation layer) so subclasses get `getStatus()`/`getResponse()` and
+ * OpenAPI/error tooling that already understands `HttpException` for free.
+ *
+ * Every subclass assigns `this.errorCode` (and often augments `this.context`)
+ * AFTER calling `super()`, so the response body can't be composed eagerly in
+ * the constructor without baking in the wrong `errorCode`. Instead
+ * {@link getResponse} composes the body lazily, at render time — Nest's
+ * exception handling always calls `getResponse()` when it actually needs the
+ * body (e.g. `BaseExceptionFilter.catch`), by which point every subclass
+ * constructor has already run.
+ */
 export class RuntimeException
-  extends Error
+  extends HttpException
   implements RuntimeExceptionInterface
 {
-  private _errorCode = 'RUNTIME_EXCEPTION';
-  readonly httpStatus: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+  /**
+   * Machine-readable error code. A plain public field — NOT an accessor
+   * pair — because Nest's `HttpException` declares `errorCode` as a native
+   * class field, which would otherwise shadow a subclass-defined accessor.
+   */
+  public errorCode = 'RUNTIME_EXCEPTION';
+
+  /**
+   * The HTTP status this exception renders with (same value passed to the
+   * `HttpException` constructor — exposed here too since many consumers
+   * read `.httpStatus` directly instead of calling `getStatus()`).
+   */
+  readonly httpStatus: HttpStatus;
+
+  /**
+   * If set, this message is used on responses instead of `message`.
+   *
+   * Use this when the main message might expose sensitive detail.
+   */
   readonly safeMessage?: string;
+
+  /**
+   * Additional context.
+   */
   public context: RuntimeExceptionContext = {};
 
   constructor(
@@ -52,7 +99,7 @@ export class RuntimeException
       safeMessage,
       safeMessageParams = [],
       originalError,
-      httpStatus,
+      httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
     } = finalOptions;
 
     const formattedMessage = format(message ?? '', ...messageParams);
@@ -61,26 +108,53 @@ export class RuntimeException
       ...safeMessageParams,
     );
 
-    super(formattedMessage.length ? formattedMessage : formattedSafeMessage);
+    const cause =
+      originalError !== undefined
+        ? mapNonErrorToException(originalError)
+        : undefined;
 
-    if (httpStatus) {
-      this.httpStatus = httpStatus;
-    }
+    super(
+      formattedMessage.length ? formattedMessage : formattedSafeMessage,
+      httpStatus,
+      { cause },
+    );
+
+    this.httpStatus = httpStatus;
 
     if (formattedSafeMessage.length) {
       this.safeMessage = formattedSafeMessage;
     }
 
-    if (originalError !== undefined) {
-      this.context.originalError = mapNonErrorToException(originalError);
+    if (cause) {
+      this.context.originalError = cause;
     }
   }
 
-  public get errorCode() {
-    return this._errorCode;
-  }
+  /**
+   * Composes the wire body lazily so it always reflects the final
+   * `errorCode`/`context` state, which subclasses only finish assigning
+   * after `super()` returns.
+   */
+  public override getResponse(): HttpExceptionBody {
+    const statusCode = this.getStatus();
 
-  protected set errorCode(v: string) {
-    this._errorCode = v;
+    const message =
+      this.safeMessage ??
+      (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR
+        ? SAFE_MESSAGE_FALLBACK
+        : this.message);
+
+    const body: HttpExceptionBody = {
+      statusCode,
+      message,
+      errorCode: this.errorCode,
+    };
+
+    const error = STATUS_CODES[statusCode];
+    if (error !== undefined) {
+      body.error = error;
+    }
+
+    return body;
   }
 }

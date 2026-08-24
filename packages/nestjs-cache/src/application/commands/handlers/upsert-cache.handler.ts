@@ -38,7 +38,12 @@ export class UpsertCacheHandler implements ICommandHandler<UpsertCacheCommand> {
 
       if (existing) {
         cache = this.eventPublisher.mergeObjectContext(existing);
-        cache.updateData(eventContext, data);
+
+        // omitted `data` means "leave unchanged" (partial update) —
+        // matching the existing conditional pattern for `expiresIn` below.
+        if (data !== undefined) {
+          cache.updateData(eventContext, data);
+        }
 
         if (expiresIn) {
           const expirationDate =

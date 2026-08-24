@@ -1,4 +1,4 @@
-import { isUUID } from 'class-validator';
+import { z } from 'zod';
 
 import { type PlainLiteralObject } from '@nestjs/common';
 import { isNil, isNumber, isObject } from '@nestjs/common/utils/shared.utils';
@@ -111,8 +111,10 @@ export function validateParamOption<T extends PlainLiteralObject>(
   }
 }
 
+const uuidSchema = z.uuid();
+
 export function validateUUID(str: string, name: string) {
-  if (!isUUID(str)) {
+  if (!uuidSchema.safeParse(str).success) {
     throw new CrudQueryValidatorException({
       message: `Invalid param ${name}. UUID string expected`,
     });

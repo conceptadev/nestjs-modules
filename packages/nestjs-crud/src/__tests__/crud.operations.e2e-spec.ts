@@ -1,4 +1,3 @@
-import { instanceToPlain, plainToInstance } from 'class-transformer';
 import supertest from 'supertest';
 
 import { type INestApplication } from '@nestjs/common';
@@ -14,17 +13,22 @@ import { AppResolverCqrsModuleFixture } from '../__fixtures__/app-resolver-cqrs.
 import { AppResolverOperationModuleFixture } from '../__fixtures__/app-resolver-operation.module.fixture.js';
 import { AppModuleFixture } from '../__fixtures__/app.module.fixture.js';
 import { default as ormConfig } from '../__fixtures__/ormconfig.fixture.js';
-import { PhotoDtoFixture } from '../__fixtures__/photo/dto/photo.dto.fixture.js';
 import { type PhotoFixture } from '../__fixtures__/photo/photo.entity.fixture.js';
 import { PhotoFactoryFixture } from '../__fixtures__/photo/photo.factory.fixture.js';
 import { PhotoSeederFixture } from '../__fixtures__/photo/photo.seeder.fixture.js';
 
-const toPhotoBody = (photo: PhotoFixture) =>
-  instanceToPlain(
-    plainToInstance(PhotoDtoFixture, photo, {
-      excludeExtraneousValues: true,
-    }),
-  );
+// Picks exactly the fields `photoSchema` exposes — the schema-based
+// replacement for the legacy `plainToInstance(PhotoDtoFixture, photo, {
+// excludeExtraneousValues: true })` + `instanceToPlain(...)` round trip.
+const toPhotoBody = (photo: PhotoFixture) => ({
+  id: photo.id,
+  name: photo.name,
+  description: photo.description,
+  filename: photo.filename,
+  views: photo.views,
+  isPublished: photo.isPublished,
+  deletedAt: photo.deletedAt,
+});
 
 /**
  * Consolidated CRUD Operations E2E Test

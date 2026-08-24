@@ -11,7 +11,7 @@ database-specific base entities for Postgres and SQLite.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-repository-typeorm)](https://www.npmjs.com/package/@concepta/nestjs-repository-typeorm)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-repository-typeorm%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -31,6 +31,11 @@ database-specific base entities for Postgres and SQLite.
 yarn add @concepta/nestjs-repository-typeorm
 ```
 
+### Requirements
+
+ESM-only — no CJS build is published. Requires Node `>= 22.12` and
+NestJS 12 (currently alpha).
+
 ### Dependencies
 
 | Package | Notes |
@@ -39,13 +44,12 @@ yarn add @concepta/nestjs-repository-typeorm
 | `@concepta/nestjs-repository` | Abstract repository layer (`RepositoryAdapter`) |
 | `@nestjs/common` | NestJS core |
 | `@nestjs/typeorm` | TypeORM integration for NestJS |
+| `@tsyche/membrane` | Hook pipeline (`Permeator`/`Membrane`) |
 
 ### Peer Dependencies
 
 | Package | Required | Notes |
 | --- | --- | --- |
-| `class-transformer` | Yes | DTO to entity transformation |
-| `class-validator` | Yes | DTO validation |
 | `typeorm` | Yes | TypeORM ^0.3.0 |
 
 ## Module Registration
@@ -144,9 +148,10 @@ export class OrderService {
 ## TypeOrmRepository
 
 `TypeOrmRepository` extends `RepositoryAdapter` from
-`@concepta/nestjs-repository` and implements all abstract methods using
-TypeORM. Every operation is transaction-aware, runs repository hooks,
-and throws `RepositoryQueryException` on errors.
+`@concepta/nestjs-repository` and implements the protected `do*` template
+methods using TypeORM; the public methods below are inherited concrete
+wrappers that run the hook pipeline. Every operation is transaction-aware,
+runs repository hooks, and throws `RepositoryQueryException` on errors.
 
 ### Methods
 
@@ -312,7 +317,7 @@ export class OrderService {
     private readonly orderRepo: TypeOrmRepository<OrderEntity>,
   ) {}
 
-  async createOrder(ctx: PlainLiteralObject, dto: CreateOrderDto) {
+  async createOrder(ctx: PlainLiteralObject, dto: DeepPartial<OrderEntity>) {
     return this.txScope.run(ctx, async () => {
       // TypeOrmRepository automatically uses the transactional EntityManager
       return this.orderRepo.create(dto, { ctx });
@@ -356,9 +361,9 @@ audit fields and optimistic locking.
 | Entity | Database | Extends | Key Fields |
 | --- | --- | --- | --- |
 | `AuditPostgresEntity` | Postgres | -- | dateCreated, dateUpdated, dateDeleted (`timestamptz`), version |
-| `AuditSqlLiteEntity` | SQLite | -- | dateCreated, dateUpdated, dateDeleted, version |
+| `AuditSqliteEntity` | SQLite | -- | dateCreated, dateUpdated, dateDeleted, version |
 | `CommonPostgresEntity` | Postgres | `AuditPostgresEntity` | id (UUID primary key) |
-| `CommonSqliteEntity` | SQLite | `AuditSqlLiteEntity` | id (UUID primary key) |
+| `CommonSqliteEntity` | SQLite | `AuditSqliteEntity` | id (UUID primary key) |
 
 `AuditPostgresEntity` uses `@CreateDateColumn`, `@UpdateDateColumn`,
 `@DeleteDateColumn` (for soft deletes), and `@VersionColumn` (for
@@ -393,4 +398,4 @@ This gives `OrderEntity` the `id`, `dateCreated`, `dateUpdated`,
 
 | Import Path | Contents |
 | --- | --- |
-| `@concepta/nestjs-repository-typeorm` | `TypeOrmRepositoryModule`, `TypeOrmRepository`, `TypeOrmProviderOptionsInterface`, `TypeOrmTransaction`, `TypeOrmTransactionFactory`, `AuditPostgresEntity`, `AuditSqlLiteEntity`, `CommonPostgresEntity`, `CommonSqliteEntity` |
+| `@concepta/nestjs-repository-typeorm` | `TypeOrmRepositoryModule`, `TypeOrmRepository`, `TypeOrmProviderOptionsInterface`, `TypeOrmTransaction`, `TypeOrmTransactionFactory`, `AuditPostgresEntity`, `AuditSqliteEntity`, `CommonPostgresEntity`, `CommonSqliteEntity` |

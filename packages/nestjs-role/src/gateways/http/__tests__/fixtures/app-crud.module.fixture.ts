@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { CoreModule, ExceptionsFilter, Operation } from '@concepta/nestjs-core';
+import { CoreModule, Operation } from '@concepta/nestjs-core';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
@@ -14,13 +13,13 @@ import { UserRoleEntityFixture } from '../../../../__tests__/fixtures/entities/u
 import { RoleAssignmentEntityInterface } from '../../../../domain/interfaces/role-assignment-entity.interface.js';
 import { RoleInterface } from '../../../../domain/interfaces/role.interface.js';
 import { RoleNamespace } from '../../../../gateways/decorators/role-namespace.decorator.js';
-import { RoleAssignmentCreateDto } from '../../../../infrastructure/dtos/role-assignment-create.dto.js';
-import { RoleAssignmentPaginatedDto } from '../../../../infrastructure/dtos/role-assignment-paginated.dto.js';
-import { RoleAssignmentDto } from '../../../../infrastructure/dtos/role-assignment.dto.js';
-import { RoleCreateDto } from '../../../../infrastructure/dtos/role-create.dto.js';
-import { RolePaginatedDto } from '../../../../infrastructure/dtos/role-paginated.dto.js';
-import { RoleUpdateDto } from '../../../../infrastructure/dtos/role-update.dto.js';
-import { RoleDto } from '../../../../infrastructure/dtos/role.dto.js';
+import { roleAssignmentCreateSchema } from '../../../../infrastructure/schemas/role-assignment-create.schema.js';
+import { roleAssignmentPaginatedSchema } from '../../../../infrastructure/schemas/role-assignment-paginated.schema.js';
+import { roleAssignmentSchema } from '../../../../infrastructure/schemas/role-assignment.schema.js';
+import { roleCreateSchema } from '../../../../infrastructure/schemas/role-create.schema.js';
+import { rolePaginatedSchema } from '../../../../infrastructure/schemas/role-paginated.schema.js';
+import { roleUpdateSchema } from '../../../../infrastructure/schemas/role-update.schema.js';
+import { roleSchema } from '../../../../infrastructure/schemas/role.schema.js';
 import { RoleModule } from '../../../../role.module.js';
 import { CreateRoleAssignmentRequestHandler } from '../../commands/handlers/create-role-assignment-request.handler.js';
 import { CreateRoleRequestHandler } from '../../commands/handlers/create-role-request.handler.js';
@@ -80,10 +79,10 @@ const USER_ROLE_ENTITY_KEY = 'userRole';
           resolver: CrudCqrsResolver,
           transactional: true,
           extraDecorators: [RoleNamespace({ name: ROLE_ENTITY_KEY })],
-          request: { body: RoleCreateDto },
+          request: { body: roleCreateSchema },
           response: {
-            resource: RoleDto,
-            paginated: RolePaginatedDto,
+            resource: roleSchema,
+            paginated: rolePaginatedSchema,
           },
         },
         operations: [
@@ -99,19 +98,19 @@ const USER_ROLE_ENTITY_KEY = 'userRole';
           },
           {
             operation: Operation.Create,
-            request: { body: RoleCreateDto },
+            request: { body: roleCreateSchema },
             command: CreateRoleRequest,
             commandHandler: CreateRoleRequestHandler,
           },
           {
             operation: Operation.Update,
-            request: { body: RoleUpdateDto },
+            request: { body: roleUpdateSchema },
             command: UpdateRoleRequest,
             commandHandler: UpdateRoleRequestHandler,
           },
           {
             operation: Operation.Replace,
-            request: { body: RoleCreateDto },
+            request: { body: roleCreateSchema },
             command: ReplaceRoleRequest,
             commandHandler: ReplaceRoleRequestHandler,
           },
@@ -131,10 +130,10 @@ const USER_ROLE_ENTITY_KEY = 'userRole';
           resolver: CrudCqrsResolver,
           transactional: true,
           extraDecorators: [RoleNamespace({ name: USER_ROLE_ENTITY_KEY })],
-          request: { body: RoleAssignmentCreateDto },
+          request: { body: roleAssignmentCreateSchema },
           response: {
-            resource: RoleAssignmentDto,
-            paginated: RoleAssignmentPaginatedDto,
+            resource: roleAssignmentSchema,
+            paginated: roleAssignmentPaginatedSchema,
           },
         },
         operations: [
@@ -150,7 +149,7 @@ const USER_ROLE_ENTITY_KEY = 'userRole';
           },
           {
             operation: Operation.Create,
-            request: { body: RoleAssignmentCreateDto },
+            request: { body: roleAssignmentCreateSchema },
             command: CreateRoleAssignmentRequest,
             commandHandler: CreateRoleAssignmentRequestHandler,
           },
@@ -163,11 +162,6 @@ const USER_ROLE_ENTITY_KEY = 'userRole';
       },
     }),
   ],
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: ExceptionsFilter,
-    },
-  ],
+  providers: [],
 })
 export class AppCrudModuleFixture {}

@@ -11,14 +11,14 @@ export { UserCredentialsRepository } from './infrastructure/persistence/user-cre
 export { UserRepositoryInterface } from './domain/repositories/user-repository.interface.js';
 export { UserCredentialsRepositoryInterface } from './domain/repositories/user-credentials-repository.interface.js';
 
-// dtos
-export { UserDto } from './infrastructure/dtos/user.dto.js';
-export { UserPaginatedDto } from './infrastructure/dtos/user-paginated.dto.js';
-export { UserCreateDto } from './infrastructure/dtos/user-create.dto.js';
-export { UserUpdateDto } from './infrastructure/dtos/user-update.dto.js';
-export { UserPasswordDto } from './infrastructure/dtos/password/user-password.dto.js';
-export { UserPasswordUpdateDto } from './infrastructure/dtos/password/user-password-update.dto.js';
-export { UserPasswordHashDto } from './infrastructure/dtos/password/user-password-hash.dto.js';
+// schemas (Zod / Standard Schema)
+export { userSchema } from './infrastructure/schemas/user.schema.js';
+export { userPaginatedSchema } from './infrastructure/schemas/user-paginated.schema.js';
+export { userCreateSchema } from './infrastructure/schemas/user-create.schema.js';
+export { userUpdateSchema } from './infrastructure/schemas/user-update.schema.js';
+export { userPasswordSchema } from './infrastructure/schemas/password/user-password.schema.js';
+export { userPasswordUpdateSchema } from './infrastructure/schemas/password/user-password-update.schema.js';
+export { userPasswordHashSchema } from './infrastructure/schemas/password/user-password-hash.schema.js';
 
 // commands
 export { CreateUserCommand } from './application/commands/impl/create-user.command.js';

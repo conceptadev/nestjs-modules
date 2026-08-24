@@ -4,17 +4,19 @@ export { CrudModule } from './crud.module.js';
 // interfaces
 export { CrudContextInterface } from './infrastructure/interceptors/interfaces/crud-context.interface.js';
 export { CrudParsedQueryInterface } from './infrastructure/request/interfaces/crud-parsed-query.interface.js';
-export { CrudResponsePaginatedInterface } from './infrastructure/dtos/interfaces/crud-response-paginated.interface.js';
-export { CrudResponseMetrics } from './infrastructure/dtos/interfaces/crud-response-metrics.interface.js';
-export { CrudCreateBatchInterface } from './infrastructure/dtos/interfaces/crud-create-batch.interface.js';
+export { CrudResponsePaginatedInterface } from './infrastructure/interfaces/crud-response-paginated.interface.js';
+export { CrudResponseMetrics } from './infrastructure/interfaces/crud-response-metrics.interface.js';
+export { CrudCreateBatchInterface } from './infrastructure/interfaces/crud-create-batch.interface.js';
 export { CrudModuleForFeatureOptionsInterface } from './infrastructure/config/interfaces/crud-module-for-feature-options.interface.js';
 export {
   CrudControllerClassOptionsInterface,
   CrudControllerOptionsInterface,
 } from './infrastructure/interfaces/crud-controller-options.interface.js';
-export type { CrudRequestConfig } from './infrastructure/request/interfaces/crud-request-config.interface.js';
-export type { CrudResponseConfig } from './infrastructure/request/interfaces/crud-response-config.interface.js';
-export type { CrudParamOptionInterface } from './infrastructure/interfaces/crud-param-option.interface.js';
+export { CrudRequestConfig } from './infrastructure/request/interfaces/crud-request-config.interface.js';
+export { CrudResponseConfig } from './infrastructure/request/interfaces/crud-response-config.interface.js';
+export { CrudParamOptionInterface } from './infrastructure/interfaces/crud-param-option.interface.js';
+export { CrudParamsOptionsInterface } from './infrastructure/interfaces/crud-params-options.interface.js';
+export { CrudSerializationOptionsInterface } from './infrastructure/interfaces/crud-serialization-options.interface.js';
 
 export { CrudAdapter } from './infrastructure/adapters/crud.adapter.js';
 
@@ -79,9 +81,9 @@ export { CrudApiParam } from './infrastructure/decorators/openapi/crud-api-param
 export { CrudApiQuery } from './infrastructure/decorators/openapi/crud-api-query.decorator.js';
 export { CrudApiResponse } from './infrastructure/decorators/openapi/crud-api-response.decorator.js';
 
-// dto
-export { CrudResponsePaginatedDto } from './infrastructure/dtos/crud-response-paginated.dto.js';
-export { CrudCreateBatchDto } from './infrastructure/dtos/crud-create-batch.dto.js';
+// schemas (Zod / Standard Schema)
+export { paginatedSchema } from './infrastructure/schemas/crud-response-paginated.schema.js';
+export { createBatchSchema } from './infrastructure/schemas/crud-create-batch.schema.js';
 
 // exceptions
 export { CrudException } from './infrastructure/exceptions/crud.exception.js';
@@ -101,7 +103,11 @@ export {
   ConfigurableCrudOptions,
 } from './infrastructure/utils/interfaces/configurable-crud-options.interface.js';
 export { ConfigurableCrudBuilder } from './infrastructure/utils/configurable-crud.builder.js';
-export { ConfigurableCrudOptionsTransformer } from './crud.types.js';
+export {
+  ConfigurableCrudOptionsTransformer,
+  CrudSchema,
+  CrudValidationOptions,
+} from './crud.types.js';
 
 // operation types
 export { CrudOperationOptions } from './infrastructure/utils/crud-operation-options.type.js';
@@ -146,5 +152,5 @@ export { CrudRestoreHandler } from './application/commands/handlers/crud-restore
 // Base handler classes for consumers to extend when writing custom handlers.
 export { CrudCommandBaseHandler } from './application/commands/handlers/crud-command-base.handler.js';
 export { CrudQueryBaseHandler } from './application/queries/handlers/crud-query-base.handler.js';
-export type { CrudCommandInterface } from './application/commands/interfaces/crud-command.interface.js';
-export type { CrudQueryInterface } from './application/queries/interfaces/crud-query.interface.js';
+export { CrudCommandInterface } from './application/commands/interfaces/crud-command.interface.js';
+export { CrudQueryInterface } from './application/queries/interfaces/crud-query.interface.js';

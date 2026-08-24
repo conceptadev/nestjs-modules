@@ -1,11 +1,11 @@
-import { plainToClass } from 'class-transformer';
 import {
+  type DeepPartial,
   type MigrationInterface,
   type Repository,
   type QueryRunner,
 } from 'typeorm';
 
-import { type PlainLiteralObject, type Type } from '@nestjs/common';
+import { type PlainLiteralObject } from '@nestjs/common';
 
 import { CompanyEntity } from './company/company.entity.js';
 import { NoteEntity } from './note/note.entity.js';
@@ -16,15 +16,9 @@ import { UserEntity } from './users/user.entity.js';
 export class Seeds implements MigrationInterface {
   private save<T extends PlainLiteralObject>(
     repo: Repository<T>,
-    data: Partial<T>[],
+    data: DeepPartial<T>[],
   ): Promise<T[]> {
-    return repo.save(
-      data.map((partial: Partial<T>) =>
-        plainToClass(repo.target as Type<T>, partial, {
-          ignoreDecorators: true,
-        }),
-      ),
-    );
+    return repo.save(data.map((partial) => repo.create(partial)));
   }
 
   public async up(queryRunner: QueryRunner): Promise<void> {

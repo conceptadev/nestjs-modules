@@ -48,9 +48,9 @@ export { FederatedOptionsExtrasInterface } from './interfaces/federated-options-
 // config interfaces
 export { FederatedSettingsInterface } from './infrastructure/config/interfaces/federated-settings.interface.js';
 
-// DTOs
-export { IdentityDto } from './infrastructure/dtos/identity.dto.js';
-export { IdentityCreateDto } from './infrastructure/dtos/identity-create.dto.js';
+// schemas (Zod / Standard Schema)
+export { identitySchema } from './infrastructure/schemas/identity.schema.js';
+export { identityCreateSchema } from './infrastructure/schemas/identity-create.schema.js';
 
 // persistence
 export { IdentityMapper } from './infrastructure/persistence/identity.mapper.js';

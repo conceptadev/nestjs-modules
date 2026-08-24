@@ -35,6 +35,7 @@ export const CrudBody = CrudMetadata.createWrappedDecorator<
         parameterIndex,
         validation: options?.validation,
         pipes: options?.pipes ?? [],
+        schema: options?.schema,
       };
 
       // Store metadata on the method handler (not the parameter)

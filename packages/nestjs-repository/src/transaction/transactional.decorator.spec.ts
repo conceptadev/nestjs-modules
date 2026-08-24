@@ -1,8 +1,6 @@
 import { Transactional, TRANSACTIONAL_KEY } from './transactional.decorator.js';
 
 describe('Transactional decorator', () => {
-  class TestError extends Error {}
-
   it('should apply metadata with default options', () => {
     class TestClass {
       @Transactional()
@@ -19,7 +17,6 @@ describe('Transactional decorator', () => {
     expect(metadata).toBeDefined();
     expect(metadata.propagation).toBe('SUPPORTS');
     expect(metadata.readOnly).toBe(false);
-    expect(metadata.noRollbackFor).toEqual([]);
     expect(metadata.timeout).toBeUndefined();
   });
 
@@ -103,29 +100,12 @@ describe('Transactional decorator', () => {
     expect(metadata.timeout).toBe(5000);
   });
 
-  it('should apply metadata with noRollbackFor', () => {
-    class TestClass {
-      @Transactional({ noRollbackFor: [TestError] })
-      testMethod() {
-        return 'test';
-      }
-    }
-
-    const metadata = Reflect.getMetadata(
-      TRANSACTIONAL_KEY,
-      TestClass.prototype.testMethod,
-    );
-
-    expect(metadata.noRollbackFor).toContain(TestError);
-  });
-
   it('should apply metadata with multiple options', () => {
     class TestClass {
       @Transactional({
         propagation: 'SUPPORTS',
         readOnly: true,
         timeout: 10000,
-        noRollbackFor: [TestError],
       })
       testMethod() {
         return 'test';
@@ -140,6 +120,5 @@ describe('Transactional decorator', () => {
     expect(metadata.propagation).toBe('SUPPORTS');
     expect(metadata.readOnly).toBe(true);
     expect(metadata.timeout).toBe(10000);
-    expect(metadata.noRollbackFor).toContain(TestError);
   });
 });

@@ -1,6 +1,6 @@
-// user DTOs
-export { UserPaginatedDto } from './infrastructure/dtos/user-paginated.dto.js';
-export { UserCreateBatchDto } from './infrastructure/dtos/user-create-batch.dto.js';
+// user schemas (Zod / Standard Schema)
+export { userPaginatedSchema } from './infrastructure/schemas/user-paginated.schema.js';
+export { userCreateBatchSchema } from './infrastructure/schemas/user-create-batch.schema.js';
 
 // user requests
 export { CreateUserRequest } from './gateways/http/commands/impl/create-user.request.js';

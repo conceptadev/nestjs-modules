@@ -10,7 +10,7 @@ control, and a two-level repository hook system.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-repository)](https://www.npmjs.com/package/@concepta/nestjs-repository)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-repository%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -36,6 +36,11 @@ control, and a two-level repository hook system.
 yarn add @concepta/nestjs-repository
 ```
 
+### Requirements
+
+ESM-only — no CJS build is published. Requires Node `>= 22.12` and
+NestJS 12 (currently alpha).
+
 ### Dependencies
 
 | Package | Notes |
@@ -43,13 +48,12 @@ yarn add @concepta/nestjs-repository
 | `@concepta/nestjs-core` | Core interfaces, hook system, and utilities |
 | `@nestjs/common` | NestJS core |
 | `@nestjs/core` | Reflector for metadata |
+| `@tsyche/membrane` | Hook pipeline (`Permeator`/`Membrane`) — ^0.7.0 |
 
 ### Peer Dependencies
 
 | Package | Required | Notes |
 | --- | --- | --- |
-| `class-transformer` | Yes | DTO to entity transformation |
-| `class-validator` | Yes | DTO validation |
 | `rxjs` | Yes | Used by `TransactionalRunner` and interceptor |
 
 ## Module Registration
@@ -158,56 +162,67 @@ RepositoryModule (forRoot / forFeature)
 ## Repository Adapter
 
 `RepositoryAdapter` is the abstract base class that all driver-specific
-repository implementations extend. It implements `RepositoryInterface`.
+repository implementations extend. It implements `RepositoryInterface` with
+a template-method design: the public operations (`find`, `create`, `update`,
+etc.) are concrete wrappers that run the hook pipeline, each delegating to a
+protected abstract `do*` method that the driver implements.
 
-### Abstract Methods
+### Abstract Members
 
-Concrete implementations must provide these methods:
+Concrete implementations must provide these protected `do*` methods, plus
+the abstract `transform`/`merge` utilities and the `metadata` property:
 
 | Category | Method | Signature |
 | --- | --- | --- |
-| Query | `find` | `(options?) => Promise<Entity[]>` |
-| Query | `findOne` | `(options) => Promise<Entity \| null>` |
-| Query | `count` | `(options?) => Promise<number>` |
-| Query | `findAndCount` | `(options?) => Promise<[Entity[], number]>` |
-| Create | `create` | `(entity, options?) => Promise<Entity>` |
-| Create | `createMany` | `(entities, options?) => Promise<Entity[]>` |
-| Update | `update` | `(entity, data, options?) => Promise<Entity>` |
-| Update | `upsert` | `(entity, options?) => Promise<Entity>` |
-| Update | `replace` | `(entity, data, options?) => Promise<Entity>` |
-| Delete | `delete` | `(entity, options?) => Promise<Entity>` |
-| Delete | `deleteMany` | `(entities, options?) => Promise<Entity[]>` |
-| Delete | `softDelete` | `(entity, options?) => Promise<Entity>` |
-| Lifecycle | `restore` | `(entity, options?) => Promise<Entity>` |
+| Query | `doFind` | `(options?) => Promise<Entity[]>` |
+| Query | `doFindOne` | `(options) => Promise<Entity \| null>` |
+| Query | `doCount` | `(options?) => Promise<number>` |
+| Query | `doFindAndCount` | `(options?) => Promise<[Entity[], number]>` |
+| Create | `doCreate` | `(entity, options?) => Promise<Entity>` |
+| Create | `doCreateMany` | `(entities, options?) => Promise<Entity[]>` |
+| Update | `doUpdate` | `(entity, data, options?) => Promise<Entity>` |
+| Update | `doUpsert` | `(entity, options?) => Promise<Entity>` |
+| Update | `doReplace` | `(entity, data, options?) => Promise<Entity>` |
+| Delete | `doDelete` | `(entity, options?) => Promise<Entity>` |
+| Delete | `doDeleteMany` | `(entities, options?) => Promise<Entity[]>` |
+| Delete | `doSoftDelete` | `(entity, options?) => Promise<Entity>` |
+| Lifecycle | `doRestore` | `(entity, options?) => Promise<Entity>` |
 | Utility | `transform` | `(entityLike) => Entity` |
 | Utility | `merge` | `(mergeIntoEntity, ...entityLikes) => Entity` |
+| Utility | `metadata` | `RepositoryMetadataInterface<Entity>` (abstract property) |
 
-### Concrete Methods
+### Concrete Members
 
-| Method | Description |
-| --- | --- |
-| `prepare(dto)` | Transform DTO to entity instance using `class-transformer` |
-| `getPrimaryColumns()` | Get primary key column names from metadata |
-| `toDnf(clause)` | Convert `WhereClause` AST to Disjunctive Normal Form |
-| `runHooks(methodKey, payload, ctx)` | Execute repository hooks for a lifecycle event |
+The public `find`, `findOne`, `count`, `findAndCount`, `create`,
+`createMany`, `update`, `upsert`, `replace`, `delete`, `deleteMany`,
+`softDelete`, and `restore` methods are concrete — each runs the
+[hook pipeline](#hook-pipeline) around the matching `do*` method.
+
+| Member | Visibility | Description |
+| --- | --- | --- |
+| `prepare(dto)` | public | Returns `dto` unchanged if it is already an entity instance, otherwise `Object.assign(new entityType(), dto)` |
+| `getPrimaryColumns()` | protected | Get primary key column names from metadata (subclass-author API) |
+| `toDnf(clause)` | protected | Convert `WhereClause` AST to Disjunctive Normal Form (subclass-author API) |
+| `runHooks(methodKey, payload, ctx)` | protected | Execute repository hooks for a lifecycle event (subclass-author API) |
+| `resolveJoinClauses(join?)` | protected | Resolve structural join properties from relation metadata (subclass-author API) |
 
 ### Implementing a Repository
 
 ```ts
 import { RepositoryAdapter } from '@concepta/nestjs-repository';
 
-class TypeOrmRepository<Entity> extends RepositoryAdapter<Entity> {
+class MyDriverRepository<Entity> extends RepositoryAdapter<Entity> {
   readonly metadata = { /* ... */ };
 
-  async find(options?) {
+  protected async doFind(options?) {
     return this.repo.find(options);
   }
 
-  async create(entity, options?) {
+  protected async doCreate(entity, options?) {
     return this.repo.save(entity);
   }
 
-  // ... implement remaining abstract methods
+  // ... implement the remaining do* methods, transform, and merge
 }
 ```
 
@@ -228,7 +243,8 @@ interface JoinClause {
 ```
 
 Structural properties (`on`, `through`, `cardinality`) are resolved
-automatically from entity relation metadata by `RepositoryAdapter.resolveJoinClauses()`.
+automatically from entity relation metadata by the adapter (via the
+protected `resolveJoinClauses()`).
 
 ### Join Helper
 
@@ -629,14 +645,14 @@ import { TransactionScope } from '@concepta/nestjs-repository';
 export class OrderService {
   constructor(private readonly txScope: TransactionScope) {}
 
-  async createOrder(ctx: PlainLiteralObject, dto: CreateOrderDto) {
-    return this.txScope.run(ctx, async (trx) => {
+  async createOrder(ctx: PlainLiteralObject, dto: DeepPartial<OrderEntity>) {
+    return this.txScope.run(ctx, async (txCtx) => {
       // All repository operations share the same transaction
       const order = await orderRepo.create(dto);
       await inventoryRepo.update(order.itemId, { reserved: true });
 
       // Register post-commit callback
-      trx.trx.onCommit(() => {
+      txCtx.trx.onCommit(() => {
         // Send confirmation email after successful commit
       });
 
@@ -673,15 +689,15 @@ export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
 
     const eventContext = new EventContextHost({ namespace }, {});
 
-    return this.txScope.run(ctx, async (trx) => {
+    return this.txScope.run(ctx, async (txCtx) => {
       const order = this.eventPublisher.mergeObjectContext(
         Order.create(eventContext, dto),
       );
 
       await orderRepo.save(ctx, order);
 
-      trx.trx.onCommit(() => order.commit());     // publish domain events
-      trx.trx.onRollback(() => order.uncommit());  // discard domain events
+      txCtx.trx.onCommit(() => order.commit());     // publish domain events
+      txCtx.trx.onRollback(() => order.uncommit());  // discard domain events
 
       return order;
     });
@@ -693,9 +709,8 @@ export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
 
 | Behavior | Description |
 | --- | --- |
-| `REQUIRED` | Join existing transaction or create a new one (default) |
-| `SUPPORTS` | Use existing transaction if available, otherwise run without one |
-| `MANDATORY` | Require an existing transaction; throw `TransactionRequiredException` if none |
+| `SUPPORTS` | Run the full lifecycle; commit/rollback are no-ops when the driver does not support transactions (default) |
+| `MANDATORY` | Require real transaction support; throw `TransactionRequiredException` if none |
 
 ```ts
 // Read-only transaction (always rolls back)
@@ -718,7 +733,7 @@ and join it. Only the outermost call owns the lifecycle (commit/rollback).
 
 ```ts
 // Outermost — creates transaction
-await this.txScope.run(ctx, async (trx) => {
+await this.txScope.run(ctx, async (txCtx) => {
   await serviceA.doWork(ctx); // joins existing transaction
   await serviceB.doWork(ctx); // joins existing transaction
 });
@@ -769,7 +784,7 @@ import { Transactional } from '@concepta/nestjs-repository';
 @Transactional()
 export class OrderController {
   @Post()
-  async create(@Body() dto: CreateOrderDto) {
+  async create(@Body() dto: DeepPartial<OrderEntity>) {
     // Runs in a transaction
   }
 
@@ -793,16 +808,14 @@ export class OrderController {
 
 ```ts
 interface TransactionalOptions {
-  propagation?: 'REQUIRED' | 'SUPPORTS' | 'MANDATORY';
+  propagation?: 'SUPPORTS' | 'MANDATORY';
   readOnly?: boolean;
-  noRollbackFor?: Array<new (...args: any[]) => Error>;
   timeout?: number; // milliseconds (default: 30000)
 }
 ```
 
-- **`propagation`** -- transaction propagation behavior (default: `'REQUIRED'`)
+- **`propagation`** -- transaction propagation behavior (default: `'SUPPORTS'`)
 - **`readOnly`** -- always roll back, for read-only operations (default: `false`)
-- **`noRollbackFor`** -- exception types that should not trigger rollback
 - **`timeout`** -- transaction timeout in milliseconds
 
 Method-level `@Transactional()` overrides class-level settings.
@@ -881,6 +894,9 @@ export class UserOnlyHook {
 }
 ```
 
+`RepoSpec.isEntity(name)` builds an `EntitySpecification` (also exported
+for direct use) that matches when the repository's entity key equals `name`.
+
 ### Hook Decorators
 
 Hooks are organized into two levels: high-level semantic decorators that
@@ -907,6 +923,33 @@ match broad categories, and fine-grained decorators for specific operations.
 
 Hook methods receive the operation payload and an optional context, and must
 return the (possibly modified) payload.
+
+### Hook Pipeline
+
+Hook execution is orchestrated by `RepoPermeatorFactory`, built on
+`@tsyche/membrane` (`Permeator`/`Membrane`). Each public repository
+operation runs before-hooks on its input, calls the driver's `do*` method,
+then runs after-hooks on the result, with one of two merge semantics:
+
+- **`overwrite`** -- read operations (`find`, `findOne`, `count`,
+  `findAndCount`) and `createMany`: hooks may freely transform options and
+  results.
+- **`preserve`** -- single-entity write operations (`create`, `update`,
+  `upsert`, `replace`) and delete/lifecycle operations (`delete`,
+  `deleteMany`, `softDelete`, `restore`): the original/DB result wins over
+  hook mutations.
+
+Any error thrown inside the pipeline (a hook or the driver call) is wrapped
+in `RepositoryQueryException`; already-wrapped errors pass through
+unchanged.
+
+Two `OverlayRef` tokens are exported for reading repository state from an
+`AppContextHost` (via `ctx.with(ref)` or `@Ctx(ref)`):
+
+| Export | Description |
+| --- | --- |
+| `RepoCtx` | Overlay carrying the entity key in scope: `{ entity: string }` |
+| `TrxCtx` | Overlay carrying the active `TransactionManager`: `{ trx }` |
 
 ## Repository Registry
 
@@ -1013,12 +1056,14 @@ export class OrderService {
 ```
 
 The injection token is derived from the `key` provided in
-`RepositoryProviderOptions`.
+`RepositoryProviderOptions` via `getDynamicRepositoryToken(key)`, which is
+also exported for manual provider wiring.
 
 ## Exceptions
 
 | Exception | Description |
 | --- | --- |
+| `RepositoryQueryException` | Wraps any error thrown by a repository operation or its hook pipeline |
 | `RepositoryDuplicateKeyException` | Duplicate repository keys detected at bootstrap |
 | `TransactionRequiredException` | `MANDATORY` propagation requires a transaction but none exists |
 | `TransactionTimeoutException` | Transaction exceeded timeout duration |

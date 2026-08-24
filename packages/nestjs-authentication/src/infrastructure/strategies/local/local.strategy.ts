@@ -1,4 +1,3 @@
-import { validateOrReject } from 'class-validator';
 import { Strategy } from 'passport-local';
 
 import { Inject, Injectable } from '@nestjs/common';
@@ -56,22 +55,20 @@ export class LocalStrategy extends PassportStrategyFactory<Strategy>(
    * @param password - The plain text password
    */
   async validate(req: unknown, username: ReferenceUsername, password: string) {
-    const { loginDto, usernameField, passwordField } = this.policy;
+    const { loginSchema, usernameField, passwordField } = this.policy;
 
-    if (!loginDto) {
-      throw new LocalException({ message: 'Login DTO is not configured.' });
+    if (!loginSchema) {
+      throw new LocalException({ message: 'Login schema is not configured.' });
     }
 
-    // validate the dto
-    const dto = new loginDto();
-    dto[usernameField] = username;
-    dto[passwordField] = password;
+    const result = await loginSchema['~standard'].validate({
+      [usernameField]: username,
+      [passwordField]: password,
+    });
 
-    try {
-      await validateOrReject(dto);
-    } catch (e) {
+    if (result.issues) {
       throw new LocalInvalidLoginDataException({
-        originalError: e,
+        originalError: result.issues,
       });
     }
 

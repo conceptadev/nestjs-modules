@@ -23,10 +23,10 @@ export { CacheRepositoryResolverInterface } from './domain/repositories/cache-re
 // interfaces
 export { CacheExtrasInterface } from './infrastructure/config/interfaces/cache-extras.interface.js';
 
-// dto
-export { CacheCreateDto } from './infrastructure/dtos/cache-create.dto.js';
-export { CacheUpdateDto } from './infrastructure/dtos/cache-update.dto.js';
-export { CacheDto } from './infrastructure/dtos/cache.dto.js';
+// schemas (Zod / Standard Schema)
+export { cacheCreateSchema } from './infrastructure/schemas/cache-create.schema.js';
+export { cacheUpdateSchema } from './infrastructure/schemas/cache-update.schema.js';
+export { cacheSchema } from './infrastructure/schemas/cache.schema.js';
 
 // domain commands
 export { UpsertCacheCommand } from './application/commands/impl/upsert-cache.command.js';

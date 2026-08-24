@@ -2,7 +2,8 @@ import { type CacheInterface } from './cache.interface.js';
 
 export interface CacheCreatableInterface extends Pick<
   CacheInterface,
-  'key' | 'type' | 'data' | 'assigneeId'
+  'key' | 'type' | 'assigneeId'
 > {
-  expiresIn: string | null;
+  data?: string | null;
+  expiresIn?: string | null;
 }

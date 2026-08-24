@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { CoreModule, ExceptionsFilter, Operation } from '@concepta/nestjs-core';
+import { CoreModule, Operation } from '@concepta/nestjs-core';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
@@ -14,10 +13,10 @@ import { CACHE_MODULE_CACHE_ENTITY_KEY } from '../../../../cache.constants.js';
 import { CacheModule } from '../../../../cache.module.js';
 import { CacheInterface } from '../../../../domain/interfaces/cache.interface.js';
 import { CacheNamespace } from '../../../../gateways/decorators/cache-namespace.decorator.js';
-import { CacheCreateDto } from '../../../../infrastructure/dtos/cache-create.dto.js';
-import { CachePaginatedDto } from '../../../../infrastructure/dtos/cache-paginated.dto.js';
-import { CacheUpdateDto } from '../../../../infrastructure/dtos/cache-update.dto.js';
-import { CacheDto } from '../../../../infrastructure/dtos/cache.dto.js';
+import { cacheCreateSchema } from '../../../../infrastructure/schemas/cache-create.schema.js';
+import { cachePaginatedSchema } from '../../../../infrastructure/schemas/cache-paginated.schema.js';
+import { cacheUpdateSchema } from '../../../../infrastructure/schemas/cache-update.schema.js';
+import { cacheSchema } from '../../../../infrastructure/schemas/cache.schema.js';
 import { CreateCacheRequestHandler } from '../../commands/handlers/create-cache-request.handler.js';
 import { DeleteCacheRequestHandler } from '../../commands/handlers/delete-cache-request.handler.js';
 import { ReplaceCacheRequestHandler } from '../../commands/handlers/replace-cache-request.handler.js';
@@ -67,10 +66,10 @@ import { ReadCacheRequest } from '../../queries/impl/read-cache.request.js';
           extraDecorators: [
             CacheNamespace({ name: CACHE_MODULE_CACHE_ENTITY_KEY }),
           ],
-          request: { body: CacheCreateDto },
+          request: { body: cacheCreateSchema },
           response: {
-            resource: CacheDto,
-            paginated: CachePaginatedDto,
+            resource: cacheSchema,
+            paginated: cachePaginatedSchema,
           },
         },
         operations: [
@@ -86,19 +85,19 @@ import { ReadCacheRequest } from '../../queries/impl/read-cache.request.js';
           },
           {
             operation: Operation.Create,
-            request: { body: CacheCreateDto },
+            request: { body: cacheCreateSchema },
             command: CreateCacheRequest,
             commandHandler: CreateCacheRequestHandler,
           },
           {
             operation: Operation.Update,
-            request: { body: CacheUpdateDto },
+            request: { body: cacheUpdateSchema },
             command: UpdateCacheRequest,
             commandHandler: UpdateCacheRequestHandler,
           },
           {
             operation: Operation.Replace,
-            request: { body: CacheCreateDto },
+            request: { body: cacheCreateSchema },
             command: ReplaceCacheRequest,
             commandHandler: ReplaceCacheRequestHandler,
           },
@@ -111,11 +110,6 @@ import { ReadCacheRequest } from '../../queries/impl/read-cache.request.js';
       },
     }),
   ],
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: ExceptionsFilter,
-    },
-  ],
+  providers: [],
 })
 export class AppCrudModuleFixture {}

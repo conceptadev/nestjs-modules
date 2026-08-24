@@ -1,5 +1,5 @@
 import {
-  CachePaginatedDto,
+  cachePaginatedSchema,
   CreateCacheRequest,
   UpdateCacheRequest,
   DeleteCacheRequest,
@@ -15,8 +15,8 @@ import {
 } from '../optional-crud.js';
 
 describe('optional-crud', () => {
-  it('should export CachePaginatedDto', () => {
-    expect(CachePaginatedDto).toBeInstanceOf(Function);
+  it('should export cachePaginatedSchema', () => {
+    expect(cachePaginatedSchema.meta).toBeInstanceOf(Function);
   });
 
   it('should export requests', () => {

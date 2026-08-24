@@ -1,4 +1,6 @@
-import { type ValidationError } from 'class-validator';
+import { type StandardSchemaV1 } from '@standard-schema/spec';
+
+import { HttpStatus } from '@nestjs/common';
 
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
@@ -6,22 +8,23 @@ import { OtpException } from './otp.exception.js';
 
 export class OtpValidationException extends OtpException {
   declare context: OtpException['context'] & {
-    entityName: string;
-    validationErrors: ValidationError[];
+    schemaName: string;
+    validationErrors: readonly StandardSchemaV1.Issue[];
   };
 
   constructor(
-    entityName: string,
-    validationErrors: ValidationError[],
+    schemaName: string,
+    validationErrors: readonly StandardSchemaV1.Issue[],
     options?: RuntimeExceptionOptions,
   ) {
     super({
-      message: 'Data for the %s OTP DTO is not valid',
-      messageParams: [entityName],
+      message: 'Data for the %s schema is not valid',
+      messageParams: [schemaName],
+      httpStatus: HttpStatus.BAD_REQUEST,
       ...options,
     });
 
-    this.context = { ...this.context, entityName, validationErrors };
+    this.context = { ...this.context, schemaName, validationErrors };
     this.errorCode = 'OTP_VALIDATION_ERROR';
   }
 }

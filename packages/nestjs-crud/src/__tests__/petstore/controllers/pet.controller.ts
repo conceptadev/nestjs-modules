@@ -1,3 +1,5 @@
+import { type z } from 'zod';
+
 import { Inject } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -17,16 +19,18 @@ import { CrudCtx } from '../../../infrastructure/interceptors/crud-context.overl
 import { CrudContextInterface } from '../../../infrastructure/interceptors/interfaces/crud-context.interface.js';
 import { CrudAdapterResolver } from '../../../infrastructure/resolvers/crud-adapter.resolver.js';
 import { CrudResolverInterface } from '../../../infrastructure/resolvers/interfaces/crud-resolver.interface.js';
-import { Pet } from '../dto/pet.dto.js';
+import { petSchema } from '../schemas/pet.schema.js';
+
+type PetType = z.infer<typeof petSchema>;
 
 @CrudController({
   path: 'pet',
   entity: 'Pet',
   request: {
-    body: Pet,
+    body: petSchema,
     params: { petId: { field: 'petId', type: 'number', primary: true } },
   },
-  response: { resource: Pet },
+  response: { resource: petSchema },
 })
 @ApiTags('pet')
 export class PetController {
@@ -39,7 +43,15 @@ export class PetController {
     command: CrudCreateCommand,
     api: { operation: { operationId: 'addPet' } },
   })
-  async addPet(@Ctx(CrudCtx) ctx: CrudContextInterface, @CrudBody() dto: Pet) {
+  async addPet(
+    @Ctx(CrudCtx) ctx: CrudContextInterface,
+    // `@CrudBody({ schema })` is required here (not just the controller's
+    // `request.body` above) — a handwritten controller's parameter
+    // decorator is what actually wires `StandardSchemaValidationPipe`;
+    // `ConfigurableCrudBuilder`-generated controllers do this
+    // automatically, handwritten ones must do it explicitly.
+    @CrudBody({ schema: petSchema }) dto: PetType,
+  ) {
     return this.crudResolver.create(ctx, dto);
   }
 
@@ -59,7 +71,7 @@ export class PetController {
   })
   async updatePetWithForm(
     @Ctx(CrudCtx) ctx: CrudContextInterface,
-    @CrudBody() dto: Pet,
+    @CrudBody({ schema: petSchema }) dto: PetType,
   ) {
     return this.crudResolver.replace(ctx, dto);
   }

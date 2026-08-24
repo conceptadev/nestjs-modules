@@ -1,9 +1,10 @@
-import { type Type } from '@nestjs/common';
 import { MetadataScanner } from '@nestjs/core';
-import { ApiBody, ApiExtraModels } from '@nestjs/swagger';
+import { ApiBody } from '@nestjs/swagger';
 
 import { Operation } from '@concepta/nestjs-core';
 
+import { type CrudSchema } from '../../../crud.types.js';
+import { CrudException } from '../../exceptions/crud.exception.js';
 import { CrudMetaview } from '../../services/crud-metaview.service.js';
 import { swagger } from '../../utils/swagger.helper.js';
 
@@ -39,10 +40,12 @@ const API_PARAMETERS_KEY: string | undefined = discoverApiParametersKey();
 /**
  * \@CrudInit() api body decorator.
  *
- * Resolves the request body type from the metadata hierarchy (method → class)
- * and applies `@ApiBody` with the correct type for each write operation.
- * Removes any placeholder body entry left by the method-level `@CrudApiBody`
- * decorator so only one body entry exists per operation.
+ * Resolves the request body schema from the metadata hierarchy (method →
+ * class) and applies `@ApiBody` with the converted JSON Schema for each
+ * write operation. Removes any placeholder body entry left by the
+ * method-level `@CrudApiBody` decorator (added by the operation decorators
+ * whenever their own local `request.body` is undefined) so only one body
+ * entry exists per operation.
  */
 export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
   /* istanbul ignore if */
@@ -61,27 +64,51 @@ export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
     const operation = reflectionService.getOperation(handler);
     if (!operation) continue;
 
-    let bodyType: Type | undefined;
+    let bodySchema: CrudSchema | undefined;
 
     switch (operation) {
       case Operation.CreateBatch:
-        bodyType = reflectionService.getRequestBodyBatch(classTarget, handler);
+        bodySchema = reflectionService.getRequestBodyBatch(
+          classTarget,
+          handler,
+        );
         break;
       case Operation.Create:
       case Operation.Update:
       case Operation.Replace:
-        bodyType = reflectionService.getRequestBody(classTarget, handler);
+        bodySchema = reflectionService.getRequestBody(classTarget, handler);
         break;
       default:
         continue;
     }
 
-    if (!bodyType) continue;
+    if (!bodySchema) continue;
 
-    // Remove any existing body entry added by the method-level CrudApiBody call,
-    // which may have type: String as a placeholder when bodyType was not yet resolved.
-    // ApiBody() appends to API_PARAMETERS on descriptor.value, so clearing first
-    // ensures only one body entry exists after we append the resolved one below.
+    // Schema-based bodies are NOT auto-documented here: @nestjs/swagger's
+    // parameter accessor bails out unless `design:paramtypes` reflection
+    // metadata is present (see parameter-metadata-accessor.js), which
+    // dynamically-generated crud controller methods never have (no real
+    // TS parameter syntax was compiled for them) — even though Nest's
+    // OWN request pipeline (ROUTE_ARGS_METADATA) correctly resolves the
+    // schema for VALIDATION regardless. So, manually inject an ApiBody
+    // entry — using `schema:` (a raw OpenAPI schema object, converted via
+    // the bridge) since `ApiBody`, unlike `ApiResponse`, has no
+    // `standardSchema` option.
+    const convert = bodySchema['~standard'].jsonSchema?.input;
+    const converted = convert?.({ target: 'openapi-3.0' });
+    if (!converted) {
+      // A schema missing its ~standard.jsonSchema bridge (i.e. never
+      // passed through withOpenApi) would otherwise silently produce an
+      // undocumented request body — fail loudly instead.
+      throw new CrudException({
+        message: `Request body schema for "${methodName}" is missing its OpenAPI bridge — wrap it with withOpenApi() before using it as a CRUD request body.`,
+      });
+    }
+    // Remove any existing body entry added by the method-level CrudApiBody
+    // placeholder (which renders as `{ type: 'string' }` when left in place).
+    // ApiBody() appends to API_PARAMETERS on descriptor.value, so clearing
+    // first ensures only one body entry exists after we append the resolved
+    // one below.
     if (API_PARAMETERS_KEY) {
       const existingParams: unknown[] =
         Reflect.getMetadata(API_PARAMETERS_KEY, handler) ?? [];
@@ -94,10 +121,10 @@ export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
       Reflect.defineMetadata(API_PARAMETERS_KEY, withoutBody, handler);
     }
 
-    // Apply ApiBody with the resolved type — appends to the cleaned array.
-    ApiBody({ type: bodyType })(prototype, methodName, descriptor);
-
-    // Register the DTO in components/schemas so $ref resolves correctly.
-    ApiExtraModels(bodyType)(classTarget);
+    ApiBody({ schema: converted, required: true })(
+      prototype,
+      methodName,
+      descriptor,
+    );
   }
 };

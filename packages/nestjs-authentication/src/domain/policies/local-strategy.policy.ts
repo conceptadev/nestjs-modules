@@ -1,24 +1,24 @@
-import { type Type } from '@nestjs/common';
+import { type StandardSchemaV1 } from '@standard-schema/spec';
 
 export interface LocalStrategyPolicySettingsInterface {
-  loginDto?: Type;
+  loginSchema?: StandardSchemaV1;
   usernameField?: string;
   passwordField?: string;
 }
 
 export class LocalStrategyPolicy {
-  readonly loginDto: Type | undefined;
+  readonly loginSchema: StandardSchemaV1 | undefined;
   readonly usernameField: string;
   readonly passwordField: string;
 
   constructor(settings: LocalStrategyPolicySettingsInterface) {
     const {
-      loginDto,
+      loginSchema,
       usernameField = 'username',
       passwordField = 'password',
     } = settings;
 
-    this.loginDto = loginDto;
+    this.loginSchema = loginSchema;
     this.usernameField = usernameField;
     this.passwordField = passwordField;
   }

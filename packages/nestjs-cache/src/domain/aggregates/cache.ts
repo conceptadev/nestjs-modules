@@ -63,7 +63,7 @@ export class Cache extends DomainAggregate<CacheInterface> {
       key,
       type,
       assigneeId,
-      data,
+      data: data ?? null,
       expirationDate,
     });
 
@@ -82,7 +82,7 @@ export class Cache extends DomainAggregate<CacheInterface> {
       key,
       type,
       assigneeId,
-      data,
+      data: data ?? null,
       expirationDate,
     };
     this.incrementVersion();

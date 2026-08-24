@@ -1,7 +1,6 @@
-import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 import request from 'supertest';
 import { DataSource } from 'typeorm';
+import { z } from 'zod';
 
 import { Get, Inject, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -34,8 +33,8 @@ import { getDynamicAdapterToken } from '../infrastructure/utils/crud-infra.utils
 
 import { CRUD_TEST_COMPANY_ENTITY_NAME } from '../__fixtures__/crud-test.constants.js';
 import { CompanyEntity } from '../__fixtures__/typeorm/company/company.entity.js';
-import { CompanyPaginatedDto } from '../__fixtures__/typeorm/company/dto/company-paginated.dto.js';
-import { CompanyDto } from '../__fixtures__/typeorm/company/dto/company.dto.js';
+import { companyPaginatedSchema } from '../__fixtures__/typeorm/company/schemas/company-paginated.schema.js';
+import { companySchema } from '../__fixtures__/typeorm/company/schemas/company.schema.js';
 import { ormSqliteConfig } from '../__fixtures__/typeorm/orm.sqlite.config.js';
 import { Seeds } from '../__fixtures__/typeorm/seeds.js';
 
@@ -75,14 +74,14 @@ describe('CrudModule.forFeature', () => {
                 entity: CRUD_TEST_COMPANY_ENTITY_NAME,
                 adapter: CrudAdapter,
                 request: {
-                  body: CompanyDto,
+                  body: companySchema,
                   params: {
                     id: { field: 'id', type: 'number', primary: true },
                   },
                 },
                 response: {
-                  resource: CompanyDto,
-                  paginated: CompanyPaginatedDto,
+                  resource: companySchema,
+                  paginated: companyPaginatedSchema,
                 },
               },
               operations: [
@@ -211,10 +210,10 @@ describe('CrudModule.forFeature', () => {
       entity: CRUD_TEST_COMPANY_ENTITY_NAME,
       adapter: CrudAdapter,
       request: {
-        body: CompanyDto,
+        body: companySchema,
         params: { id: { field: 'id', type: 'number', primary: true } },
       },
-      response: { resource: CompanyDto, paginated: CompanyPaginatedDto },
+      response: { resource: companySchema, paginated: companyPaginatedSchema },
     })
     class CompanyControllerB {
       constructor(
@@ -368,10 +367,10 @@ describe('CrudModule.forFeature', () => {
       entity: CRUD_TEST_COMPANY_ENTITY_NAME,
       adapter: CrudAdapter,
       request: {
-        body: CompanyDto,
+        body: companySchema,
         params: { id: { field: 'id', type: 'number', primary: true } },
       },
-      response: { resource: CompanyDto, paginated: CompanyPaginatedDto },
+      response: { resource: companySchema, paginated: companyPaginatedSchema },
     })
     class CompanyControllerC {
       constructor(
@@ -523,41 +522,25 @@ describe('CrudModule.forFeature', () => {
   });
 
   /**
-   * Test 4: Custom DTO Override in Operations
+   * Test 4: Custom Schema Override in Operations
    *
    * This test verifies that operations can override the controller-level
-   * request body DTO with a custom DTO that has different validation rules.
-   * The custom DTO enforces stricter validation (e.g., max length) that
-   * the default DTO doesn't have.
+   * request body schema with a custom schema that has different validation
+   * rules. The custom schema enforces stricter validation (e.g., max
+   * length) that the default schema doesn't have.
    */
-  describe('custom DTO override in operations', () => {
-    // Custom DTO with stricter validation - name max 10 chars
-    class StrictCompanyCreateDto {
-      @Expose()
-      @IsString()
-      @IsNotEmpty()
-      @MaxLength(10)
-      name!: string;
+  describe('custom schema override in operations', () => {
+    // Custom schema with stricter validation - name max 10 chars
+    const strictCompanyCreateSchema = z.object({
+      name: z.string().min(1).max(10),
+      domain: z.string().min(1),
+    });
 
-      @Expose()
-      @IsString()
-      @IsNotEmpty()
-      domain!: string;
-    }
-
-    // Custom DTO for updates - name max 5 chars
-    class StrictCompanyUpdateDto {
-      @Expose()
-      @IsString()
-      @IsNotEmpty()
-      @MaxLength(5)
-      name!: string;
-
-      @Expose()
-      @IsString()
-      @IsNotEmpty()
-      domain!: string;
-    }
+    // Custom schema for updates - name max 5 chars
+    const strictCompanyUpdateSchema = z.object({
+      name: z.string().min(1).max(5),
+      domain: z.string().min(1),
+    });
 
     // Custom command handler that prefixes name with "Updated: "
     // No need for @Injectable or constructor - auto-injected if not provided
@@ -590,17 +573,17 @@ describe('CrudModule.forFeature', () => {
       }
     }
 
-    // Controller uses default CompanyDto at controller level
+    // Controller uses default companySchema at controller level
     // Uses CrudOperationResolver to invoke handlers directly
     @CrudController({
       path: 'company-d',
       entity: CRUD_TEST_COMPANY_ENTITY_NAME,
       adapter: CrudAdapter,
       request: {
-        body: CompanyDto, // Default DTO - no max length on name
+        body: companySchema, // Default schema — no max length on name
         params: { id: { field: 'id', type: 'number', primary: true } },
       },
-      response: { resource: CompanyDto, paginated: CompanyPaginatedDto },
+      response: { resource: companySchema, paginated: companyPaginatedSchema },
     })
     class CompanyControllerD {
       constructor(
@@ -658,11 +641,11 @@ describe('CrudModule.forFeature', () => {
                 },
                 {
                   operation: Operation.Create,
-                  request: { body: StrictCompanyCreateDto },
+                  request: { body: strictCompanyCreateSchema },
                 },
                 {
                   operation: Operation.Update,
-                  request: { body: StrictCompanyUpdateDto },
+                  request: { body: strictCompanyUpdateSchema },
                   commandHandler: CustomUpdateHandler,
                 },
               ],
@@ -684,40 +667,24 @@ describe('CrudModule.forFeature', () => {
       await app?.close();
     });
 
-    it('should have custom DTO in create body param metadata', () => {
+    it('should have custom schema in create body param metadata', () => {
       const reflectionService = new CrudMetaview<CompanyEntity>();
       const bodyParams = reflectionService.getBodyParamOptions(
         CompanyControllerD.prototype.create,
       );
       expect(bodyParams).toBeDefined();
       expect(bodyParams?.length).toBe(1);
-      const validation = bodyParams?.[0]?.validation;
-      expect(validation).not.toBe(false);
-      expect(
-        validation &&
-          typeof validation === 'object' &&
-          'expectedType' in validation
-          ? validation.expectedType
-          : undefined,
-      ).toBe(StrictCompanyCreateDto);
+      expect(bodyParams?.[0]?.schema).toBe(strictCompanyCreateSchema);
     });
 
-    it('should have custom DTO in update body param metadata', () => {
+    it('should have custom schema in update body param metadata', () => {
       const reflectionService = new CrudMetaview<CompanyEntity>();
       const bodyParams = reflectionService.getBodyParamOptions(
         CompanyControllerD.prototype.update,
       );
       expect(bodyParams).toBeDefined();
       expect(bodyParams?.length).toBe(1);
-      const validation = bodyParams?.[0]?.validation;
-      expect(validation).not.toBe(false);
-      expect(
-        validation &&
-          typeof validation === 'object' &&
-          'expectedType' in validation
-          ? validation.expectedType
-          : undefined,
-      ).toBe(StrictCompanyUpdateDto);
+      expect(bodyParams?.[0]?.schema).toBe(strictCompanyUpdateSchema);
     });
 
     it('should have custom command handler in update metadata', () => {
@@ -738,18 +705,18 @@ describe('CrudModule.forFeature', () => {
       expect(handlerOptions?.resolved).toBe(CustomListHandler);
     });
 
-    it('should reject data exceeding custom DTO constraints', async () => {
+    it('should reject data exceeding custom schema constraints', async () => {
       const server = app.getHttpServer();
-      // Name is 20 chars - exceeds MaxLength(10) from StrictCompanyDto
+      // Name is 20 chars - exceeds strictCompanyCreateSchema's max(10)
       const dto = { name: 'This Name Is Too Long', domain: 'toolong.com' };
       const res = await request(server).post('/company-d').send(dto);
       expect(res.status).toBe(400);
       expect(res.body.message).toContain(
-        'name must be shorter than or equal to 10 characters',
+        'name: Too big: expected string to have <=10 characters',
       );
     });
 
-    it('should accept valid data within custom DTO constraints', async () => {
+    it('should accept valid data within custom schema constraints', async () => {
       const server = app.getHttpServer();
       // Name is 8 chars - within MaxLength(10) limit for create
       const dto = { name: 'ShortOne', domain: 'short.com' };
@@ -759,14 +726,14 @@ describe('CrudModule.forFeature', () => {
       expect(res.body.name).toBe('ShortOne');
     });
 
-    it('should reject update data exceeding custom DTO constraints', async () => {
+    it('should reject update data exceeding custom schema constraints', async () => {
       const server = app.getHttpServer();
-      // Name is 8 chars - exceeds MaxLength(5) from StrictCompanyUpdateDto
+      // Name is 8 chars - exceeds strictCompanyUpdateSchema's max(5)
       const dto = { name: 'TooLong1', domain: 'updated.com' };
       const res = await request(server).patch('/company-d/1').send(dto);
       expect(res.status).toBe(400);
       expect(res.body.message).toContain(
-        'name must be shorter than or equal to 5 characters',
+        'name: Too big: expected string to have <=5 characters',
       );
     });
 
@@ -818,8 +785,11 @@ describe('CrudModule.forFeature', () => {
                 path: 'companies',
                 entity: 'Company',
                 adapter: CrudAdapter,
-                request: { body: CompanyDto },
-                response: { resource: CompanyDto },
+                request: { body: companySchema },
+                response: {
+                  resource: companySchema,
+                  paginated: companyPaginatedSchema,
+                },
               },
               operations: [
                 { operation: Operation.List },
@@ -873,8 +843,11 @@ describe('CrudModule.forFeature', () => {
                 path: 'companies',
                 entity: 'Company',
                 adapter: CrudAdapter,
-                request: { body: CompanyDto },
-                response: { resource: CompanyDto },
+                request: { body: companySchema },
+                response: {
+                  resource: companySchema,
+                  paginated: companyPaginatedSchema,
+                },
               },
               operations: [
                 {
@@ -910,8 +883,8 @@ describe('CrudModule.forFeature', () => {
       path: 'companies',
       entity: 'Company',
       adapter: CrudAdapter,
-      request: { body: CompanyDto },
-      response: { resource: CompanyDto },
+      request: { body: companySchema },
+      response: { resource: companySchema },
     })
     class CustomCompanyController {
       @Get('ping')

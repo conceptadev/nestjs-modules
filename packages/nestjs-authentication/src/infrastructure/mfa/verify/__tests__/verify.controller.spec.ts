@@ -1,18 +1,18 @@
 import { mock } from 'vitest-mock-extended';
 
+import { type VerifyConfirmParamsInterface } from '../../../../application/services/verify/interfaces/verify-confirm-params.interface.js';
+import { type VerifySendParamsInterface } from '../../../../application/services/verify/interfaces/verify-send-params.interface.js';
 import { type VerifyService } from '../../../../application/services/verify/verify.service.js';
-import { type VerifyUpdateDto } from '../dto/verify-update.dto.js';
-import { type VerifyDto } from '../dto/verify.dto.js';
 
 import { VerifyControllerFixture } from './fixtures/verify.controller.fixture.js';
 
 describe(VerifyControllerFixture.name, () => {
   let controller: VerifyControllerFixture;
   let verifyService: VerifyService;
-  const dto: VerifyDto = {
+  const dto: VerifySendParamsInterface = {
     email: 'test@example.com',
   };
-  const verifyUpdateDto: VerifyUpdateDto = {
+  const verifyUpdateDto: VerifyConfirmParamsInterface = {
     passcode: '123456',
   };
   beforeEach(() => {

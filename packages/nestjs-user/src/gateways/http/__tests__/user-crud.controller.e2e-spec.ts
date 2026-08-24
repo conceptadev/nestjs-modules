@@ -1,13 +1,15 @@
 import supertest from 'supertest';
+import { type Repository } from 'typeorm';
 import { type MockInstance } from 'vitest';
 
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { getDataSourceToken } from '@nestjs/typeorm';
+import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
 
 import { TransactionScope } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
+import { UserCredentialEntityFixture } from '../../../__tests__/fixtures/entities/user-credential.entity.fixture.js';
 import { UserEntityFixture } from '../../../__tests__/fixtures/entities/user.entity.fixture.js';
 import { type UserEntityInterface } from '../../../domain/interfaces/user-entity.interface.js';
 import { UserFactory } from '../../../infrastructure/seeding/user.factory.js';
@@ -97,7 +99,7 @@ describe('UserCrudController (e2e)', () => {
         .send({
           username: 'user1',
           email: 'user1@dispostable.com',
-          password: 'pass1',
+          password: 'password1',
         })
         .expect(201);
 
@@ -126,6 +128,28 @@ describe('UserCrudController (e2e)', () => {
           email: 'user1@dispostable.com',
         }),
       );
+    });
+
+    it("POST /user (with password) actually creates a UserCredentials row (regression: the legacy UserCreateDto exposed passwordHash instead of password, so excludeAll+excludeExtraneousValues silently stripped an HTTP client's password before CreateUserHandler ever read dto.password — no credentials were ever created)", async () => {
+      const credentialsRepository: Repository<UserCredentialEntityFixture> =
+        app.get(getRepositoryToken(UserCredentialEntityFixture));
+
+      const res = await supertest(app.getHttpServer())
+        .post('/user')
+        .send({
+          username: 'credentialed-user',
+          email: 'credentialed-user@dispostable.com',
+          password: 'realpassword',
+        })
+        .expect(201);
+
+      const credentials = await credentialsRepository.findOne({
+        where: { userId: res.body.id },
+      });
+
+      expect(credentials).not.toBeNull();
+      expect(credentials?.passwordHash).toEqual(expect.any(String));
+      expect(credentials?.passwordHash.length).toBeGreaterThan(0);
     });
 
     it('DELETE /user/:id', async () => {

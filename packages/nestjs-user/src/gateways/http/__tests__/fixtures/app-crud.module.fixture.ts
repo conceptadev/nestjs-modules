@@ -1,14 +1,9 @@
 import { Module } from '@nestjs/common';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import {
-  CoreModule,
-  UseHooks,
-  ExceptionsFilter,
-  Operation,
-} from '@concepta/nestjs-core';
+import { CoreModule, UseHooks, Operation } from '@concepta/nestjs-core';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
 import {
   CreatePasswordCommand,
@@ -24,11 +19,11 @@ import { UserCredentialEntityFixture } from '../../../../__tests__/fixtures/enti
 import { UserEntityFixture } from '../../../../__tests__/fixtures/entities/user.entity.fixture.js';
 import { ormConfig } from '../../../../__tests__/fixtures/ormconfig.fixture.js';
 import { UserInterface } from '../../../../domain/interfaces/user.interface.js';
-import { UserPasswordUpdateDto } from '../../../../infrastructure/dtos/password/user-password-update.dto.js';
-import { UserCreateDto } from '../../../../infrastructure/dtos/user-create.dto.js';
-import { UserPaginatedDto } from '../../../../infrastructure/dtos/user-paginated.dto.js';
-import { UserUpdateDto } from '../../../../infrastructure/dtos/user-update.dto.js';
-import { UserDto } from '../../../../infrastructure/dtos/user.dto.js';
+import { userPasswordUpdateSchema } from '../../../../infrastructure/schemas/password/user-password-update.schema.js';
+import { userCreateSchema } from '../../../../infrastructure/schemas/user-create.schema.js';
+import { userPaginatedSchema } from '../../../../infrastructure/schemas/user-paginated.schema.js';
+import { userUpdateSchema } from '../../../../infrastructure/schemas/user-update.schema.js';
+import { userSchema } from '../../../../infrastructure/schemas/user.schema.js';
 import { UserModule } from '../../../../user.module.js';
 import { CreateUserRequestHandler } from '../../commands/handlers/create-user-request.handler.js';
 import { DeleteUserRequestHandler } from '../../commands/handlers/delete-user-request.handler.js';
@@ -90,10 +85,10 @@ const USER_CREDENTIALS_ENTITY_KEY_FIXTURE = 'user-credentials';
           path: 'user',
           resolver: CrudCqrsResolver,
           transactional: true,
-          request: { body: UserCreateDto },
+          request: { body: userCreateSchema },
           response: {
-            resource: UserDto,
-            paginated: UserPaginatedDto,
+            resource: userSchema,
+            paginated: userPaginatedSchema,
           },
         },
         operations: [
@@ -109,13 +104,13 @@ const USER_CREDENTIALS_ENTITY_KEY_FIXTURE = 'user-credentials';
           },
           {
             operation: Operation.Create,
-            request: { body: UserCreateDto },
+            request: { body: userCreateSchema },
             command: CreateUserRequest,
             commandHandler: CreateUserRequestHandler,
           },
           {
             operation: Operation.Update,
-            request: { body: UserUpdateDto },
+            request: { body: userUpdateSchema },
             command: UpdateUserRequest,
             commandHandler: UpdateUserRequestHandler,
           },
@@ -134,14 +129,14 @@ const USER_CREDENTIALS_ENTITY_KEY_FIXTURE = 'user-credentials';
           path: 'password',
           resolver: CrudCqrsResolver,
           transactional: true,
-          request: { body: UserPasswordUpdateDto },
-          response: { resource: UserDto },
+          request: { body: userPasswordUpdateSchema },
+          response: { resource: userSchema },
           extraDecorators: [UseHooks(UserScopeHookFixture)],
         },
         operations: [
           {
             operation: Operation.Update,
-            request: { body: UserPasswordUpdateDto },
+            request: { body: userPasswordUpdateSchema },
             command: UpdateUserPasswordRequest,
             commandHandler: UpdateUserPasswordRequestHandler,
           },
@@ -150,10 +145,6 @@ const USER_CREDENTIALS_ENTITY_KEY_FIXTURE = 'user-credentials';
     }),
   ],
   providers: [
-    {
-      provide: APP_FILTER,
-      useClass: ExceptionsFilter,
-    },
     UserScopeHookFixture,
     FakeAuthInterceptorFixture,
     {

@@ -11,7 +11,7 @@ export interface InvitationUserRelationInterface<
 export interface InvitationInterface extends InvitationUserRelationInterface {
   code: string;
   category: string;
-  constraints: PlainLiteralObject | undefined;
+  constraints?: PlainLiteralObject | null;
   dateAccepted: Date | null;
   dateRevoked: Date | null;
 }

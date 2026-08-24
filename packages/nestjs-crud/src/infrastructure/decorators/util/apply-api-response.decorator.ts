@@ -1,18 +1,18 @@
-import { HttpStatus, type Type } from '@nestjs/common';
+import { type z } from 'zod';
+
+import { HttpStatus } from '@nestjs/common';
 import {
-  ApiExtraModels,
   ApiResponse,
   type ApiResponseMetadata,
   type ApiResponseOptions,
-  type ApiResponseSchemaHost,
-  getSchemaPath,
 } from '@nestjs/swagger';
 
-import { Operation } from '@concepta/nestjs-core';
+import { Operation, withOpenApi } from '@concepta/nestjs-core';
 
-import { type DecoratorTargetObject } from '../../../crud.types.js';
-import { CrudInvalidResponseDto } from '../../dtos/crud-invalid-response.dto.js';
-import { CrudResponsePaginatedDto } from '../../dtos/crud-response-paginated.dto.js';
+import {
+  type CrudSchema,
+  type DecoratorTargetObject,
+} from '../../../crud.types.js';
 import { CrudException } from '../../exceptions/crud.exception.js';
 import { CrudMetaview } from '../../services/crud-metaview.service.js';
 
@@ -48,60 +48,64 @@ export function applyApiResponse(
       handler,
     );
 
-    // determine the dto type
-    const dto =
-      serializeOptions?.type ??
-      reflectionService.getResponseResource(target, handler) ??
-      CrudInvalidResponseDto;
+    // determine the response schema
+    const schema =
+      serializeOptions?.resource ??
+      reflectionService.getResponseResource(target, handler);
 
-    // determine pagination dto
-    const paginatedDto =
-      serializeOptions?.paginatedType ??
-      reflectionService.getResponsePaginated(target, handler) ??
-      CrudResponsePaginatedDto;
+    // determine the paginated response schema
+    const paginatedSchema =
+      serializeOptions?.paginated ??
+      reflectionService.getResponsePaginated(target, handler);
 
-    // dto meta options
-    const dtoMetaOptions: ApiResponseMetadata = {};
+    // response meta options
+    const responseMetaOptions: ApiResponseMetadata = {};
 
-    // dto schema options — only populated for operations that need a schema object
-    let dtoSchemaOptions: Partial<ApiResponseSchemaHost> = {};
+    // the schema actually documented by this operation — used only for the
+    // human-readable `description` string below
+    let displaySchema: CrudSchema | undefined;
 
     // operation is the discriminator
     switch (operation) {
       // list (paginated)
       case Operation.List:
-        dtoSchemaOptions = createListResponse({
-          operation: Operation.List,
-          modelName: dto.name,
-          dto,
-          paginatedDto,
-        });
+        displaySchema = paginatedSchema;
+        setSingleResponse(responseMetaOptions, paginatedSchema);
         break;
 
       // create batch (array response)
       case Operation.CreateBatch:
-        dtoSchemaOptions = { schema: createArraySchema(dto) };
+        displaySchema = schema;
+        if (schema !== undefined) {
+          assertBridged(schema, 'response schema');
+          // withOpenApi (no id) bridges an inline array wrapper so Nest's
+          // native path converts it — the named item schema nested inside
+          // is hoisted into components.schemas automatically.
+          responseMetaOptions.standardSchema = withOpenApi(schema.array());
+        }
         break;
 
       // returns deleted item or empty
       case Operation.Delete:
       case Operation.SoftDelete:
-        dtoMetaOptions.type = reflectionService.getReturnDeleted(
+        displaySchema = reflectionService.getReturnDeleted(
           target,
           target.prototype[propertyKey],
         )
-          ? dto
+          ? schema
           : undefined;
+        setSingleResponse(responseMetaOptions, displaySchema);
         break;
 
       // returns restored item or empty
       case Operation.Restore:
-        dtoMetaOptions.type = reflectionService.getReturnRestored(
+        displaySchema = reflectionService.getReturnRestored(
           target,
           target.prototype[propertyKey],
         )
-          ? dto
+          ? schema
           : undefined;
+        setSingleResponse(responseMetaOptions, displaySchema);
         break;
 
       // returns one item
@@ -110,20 +114,19 @@ export function applyApiResponse(
       case Operation.Update:
       case Operation.Replace:
       default:
-        dtoMetaOptions.type = dto;
+        displaySchema = schema;
+        setSingleResponse(responseMetaOptions, schema);
         break;
     }
 
     // merge the options
     const mergedOptions: ApiResponseOptions = {
       status: HttpStatus.OK,
-      description: `${operation} ${dto.name}`,
-      ...dtoMetaOptions,
-      ...dtoSchemaOptions,
+      description: `${operation} ${displayName(displaySchema)}`,
+      ...responseMetaOptions,
       ...options,
     };
 
-    ApiExtraModels(paginatedDto)(target, ...rest);
     ApiResponse(mergedOptions)(target, ...rest);
   };
 }
@@ -132,40 +135,37 @@ export function applyApiResponse(
 // private routines
 //
 
-function createArraySchema(dto: Type): ApiResponseSchemaHost['schema'] {
-  return {
-    type: 'array',
-    items: {
-      $ref: getSchemaPath(dto),
-    },
-  };
+/**
+ * Sets `responseMetaOptions.standardSchema` for a single-resource response;
+ * a no-op when there is no response schema to document (e.g. Delete/Restore
+ * configured not to return the entity).
+ */
+function setSingleResponse(
+  responseMetaOptions: ApiResponseMetadata,
+  schema: CrudSchema | undefined,
+): void {
+  if (schema === undefined) return;
+  assertBridged(schema, 'response schema');
+  responseMetaOptions.standardSchema = schema;
 }
 
-function createPaginatedSchema(
-  paginatedDto: Type,
-): ApiResponseSchemaHost['schema'] {
-  return {
-    $ref: getSchemaPath(paginatedDto),
-  };
+/**
+ * A schema missing its `~standard.jsonSchema` bridge (i.e. never passed
+ * through `withOpenApi`) would otherwise silently produce an undocumented
+ * response (no schema in the OpenAPI output) — fail loudly instead.
+ */
+function assertBridged(schema: z.ZodType, context: string): void {
+  if (!schema['~standard'].jsonSchema?.output) {
+    throw new CrudException({
+      message: `CRUD ${context} is missing its OpenAPI bridge — wrap it with withOpenApi() before using it as a CRUD response.`,
+    });
+  }
 }
 
-function createPaginatedResponse(options: {
-  operation: Operation;
-  modelName: string;
-  paginatedDto: Type;
-}): ApiResponseSchemaHost {
-  return {
-    description: `${options.operation} ${options.modelName} as paginated response.`,
-    schema: createPaginatedSchema(options.paginatedDto),
-  };
-}
-
-function createListResponse(options: {
-  operation: Operation;
-  modelName: string;
-  dto: Type;
-  paginatedDto: Type;
-}): ApiResponseSchemaHost {
-  // always use paginated type
-  return createPaginatedResponse(options);
+/**
+ * Display name for a response schema — used only for the human-readable
+ * `description` string.
+ */
+function displayName(schema: CrudSchema | undefined): string {
+  return schema?.meta()?.id ?? 'Resource';
 }

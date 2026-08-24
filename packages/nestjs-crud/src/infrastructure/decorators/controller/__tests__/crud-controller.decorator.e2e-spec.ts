@@ -1,16 +1,17 @@
 import request from 'supertest';
+import { z } from 'zod';
 
 import { Inject, INestApplication } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 
-import { Ctx, ExceptionsFilter } from '@concepta/nestjs-core';
+import { Ctx } from '@concepta/nestjs-core';
 import { WhereOperator } from '@concepta/nestjs-repository';
 
-import { TestModelCreateBatchDto } from '../../../../__fixtures__/crud/dto/test-model-create-batch.dto.js';
-import { TestModelCreateDto } from '../../../../__fixtures__/crud/dto/test-model-create.dto.js';
-import { TestModelUpdateDto } from '../../../../__fixtures__/crud/dto/test-model-update.dto.js';
-import { TestModelDto } from '../../../../__fixtures__/crud/models/test.model.js';
+import { TestModel } from '../../../../__fixtures__/crud/models/test.model.js';
+import { testModelCreateBatchSchema } from '../../../../__fixtures__/crud/schemas/test-model-create-batch.schema.js';
+import { testModelCreateSchema } from '../../../../__fixtures__/crud/schemas/test-model-create.schema.js';
+import { testModelUpdateSchema } from '../../../../__fixtures__/crud/schemas/test-model-update.schema.js';
+import { testModelSchema } from '../../../../__fixtures__/crud/schemas/test-model.schema.js';
 import { CrudCreateBatchHandler } from '../../../../application/commands/handlers/crud-create-batch.handler.js';
 import { CrudCreateHandler } from '../../../../application/commands/handlers/crud-create.handler.js';
 import { CrudDeleteHandler } from '../../../../application/commands/handlers/crud-delete.handler.js';
@@ -19,12 +20,13 @@ import { CrudUpdateHandler } from '../../../../application/commands/handlers/cru
 import { CrudListHandler } from '../../../../application/queries/handlers/crud-list.handler.js';
 import { CrudReadHandler } from '../../../../application/queries/handlers/crud-read.handler.js';
 import { CrudModule } from '../../../../crud.module.js';
-import { CrudCreateBatchInterface } from '../../../dtos/interfaces/crud-create-batch.interface.js';
 import { CrudCtx } from '../../../interceptors/crud-context.overlay.js';
 import { CrudContextInterface } from '../../../interceptors/interfaces/crud-context.interface.js';
+import { CrudCreateBatchInterface } from '../../../interfaces/crud-create-batch.interface.js';
 import { CrudQueryBuilder } from '../../../request/crud-query.builder.js';
 import { CrudAdapterResolver } from '../../../resolvers/crud-adapter.resolver.js';
 import { CrudResolverInterface } from '../../../resolvers/interfaces/crud-resolver.interface.js';
+import { paginatedSchema } from '../../../schemas/crud-response-paginated.schema.js';
 import { CrudCreateBatch } from '../../operations/crud-create-batch.decorator.js';
 import { CrudCreate } from '../../operations/crud-create.decorator.js';
 import { CrudDelete } from '../../operations/crud-delete.decorator.js';
@@ -49,6 +51,7 @@ describe('#crud', () => {
         total: 0,
         page: 1,
         pageCount: 0,
+        limit: 0,
       }),
       read: vi.fn().mockResolvedValue({ id: 1 }),
       create: vi.fn().mockResolvedValue({ id: 1 }),
@@ -66,13 +69,11 @@ describe('#crud', () => {
         params: {
           id: { field: 'id', type: 'number' },
         },
-        validation: {
-          transformOptions: {
-            strategy: 'exposeAll',
-          },
-        },
       },
-      response: { resource: TestModelDto },
+      response: {
+        resource: testModelSchema,
+        paginated: paginatedSchema(testModelSchema),
+      },
     })
     class TestController {
       constructor(
@@ -81,49 +82,69 @@ describe('#crud', () => {
       ) {}
 
       @CrudList({ queryHandler: CrudListHandler })
-      async list(@Ctx(CrudCtx) context: CrudContextInterface<TestModelDto>) {
+      async list(@Ctx(CrudCtx) context: CrudContextInterface<TestModel>) {
         return this.crudResolver.list(context);
       }
 
       @CrudRead({ queryHandler: CrudReadHandler })
-      async read(@Ctx(CrudCtx) context: CrudContextInterface<TestModelDto>) {
+      async read(@Ctx(CrudCtx) context: CrudContextInterface<TestModel>) {
         return this.crudResolver.read(context);
       }
 
-      @CrudCreate({ commandHandler: CrudCreateHandler })
+      @CrudCreate({
+        commandHandler: CrudCreateHandler,
+        request: { body: testModelCreateSchema },
+      })
       async create(
-        @Ctx(CrudCtx) context: CrudContextInterface<TestModelDto>,
-        @CrudBody() dto: TestModelCreateDto,
+        @Ctx(CrudCtx) context: CrudContextInterface<TestModel>,
+        // Explicit schema — validation would also resolve from this
+        // operation's `request.body` fallback; passing it here pins it on
+        // the parameter itself.
+        @CrudBody({ schema: testModelCreateSchema })
+        dto: z.infer<typeof testModelCreateSchema>,
       ) {
         return this.crudResolver.create(context, dto);
       }
 
-      @CrudReplace({ commandHandler: CrudReplaceHandler })
+      @CrudReplace({
+        commandHandler: CrudReplaceHandler,
+        request: { body: testModelCreateSchema },
+      })
       async replace(
-        @Ctx(CrudCtx) context: CrudContextInterface<TestModelDto>,
-        @CrudBody() dto: TestModelCreateDto,
+        @Ctx(CrudCtx) context: CrudContextInterface<TestModel>,
+        @CrudBody({ schema: testModelCreateSchema })
+        dto: z.infer<typeof testModelCreateSchema>,
       ) {
         return this.crudResolver.replace(context, dto);
       }
 
-      @CrudUpdate({ commandHandler: CrudUpdateHandler })
+      @CrudUpdate({
+        commandHandler: CrudUpdateHandler,
+        request: { body: testModelUpdateSchema },
+      })
       async update(
-        @Ctx(CrudCtx) context: CrudContextInterface<TestModelDto>,
-        @CrudBody() dto: TestModelUpdateDto,
+        @Ctx(CrudCtx) context: CrudContextInterface<TestModel>,
+        @CrudBody({ schema: testModelUpdateSchema })
+        dto: z.infer<typeof testModelUpdateSchema>,
       ) {
         return this.crudResolver.update(context, dto);
       }
 
-      @CrudCreateBatch({ commandHandler: CrudCreateBatchHandler })
+      @CrudCreateBatch({
+        commandHandler: CrudCreateBatchHandler,
+        request: { body: testModelCreateBatchSchema },
+        response: { serialization: { resource: z.array(testModelSchema) } },
+      })
       async createBatch(
-        @Ctx(CrudCtx) context: CrudContextInterface<TestModelDto>,
-        @CrudBody() dto: TestModelCreateBatchDto,
+        @Ctx(CrudCtx) context: CrudContextInterface<TestModel>,
+        @CrudBody({ schema: testModelCreateBatchSchema })
+        dto: z.infer<typeof testModelCreateBatchSchema>,
       ) {
         return this.crudResolver.createBatch(context, dto);
       }
 
       @CrudDelete({ commandHandler: CrudDeleteHandler })
-      async delete(@Ctx(CrudCtx) context: CrudContextInterface<TestModelDto>) {
+      async delete(@Ctx(CrudCtx) context: CrudContextInterface<TestModel>) {
         return this.crudResolver.delete(context);
       }
     }
@@ -133,7 +154,6 @@ describe('#crud', () => {
         imports: [CrudModule.forRoot({})],
         controllers: [TestController],
         providers: [
-          { provide: APP_FILTER, useClass: ExceptionsFilter },
           { provide: CrudAdapterResolver, useValue: mockCrudResolver },
         ],
       }).compile();
@@ -160,10 +180,12 @@ describe('#crud', () => {
         const query = qb.setFilter(['foo', WhereOperator.GT]).query();
         const expected = {
           statusCode: 400,
+          message: 'Error on crud context processing',
+          error: 'Bad Request',
           errorCode: 'CRUD_CONTEXT_ERROR',
         };
         const res = await request(server).get('/test').query(query).expect(400);
-        expect(res.body).toMatchObject(expected);
+        expect(res.body).toEqual(expected);
       });
     });
 
@@ -174,16 +196,18 @@ describe('#crud', () => {
       it('should return status 400', async () => {
         const expected = {
           statusCode: 400,
+          message: 'Error on crud context processing',
+          error: 'Bad Request',
           errorCode: 'CRUD_CONTEXT_ERROR',
         };
         const res = await request(server).get('/test/invalid').expect(400);
-        expect(res.body).toMatchObject(expected);
+        expect(res.body).toEqual(expected);
       });
     });
 
     describe('#createBase', () => {
       it('should return status 201', async () => {
-        const send: TestModelDto = {
+        const send: TestModel = {
           firstName: 'firstName',
           lastName: 'lastName',
           email: 'test@test.com',
@@ -192,7 +216,7 @@ describe('#crud', () => {
         await request(server).post('/test').send(send).expect(201);
       });
       it('should return status 400', async () => {
-        const send: TestModelDto = {
+        const send: TestModel = {
           firstName: 'firstName',
           lastName: 'lastName',
           email: 'test@test.com',
@@ -203,7 +227,7 @@ describe('#crud', () => {
 
     describe('#createBatch', () => {
       it('should return status 201', async () => {
-        const send: CrudCreateBatchInterface<TestModelDto> = {
+        const send: CrudCreateBatchInterface<TestModel> = {
           bulk: [
             {
               firstName: 'firstName',
@@ -222,7 +246,7 @@ describe('#crud', () => {
         await request(server).post('/test/bulk').send(send).expect(201);
       });
       it('should return status 400', async () => {
-        const send: CrudCreateBatchInterface<TestModelDto> = {
+        const send: CrudCreateBatchInterface<TestModel> = {
           bulk: [],
         };
         await request(server).post('/test/bulk').send(send).expect(400);
@@ -231,7 +255,7 @@ describe('#crud', () => {
 
     describe('#replace', () => {
       it('should return status 200', async () => {
-        const send: TestModelDto = {
+        const send: TestModel = {
           id: 1,
           firstName: 'firstName',
           lastName: 'lastName',
@@ -241,7 +265,7 @@ describe('#crud', () => {
         await request(server).put('/test/1').send(send).expect(200);
       });
       it('should return status 400', async () => {
-        const send: TestModelDto = {
+        const send: TestModel = {
           firstName: 'firstName',
           lastName: 'lastName',
           email: 'test@test.com',
@@ -252,7 +276,7 @@ describe('#crud', () => {
 
     describe('#update', () => {
       it('should return status 200', async () => {
-        const send: TestModelDto = {
+        const send: TestModel = {
           id: 1,
           firstName: 'firstName',
           lastName: 'lastName',
@@ -262,7 +286,7 @@ describe('#crud', () => {
         await request(server).patch('/test/1').send(send).expect(200);
       });
       it('should return status 400', async () => {
-        const send: TestModelDto = {
+        const send: TestModel = {
           firstName: 'firstName',
           lastName: 'lastName',
           email: 'test@test.com',

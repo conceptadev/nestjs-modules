@@ -202,6 +202,22 @@ export type AfterDeleteMethod<
   Ctx extends PlainLiteralObject = PlainLiteralObject,
 > = (result: Entity, ctx?: Ctx) => Promise<Entity>;
 
+/**
+ * Before deleteMany - receives entities, returns entities (or throws to prevent).
+ */
+export type BeforeDeleteManyMethod<
+  Entity extends PlainLiteralObject = PlainLiteralObject,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
+> = (entities: Entity[], ctx?: Ctx) => Promise<Entity[]>;
+
+/**
+ * After deleteMany - receives deleted entities, returns entities.
+ */
+export type AfterDeleteManyMethod<
+  Entity extends PlainLiteralObject = PlainLiteralObject,
+  Ctx extends PlainLiteralObject = PlainLiteralObject,
+> = (result: Entity[], ctx?: Ctx) => Promise<Entity[]>;
+
 // =============================================================================
 // Lifecycle Operations (soft delete/restore)
 // =============================================================================

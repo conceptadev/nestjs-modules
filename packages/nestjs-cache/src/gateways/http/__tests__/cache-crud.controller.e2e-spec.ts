@@ -273,6 +273,43 @@ describe('CacheAssignmentController (e2e)', () => {
       });
   });
 
+  it('PATCH /cache/user extending TTL without resending data leaves data unchanged', async () => {
+    const payload: CacheCreatableInterface = {
+      key: 'dashboard-1',
+      type: 'filter',
+      data: '{"original":true}',
+      expiresIn: '1d',
+      assigneeId: user.id,
+    };
+
+    let cacheId = '';
+
+    await supertest(app.getHttpServer())
+      .post('/cache/user')
+      .send(payload)
+      .expect(201)
+      .then((res) => {
+        cacheId = res.body.id;
+      });
+
+    // PATCH with only `expiresIn` — `data` and `key`/`type`/`assigneeId`
+    // are all omitted, matching a real partial-update request shape.
+    await supertest(app.getHttpServer())
+      .patch(`/cache/user/${cacheId}`)
+      .send({ expiresIn: '2d' })
+      .expect(200)
+      .then((res) => {
+        expect(res.body.data).toBe(payload.data);
+      });
+
+    await supertest(app.getHttpServer())
+      .get(`/cache/user/${cacheId}`)
+      .expect(200)
+      .then((res) => {
+        expect(res.body.data).toBe(payload.data);
+      });
+  });
+
   it('PUT /cache/user', async () => {
     const payload: CacheCreatableInterface = {
       key: 'dashboard-1',

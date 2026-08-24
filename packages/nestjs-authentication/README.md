@@ -4,11 +4,16 @@
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-authentication)](https://www.npmjs.com/package/@concepta/nestjs-authentication)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-authentication%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 Comprehensive NestJS authentication module built on CQRS and clean architecture.
 Includes local (username/password), JWT bearer, refresh token, password recovery,
 email verification, and OAuth provider routing — all in a single, unified module.
+
+Request validation and OpenAPI documentation are schema-first: every request
+body is described by a native Zod v4 schema exposed through the
+[Standard Schema](https://standardschema.dev) interface — there are no
+class-validator DTO classes.
 
 ## Table of Contents
 
@@ -23,6 +28,7 @@ email verification, and OAuth provider routing — all in a single, unified modu
   - [Password Recovery](#password-recovery)
   - [Email Verification](#email-verification)
   - [OAuth Provider Router](#oauth-provider-router)
+- [Validation Schemas](#validation-schemas)
 - [Configuration Reference](#configuration-reference)
   - [Module Options](#module-options)
   - [JWT Settings](#jwt-settings)
@@ -30,6 +36,7 @@ email verification, and OAuth provider routing — all in a single, unified modu
   - [MFA Settings](#mfa-settings)
   - [Port Settings](#port-settings)
   - [Extras](#extras)
+- [Exceptions](#exceptions)
 - [Advanced](#advanced)
   - [Two-Tier CQRS Architecture](#two-tier-cqrs-architecture)
   - [Custom Notification Commands](#custom-notification-commands)
@@ -49,7 +56,7 @@ into a single package:
 |---|---|
 | **JWT** | Bearer token verification, global APP_GUARD, `@AuthPublic`/`@AuthUser` |
 | **Local** | Username/password login via `passport-local` |
-| **Refresh** | Refresh token issuance and rotation |
+| **Refresh** | Refresh token verification and re-issuance |
 | **Recovery** | OTP-based password recovery (recover-login, recover-password, update-password) |
 | **Verify** | OTP-based email/account verification |
 | **Router** | `?provider=` query dispatch to named OAuth guards |
@@ -59,8 +66,15 @@ Internally the module is structured in three layers:
 - **Domain** — aggregates, ports, policies, events, exceptions; zero framework
   dependencies.
 - **Application** — CQRS command/query handlers that orchestrate the domain.
-- **Infrastructure** — Passport strategies, JWT service, DTOs, config,
-  the `AuthUserContextOverlay` gateway.
+- **Infrastructure** — Passport strategies, JWT service, Zod request schemas,
+  config, the `AuthUserContextOverlay` gateway.
+
+A key design point: **Passport strategies never issue tokens.** A strategy
+validates credentials and places the authenticated *user* on `request.user`.
+Your controller then issues the access/refresh token pair by executing
+`IssueAuthenticatedResponseCommand` on the `CommandBus`. This keeps
+strategies transport-agnostic and token issuance overridable via
+[ports](#port-settings).
 
 OAuth provider strategies (Apple, GitHub, Google) live in separate packages
 (`@concepta/nestjs-auth-apple`, `-github`, `-google`). This module provides
@@ -78,8 +92,17 @@ yarn add @concepta/nestjs-authentication
 Peer dependencies:
 
 ```bash
-yarn add class-transformer class-validator rxjs
+yarn add rxjs
 ```
+
+Requirements:
+
+- **ESM-only** — the package ships native ES modules (no CommonJS build).
+- **Node.js >= 22.12**
+- **NestJS 12** (currently alpha)
+
+Zod v4 and `@standard-schema/spec` are regular dependencies — you do not need
+to install them yourself unless you author your own schemas.
 
 ---
 
@@ -115,16 +138,28 @@ import { AuthenticationModule } from '@concepta/nestjs-authentication';
 export class AppModule {}
 ```
 
-All routes are protected by default. Mark public routes with `@AuthPublic()`:
+All routes are protected by default. Mark public routes with `@AuthPublic()`.
+When applying the decorator to an entire controller class, pass
+`{ classLevel: true }` — without it, a runtime warning is emitted on every
+request that hits the class-level decorator:
 
 ```typescript
 import { AuthPublic } from '@concepta/nestjs-authentication';
 
-@AuthPublic()
+// class level — explicit opt-in required
+@AuthPublic({ classLevel: true })
 @Controller('health')
 export class HealthController {
   @Get()
   check() { return 'ok'; }
+}
+
+// method level — no option needed
+@Controller('info')
+export class InfoController {
+  @AuthPublic()
+  @Get()
+  version() { return '1.0.0'; }
 }
 ```
 
@@ -137,10 +172,11 @@ Activate additional features by adding keys to `settings.strategies` and
 
 ## End-to-End Example
 
-This example wires up local login and JWT bearer auth. The scenario:
+This example wires up local login, refresh, and JWT bearer auth. The scenario:
 
 - `POST /auth/login` — accepts `username`/`password`, returns
   `accessToken` + `refreshToken`.
+- `POST /token/refresh` — accepts `refreshToken`, returns a new token pair.
 - `GET /me` — returns the authenticated user (protected by the global JWT guard).
 
 ### Step 1 — Implement UserPort queries and handlers
@@ -196,9 +232,15 @@ export class GetUserByUsernameHandler
 
 Repeat this pattern for `GetUserByIdQuery`, `GetUserBySubjectQuery`,
 `GetUserByEmailQuery`, and `UpdateUserCommand` — each implementing the
-corresponding interface exported from `@concepta/nestjs-authentication`.
+corresponding interface exported from `@concepta/nestjs-authentication`
+(`GetUserByIdQueryInterface`, `GetUserBySubjectQueryInterface`,
+`GetUserByEmailQueryInterface`, `UpdateUserCommandInterface`).
 
 ### Step 2 — Implement PasswordPort commands
+
+Password hashing and validation come from `@concepta/nestjs-password`. Its
+`PasswordValidationService.validate()` takes the plain password and the stored
+hash:
 
 ```typescript
 // src/user/commands/validate-password.command.ts
@@ -226,7 +268,7 @@ export class ValidatePasswordCommand
 ```typescript
 // src/user/commands/validate-password.handler.ts
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PasswordModule } from '@concepta/nestjs-password';
+import { PasswordValidationService } from '@concepta/nestjs-password';
 import { ValidatePasswordCommand } from './validate-password.command';
 import { UserRepository } from '../user.repository';
 
@@ -236,16 +278,23 @@ export class ValidatePasswordHandler
 {
   constructor(
     private readonly userRepo: UserRepository,
-    private readonly passwordService: PasswordModule,
+    private readonly passwordValidationService: PasswordValidationService,
   ) {}
 
   async execute(command: ValidatePasswordCommand): Promise<boolean> {
     const user = await this.userRepo.findById(command.target.id);
-    if (!user) return false;
-    return this.passwordService.validateObject(command.password, user);
+    if (!user || !user.passwordHash) return false;
+    return this.passwordValidationService.validate({
+      password: command.password,
+      passwordHash: user.passwordHash,
+    });
   }
 }
 ```
+
+Alternatively, dispatch `ValidatePasswordCommand` from
+`@concepta/nestjs-password` itself on the `CommandBus` — the package registers
+its own `ValidatePasswordHandler` that performs the same check.
 
 Provide `SetPasswordCommand` in the same way (implementing
 `SetPasswordCommandInterface`).
@@ -256,16 +305,7 @@ Provide `SetPasswordCommand` in the same way (implementing
 // src/app.module.ts
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import {
-  AuthenticationModule,
-  IssueAccessTokenCommand,
-  IssueRefreshTokenCommand,
-  ValidateTokenQuery,
-  ValidateAndVerifyAccessTokenQuery,
-  ValidateAndVerifyRefreshTokenQuery,
-  VerifyAccessTokenQuery,
-  VerifyRefreshTokenQuery,
-} from '@concepta/nestjs-authentication';
+import { AuthenticationModule } from '@concepta/nestjs-authentication';
 
 import { GetUserByIdQuery } from './user/queries/get-user-by-id.query';
 import { GetUserBySubjectQuery } from './user/queries/get-user-by-subject.query';
@@ -314,9 +354,9 @@ import { passwordHandlers } from './user/password.handlers';
         // all required together once ports is provided (jwt/token are the
         // only optional pair, defaulting if omitted) — supply stubs or real
         // implementations depending on whether you enable settings.mfa.recovery / .verify
-        otp: { ... },
-        recoveryNotification: { ... },
-        verifyNotification: { ... },
+        otp: { /* ... */ },
+        recoveryNotification: { /* ... */ },
+        verifyNotification: { /* ... */ },
       },
     }),
   ],
@@ -329,36 +369,130 @@ import { passwordHandlers } from './user/password.handlers';
 export class AppModule {}
 ```
 
-### Step 4 — Add a login controller
+### Step 4 — Add login and refresh controllers
 
-`LocalStrategy` calls `LocalService.validate()` which invokes `UserPort` and
-`PasswordPort`. The result is placed on `request.user`. Your controller issues
-tokens using `TokenPort`:
+`LocalStrategy` validates the request body against the configured login schema
+and calls `LocalService.validateUser()`, which invokes `UserPort` and
+`PasswordPort`. The validated **user** is placed on `request.user` — the
+strategy does not issue tokens. Your controller issues the token pair by
+executing `IssueAuthenticatedResponseCommand`:
 
 ```typescript
-// src/auth/auth.controller.ts
-import { Controller, Post, Req, Get } from '@nestjs/common';
-import { Request } from 'express';
-import { AuthPublic, AuthUser, LocalGuard, RefreshGuard } from '@concepta/nestjs-authentication';
-import { UseGuards } from '@nestjs/common';
+// src/auth/local.controller.ts
+import { Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
+import {
+  ApiBody,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import {
+  AuthPublic,
+  AuthUser,
+  AuthenticatedResponseInterface,
+  AuthenticatedUserInterface,
+  IssueAuthenticatedResponseCommand,
+  LocalGuard,
+  authenticationResponseSchema,
+  localLoginSchema,
+} from '@concepta/nestjs-authentication';
 
-@Controller('auth')
-export class AuthController {
-  @AuthPublic()
-  @UseGuards(LocalGuard)
-  @Post('login')
-  async login(@Req() req: Request) {
-    // LocalStrategy populates req.user with AuthenticatedResponseInterface
-    return req.user;
-  }
+// The body is consumed by the Passport strategy, not @Body(), so the
+// OpenAPI body schema is provided manually via the schema's JSON Schema bridge.
+const localLoginBodySchema = localLoginSchema['~standard'].jsonSchema?.input?.({
+  target: 'openapi-3.0',
+});
 
-  @AuthPublic()
-  @UseGuards(RefreshGuard)
-  @Post('refresh')
-  async refresh(@Req() req: Request) {
-    return req.user;
+@Controller('auth/login')
+@UseGuards(LocalGuard)
+@AuthPublic({ classLevel: true })
+@ApiTags('auth')
+export class LocalController {
+  constructor(private readonly commandBus: CommandBus) {}
+
+  @ApiBody({
+    schema: localLoginBodySchema,
+    description: 'Schema containing username and password.',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    standardSchema: authenticationResponseSchema,
+    description: 'Schema containing an access token and a refresh token.',
+  })
+  @ApiUnauthorizedResponse()
+  @Post()
+  async login(
+    @AuthUser() user: AuthenticatedUserInterface,
+  ): Promise<AuthenticatedResponseInterface> {
+    return this.commandBus.execute(
+      new IssueAuthenticatedResponseCommand({}, user.id),
+    );
   }
 }
+```
+
+The refresh controller is shape-identical — `RefreshGuard` verifies the
+refresh token, loads the user via `UserPort.getBySubject()`, and the
+controller issues a fresh pair:
+
+```typescript
+// src/auth/refresh.controller.ts
+import { Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
+import {
+  ApiBody,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import {
+  AuthPublic,
+  AuthUser,
+  AuthenticatedResponseInterface,
+  AuthenticatedUserInterface,
+  IssueAuthenticatedResponseCommand,
+  RefreshGuard,
+  authenticationResponseSchema,
+  refreshSchema,
+} from '@concepta/nestjs-authentication';
+
+const refreshBodySchema = refreshSchema['~standard'].jsonSchema?.input?.({
+  target: 'openapi-3.0',
+});
+
+@Controller('token/refresh')
+@UseGuards(RefreshGuard)
+@AuthPublic({ classLevel: true })
+@ApiTags('auth')
+export class RefreshController {
+  constructor(private readonly commandBus: CommandBus) {}
+
+  @ApiBody({
+    schema: refreshBodySchema,
+    description: 'Schema containing a refresh token.',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    standardSchema: authenticationResponseSchema,
+    description: 'Schema containing an access token and a refresh token.',
+  })
+  @ApiUnauthorizedResponse()
+  @Post()
+  async refresh(
+    @AuthUser() user: AuthenticatedUserInterface,
+  ): Promise<AuthenticatedResponseInterface> {
+    return this.commandBus.execute(
+      new IssueAuthenticatedResponseCommand({}, user.id),
+    );
+  }
+}
+```
+
+```typescript
+// src/me/me.controller.ts
+import { Controller, Get } from '@nestjs/common';
+import { AuthUser } from '@concepta/nestjs-authentication';
 
 @Controller('me')
 export class MeController {
@@ -383,10 +517,14 @@ curl -X GET http://localhost:3000/me \
   -H "Authorization: Bearer eyJ..."
 
 # Refresh tokens
-curl -X POST http://localhost:3000/auth/refresh \
+curl -X POST http://localhost:3000/token/refresh \
   -H "Content-Type: application/json" \
   -d '{"refreshToken": "eyJ..."}'
+# => { "accessToken": "eyJ...", "refreshToken": "eyJ..." }
 ```
+
+The response bodies match `authenticationResponseSchema`, which is published
+to OpenAPI as the named component `AuthenticationResponse`.
 
 ---
 
@@ -400,15 +538,18 @@ that enforces JWT verification on every route. Token extraction defaults to
 
 **Decorators:**
 
-- `@AuthPublic()` — exempts a controller or route handler from the global guard.
+- `@AuthPublic()` — exempts a route handler from the global guard. At class
+  level, pass `@AuthPublic({ classLevel: true })` to make the intent explicit;
+  a class-level `@AuthPublic()` without the option triggers a runtime warning
+  on every request.
 - `@AuthUser()` — injects the verified user object into a route parameter.
 
 ```typescript
 import { AuthPublic, AuthUser } from '@concepta/nestjs-authentication';
 
+@AuthPublic({ classLevel: true })
 @Controller('public')
 export class PublicController {
-  @AuthPublic()
   @Get()
   open() { return 'no token needed'; }
 }
@@ -426,7 +567,8 @@ export class PrivateController {
 
 - `JwtGuard` — `AuthGuard('jwt')` subclass with `canDisable` support.
 - `AuthGuard` — base factory function; use to build custom guards:
-  `AuthGuard(strategyName, options?)`.
+  `AuthGuard(strategyName, options?)`. See `AuthGuardOptions` and
+  `AuthGuardCtr` for the option/constructor types.
 
 **Custom token extraction:**
 
@@ -453,28 +595,44 @@ settings: {
 Activated by setting `settings.strategies.local`. Registers a `passport-local`
 strategy. On each login request the strategy:
 
-1. Calls `UserPort.getByUsername()` to find the user.
-2. Calls `PasswordPort.validate()` to verify the password.
-3. Calls `TokenPort.issueAccessToken()` and `TokenPort.issueRefreshToken()` to
-   build the response.
+1. Validates the request body against the configured `loginSchema` by calling
+   its Standard Schema `~standard.validate` method (throws
+   `LocalInvalidLoginDataException` on schema issues).
+2. Calls `LocalService.validateUser()`, which uses `UserPort.getByUsername()`
+   to find the user and `PasswordPort.validate()` to verify the password.
+3. Returns the validated **user**, which Passport places on `request.user`.
 
-**Exported symbols:** `LocalGuard`, `LocalService`, `LocalLoginDto`,
+Token issuance is your controller's responsibility — execute
+`IssueAuthenticatedResponseCommand(ctx, user.id)` on the `CommandBus` as shown
+in the [End-to-End Example](#end-to-end-example).
+
+**Exported symbols:** `LocalGuard`, `LocalService`, `localLoginSchema`,
 `LocalCredentialsInterface`, `LocalServiceInterface`,
 `LocalValidateUserInterface`.
 
-**Customize field names:**
+**Customize field names and validation:**
 
 ```typescript
 settings: {
   strategies: {
     local: {
-      usernameField: 'email',   // default: 'username'
-      passwordField: 'pass',    // default: 'password'
-      loginDto: MyLoginDto,     // optional custom DTO class for validation
+      usernameField: 'email',      // default: 'username'
+      passwordField: 'pass',       // default: 'password'
+      loginSchema: myLoginSchema,  // optional StandardSchemaV1; default: localLoginSchema
     },
   },
 }
 ```
+
+`loginSchema` accepts any Standard Schema implementation — a plain Zod v4
+schema works out of the box. The default `localLoginSchema` requires
+`username` (max 255 chars) and `password` (max 72 chars). When you remap
+`usernameField`/`passwordField`, the strategy validates an object keyed by
+your custom field names, so a custom schema should declare those keys.
+
+The default field names can also be set through the environment variables
+`AUTH_LOCAL_USERNAME_FIELD` and `AUTH_LOCAL_PASSWORD_FIELD` (read by the
+module's default config).
 
 **Exceptions:** `LocalUnauthorizedException`, `LocalUsernameNotFoundException`,
 `LocalUserInactiveException`, `LocalInvalidPasswordException`,
@@ -486,9 +644,14 @@ settings: {
 
 Activated by setting `settings.strategies.refresh`. Registers a Passport
 strategy that reads a refresh token from the request body (`refreshToken`
-field by default) and issues a new access + refresh token pair.
+field by default), verifies it via `JwtPort`, and loads the user with
+`UserPort.getBySubject()`. The **user** lands on `request.user`; your
+controller issues the new access + refresh pair with
+`IssueAuthenticatedResponseCommand` (see the
+[End-to-End Example](#end-to-end-example)).
 
-**Exported symbols:** `RefreshGuard`, `RefreshDto`.
+**Exported symbols:** `RefreshGuard`, `refreshSchema` (validates
+`refreshToken` as a JWT via `z.jwt()`).
 
 **Custom token extraction:**
 
@@ -513,28 +676,75 @@ settings: {
 Activated by setting `settings.mfa.recovery`. Provides the following flows,
 all requiring `ports.otp` and `ports.recoveryNotification`:
 
-| Flow | Description |
-|---|---|
-| Recover login | Sends the user's username to their email |
-| Recover password | Generates an OTP passcode and sends it by email |
-| Validate passcode | Validates the OTP passcode |
-| Update password | Sets a new password and notifies the user |
+| Flow | `RecoveryService` method | Description |
+|---|---|---|
+| Recover login | `recoverLogin(ctx, email)` | Sends the user's username to their email |
+| Recover password | `recoverPassword(ctx, email)` | Generates an OTP passcode and sends it by email |
+| Validate passcode | `validatePasscode(ctx, passcode)` | Validates the OTP passcode |
+| Update password | `updatePassword(ctx, passcode, newPassword)` | Sets a new password and notifies the user |
+| Revoke recoveries | `revokeAllUserPasswordRecoveries(ctx, email)` | Clears all active recovery OTPs for a user |
 
-**Exported symbols:** `RecoveryService`, `RecoveryRecoverLoginDto`,
-`RecoveryRecoverPasswordDto`, `RecoveryUpdatePasswordDto`,
-`RecoveryValidatePasscodeDto`, `RecoveryException`, `RecoveryOtpInvalidException`.
+**Exported symbols:** `RecoveryService`, `recoveryRecoverLoginSchema`,
+`recoveryRecoverPasswordSchema`, `recoveryUpdatePasswordSchema`,
+`recoveryValidatePasscodeSchema`, `RecoveryRecoverLoginParamsInterface`,
+`RecoveryRecoverPasswordParamsInterface`,
+`RecoveryUpdatePasswordParamsInterface`,
+`RecoveryValidatePasscodeParamsInterface`, `RecoveryException`,
+`RecoveryOtpInvalidException`.
 
-**OTP settings:**
+**Controller pattern:** validate bodies with the exported schemas via the
+native `@Body()` schema option and `StandardSchemaValidationPipe`:
+
+```typescript
+import {
+  Body,
+  Controller,
+  PlainLiteralObject,
+  Post,
+  StandardSchemaValidationPipe,
+} from '@nestjs/common';
+import { Ctx } from '@concepta/nestjs-core';
+import {
+  AuthPublic,
+  RecoveryRecoverPasswordParamsInterface,
+  RecoveryService,
+  recoveryRecoverPasswordSchema,
+} from '@concepta/nestjs-authentication';
+
+@Controller('auth/recovery')
+@AuthPublic({ classLevel: true })
+export class RecoveryController {
+  constructor(private readonly recoveryService: RecoveryService) {}
+
+  @Post('/password')
+  async recoverPassword(
+    @Ctx() ctx: PlainLiteralObject,
+    @Body({
+      schema: recoveryRecoverPasswordSchema,
+      pipes: [new StandardSchemaValidationPipe()],
+    })
+    recoverPasswordParams: RecoveryRecoverPasswordParamsInterface,
+  ): Promise<void> {
+    await this.recoveryService.recoverPassword(
+      ctx,
+      recoverPasswordParams.email,
+    );
+  }
+}
+```
+
+**Shipped OTP defaults** (override under `settings.mfa.recovery.otp`):
 
 ```typescript
 settings: {
   mfa: {
     recovery: {
       otp: {
-        category: 'auth',
-        namespace: 'recovery',
+        namespace: 'userOtp',
+        category: 'auth-recovery',
         type: 'uuid',
         expiresIn: '1h',
+        duplicateStrategy: 'DEACTIVATE',
         rateSeconds: 60,    // min seconds between requests per user
         rateThreshold: 5,   // max requests within rateSeconds window
       },
@@ -571,23 +781,81 @@ Activated by setting `settings.mfa.verify`. Provides OTP-based email
 verification using two endpoints — send and confirm — and toggles the user's
 `active` flag on successful confirmation.
 
-**Exported symbols:** `VerifyService`, `VerifyDto`, `VerifyUpdateDto`,
+**`VerifyService` methods:** `send(ctx, { email })`,
+`validatePasscode(ctx, { passcode })`, `confirmUser(ctx, { passcode })`,
+`revokeAllUserVerifyToken(ctx, { email })`.
+
+**Exported symbols:** `VerifyService`, `verifySchema`, `verifyUpdateSchema`,
 `VerifySendParamsInterface`, `VerifyConfirmParamsInterface`,
 `VerifyException`, `VerifyOtpInvalidException`.
 
-**OTP settings** (same shape as recovery):
+**Controller pattern** (same native `@Body()` schema option as recovery):
+
+```typescript
+import {
+  Body,
+  Controller,
+  Patch,
+  PlainLiteralObject,
+  Post,
+  StandardSchemaValidationPipe,
+} from '@nestjs/common';
+import { Ctx } from '@concepta/nestjs-core';
+import {
+  AuthPublic,
+  VerifyConfirmParamsInterface,
+  VerifySendParamsInterface,
+  VerifyService,
+  verifySchema,
+  verifyUpdateSchema,
+} from '@concepta/nestjs-authentication';
+
+@Controller('auth/verify')
+@AuthPublic({ classLevel: true })
+export class VerifyController {
+  constructor(private readonly verifyService: VerifyService) {}
+
+  @Post('/send')
+  async send(
+    @Ctx() ctx: PlainLiteralObject,
+    @Body({
+      schema: verifySchema,
+      pipes: [new StandardSchemaValidationPipe()],
+    })
+    verifyParams: VerifySendParamsInterface,
+  ): Promise<void> {
+    await this.verifyService.send(ctx, { email: verifyParams.email });
+  }
+
+  @Patch('/confirm')
+  async confirm(
+    @Ctx() ctx: PlainLiteralObject,
+    @Body({
+      schema: verifyUpdateSchema,
+      pipes: [new StandardSchemaValidationPipe()],
+    })
+    verifyUpdateParams: VerifyConfirmParamsInterface,
+  ): Promise<void> {
+    const { passcode } = verifyUpdateParams;
+    await this.verifyService.confirmUser(ctx, { passcode });
+  }
+}
+```
+
+**Shipped OTP defaults** (override under `settings.mfa.verify.otp`):
 
 ```typescript
 settings: {
   mfa: {
     verify: {
       otp: {
-        category: 'auth',
-        namespace: 'verify',
+        namespace: 'userOtp',
+        category: 'auth-verify',
         type: 'uuid',
         expiresIn: '24h',
-        rateSeconds: 300,
-        rateThreshold: 3,
+        duplicateStrategy: 'DEACTIVATE',
+        rateSeconds: 60,
+        rateThreshold: 5,
       },
     },
   },
@@ -664,11 +932,58 @@ async callback(@Req() req: Request) {
 `OAuthAuthenticateOptionsInterface`, `OAuthParamsInterface`,
 `OAuthRequestInterface`, `processOAuthParams`.
 
-**Router exceptions:** All router errors extend `AuthRouterException` (exported).
-Specific subclasses (`AuthRouterProviderMissingException`,
-`AuthRouterProviderNotSupportedException`, `AuthRouterConfigNotAvailableException`,
-`AuthRouterGuardInvalidException`, `AuthRouterAuthenticationFailedException`)
-are thrown internally but are not part of the public exports.
+**Router exceptions:** All router errors extend `AuthRouterException`, the
+only router exception in the public exports. Client mistakes — a missing
+`?provider=` parameter or a provider with no registered guard — are rejected
+with **400 Bad Request**. Server-side misconfiguration (missing guard config,
+invalid guard) surfaces as 500.
+
+---
+
+## Validation Schemas
+
+All request/response bodies are described by Zod v4 schemas built with the
+schema helpers from `@concepta/nestjs-core`:
+
+- `conformsTo<T>()(schema)` — pins the schema's output type to a domain
+  interface at compile time.
+- `withOpenApi(schema)` — attaches a JSON Schema bridge so the schema can be
+  rendered into OpenAPI (used for request bodies).
+- `withNamedComponent(schema, name)` — additionally registers the schema as a
+  named OpenAPI component (used for `authenticationResponseSchema` →
+  `AuthenticationResponse`).
+
+| Schema | Shape | Conforms to |
+|---|---|---|
+| `localLoginSchema` | `{ username: string (≤255), password: string (≤72) }` | `AuthenticationLoginInterface` |
+| `refreshSchema` | `{ refreshToken: jwt }` | `AuthenticationRefreshInterface` |
+| `authenticationResponseSchema` | `{ accessToken: string, refreshToken: string }` | `AuthenticatedResponseInterface` |
+| `verifySchema` | `{ email: email }` | `VerifySendParamsInterface` |
+| `verifyUpdateSchema` | `{ passcode: string (≤36) }` | `VerifyConfirmParamsInterface` |
+| `recoveryRecoverLoginSchema` | `{ email: email }` | `RecoveryRecoverLoginParamsInterface` |
+| `recoveryRecoverPasswordSchema` | `{ email: email }` | `RecoveryRecoverPasswordParamsInterface` |
+| `recoveryUpdatePasswordSchema` | `{ passcode: string (≤36), newPassword: string (≤72) }` | `RecoveryUpdatePasswordParamsInterface` |
+| `recoveryValidatePasscodeSchema` | `{ passcode: string (≤36) }` | `RecoveryValidatePasscodeParamsInterface` |
+
+Two usage patterns:
+
+- **Body consumed by your controller** — pass the schema to the native
+  `@Body({ schema, pipes: [new StandardSchemaValidationPipe()] })` option;
+  OpenAPI documentation is derived automatically.
+- **Body consumed by a Passport strategy** (local login, refresh) — the
+  strategy validates internally via the schema's `~standard.validate`; document
+  the body manually:
+
+  ```ts
+  @ApiBody({
+    schema: theSchema['~standard'].jsonSchema?.input?.({
+      target: 'openapi-3.0',
+    }),
+  })
+  ```
+
+Responses are documented with
+`@ApiResponse({ status, standardSchema: authenticationResponseSchema })`.
 
 ---
 
@@ -692,8 +1007,10 @@ AuthenticationModule.forRoot({
 
 ### JWT Settings
 
-Configured under `settings.jwt`. Both `access` and `refresh` accept
-`TokenOptionsInterface`, which extends `JwtModuleOptions` from `@nestjs/jwt`.
+Configured under `settings.jwt` (see `JwtPolicySettingsInterface`). Both
+`access` and `refresh` accept `TokenOptionsInterface`, which extends
+`JwtModuleOptions` from `@nestjs/jwt` minus `secretOrPrivateKey` (and narrows
+`secret` to `string | Buffer`).
 
 ```typescript
 settings: {
@@ -710,9 +1027,12 @@ settings: {
 }
 ```
 
-Defaults when `expiresIn` is omitted: access = 1h, refresh = 24h. The module
-emits `process.emitWarning` if secrets are too short, identical, or expiry is
-not set. Use separate secrets for access and refresh tokens.
+Defaults when `signOptions.expiresIn` is omitted: access = **1h**, refresh =
+**24h** — and the module emits a `process.emitWarning`
+(`ROCKETS_JWT_NO_EXPIRY`) urging you to set it explicitly. Warnings are also
+emitted for secrets shorter than 32 characters (`ROCKETS_JWT_WEAK_SECRET`) and
+for identical access/refresh secrets (`ROCKETS_JWT_SHARED_SECRET`). Use
+separate secrets for access and refresh tokens.
 
 ### Strategy Settings
 
@@ -722,13 +1042,14 @@ Presence of a strategy key activates that Passport strategy:
 settings: {
   strategies: {
     jwt?: JwtStrategyPolicySettingsInterface;     // { jwtFromRequest? }
-    local?: LocalStrategyPolicySettingsInterface; // { usernameField?, passwordField?, loginDto? }
+    local?: LocalStrategyPolicySettingsInterface; // { usernameField?, passwordField?, loginSchema? }
     refresh?: RefreshStrategyPolicySettingsInterface; // { jwtFromRequest? }
   },
 }
 ```
 
 Omitting a strategy key entirely disables that strategy.
+`loginSchema` is any `StandardSchemaV1` (default: `localLoginSchema`).
 
 ### MFA Settings
 
@@ -748,8 +1069,8 @@ settings: {
 ```typescript
 {
   otp: {
-    category: string;           // groups OTPs (e.g. 'auth')
-    namespace: string;          // sub-groups OTPs (e.g. 'recovery')
+    category: string;           // groups OTPs (e.g. 'auth-recovery')
+    namespace: string;          // OTP repository namespace (e.g. 'userOtp')
     type: string;               // OTP type (e.g. 'uuid', 'numeric')
     expiresIn: string;          // e.g. '1h'
     duplicateStrategy?: 'ALLOW' | 'DEACTIVATE';
@@ -758,6 +1079,12 @@ settings: {
   }
 }
 ```
+
+Shipped defaults (deep-merged with your settings): both features use
+`namespace: 'userOtp'`, `type: 'uuid'`, `duplicateStrategy: 'DEACTIVATE'`,
+`rateSeconds: 60`, `rateThreshold: 5`; recovery uses
+`category: 'auth-recovery'` with `expiresIn: '1h'`, verify uses
+`category: 'auth-verify'` with `expiresIn: '24h'`.
 
 ### Port Settings
 
@@ -811,6 +1138,27 @@ AuthenticationModule.forRoot({
 - `appGuard: false` — disables the global `APP_GUARD` entirely.
 - `appGuard: MyCustomGuard` — replaces the default `JwtGuard` as the APP_GUARD.
 - `guards` — registers named guards for `AuthRouterGuard` dispatch.
+
+---
+
+## Exceptions
+
+All exceptions in this package extend `RuntimeException` from
+`@concepta/nestjs-core`, which itself extends Nest's `HttpException` — no
+custom exception filter registration is required. Errors render on the wire
+as:
+
+```json
+{
+  "statusCode": 401,
+  "message": "Invalid credentials.",
+  "errorCode": "AUTH_LOCAL_INVALID_CREDENTIALS_ERROR",
+  "error": "Unauthorized"
+}
+```
+
+The full list of exported exception classes is in the
+[Exports Reference](#exports-reference).
 
 ---
 
@@ -894,7 +1242,8 @@ AuthenticationModule.forRoot({
 ```
 
 To protect only specific routes, leave the global guard enabled and use
-`@AuthPublic()` on controllers or handlers that should be publicly accessible.
+`@AuthPublic()` on handlers (or `@AuthPublic({ classLevel: true })` on
+controllers) that should be publicly accessible.
 
 To replace the default `JwtGuard` with a custom guard as the global APP_GUARD:
 
@@ -914,19 +1263,20 @@ AuthenticationModule.forRoot({
 ### Context Overlay
 
 `AuthUserContextOverlay` is registered as an `APP_INTERCEPTOR` and publishes
-`request.user` into the Rockets `AppContextHost` via `AuthUserCtx`:
+`request.user` into the Rockets `AppContextHost` via the `AuthUserCtx`
+overlay reference:
 
 ```typescript
 import { AuthUserCtx } from '@concepta/nestjs-authentication';
 import { getAppContext } from '@concepta/nestjs-core';
 
 // In a handler or interceptor:
-const ctx = getAppContext(request);
-const { user } = ctx.with(AuthUserCtx);
+const { user } = getAppContext(request).with(AuthUserCtx);
 ```
 
-This is useful in command/query handlers that need access to the authenticated
-user without taking it as a parameter.
+This is exactly how the `@AuthUser()` decorator resolves the user, and it is
+useful in command/query handlers that need access to the authenticated user
+without taking it as a parameter.
 
 ---
 
@@ -940,6 +1290,9 @@ user without taking it as a parameter.
 | `AuthenticationOptionsInterface` | Module options shape |
 | `AuthenticationOptionsExtrasInterface` | Extras (appGuard, guards) shape |
 | `AuthenticationPortsInterface` | Ports configuration shape |
+| `AuthenticationSettingsInterface` | Settings shape (jwt, strategies, mfa, guards) |
+| `AuthenticationStrategiesSettingsInterface` | `settings.strategies` shape |
+| `AuthenticationMfaSettingsInterface` | `settings.mfa` shape |
 
 ### Guards and Strategies
 
@@ -949,66 +1302,114 @@ user without taking it as a parameter.
 | `LocalGuard` | Local strategy guard (`AuthGuard('local')`) |
 | `RefreshGuard` | Refresh token guard (`AuthGuard('refresh')`) |
 | `AuthRouterGuard` | OAuth provider dispatcher |
+| `AuthRouterGuardsRecord` | Named-guard record type for the router |
+| `AuthRouterGuardConfigInterface` | `{ name, guard }` config entry |
 | `AuthGuard` | Guard factory function |
+| `AuthGuardOptions` | `{ canDisable? }` guard options |
+| `AuthGuardCtr` | Guard constructor type |
 | `JwtStrategy` | `passport-jwt` strategy |
 | `JwtPassportStrategy` | Low-level Passport JWT strategy base |
+| `JwtPassportOptionsInterface` | Options for `JwtPassportStrategy` |
 | `PassportStrategyFactory` | Factory for creating Passport strategies |
+| `createVerifyTokenCallback` | Builds a `JwtVerifyTokenCallback` from `JwtPort` |
+| `JwtVerifyTokenCallback` | Token verification callback type |
 
 ### Decorators
 
 | Symbol | Description |
 |---|---|
-| `@AuthPublic()` | Exempts a route from the global JWT guard |
-| `@AuthUser()` | Injects `request.user` into a route parameter |
+| `@AuthPublic(options?)` | Exempts a route (or, with `{ classLevel: true }`, a controller) from the global guard |
+| `AuthPublicOptions` / `AuthPublicMetadata` | Decorator option/metadata types |
+| `@AuthUser()` | Injects the authenticated user into a route parameter |
 
-### DTOs
+### Schemas
 
 | Symbol | Description |
 |---|---|
-| `AuthenticationResponseDto` | Access + refresh token response |
-| `LocalLoginDto` | Default login DTO (`username`, `password`) |
-| `RefreshDto` | Refresh token request body |
-| `RecoveryRecoverLoginDto` | Recover-login request body |
-| `RecoveryRecoverPasswordDto` | Recover-password request body |
-| `RecoveryUpdatePasswordDto` | Update-password request body |
-| `RecoveryValidatePasscodeDto` | Validate-passcode request body |
-| `VerifyDto` | Verify send request body |
-| `VerifyUpdateDto` | Verify confirm request body |
+| `authenticationResponseSchema` | Access + refresh token response (OpenAPI component `AuthenticationResponse`) |
+| `localLoginSchema` | Default login body (`username`, `password`) |
+| `refreshSchema` | Refresh request body (`refreshToken` as JWT) |
+| `recoveryRecoverLoginSchema` | Recover-login request body |
+| `recoveryRecoverPasswordSchema` | Recover-password request body |
+| `recoveryUpdatePasswordSchema` | Update-password request body |
+| `recoveryValidatePasscodeSchema` | Validate-passcode request body |
+| `verifySchema` | Verify send request body |
+| `verifyUpdateSchema` | Verify confirm request body |
+
+### Services
+
+| Symbol | Description |
+|---|---|
+| `JwtService` | Low-level JWT sign/verify service |
+| `LocalService` | Username/password user validation (`validateUser`) |
+| `RecoveryService` | Recovery flows (see [Password Recovery](#password-recovery)) |
+| `VerifyService` | Verification flows (see [Email Verification](#email-verification)) |
 
 ### Ports
 
 | Symbol | Description |
 |---|---|
-| `JwtPort` | Sign/verify raw JWTs |
-| `TokenPort` | Issue/verify/validate access and refresh tokens |
-| `UserPort` | User lookup and update |
-| `PasswordPort` | Password validation and set |
-| `OtpPort` | OTP create/validate/clear |
-| `RecoveryNotificationPort` | Recovery email dispatch |
-| `VerifyNotificationPort` | Verify email dispatch |
+| `JwtPort` / `JwtPortSettings` | Sign/verify raw JWTs |
+| `TokenPort` / `TokenPortSettings` | Issue/verify/validate access and refresh tokens |
+| `UserPort` / `UserPortSettings` | User lookup and update |
+| `PasswordPort` / `PasswordPortSettings` | Password validation and set |
+| `OtpPort` / `OtpPortSettings` | OTP create/validate/clear |
+| `RecoveryNotificationPort` / `RecoveryNotificationPortSettings` | Recovery email dispatch |
+| `VerifyNotificationPort` / `VerifyNotificationPortSettings` | Verify email dispatch |
+| `AUTHENTICATION_JWT_PORT_TOKEN` | Injection token for `JwtPort` |
+
+**Port command/query contracts:** `SignTokenCommandInterface`,
+`JwtVerifyTokenQueryInterface`, `IssueTokenCommandInterface`,
+`VerifyTokenQueryInterface`, `ValidateTokenQueryInterface`,
+`GetUserByIdQueryInterface`, `GetUserBySubjectQueryInterface`,
+`GetUserByUsernameQueryInterface`, `GetUserByEmailQueryInterface`,
+`UpdateUserCommandInterface`, `ValidatePasswordCommandInterface`,
+`SetPasswordCommandInterface`, `CreateOtpCommandInterface`,
+`ValidateOtpQueryInterface`, `ClearOtpCommandInterface`,
+`SendRecoverLoginNotificationCommandInterface`,
+`SendRecoverPasswordNotificationCommandInterface`,
+`SendPasswordUpdatedNotificationCommandInterface`,
+`SendVerifyNotificationCommandInterface`.
 
 ### Policies
 
 | Symbol | Description |
 |---|---|
-| `JwtPolicy` | JWT signing settings (access/refresh secrets, expiry) |
-| `JwtStrategyPolicy` | JWT Passport strategy settings |
-| `LocalStrategyPolicy` | Local strategy settings (fields, DTO) |
-| `RefreshStrategyPolicy` | Refresh strategy settings |
-| `GuardsPolicy` | Guard enable/disable settings |
-| `RecoveryPolicy` | Recovery OTP settings |
-| `VerifyPolicy` | Verify OTP settings |
-| `OtpPolicy` | Base OTP policy |
+| `JwtPolicy` / `JwtPolicySettingsInterface` | JWT signing settings (access/refresh secrets, expiry) |
+| `JwtStrategyPolicy` / `JwtStrategyPolicySettingsInterface` | JWT Passport strategy settings |
+| `LocalStrategyPolicy` / `LocalStrategyPolicySettingsInterface` | Local strategy settings (fields, `loginSchema`) |
+| `RefreshStrategyPolicy` / `RefreshStrategyPolicySettingsInterface` | Refresh strategy settings |
+| `GuardsPolicy` / `GuardsPolicySettingsInterface` | Guard enable/disable settings |
+| `RecoveryPolicy` / `RecoveryPolicySettingsInterface` | Recovery OTP settings |
+| `VerifyPolicy` / `VerifyPolicySettingsInterface` | Verify OTP settings |
+| `OtpPolicy` / `OtpPolicySettingsInterface` | Base OTP policy |
 
-### Aggregates and Events
+### Domain Interfaces, Aggregates, and Events
 
 | Symbol | Description |
 |---|---|
 | `Token` | Token lifecycle aggregate |
 | `TokenIssuedEvent` | Emitted when a token is issued |
 | `TokenRevokedEvent` | Emitted when a token is revoked |
+| `TokenInterface` / `TokenType` / `TokenCreatableInterface` | Token shapes |
+| `TokenOptionsInterface` | Per-token JWT options (extends `JwtModuleOptions`) |
+| `AuthenticatedUserInterface` | Shape of `request.user` |
+| `AuthenticatedResponseInterface` | `{ accessToken, refreshToken }` |
+| `AuthenticationLoginInterface` | Login credentials shape |
+| `AuthenticationRefreshInterface` | `{ refreshToken }` shape |
+| `AuthenticationAccessInterface` | `{ accessToken }` shape |
+| `AuthorizationPayloadInterface` | JWT payload (`sub`, ...) |
+| `AuthenticationUserInterface` / `AuthenticationUserResult` | UserPort result shapes |
+| `AuthenticationOtpInterface` / `AuthenticationOtpCreatableInterface` | OtpPort shapes |
+| `LocalCredentialsInterface` / `LocalValidateUserInterface` / `LocalServiceInterface` | Local login contracts |
+| `RecoveryRecoverLoginParamsInterface` | `{ email }` |
+| `RecoveryRecoverPasswordParamsInterface` | `{ email }` |
+| `RecoveryUpdatePasswordParamsInterface` | `{ passcode, newPassword }` |
+| `RecoveryValidatePasscodeParamsInterface` | `{ passcode }` |
+| `VerifySendParamsInterface` | `{ email }` |
+| `VerifyConfirmParamsInterface` | `{ passcode }` |
 
-### Exceptions
+### Exception Classes
 
 | Symbol | Description |
 |---|---|
@@ -1027,7 +1428,7 @@ user without taking it as a parameter.
 | `LocalUsernameNotFoundException` | Username not found |
 | `LocalUserInactiveException` | User is inactive |
 | `LocalInvalidPasswordException` | Password mismatch |
-| `LocalInvalidLoginDataException` | Malformed login data |
+| `LocalInvalidLoginDataException` | Login body failed schema validation |
 | `LocalInvalidCredentialsException` | Credentials rejected |
 | `RefreshException` | Base refresh exception |
 | `RefreshUnauthorizedException` | Refresh strategy unauthorized |
@@ -1035,7 +1436,7 @@ user without taking it as a parameter.
 | `RecoveryOtpInvalidException` | Recovery OTP invalid |
 | `VerifyException` | Base verify exception |
 | `VerifyOtpInvalidException` | Verify OTP invalid |
-| `AuthRouterException` | Base router exception |
+| `AuthRouterException` | Base router exception (bad requests → 400) |
 | `AuthenticationUserPortRequiredException` | UserPort not configured |
 | `AuthenticationFeatureConfigException` | Feature misconfiguration |
 
@@ -1049,8 +1450,8 @@ user without taking it as a parameter.
 | `VerifyAccessTokenQuery` | TokenPort |
 | `VerifyRefreshTokenQuery` | TokenPort |
 | `ValidateTokenQuery` | TokenPort |
-| `ValidateAndVerifyAccessTokenQuery` | TokenPort |
-| `ValidateAndVerifyRefreshTokenQuery` | TokenPort |
+| `ValidateAndVerifyAccessTokenQuery` (+ `ValidateAndVerifyAccessTokenQueryInterface`) | TokenPort |
+| `ValidateAndVerifyRefreshTokenQuery` (+ `ValidateAndVerifyRefreshTokenQueryInterface`) | TokenPort |
 | `SignAccessTokenCommand` | JwtPort |
 | `SignRefreshTokenCommand` | JwtPort |
 | `JwtVerifyAccessTokenQuery` | JwtPort |
@@ -1072,7 +1473,7 @@ user without taking it as a parameter.
 | `OAuthAuthenticateOptionsInterface` | Options passed to `passport.authenticate()` |
 | `OAuthParamsInterface` | Normalized OAuth params (provider, state, code) |
 | `OAuthRequestInterface` | Extended request with OAuth state |
-| `ExtractJwt` | Re-export from `passport-jwt` |
+| `ExtractJwt` / `JwtFromRequestFunction` | Re-exports from `passport-jwt` |
 
 ---
 
@@ -1081,9 +1482,10 @@ user without taking it as a parameter.
 **Runtime dependencies:**
 
 - [`@concepta/nestjs-core`](../nestjs-core) — `AppContextHost`, `OverlayRef`,
-  `ReferenceId`, event/exception base classes.
+  `ReferenceId`, schema helpers (`conformsTo`, `withOpenApi`,
+  `withNamedComponent`), event/exception base classes.
 - [`@concepta/nestjs-password`](../nestjs-password) — password hashing and
-  validation utilities (typically used in `PasswordPort` command handlers).
+  validation (typically used in `PasswordPort` command handlers).
 - [`@concepta/nestjs-user`](../nestjs-user) — ready-made user module with
   CQRS queries/commands that satisfy `UserPortSettings`.
 

@@ -1,5 +1,3 @@
-import { plainToInstance } from 'class-transformer';
-
 import { type PlainLiteralObject } from '@nestjs/common';
 import { isObject } from '@nestjs/common/utils/shared.utils';
 
@@ -36,7 +34,7 @@ import {
 import { WhereCompoundOperator } from './repository.types.js';
 
 /**
- * Abstract repository adapter that implements DTO transformation.
+ * Abstract repository adapter that implements entity hydration.
  *
  * Concrete repository implementations should extend this class.
  *
@@ -352,7 +350,7 @@ export abstract class RepositoryAdapter<
       return dto;
     }
 
-    return plainToInstance(entityType, dto);
+    return Object.assign(new entityType(), dto);
   }
 
   /**

@@ -10,8 +10,8 @@ export { OtpRepositoryResolver } from './infrastructure/persistence/otp-reposito
 export { OtpRepositoryInterface } from './domain/repositories/otp-repository.interface.js';
 export { OtpRepositoryResolverInterface } from './domain/repositories/otp-repository-resolver.interface.js';
 
-// dto
-export { OtpCreateDto } from './infrastructure/dtos/otp-create.dto.js';
+// schemas (Zod / Standard Schema)
+export { otpCreateSchema } from './infrastructure/schemas/otp-create.schema.js';
 
 // commands
 export { ConsumeOtpCommand } from './application/commands/impl/consume-otp.command.js';

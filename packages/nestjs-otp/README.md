@@ -10,7 +10,7 @@ duplicate strategies, and automatic history cleanup.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-otp)](https://www.npmjs.com/package/@concepta/nestjs-otp)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-otp%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -23,7 +23,8 @@ duplicate strategies, and automatic history cleanup.
 - [Domain Events](#domain-events)
 - [Otp Aggregate](#otp-aggregate)
 - [Repository](#repository)
-- [DTOs](#dtos)
+- [Context Overlay](#context-overlay)
+- [Schemas](#schemas)
 - [Exceptions](#exceptions)
 - [HTTP Controller with CRUD Module](#http-controller-with-crud-module)
 - [Entry Points](#entry-points)
@@ -36,6 +37,9 @@ duplicate strategies, and automatic history cleanup.
 yarn add @concepta/nestjs-otp
 ```
 
+This package is ESM-only and requires Node.js >= 22.12 and NestJS 12
+(currently alpha).
+
 ### Dependencies
 
 `@nestjs/cqrs` is a direct dependency (used for `CommandBus`, `QueryBus`,
@@ -45,12 +49,14 @@ yarn add @concepta/nestjs-otp
 
 | Package | Required | Notes |
 | --- | --- | --- |
-| `class-transformer` | Yes | DTO serialization |
-| `class-validator` | Yes | DTO validation |
+| `rxjs` | Yes | Required by NestJS interceptors |
 | `typeorm` | No | Only if using the TypeORM repository adapter |
-| `@concepta/nestjs-crud` | No | Only if using the HTTP gateway layer |
 | `@concepta/typeorm-seeding` | No | Only for database seeding |
 | `@faker-js/faker` | No | Only for database seeding |
+
+`@concepta/nestjs-crud` is NOT a dependency of this package — it is only
+needed if you choose to wire OTP operations into REST endpoints yourself
+(see [HTTP Controller with CRUD Module](#http-controller-with-crud-module)).
 
 ## Module Registration
 
@@ -178,7 +184,7 @@ Application (Commands / Queries / Listeners)
   |
 Domain (Otp aggregate, Events, Services)
   |
-Infrastructure (Repository, Mapper, DTOs, Config)
+Infrastructure (Repository, Mapper, Schemas, Config)
 ```
 
 - **Domain** -- `Otp` aggregate extending `DomainAggregate<OtpInterface>`,
@@ -187,9 +193,11 @@ Infrastructure (Repository, Mapper, DTOs, Config)
   1 built-in event listener
 - **Infrastructure** -- `OtpRepository` with ctx-first signatures,
   `OtpMapper` for entity-to-aggregate conversion (DI-injected),
-  `OtpRepositoryResolver`, DTOs, config
+  `OtpRepositoryResolver`, Zod schemas, config
 
-The module does not include a gateway layer. See
+The module ships no HTTP controllers or request handlers of its own, but it
+DOES export gateway context-overlay helpers (`OtpContextOverlay`, `OtpCtx`,
+`OtpNamespace` — see [Context Overlay](#context-overlay)). See
 [HTTP Controller with CRUD Module](#http-controller-with-crud-module) for how
 to expose OTP operations as REST endpoints.
 
@@ -224,7 +232,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateOtpCommand, Otp } from '@concepta/nestjs-otp';
 
 const otp = await this.commandBus.execute<CreateOtpCommand, Otp>(
-  new CreateOtpCommand(ctx, {
+  new CreateOtpCommand(ctx, 'userOtp', {
     category: 'email-verification',
     type: 'uuid',
     expiresIn: '15m',
@@ -233,10 +241,11 @@ const otp = await this.commandBus.execute<CreateOtpCommand, Otp>(
 );
 ```
 
-`CreateOtpCommand` accepts an optional third argument for per-request overrides:
+`CreateOtpCommand` accepts an optional fourth argument for per-request
+overrides:
 
 ```ts
-new CreateOtpCommand(ctx, dto, {
+new CreateOtpCommand(ctx, 'userOtp', dto, {
   duplicateStrategy: 'ALLOW',
   rateSeconds: 60,
   rateThreshold: 3,
@@ -262,7 +271,12 @@ import { AssigneeRelationInterface } from '@concepta/nestjs-core';
 const result = await this.queryBus.execute<
   ValidateOtpQuery,
   AssigneeRelationInterface | null
->(new ValidateOtpQuery(ctx, { category: 'email-verification', passcode }));
+>(
+  new ValidateOtpQuery(ctx, 'userOtp', {
+    category: 'email-verification',
+    passcode,
+  }),
+);
 ```
 
 ## Domain Events
@@ -366,14 +380,37 @@ const otp = await otpRepo.get(ctx, id);
 `OtpRepositoryResolver` looks up the repository by entity key. Entity keys
 are registered via `OtpModule.forFeature()`.
 
-## DTOs
+## Context Overlay
 
-| DTO | Fields |
+While the module ships no HTTP controllers, it exports a context overlay for
+resolving the OTP entity namespace per HTTP request when you build your own
+gateway:
+
+- **`OtpNamespace`** -- decorator: apply `@OtpNamespace({ name })` to a
+  controller (or pass via `extraDecorators` on a generated CRUD controller)
+  to associate it with an OTP entity key
+- **`OtpContextOverlay`** -- extends `ContextOverlayInterceptor`; register it
+  as a global `APP_INTERCEPTOR`. Its `attach()` reads the `@OtpNamespace`
+  metadata via `Reflector` and calls `ctx.defineOverlay(OtpCtx, { namespace })`
+- **`OtpCtx`** -- the `OverlayRef`; request handlers read the namespace via
+  `@Ctx(OtpCtx)` (or `ctx.with(OtpCtx)`) and pass it to commands/queries
+
+## Schemas
+
+Schemas are Zod v4 objects (Standard Schema compatible), replacing the legacy
+class-validator DTO classes.
+
+| Schema | Fields |
 | --- | --- |
-| `OtpCreateDto` | category, type, expiresIn, assigneeId, rateSeconds?, rateThreshold? |
+| `otpCreateSchema` | `category`, `type`, `expiresIn`, `rateSeconds?` (int >= 0), `rateThreshold?` (int >= 1), `assigneeId` |
 
 The `expiresIn` field accepts time span strings: `'60'`, `'2 days'`, `'10h'`,
 `'7d'`.
+
+`otpCreateSchema` is programmatic-only: it carries no OpenAPI wrapper
+(`withOpenApi`/`withNamedComponent`) because the module has no HTTP surface
+of its own. `CreateOtpHandler` validates every incoming dto against it and
+throws `OtpValidationException` when validation fails.
 
 ## Exceptions
 
@@ -384,13 +421,20 @@ The `expiresIn` field accepts time span strings: `'60'`, `'2 days'`, `'10h'`,
 | `OtpTypeNotDefinedException` | OTP type not configured in settings |
 | `OtpLimitReachedException` | Rate limit exceeded (HTTP 429) |
 | `OtpInvalidExpirationDateException` | Invalid `expiresIn` format |
+| `OtpValidationException` | Schema validation failed (HTTP 400, error code `OTP_VALIDATION_ERROR`, context `{ schemaName, validationErrors }`) |
 | `OtpException` | Base OTP exception |
+
+All exceptions extend `OtpException`, which extends `RuntimeException` from
+`@concepta/nestjs-core`. `RuntimeException` extends NestJS's
+`HttpException`, so no exception filter registration is needed — errors
+serialize over the wire as `{ statusCode, message, errorCode, error? }`
+(no `timestamp`).
 
 ## HTTP Controller with CRUD Module
 
-The OTP module does not include a gateway layer. To expose OTP operations as
-REST endpoints via `@concepta/nestjs-crud`, create custom request and handler
-classes that bridge CRUD operations to domain commands.
+The OTP module ships no controllers or request handlers of its own. To expose
+OTP operations as REST endpoints via `@concepta/nestjs-crud`, create custom
+request and handler classes that bridge CRUD operations to domain commands.
 
 ### Custom Request Class
 
@@ -425,11 +469,37 @@ export class CreateOtpRequestHandler {
   ): Promise<OtpInterface> {
     const { context, dto } = command;
     const otp = await this.commandBus.execute<CreateOtpCommand, Otp>(
-      new CreateOtpCommand(context, dto),
+      new CreateOtpCommand(context, 'userOtp', dto),
     );
     return otp.toPlain();
   }
 }
+```
+
+(To avoid hard-coding the namespace, register `OtpContextOverlay` and read it
+from the context via `OtpCtx` — see [Context Overlay](#context-overlay).)
+
+### Response Schema
+
+`otpCreateSchema` is a request schema — do not reuse it as a response
+resource. Author a small response schema yourself with the OpenAPI helpers
+from `@concepta/nestjs-core`:
+
+```ts
+import { z } from 'zod';
+import { withNamedComponent } from '@concepta/nestjs-core';
+
+// Deliberately omits `passcode` so it is never serialized to clients.
+export const otpResponseSchema = withNamedComponent(
+  z.object({
+    assigneeId: z.string(),
+    category: z.string(),
+    type: z.string(),
+    expirationDate: z.date(),
+    active: z.boolean(),
+  }),
+  'Otp',
+);
 ```
 
 ### Module Wiring
@@ -438,10 +508,11 @@ export class CreateOtpRequestHandler {
 import { Module } from '@nestjs/common';
 import { Operation } from '@concepta/nestjs-core';
 import { CrudCqrsResolver, CrudModule } from '@concepta/nestjs-crud';
-import { OtpInterface, OtpModule, OtpCreateDto } from '@concepta/nestjs-otp';
+import { OtpInterface, OtpModule, otpCreateSchema } from '@concepta/nestjs-otp';
 
 import { CreateOtpRequest } from './create-otp.request';
 import { CreateOtpRequestHandler } from './create-otp-request.handler';
+import { otpResponseSchema } from './otp-response.schema';
 
 @Module({
   imports: [
@@ -453,13 +524,13 @@ import { CreateOtpRequestHandler } from './create-otp-request.handler';
           path: 'otp/user',
           resolver: CrudCqrsResolver,
           transactional: true,
-          request: { body: OtpCreateDto },
-          response: { resource: OtpCreateDto },
+          request: { body: otpCreateSchema },
+          response: { resource: otpResponseSchema },
         },
         operations: [
           {
             operation: Operation.Create,
-            request: { body: OtpCreateDto },
+            request: { body: otpCreateSchema },
             command: CreateOtpRequest,
             commandHandler: CreateOtpRequestHandler,
           },
@@ -470,6 +541,13 @@ import { CreateOtpRequestHandler } from './create-otp-request.handler';
 })
 export class UserOtpModule {}
 ```
+
+Builder-generated controllers derive request body validation from
+`operations[].request.body` automatically; a handwritten `@CrudController`
+class would need an explicit `@CrudBody({ schema })` for runtime validation.
+Note that `otpCreateSchema` has no OpenAPI wrapper (it is programmatic-only),
+so wrap it with `withOpenApi` from `@concepta/nestjs-core` if you want the
+request body documented in generated Swagger output.
 
 This is a minimal example showing a single Create operation. Add more
 operations (Read, List, Delete, etc.) by creating additional request/handler
@@ -483,7 +561,7 @@ in a parent module for `forFeature()` to resolve its dependencies.
 
 | Import Path | Contents |
 | --- | --- |
-| `@concepta/nestjs-otp` | Module, aggregate, commands, queries, events, handlers, DTOs, repository, exceptions, domain interfaces |
+| `@concepta/nestjs-otp` | Module, aggregate, commands, queries, events, handlers, `otpCreateSchema`, repository, context overlay (`OtpContextOverlay`, `OtpCtx`, `OtpNamespace`), exceptions, domain interfaces |
 | `@concepta/nestjs-otp/optional/typeorm` | `OtpSqliteEntity`, `OtpPostgresEntity` |
 | `@concepta/nestjs-otp/optional/seeding` | `OtpFactory` |
 

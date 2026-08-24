@@ -1,10 +1,7 @@
 import supertest from 'supertest';
 
 import { type INestApplication } from '@nestjs/common';
-import { HttpAdapterHost } from '@nestjs/core';
 import { Test, type TestingModule } from '@nestjs/testing';
-
-import { ExceptionsFilter } from '@concepta/nestjs-core';
 
 import { AppModuleFixture } from '../../../../__tests__/fixtures/app.module.fixture.js';
 import { VerifyOtpInvalidException } from '../../../../application/exceptions/verify-otp-invalid.exception.js';
@@ -34,9 +31,6 @@ describe('VerifyController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-
-    const exceptionsFilter = app.get(HttpAdapterHost);
-    app.useGlobalFilters(new ExceptionsFilter(exceptionsFilter));
 
     await app.init();
   });

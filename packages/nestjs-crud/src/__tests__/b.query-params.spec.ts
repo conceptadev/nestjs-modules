@@ -1,12 +1,12 @@
 import request from 'supertest';
 import { DataSource } from 'typeorm';
+import { z } from 'zod';
 
 import { Inject, INestApplication } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 
-import { ExceptionsFilter, Ctx } from '@concepta/nestjs-core';
+import { Ctx } from '@concepta/nestjs-core';
 import { RepositoryModule } from '@concepta/nestjs-repository';
 import { TypeOrmRepositoryModule } from '@concepta/nestjs-repository-typeorm';
 
@@ -35,6 +35,7 @@ import { CrudContextInterface } from '../infrastructure/interceptors/interfaces/
 import { CrudQueryBuilder } from '../infrastructure/request/crud-query.builder.js';
 import { CrudAdapterResolver } from '../infrastructure/resolvers/crud-adapter.resolver.js';
 import { CrudResolverInterface } from '../infrastructure/resolvers/interfaces/crud-resolver.interface.js';
+import { paginatedSchema } from '../infrastructure/schemas/crud-response-paginated.schema.js';
 import { createCrudAdapterProvider } from '../infrastructure/utils/create-crud-adapter-provider.js';
 
 import { createCrudOperationClasses } from '../__fixtures__/crud/create-crud-operation-classes.fixture.js';
@@ -45,19 +46,18 @@ import {
   CRUD_TEST_USER_ENTITY_NAME,
 } from '../__fixtures__/crud-test.constants.js';
 import { CompanyEntity } from '../__fixtures__/typeorm/company/company.entity.js';
-import { CompanyPaginatedDto } from '../__fixtures__/typeorm/company/dto/company-paginated.dto.js';
-import { CompanyDto } from '../__fixtures__/typeorm/company/dto/company.dto.js';
-import { NotePaginatedDto } from '../__fixtures__/typeorm/note/dto/note-paginated.dto.js';
-import { NoteDto } from '../__fixtures__/typeorm/note/dto/note.dto.js';
+import { companyPaginatedSchema } from '../__fixtures__/typeorm/company/schemas/company-paginated.schema.js';
+import { companySchema } from '../__fixtures__/typeorm/company/schemas/company.schema.js';
 import { NoteEntity } from '../__fixtures__/typeorm/note/note.entity.js';
+import { notePaginatedSchema } from '../__fixtures__/typeorm/note/schemas/note-paginated.schema.js';
+import { noteSchema } from '../__fixtures__/typeorm/note/schemas/note.schema.js';
 import { ormSqliteConfig } from '../__fixtures__/typeorm/orm.sqlite.config.js';
-import { ProjectCreateDto } from '../__fixtures__/typeorm/project/dto/project-create.dto.js';
-import { ProjectPaginatedDto } from '../__fixtures__/typeorm/project/dto/project-paginated.dto.js';
-import { ProjectDto } from '../__fixtures__/typeorm/project/dto/project.dto.js';
 import { ProjectEntity } from '../__fixtures__/typeorm/project/project.entity.js';
+import { projectCreateSchema } from '../__fixtures__/typeorm/project/schemas/project-create.schema.js';
+import { projectPaginatedSchema } from '../__fixtures__/typeorm/project/schemas/project-paginated.schema.js';
+import { projectSchema } from '../__fixtures__/typeorm/project/schemas/project.schema.js';
 import { Seeds } from '../__fixtures__/typeorm/seeds.js';
-import { UserPaginatedDto } from '../__fixtures__/typeorm/users/dto/user-paginated.dto.js';
-import { UserDto } from '../__fixtures__/typeorm/users/dto/user.dto.js';
+import { userSchema } from '../__fixtures__/typeorm/users/schemas/user.schema.js';
 import { UserEntity } from '../__fixtures__/typeorm/users/user.entity.js';
 
 // Create entity-specific operation classes
@@ -120,11 +120,11 @@ describe('#crud-typeorm', () => {
       path: 'companies',
       entity: CRUD_TEST_COMPANY_ENTITY_NAME,
       request: {
-        body: CompanyDto,
+        body: companySchema,
       },
       response: {
-        resource: CompanyDto,
-        paginated: CompanyPaginatedDto,
+        resource: companySchema,
+        paginated: companyPaginatedSchema,
       },
     })
     @CrudExclude(['updatedAt'])
@@ -154,11 +154,11 @@ describe('#crud-typeorm', () => {
             primary: true,
           },
         },
-        body: ProjectCreateDto,
+        body: projectCreateSchema,
       },
       response: {
-        resource: ProjectDto,
-        paginated: ProjectPaginatedDto,
+        resource: projectSchema,
+        paginated: projectPaginatedSchema,
       },
     })
     @CrudSort([{ field: 'id', order: 'ASC' }])
@@ -179,10 +179,22 @@ describe('#crud-typeorm', () => {
         return this.crudResolver.read(context);
       }
 
-      @CrudUpdate({ command: ProjectOps.CrudUpdateCommand })
+      // This fixture reuses `projectCreateSchema` for both create AND
+      // update (a pre-existing test-fixture quirk, not a real API
+      // pattern) — but update is a PATCH, and `projectCreateSchema.name`
+      // is required (per the Phase 3 decision to fix it to match
+      // `ProjectEntity`'s NOT NULL constraint). `.partial()` here keeps
+      // that create-time requirement intact while allowing this
+      // operation's genuinely partial payloads (e.g. `{ companyId }`
+      // alone) to validate.
+      @CrudUpdate({
+        command: ProjectOps.CrudUpdateCommand,
+        request: { body: projectCreateSchema.partial() },
+      })
       update(
         @Ctx(CrudCtx) context: CrudContextInterface<ProjectEntity>,
-        @CrudBody() project: ProjectCreateDto,
+        @CrudBody({ schema: projectCreateSchema.partial() })
+        project: z.infer<typeof projectCreateSchema>,
       ) {
         return this.crudResolver.update(context, project);
       }
@@ -192,11 +204,11 @@ describe('#crud-typeorm', () => {
       path: 'projects2',
       entity: CRUD_TEST_PROJECT_ENTITY_NAME,
       request: {
-        body: ProjectDto,
+        body: projectSchema,
       },
       response: {
-        resource: ProjectDto,
-        paginated: ProjectPaginatedDto,
+        resource: projectSchema,
+        paginated: projectPaginatedSchema,
       },
     })
     class ProjectsController2 {
@@ -215,11 +227,11 @@ describe('#crud-typeorm', () => {
       path: 'projects3',
       entity: CRUD_TEST_PROJECT_ENTITY_NAME,
       request: {
-        body: ProjectDto,
+        body: projectSchema,
       },
       response: {
-        resource: ProjectDto,
-        paginated: ProjectPaginatedDto,
+        resource: projectSchema,
+        paginated: projectPaginatedSchema,
       },
     })
     @CrudFilter({ isActive: false })
@@ -239,11 +251,11 @@ describe('#crud-typeorm', () => {
       path: 'projects4',
       entity: CRUD_TEST_PROJECT_ENTITY_NAME,
       request: {
-        body: ProjectDto,
+        body: projectSchema,
       },
       response: {
-        resource: ProjectDto,
-        paginated: ProjectPaginatedDto,
+        resource: projectSchema,
+        paginated: projectPaginatedSchema,
       },
     })
     @CrudFilter({ isActive: true })
@@ -263,11 +275,36 @@ describe('#crud-typeorm', () => {
       path: 'users',
       entity: CRUD_TEST_USER_ENTITY_NAME,
       request: {
-        body: UserDto,
+        body: userSchema,
       },
       response: {
-        resource: UserDto,
-        paginated: UserPaginatedDto,
+        resource: userSchema,
+        // Field-selection (`select=...`) can legitimately narrow a List
+        // response down to a subset of `userSchema`'s fields (see the
+        // "#field selection" describe block below) — unlike the legacy
+        // class-transformer path (which never validated field presence
+        // at all), the schema-based serializer validates the response
+        // shape, so List needs a lenient (all-optional) paginated schema.
+        // Built inline rather than `userSchema.partial()` because
+        // `userSchema` is typed `z.ZodType<UserType>` (an explicit
+        // annotation required to break its circular reference with
+        // `companySchema` — see user.schema.ts), which drops
+        // `ZodObject`-only methods like `.partial()`. This plain (no
+        // join) `/users` list never actually returns `company`/
+        // `userProfile`, so they're omitted here rather than duplicated.
+        // Read/Create/Update stay strict via the full `userSchema`
+        // resource above.
+        paginated: paginatedSchema(
+          z.object({
+            id: z.number().optional(),
+            email: z.string().optional(),
+            isActive: z.boolean().optional(),
+            companyId: z.number().optional(),
+            deletedAt: z.date().nullable().optional(),
+            firstName: z.string().nullable().optional(),
+            lastName: z.string().nullable().optional(),
+          }),
+        ),
       },
     })
     class UsersController {
@@ -286,11 +323,11 @@ describe('#crud-typeorm', () => {
       path: 'notes',
       entity: CRUD_TEST_NOTE_ENTITY_NAME,
       request: {
-        body: NoteDto,
+        body: noteSchema,
       },
       response: {
-        resource: NoteDto,
-        paginated: NotePaginatedDto,
+        resource: noteSchema,
+        paginated: notePaginatedSchema,
       },
     })
     class NotesController {
@@ -331,7 +368,6 @@ describe('#crud-typeorm', () => {
           NotesController,
         ],
         providers: [
-          { provide: APP_FILTER, useClass: ExceptionsFilter },
           createCrudAdapterProvider({
             entity: CRUD_TEST_COMPANY_ENTITY_NAME,
             adapter: CrudAdapter,

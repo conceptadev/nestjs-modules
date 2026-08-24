@@ -1,3 +1,5 @@
+import { HttpStatus } from '@nestjs/common';
+
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
 import { AuthRouterException } from './auth-router.exception.js';
@@ -7,6 +9,7 @@ export class AuthRouterProviderMissingException extends AuthRouterException {
     super({
       safeMessage:
         'Auth Router provider is required in the request query parameters.',
+      httpStatus: HttpStatus.BAD_REQUEST,
       ...options,
     });
 

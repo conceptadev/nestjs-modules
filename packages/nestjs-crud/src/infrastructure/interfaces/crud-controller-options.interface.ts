@@ -51,12 +51,12 @@ export interface CrudControllerOptionsInterface<T extends PlainLiteralObject>
   resolver?: Type<CrudResolverInterface>;
 
   /**
-   * Request configuration (params, body DTOs, validation).
+   * Request configuration (params, body schemas, validation).
    */
   request?: CrudRequestConfig<T>;
 
   /**
-   * Response configuration (resource DTOs, serialization).
+   * Response configuration (resource schemas, serialization).
    */
   response?: CrudResponseConfig;
 }

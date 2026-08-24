@@ -1,10 +1,10 @@
-import { Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { AuthenticatedUserInterface } from '../../../../domain/interfaces/authenticated-user.interface.js';
 import { AuthPublic } from '../../../decorators/auth-public.decorator.js';
 import { AuthUser } from '../../../decorators/auth-user.decorator.js';
-import { AuthenticationResponseDto } from '../../../dtos/authenticated-response.dto.js';
+import { authenticationResponseSchema } from '../../../schemas/authentication-response.schema.js';
 import { AuthRouterGuard } from '../../auth-router.guard.js';
 
 @Controller('auth-router')
@@ -25,9 +25,10 @@ export class RouterControllerFixture {
     return;
   }
 
-  @ApiOkResponse({
-    type: AuthenticationResponseDto,
-    description: 'DTO containing an access token and a refresh token.',
+  @ApiResponse({
+    status: HttpStatus.OK,
+    standardSchema: authenticationResponseSchema,
+    description: 'Schema containing an access token and a refresh token.',
   })
   @Get('callback')
   async callback(@AuthUser() _user: AuthenticatedUserInterface) {
@@ -36,9 +37,10 @@ export class RouterControllerFixture {
     };
   }
 
-  @ApiOkResponse({
-    type: AuthenticationResponseDto,
-    description: 'DTO containing an access token and a refresh token.',
+  @ApiResponse({
+    status: HttpStatus.OK,
+    standardSchema: authenticationResponseSchema,
+    description: 'Schema containing an access token and a refresh token.',
   })
   @Post('callback')
   async postCallback(@AuthUser() _user: AuthenticatedUserInterface) {

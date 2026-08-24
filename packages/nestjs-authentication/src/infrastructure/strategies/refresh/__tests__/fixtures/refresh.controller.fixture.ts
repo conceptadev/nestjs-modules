@@ -1,8 +1,8 @@
-import { Controller, Post, UseGuards } from '@nestjs/common';
+import { Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import {
   ApiBody,
-  ApiOkResponse,
+  ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -12,9 +12,19 @@ import { AuthenticatedResponseInterface } from '../../../../../domain/interfaces
 import { AuthenticatedUserInterface } from '../../../../../domain/interfaces/authenticated-user.interface.js';
 import { AuthPublic } from '../../../../decorators/auth-public.decorator.js';
 import { AuthUser } from '../../../../decorators/auth-user.decorator.js';
-import { AuthenticationResponseDto } from '../../../../dtos/authenticated-response.dto.js';
-import { RefreshDto } from '../../dto/refresh.dto.js';
+import { authenticationResponseSchema } from '../../../../schemas/authentication-response.schema.js';
 import { RefreshGuard } from '../../refresh.guard.js';
+import { refreshSchema } from '../../schemas/refresh.schema.js';
+
+const refreshBodySchema = refreshSchema['~standard'].jsonSchema?.input?.({
+  target: 'openapi-3.0',
+});
+
+if (!refreshBodySchema) {
+  throw new Error(
+    'refreshSchema is missing its OpenAPI bridge — wrap it with withOpenApi() first.',
+  );
+}
 
 /**
  * Auth Local controller
@@ -30,12 +40,13 @@ export class RefreshControllerFixture {
    * Login
    */
   @ApiBody({
-    type: RefreshDto,
-    description: 'DTO containing a refresh token.',
+    schema: refreshBodySchema,
+    description: 'Schema containing a refresh token.',
   })
-  @ApiOkResponse({
-    type: AuthenticationResponseDto,
-    description: 'DTO containing an access token and a refresh token.',
+  @ApiResponse({
+    status: HttpStatus.OK,
+    standardSchema: authenticationResponseSchema,
+    description: 'Schema containing an access token and a refresh token.',
   })
   @ApiUnauthorizedResponse()
   @Post()

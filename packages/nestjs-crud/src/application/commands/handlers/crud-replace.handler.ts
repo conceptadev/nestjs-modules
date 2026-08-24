@@ -9,9 +9,9 @@ import { CrudWithBodyCommandHandler } from './crud-with-body-command.handler.js'
 
 export class CrudReplaceHandler<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  DTO extends DeepPartial<Entity> = DeepPartial<Entity>,
-> extends CrudWithBodyCommandHandler<Entity, DTO> {
-  async execute(command: CrudReplaceCommand<Entity, DTO>): Promise<Entity> {
+  Body extends DeepPartial<Entity> = DeepPartial<Entity>,
+> extends CrudWithBodyCommandHandler<Entity, Body> {
+  async execute(command: CrudReplaceCommand<Entity, Body>): Promise<Entity> {
     const { context, dto } = command;
 
     try {

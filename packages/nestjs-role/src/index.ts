@@ -11,14 +11,14 @@ export { RoleAssignmentRepository } from './infrastructure/persistence/role-assi
 export { RoleRepositoryResolver } from './infrastructure/persistence/role-repository.resolver.js';
 export { RoleAssignmentRepositoryResolver } from './infrastructure/persistence/role-assignment-repository.resolver.js';
 
-// dtos
-export { RoleDto } from './infrastructure/dtos/role.dto.js';
-export { RolePaginatedDto } from './infrastructure/dtos/role-paginated.dto.js';
-export { RoleCreateDto } from './infrastructure/dtos/role-create.dto.js';
-export { RoleUpdateDto } from './infrastructure/dtos/role-update.dto.js';
-export { RoleAssignmentDto } from './infrastructure/dtos/role-assignment.dto.js';
-export { RoleAssignmentPaginatedDto } from './infrastructure/dtos/role-assignment-paginated.dto.js';
-export { RoleAssignmentCreateDto } from './infrastructure/dtos/role-assignment-create.dto.js';
+// schemas (Zod / Standard Schema)
+export { roleSchema } from './infrastructure/schemas/role.schema.js';
+export { rolePaginatedSchema } from './infrastructure/schemas/role-paginated.schema.js';
+export { roleCreateSchema } from './infrastructure/schemas/role-create.schema.js';
+export { roleUpdateSchema } from './infrastructure/schemas/role-update.schema.js';
+export { roleAssignmentSchema } from './infrastructure/schemas/role-assignment.schema.js';
+export { roleAssignmentPaginatedSchema } from './infrastructure/schemas/role-assignment-paginated.schema.js';
+export { roleAssignmentCreateSchema } from './infrastructure/schemas/role-assignment-create.schema.js';
 
 // commands
 export { CreateRoleCommand } from './application/commands/impl/create-role.command.js';
@@ -80,7 +80,6 @@ export { RoleRelationInterface } from './domain/interfaces/role-relation.interfa
 
 // config interfaces
 export { RoleOptionsInterface } from './infrastructure/config/interfaces/role-options.interface.js';
-export { RoleSettingsInterface } from './infrastructure/config/interfaces/role-settings.interface.js';
 export { RoleExtrasInterface } from './infrastructure/config/interfaces/role-extras.interface.js';
 
 // exceptions

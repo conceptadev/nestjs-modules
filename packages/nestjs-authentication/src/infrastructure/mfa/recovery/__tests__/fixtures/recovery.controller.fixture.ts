@@ -7,10 +7,10 @@ import {
   Patch,
   PlainLiteralObject,
   Post,
+  StandardSchemaValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiBody,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -19,12 +19,15 @@ import {
 
 import { Ctx } from '@concepta/nestjs-core';
 
+import { RecoveryRecoverLoginParamsInterface } from '../../../../../application/services/recovery/interfaces/recovery-recover-login-params.interface.js';
+import { RecoveryRecoverPasswordParamsInterface } from '../../../../../application/services/recovery/interfaces/recovery-recover-password-params.interface.js';
+import { RecoveryUpdatePasswordParamsInterface } from '../../../../../application/services/recovery/interfaces/recovery-update-password-params.interface.js';
 import { RecoveryService } from '../../../../../application/services/recovery/recovery.service.js';
 import { AuthPublic } from '../../../../decorators/auth-public.decorator.js';
-import { RecoveryRecoverLoginDto } from '../../dto/recovery-recover-login.dto.js';
-import { RecoveryRecoverPasswordDto } from '../../dto/recovery-recover-password.dto.js';
-import { RecoveryUpdatePasswordDto } from '../../dto/recovery-update-password.dto.js';
 import { RecoveryOtpInvalidException } from '../../exceptions/recovery-otp-invalid.exception.js';
+import { recoveryRecoverLoginSchema } from '../../schemas/recovery-recover-login.schema.js';
+import { recoveryRecoverPasswordSchema } from '../../schemas/recovery-recover-password.schema.js';
+import { recoveryUpdatePasswordSchema } from '../../schemas/recovery-update-password.schema.js';
 
 @Controller('auth/recovery')
 @AuthPublic({ classLevel: true })
@@ -39,34 +42,37 @@ export class RecoveryController {
     summary:
       'Recover account username password by providing an email that will receive an username.',
   })
-  @ApiBody({
-    type: RecoveryRecoverLoginDto,
-    description: 'DTO of login recover.',
-  })
   @ApiOkResponse()
   @Post('/login')
   async recoverLogin(
     @Ctx() ctx: PlainLiteralObject,
-    @Body() recoverLoginDto: RecoveryRecoverLoginDto,
+    @Body({
+      schema: recoveryRecoverLoginSchema,
+      pipes: [new StandardSchemaValidationPipe()],
+    })
+    recoverLoginParams: RecoveryRecoverLoginParamsInterface,
   ): Promise<void> {
-    await this.recoveryService.recoverLogin(ctx, recoverLoginDto.email);
+    await this.recoveryService.recoverLogin(ctx, recoverLoginParams.email);
   }
 
   @ApiOperation({
     summary:
       'Recover account email password by providing an email that will receive a password reset link.',
   })
-  @ApiBody({
-    type: RecoveryRecoverPasswordDto,
-    description: 'DTO of email recover.',
-  })
   @ApiOkResponse()
   @Post('/password')
   async recoverPassword(
     @Ctx() ctx: PlainLiteralObject,
-    @Body() recoverPasswordDto: RecoveryRecoverPasswordDto,
+    @Body({
+      schema: recoveryRecoverPasswordSchema,
+      pipes: [new StandardSchemaValidationPipe()],
+    })
+    recoverPasswordParams: RecoveryRecoverPasswordParamsInterface,
   ): Promise<void> {
-    await this.recoveryService.recoverPassword(ctx, recoverPasswordDto.email);
+    await this.recoveryService.recoverPassword(
+      ctx,
+      recoverPasswordParams.email,
+    );
   }
 
   @ApiOperation({
@@ -89,18 +95,18 @@ export class RecoveryController {
   @ApiOperation({
     summary: 'Update lost password by providing passcode and new password.',
   })
-  @ApiBody({
-    type: RecoveryUpdatePasswordDto,
-    description: 'DTO of update password.',
-  })
   @ApiOkResponse()
   @ApiBadRequestResponse()
   @Patch('/password')
   async updatePassword(
     @Ctx() ctx: PlainLiteralObject,
-    @Body() updatePasswordDto: RecoveryUpdatePasswordDto,
+    @Body({
+      schema: recoveryUpdatePasswordSchema,
+      pipes: [new StandardSchemaValidationPipe()],
+    })
+    updatePasswordParams: RecoveryUpdatePasswordParamsInterface,
   ): Promise<void> {
-    const { passcode, newPassword } = updatePasswordDto;
+    const { passcode, newPassword } = updatePasswordParams;
 
     const user = await this.recoveryService.updatePassword(
       ctx,

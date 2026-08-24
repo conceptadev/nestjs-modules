@@ -9,14 +9,14 @@ import { CrudCommandBaseHandler } from './crud-command-base.handler.js';
 
 export class CrudWithBodyCommandHandler<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  DTO extends DeepPartial<Entity> = DeepPartial<Entity>,
+  Body extends DeepPartial<Entity> = DeepPartial<Entity>,
 > extends CrudCommandBaseHandler<Entity> {
   constructor(readonly crudAdapter: CrudAdapter<Entity>) {
     super(crudAdapter);
   }
 
   execute(
-    _command: CrudWithBodyCommand<Entity, DTO>,
+    _command: CrudWithBodyCommand<Entity, Body>,
   ): Promise<Entity | Entity[]> {
     throw new Error('Method not implemented');
   }

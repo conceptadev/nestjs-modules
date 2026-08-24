@@ -7,10 +7,10 @@ import { CrudWithBodyCommandHandler } from './crud-with-body-command.handler.js'
 
 export class CrudCreateBatchHandler<
   Entity extends PlainLiteralObject = PlainLiteralObject,
-  DTO extends Entity = Entity,
+  Body extends Entity = Entity,
 > extends CrudWithBodyCommandHandler<Entity> {
   async execute(
-    command: CrudCreateBatchCommand<Entity, DTO>,
+    command: CrudCreateBatchCommand<Entity, Body>,
   ): Promise<Entity[]> {
     const { context, dto } = command;
 

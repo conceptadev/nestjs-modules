@@ -58,16 +58,16 @@ describe('RouterController (e2e)', () => {
       expect(httpRequest.query.provider).toBe('google');
     });
 
-    it('should return 500 when provider is missing (Auth Router exception)', async () => {
+    it('should return 400 when provider is missing (Auth Router exception)', async () => {
       await supertest(app.getHttpServer())
         .get('/auth-router/login')
-        .expect(500);
+        .expect(400);
     });
 
-    it('should return 500 when provider is not supported (Auth Router exception)', async () => {
+    it('should return 400 when provider is not supported (Auth Router exception)', async () => {
       await supertest(app.getHttpServer())
         .get('/auth-router/login?provider=unsupported')
-        .expect(500);
+        .expect(400);
     });
   });
 

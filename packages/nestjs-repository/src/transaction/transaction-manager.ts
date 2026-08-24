@@ -55,10 +55,9 @@ export class TransactionManager implements TransactionManagerInterface {
   push(key: string, transaction: TransactionInterface): void {
     const current = this.transactions.get(key);
     if (current) {
-      if (!this.stack.has(key)) {
-        this.stack.set(key, []);
-      }
-      this.stack.get(key)!.push(current);
+      const stack = this.stack.get(key) ?? [];
+      stack.push(current);
+      this.stack.set(key, stack);
     }
     this.transactions.set(key, transaction);
   }
@@ -67,9 +66,9 @@ export class TransactionManager implements TransactionManagerInterface {
    * Pop the current transaction for the given key, restoring the previous one.
    */
   pop(key: string): void {
-    const stack = this.stack.get(key);
-    if (stack?.length) {
-      this.transactions.set(key, stack.pop()!);
+    const previous = this.stack.get(key)?.pop();
+    if (previous) {
+      this.transactions.set(key, previous);
     } else {
       this.transactions.delete(key);
     }

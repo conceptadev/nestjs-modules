@@ -20,6 +20,9 @@ Rapid Enterprise Development Toolkit
 A collection of NestJS modules
 that were created for the rapid development of enterpise level APIs.
 
+The v8 line is schema-first — native Zod v4 / Standard Schema validation,
+serialization, and OpenAPI — on NestJS 12, ESM-only, Node >= 22.
+
 All reasonable efforts have been made to provide loosely coupled interfaces,
 overridable services, and sane default implementations.
 

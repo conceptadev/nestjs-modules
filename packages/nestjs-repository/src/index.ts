@@ -79,6 +79,8 @@ export {
   // Delete operations
   BeforeDeleteMethod,
   AfterDeleteMethod,
+  BeforeDeleteManyMethod,
+  AfterDeleteManyMethod,
   // Lifecycle operations
   BeforeSoftDeleteMethod,
   AfterSoftDeleteMethod,
@@ -134,6 +136,8 @@ export {
   // Fine-grained delete decorators
   BeforeDelete,
   AfterDelete,
+  BeforeDeleteMany,
+  AfterDeleteMany,
   // Fine-grained lifecycle decorators
   BeforeSoftDelete,
   AfterSoftDelete,

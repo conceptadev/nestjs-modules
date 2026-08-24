@@ -1,5 +1,4 @@
-import { type Type } from '@nestjs/common';
-
+import { type CrudSchema } from '../../../crud.types.js';
 import { type CrudSerializationOptionsInterface } from '../../interfaces/crud-serialization-options.interface.js';
 
 /**
@@ -9,19 +8,19 @@ import { type CrudSerializationOptionsInterface } from '../../interfaces/crud-se
  */
 export interface CrudResponseConfig {
   /**
-   * DTO type for single resource responses.
+   * Schema for single resource responses.
    */
-  resource?: Type;
+  resource?: CrudSchema;
 
   /**
-   * DTO type for collection responses (future use when de-paginate is supported).
+   * Schema for collection responses (future use when de-paginate is supported).
    */
-  collection?: Type;
+  collection?: CrudSchema;
 
   /**
-   * DTO type for paginated responses.
+   * Schema for paginated responses.
    */
-  paginated?: Type;
+  paginated?: CrudSchema;
 
   /**
    * Serialization options for response transformation.
