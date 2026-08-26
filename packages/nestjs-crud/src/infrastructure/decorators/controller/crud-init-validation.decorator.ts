@@ -4,7 +4,6 @@ import { MetadataScanner } from '@nestjs/core';
 import { Operation } from '@concepta/nestjs-core';
 
 import { CrudMetaview } from '../../services/crud-metaview.service.js';
-import { crudStandardSchemaExceptionFactory } from '../../utils/crud-standard-schema-exception.util.js';
 
 /**
  * Crud initialize validation decorator.
@@ -15,11 +14,10 @@ import { crudStandardSchemaExceptionFactory } from '../../utils/crud-standard-sc
  * (method-level only — the controller-level default is typically the full
  * entity schema and is never used for validation). Pipe options come from
  * `metadata.validation`, falling back to the operation-then-controller
- * `@CrudValidate()` hierarchy, merged over the crud-wide default
- * `exceptionFactory` — so callers can tune pipe behavior via plain options
- * instead of subclassing. `validation: false` disables validation for that
- * body (it is still bound, just unvalidated); a body with no resolvable
- * schema is always bound unvalidated.
+ * `@CrudValidate()` hierarchy — so callers can tune pipe behavior via plain
+ * options instead of subclassing. `validation: false` disables validation
+ * for that body (it is still bound, just unvalidated); a body with no
+ * resolvable schema is always bound unvalidated.
  */
 export const CrudInitValidation = (): ClassDecorator => (classTarget) => {
   const reflectionService = new CrudMetaview();
@@ -57,10 +55,7 @@ export const CrudInitValidation = (): ClassDecorator => (classTarget) => {
         Body({
           schema,
           pipes: [
-            new StandardSchemaValidationPipe({
-              exceptionFactory: crudStandardSchemaExceptionFactory,
-              ...validation,
-            }),
+            new StandardSchemaValidationPipe({ ...validation }),
             ...pipes,
           ],
         })(prototype, methodName, metadata.parameterIndex);
