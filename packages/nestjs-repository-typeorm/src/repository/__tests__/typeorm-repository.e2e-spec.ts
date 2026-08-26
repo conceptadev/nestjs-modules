@@ -561,9 +561,9 @@ describe(TypeOrmRepository, () => {
   });
 
   describe('prepare', () => {
-    it('should return undefined for empty object', () => {
+    it('should transform an empty object to an entity instance (#466)', () => {
       const result = testRepository.prepare({});
-      expect(result).toBeUndefined();
+      expect(result).toBeInstanceOf(TestEntityFixture);
     });
 
     it('should return undefined for non-object', () => {

@@ -248,8 +248,9 @@ describe(RepositoryAdapter.name, () => {
   });
 
   describe('prepare', () => {
-    it('should return undefined for empty object', () => {
-      expect(adapter.prepare({})).toBeUndefined();
+    it('should return an entity instance for an empty object', () => {
+      const result = adapter.prepare({});
+      expect(result).toBeInstanceOf(TestEntityClass);
     });
 
     it('should return entity instance as-is', () => {

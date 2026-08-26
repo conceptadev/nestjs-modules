@@ -264,9 +264,9 @@ describe('CrudAdapter', () => {
       ).toBeUndefined();
     });
 
-    it('should return undefined for empty object', () => {
+    it('should return an entity for an empty object (#466)', () => {
       const ctx = mockCrudContext();
-      expect(adapter.prepareEntityBeforeSave({} as never, ctx)).toBeUndefined();
+      expect(adapter.prepareEntityBeforeSave({} as never, ctx)).toEqual({});
     });
 
     it('should return entity with dto field values', () => {
@@ -286,14 +286,14 @@ describe('CrudAdapter', () => {
       expect(result?.id).toEqual('overridden');
     });
 
-    it('should ignore route params not present in dto', () => {
+    it('should apply route params not present in dto (matches update/replace)', () => {
       const dto = { name: 'Test' } as TestEntity;
       const context = mockCrudContext({
-        params: { id: 'should-not-appear' },
+        params: { id: 'from-route' },
       });
       const result = adapter.prepareEntityBeforeSave(dto, context);
       expect(result).toBeDefined();
-      expect(result).not.toHaveProperty('id');
+      expect(result?.id).toEqual('from-route');
       expect(result?.name).toEqual('Test');
     });
   });

@@ -1,22 +1,17 @@
 import { type z } from 'zod';
 
-import {
-  type PipeTransform,
-  type PlainLiteralObject,
-  type Type,
-} from '@nestjs/common';
+import { type PipeTransform, type Type } from '@nestjs/common';
 
-import { type CrudValidationOptions } from '../../../../crud.types.js';
+import { type CrudBodyValidationOptionsInterface } from './crud-body-validation-options.interface.js';
 
-export interface CrudBodyOptionsInterface<
-  T extends PlainLiteralObject = PlainLiteralObject,
-> {
+export interface CrudBodyOptionsInterface {
   /**
    * Options merged into the `StandardSchemaValidationPipe` used to
-   * validate `schema` — see `CrudOptionsInterface.validation`. Overrides
-   * any controller/operation-level default.
+   * validate `schema`. Overrides any controller/operation-level default.
+   * `false` disables validation for the body (it is still bound, just
+   * unvalidated).
    */
-  validation?: CrudValidationOptions<T>;
+  validation?: CrudBodyValidationOptionsInterface | false;
   pipes?: (Type<PipeTransform> | PipeTransform)[];
   /**
    * The schema to validate the body against — consumed by

@@ -880,6 +880,18 @@ describe('#crud-typeorm', () => {
         });
         expect(z.uuid().safeParse(res.body.deviceKey).success).toBe(true);
       });
+
+      // Regression test for #466: a create body that validates to `{}` was
+      // rejected with a bare 400 even though `deviceCreateSchema` declares
+      // every field optional — every column here is server-populated.
+      it('should create device with an empty body (issue #466)', async () => {
+        const res = await request(server).post('/devices').send({}).expect(201);
+        expect(res.body).toEqual({
+          deviceKey: expect.any(String),
+          description: null,
+        });
+        expect(z.uuid().safeParse(res.body.deviceKey).success).toBe(true);
+      });
     });
   });
 

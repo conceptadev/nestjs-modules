@@ -4,6 +4,7 @@ import { MetadataScanner } from '@nestjs/core';
 import { Operation } from '@concepta/nestjs-core';
 
 import { CrudMetaview } from '../../services/crud-metaview.service.js';
+import { withEmptyBodyGuard } from '../../utils/crud-empty-body-guard.util.js';
 
 /**
  * Crud initialize validation decorator.
@@ -17,7 +18,10 @@ import { CrudMetaview } from '../../services/crud-metaview.service.js';
  * `@CrudValidate()` hierarchy — so callers can tune pipe behavior via plain
  * options instead of subclassing. `validation: false` disables validation
  * for that body (it is still bound, just unvalidated); a body with no
- * resolvable schema is always bound unvalidated.
+ * resolvable schema is always bound unvalidated. `metadata.validation`'s
+ * own `allowEmpty` (default `true`, no `@CrudValidate()` fallback — see
+ * `CrudBodyValidationOptionsInterface`) controls whether an empty (`{}`)
+ * body is accepted — see `withEmptyBodyGuard`.
  */
 export const CrudInitValidation = (): ClassDecorator => (classTarget) => {
   const reflectionService = new CrudMetaview();
@@ -50,10 +54,14 @@ export const CrudInitValidation = (): ClassDecorator => (classTarget) => {
     for (const metadata of bodyParamOptions) {
       const { pipes = [], validation = fallbackOptions } = metadata;
       const schema = metadata.schema ?? fallbackSchema;
+      const allowEmpty =
+        metadata.validation && typeof metadata.validation === 'object'
+          ? metadata.validation.allowEmpty
+          : undefined;
 
       if (schema && validation !== false) {
         Body({
-          schema,
+          schema: withEmptyBodyGuard(schema, allowEmpty),
           pipes: [
             new StandardSchemaValidationPipe({ ...validation }),
             ...pipes,

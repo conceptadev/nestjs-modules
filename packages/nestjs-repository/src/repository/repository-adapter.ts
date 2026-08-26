@@ -337,10 +337,12 @@ export abstract class RepositoryAdapter<
 
   /**
    * Prepare a DTO for write operations.
-   * Transforms DTO to entity instance if needed.
+   * Transforms DTO to entity instance if needed. An empty object is a
+   * valid entity (e.g. every column is server-populated) — rejecting it
+   * is a schema/validation-layer decision, not this adapter's (see #466).
    */
   prepare(dto: DeepPartial<Entity>): Entity | undefined {
-    if (!isObject(dto) || !Object.keys(dto).length) {
+    if (!isObject(dto)) {
       return undefined;
     }
 

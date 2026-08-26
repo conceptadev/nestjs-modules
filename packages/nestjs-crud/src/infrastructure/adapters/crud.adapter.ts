@@ -229,17 +229,9 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
       return undefined;
     }
 
-    // Apply route params to dto fields that exist in the dto
-    let merged = dto;
-    for (const [field, value] of Object.entries(context.params)) {
-      if (field in merged) {
-        merged = { ...merged, [field]: value };
-      }
-    }
-
-    if (!Object.keys(merged).length) {
-      return undefined;
-    }
+    // Route params always win over the body (e.g. a nested route's FK) —
+    // matches update()/replace()'s merge below.
+    const merged = { ...dto, ...context.params };
 
     return this.repository.prepare(merged);
   }
@@ -261,7 +253,9 @@ export class CrudAdapter<Entity extends PlainLiteralObject> {
     const entity = this.prepareEntityBeforeSave(dto, context);
 
     if (!entity) {
-      throw new BadRequestException();
+      throw new BadRequestException(
+        'Invalid request body. Expected an object.',
+      );
     }
 
     return this.repository.create(entity, { ctx: context });
