@@ -11,9 +11,10 @@ import { withEmptyBodyGuard } from '../../utils/crud-empty-body-guard.util.js';
  *
  * Adds a `StandardSchemaValidationPipe` to every parameter called with the
  * `CrudBody` decorator. The schema resolves from `@CrudBody({ schema })`
- * first, falling back to the operation's own `request.body`/`bodyBatch`
- * (method-level only — the controller-level default is typically the full
- * entity schema and is never used for validation). Pipe options come from
+ * first, falling back to `request.body`/`bodyBatch` resolved through the
+ * metadata hierarchy (method → class) — so a controller-level default is
+ * validated, not just a docs placeholder left for `@ApiBody` to render
+ * (#467). Pipe options come from
  * `metadata.validation`, falling back to the operation-then-controller
  * `@CrudValidate()` hierarchy — so callers can tune pipe behavior via plain
  * options instead of subclassing. `validation: false` disables validation
@@ -42,13 +43,15 @@ export const CrudInitValidation = (): ClassDecorator => (classTarget) => {
       handler,
     );
 
-    // without an explicit @CrudBody({ schema }), fall back to the schema the
-    // operation decorator stored from its own request.body/bodyBatch
+    // without an explicit @CrudBody({ schema }), fall back to request.body/
+    // bodyBatch resolved through the metadata hierarchy (method → class) —
+    // the same resolution docs use (see crud-init-api-body.decorator.ts), so
+    // a controller-level default is validated, not just documented (#467).
     const operation = reflectionService.getOperation(handler);
     const fallbackSchema =
       operation === Operation.CreateBatch
-        ? reflectionService.getMethodRequestBodyBatch(handler)
-        : reflectionService.getMethodRequestBody(handler);
+        ? reflectionService.getRequestBodyBatch(classTarget, handler)
+        : reflectionService.getRequestBody(classTarget, handler);
 
     // loop all metadatas and set up the pipe
     for (const metadata of bodyParamOptions) {

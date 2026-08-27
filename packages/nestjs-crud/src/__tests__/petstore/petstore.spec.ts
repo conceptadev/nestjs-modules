@@ -157,6 +157,37 @@ describe('Petstore3 CRUD-fits replication', () => {
     );
   });
 
+  // ── Duplicate $ref grouping ─────────────────────────────────────────────────
+  // Pet/Order/User are each $ref-ed from BOTH a request body (#467) and one or
+  // more responses, across multiple operations — proves the document converter
+  // groups every usage into a single named component rather than registering a
+  // duplicate (e.g. a renamed "PetCreate") per call site.
+  describe('duplicate $refs are grouped into a single component', () => {
+    it.each(['Pet', 'Order', 'User', 'Category', 'Tag'])(
+      'registers exactly one %s component',
+      (name) => {
+        const matchingKeys = Object.keys(doc.components?.schemas ?? {}).filter(
+          (key) => key === name,
+        );
+        expect(matchingKeys).toHaveLength(1);
+      },
+    );
+
+    it.each<[string, number]>([
+      ['Pet', 5], // addPet body+response, getPetById response, updatePetWithForm body+response
+      ['Order', 3], // placeOrder body+response, getOrderById response
+      ['User', 5], // createUser body+response, getUserByName response, updateUser body+response
+    ])(
+      '%s is $ref-ed %i times across body and response usages',
+      (name, count) => {
+        // trailing quote guards against a false prefix match (e.g. Pet vs PetPaginated)
+        const needle = `"$ref":"#/components/schemas/${name}"`;
+        const refCount = JSON.stringify(doc).split(needle).length - 1;
+        expect(refCount).toBe(count);
+      },
+    );
+  });
+
   // ── Pet schema shapes ──────────────────────────────────────────────────────
   describe('Pet schema', () => {
     let petSchema: SchemaObject;

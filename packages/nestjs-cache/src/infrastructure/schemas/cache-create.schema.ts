@@ -7,11 +7,9 @@ import { type CacheCreatableInterface } from '../../domain/interfaces/cache-crea
 import { cacheSchema } from './cache.schema.js';
 
 /**
- * Used only as a request body, which `crud-init-api-body.decorator.ts`
- * documents inline via a manually injected `ApiBody` call (see that file —
- * dynamically-generated crud controllers never get `design:paramtypes`
- * reflection, so a schema-bearing `Body` param is not auto-detected by
- * swagger) — not a named OpenAPI component (no `withNamedComponent`).
+ * Used only as a request body — not a named OpenAPI component (no
+ * `withNamedComponent`), so `crud-init-api-body.decorator.ts` documents it
+ * inline.
  *
  * `data` and `expiresIn` are optional here — matching the legacy
  * `CacheCreateDto` class's `IsOptional` decorator on both (picking `data`

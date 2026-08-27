@@ -82,7 +82,7 @@ describe('RoleController swagger (e2e)', () => {
     });
   });
 
-  it("documents the schema-based POST request body inline (via crud-init-api-body.decorator.ts's manual ApiBody injection), with no component registered for it", () => {
+  it('documents the schema-based POST request body inline, since roleCreateSchema is not a named component (no withNamedComponent)', () => {
     const config = new DocumentBuilder()
       .setTitle('role')
       .setVersion('1.0')
@@ -105,7 +105,7 @@ describe('RoleController swagger (e2e)', () => {
 
     expect(schema.type).toBe('object');
     expect(schema.properties).toBeDefined();
-    // Request bodies aren't named components — only responses are.
+    // roleCreateSchema was never passed through withNamedComponent.
     expect(document.components?.schemas?.RoleCreate).toBeUndefined();
   });
 });

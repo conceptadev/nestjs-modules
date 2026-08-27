@@ -57,7 +57,7 @@ describe('CacheAssignmentController swagger (e2e)', () => {
     });
   });
 
-  it("documents the schema-based POST request body inline (via crud-init-api-body.decorator.ts's manual ApiBody injection), with no component registered for it", () => {
+  it('documents the schema-based POST request body inline, since cacheCreateSchema is not a named component (no withNamedComponent)', () => {
     const config = new DocumentBuilder()
       .setTitle('cache')
       .setVersion('1.0')
@@ -80,7 +80,7 @@ describe('CacheAssignmentController swagger (e2e)', () => {
 
     expect(schema.type).toBe('object');
     expect(schema.properties).toBeDefined();
-    // Request bodies aren't named components — only responses are.
+    // cacheCreateSchema was never passed through withNamedComponent.
     expect(document.components?.schemas?.CacheCreate).toBeUndefined();
   });
 });

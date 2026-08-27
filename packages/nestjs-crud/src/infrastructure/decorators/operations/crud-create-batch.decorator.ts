@@ -58,9 +58,9 @@ export const CrudCreateBatch = <
     CrudApiOperation(api?.operation),
     // Schema-based bodies are documented by crud-init-api-body.decorator.ts's
     // manual ApiBody injection instead of this placeholder-based mechanism
-    // (see that file for why — dynamically-generated methods never get
-    // design:paramtypes, so swagger can't auto-detect a schema-bearing Body
-    // param the way it does for handwritten controllers).
+    // (see that file — it resolves the same request.body/bodyBatch hierarchy
+    // this operation stores into below, so a placeholder is only needed when
+    // no schema resolves at all).
     ...(bodyBatchSchema === undefined ? [CrudApiBody({ ...api?.body })] : []),
     CrudApiResponse(api?.response),
     ...getTransactionalDecorators(transactional),

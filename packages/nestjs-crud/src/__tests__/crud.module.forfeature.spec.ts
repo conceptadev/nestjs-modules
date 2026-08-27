@@ -513,7 +513,15 @@ describe('CrudModule.forFeature', () => {
 
     it('should respond to POST /company-c (augmented create)', async () => {
       const server = app.getHttpServer();
-      const dto = { name: 'New Company', domain: 'new-company.com' };
+      // This operation has no op-level request.body, so validation now
+      // resolves the controller-level companySchema (full entity) through
+      // the hierarchy, same as docs already did (#467) — description is
+      // required (nullable, not optional) by that schema.
+      const dto = {
+        name: 'New Company',
+        domain: 'new-company.com',
+        description: null,
+      };
       const res = await request(server).post('/company-c').send(dto);
       expect(res.status).toBe(201);
       expect(res.body.id).toBeDefined();

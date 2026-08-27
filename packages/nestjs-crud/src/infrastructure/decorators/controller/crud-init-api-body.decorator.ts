@@ -1,5 +1,5 @@
 import { MetadataScanner } from '@nestjs/core';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBody, type ApiBodyOptions } from '@nestjs/swagger';
 
 import { Operation } from '@concepta/nestjs-core';
 
@@ -7,6 +7,19 @@ import { type CrudSchema } from '../../../crud.types.js';
 import { CrudException } from '../../exceptions/crud.exception.js';
 import { CrudMetaview } from '../../services/crud-metaview.service.js';
 import { swagger } from '../../utils/swagger.helper.js';
+
+/**
+ * `standardSchema` isn't declared on `@nestjs/swagger`'s `ApiBodyOptions`
+ * (12.0.0-alpha.2) the way it already is on `ApiResponseMetadata`, but
+ * `SchemaObjectFactory.getSchemaOverride` reads `param.standardSchema` at
+ * document-build time regardless — the same mechanism `apply-api-response.decorator.ts`
+ * already relies on for responses. This local intersection keeps the call
+ * cast-free; a `swagger.spec.ts`/`petstore.spec.ts` assertion guards against a
+ * future alpha silently dropping the key.
+ */
+type ApiBodyOptionsWithStandardSchema = ApiBodyOptions & {
+  standardSchema: CrudSchema;
+};
 
 /**
  * Discovers the Reflect metadata key that `@ApiBody()` uses to store
@@ -40,12 +53,24 @@ const API_PARAMETERS_KEY: string | undefined = discoverApiParametersKey();
 /**
  * \@CrudInit() api body decorator.
  *
- * Resolves the request body schema from the metadata hierarchy (method →
- * class) and applies `@ApiBody` with the converted JSON Schema for each
- * write operation. Removes any placeholder body entry left by the
- * method-level `@CrudApiBody` decorator (added by the operation decorators
- * whenever their own local `request.body` is undefined) so only one body
- * entry exists per operation.
+ * Resolves the request body schema — preferring a parameter-level
+ * `@CrudBody({ schema })` (so a caller pinning the schema on the parameter
+ * itself isn't silently overridden by a differing class/method default),
+ * then falling back to the metadata hierarchy (method → class) — and
+ * applies `@ApiBody({ standardSchema })` for each write operation. Passing
+ * the schema itself (rather than a pre-converted JSON Schema blob) routes
+ * it through the SAME document-level `standardSchemaConverter` responses
+ * already use (see `apply-api-response.decorator.ts`), so a schema
+ * registered via `withNamedComponent` documents as a `$ref` instead of
+ * inlining — dynamically-generated crud controller methods have no
+ * `design:paramtypes` reflection metadata for swagger's OWN parameter
+ * explorer to pick this up automatically (see parameter-metadata-accessor.js),
+ * so it's applied manually here instead.
+ *
+ * Also removes any placeholder body entry left by the method-level
+ * `@CrudApiBody` decorator (added by the operation decorators whenever
+ * their own local `request.body` is undefined) so only one body entry
+ * exists per operation.
  */
 export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
   /* istanbul ignore if */
@@ -64,11 +89,11 @@ export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
     const operation = reflectionService.getOperation(handler);
     if (!operation) continue;
 
-    let bodySchema: CrudSchema | undefined;
+    let hierarchySchema: CrudSchema | undefined;
 
     switch (operation) {
       case Operation.CreateBatch:
-        bodySchema = reflectionService.getRequestBodyBatch(
+        hierarchySchema = reflectionService.getRequestBodyBatch(
           classTarget,
           handler,
         );
@@ -76,27 +101,23 @@ export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
       case Operation.Create:
       case Operation.Update:
       case Operation.Replace:
-        bodySchema = reflectionService.getRequestBody(classTarget, handler);
+        hierarchySchema = reflectionService.getRequestBody(
+          classTarget,
+          handler,
+        );
         break;
       default:
         continue;
     }
 
+    const crudBodySchema = reflectionService
+      .getBodyParamOptions(handler)
+      ?.find((metadata) => metadata.schema)?.schema;
+
+    const bodySchema = crudBodySchema ?? hierarchySchema;
     if (!bodySchema) continue;
 
-    // Schema-based bodies are NOT auto-documented here: @nestjs/swagger's
-    // parameter accessor bails out unless `design:paramtypes` reflection
-    // metadata is present (see parameter-metadata-accessor.js), which
-    // dynamically-generated crud controller methods never have (no real
-    // TS parameter syntax was compiled for them) — even though Nest's
-    // OWN request pipeline (ROUTE_ARGS_METADATA) correctly resolves the
-    // schema for VALIDATION regardless. So, manually inject an ApiBody
-    // entry — using `schema:` (a raw OpenAPI schema object, converted via
-    // the bridge) since `ApiBody`, unlike `ApiResponse`, has no
-    // `standardSchema` option.
-    const convert = bodySchema['~standard'].jsonSchema?.input;
-    const converted = convert?.({ target: 'openapi-3.0' });
-    if (!converted) {
+    if (!bodySchema['~standard'].jsonSchema?.input) {
       // A schema missing its ~standard.jsonSchema bridge (i.e. never
       // passed through withOpenApi) would otherwise silently produce an
       // undocumented request body — fail loudly instead.
@@ -104,6 +125,7 @@ export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
         message: `Request body schema for "${methodName}" is missing its OpenAPI bridge — wrap it with withOpenApi() before using it as a CRUD request body.`,
       });
     }
+
     // Remove any existing body entry added by the method-level CrudApiBody
     // placeholder (which renders as `{ type: 'string' }` when left in place).
     // ApiBody() appends to API_PARAMETERS on descriptor.value, so clearing
@@ -121,10 +143,11 @@ export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
       Reflect.defineMetadata(API_PARAMETERS_KEY, withoutBody, handler);
     }
 
-    ApiBody({ schema: converted, required: true })(
-      prototype,
-      methodName,
-      descriptor,
-    );
+    const options: ApiBodyOptionsWithStandardSchema = {
+      standardSchema: bodySchema,
+      required: true,
+    };
+
+    ApiBody(options)(prototype, methodName, descriptor);
   }
 };

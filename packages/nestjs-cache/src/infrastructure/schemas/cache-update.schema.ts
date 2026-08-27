@@ -5,11 +5,9 @@ import { conformsTo, withOpenApi } from '@concepta/nestjs-core';
 import { type CacheUpdatableInterface } from '../../domain/interfaces/cache-updatable.interface.js';
 
 /**
- * Used only as a request body, which `crud-init-api-body.decorator.ts`
- * documents inline via a manually injected `ApiBody` call (see that file —
- * dynamically-generated crud controllers never get `design:paramtypes`
- * reflection, so a schema-bearing `Body` param is not auto-detected by
- * swagger) — not a named OpenAPI component (no `withNamedComponent`).
+ * Used only as a request body — not a named OpenAPI component (no
+ * `withNamedComponent`), so `crud-init-api-body.decorator.ts` documents it
+ * inline.
  *
  * Both fields are optional — matching the legacy `CacheUpdateDto` class's
  * `IsOptional` decorator on both (e.g. a PATCH extending TTL without

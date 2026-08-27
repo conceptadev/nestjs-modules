@@ -45,11 +45,12 @@ export class PetController {
   })
   async addPet(
     @Ctx(CrudCtx) ctx: CrudContextInterface,
-    // `@CrudBody({ schema })` is required here (not just the controller's
-    // `request.body` above) — a handwritten controller's parameter
-    // decorator is what actually wires `StandardSchemaValidationPipe`;
+    // `@CrudBody()` itself is required here (a handwritten controller's
+    // parameter decorator is what wires `StandardSchemaValidationPipe`;
     // `ConfigurableCrudBuilder`-generated controllers do this
-    // automatically, handwritten ones must do it explicitly.
+    // automatically) — though since #467 a bare `@CrudBody()` would
+    // resolve `petSchema` from the controller's `request.body` too;
+    // pinning it here just makes the parameter's own schema explicit.
     @CrudBody({ schema: petSchema }) dto: PetType,
   ) {
     return this.crudResolver.create(ctx, dto);

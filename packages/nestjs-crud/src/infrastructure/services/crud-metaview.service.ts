@@ -211,31 +211,11 @@ export class CrudMetaview<
     return CrudMetadata.getHierarchy(CrudRequestBody, handler, target);
   }
 
-  /**
-   * Method-level (operation's own) request body only — deliberately does NOT
-   * fall back to the controller-level default, which is typically the full
-   * entity schema and would wrongly reject legitimate create/update payloads
-   * if used for validation.
-   */
-  public getMethodRequestBody(handler: MethodHandler): CrudSchema | undefined {
-    return CrudMetadata.get(CrudRequestBody, handler);
-  }
-
   public getRequestBodyBatch(
     target: ControllerTarget,
     handler: MethodHandler,
   ): CrudSchema | undefined {
     return CrudMetadata.getHierarchy(CrudRequestBodyBatch, handler, target);
-  }
-
-  /**
-   * Method-level (operation's own) batch request body only — see
-   * {@link getMethodRequestBody} for why there is no class-level fallback.
-   */
-  public getMethodRequestBodyBatch(
-    handler: MethodHandler,
-  ): CrudSchema | undefined {
-    return CrudMetadata.get(CrudRequestBodyBatch, handler);
   }
 
   public getResponseResource(

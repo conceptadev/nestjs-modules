@@ -151,16 +151,15 @@ describe('CrudModule swagger document', () => {
   });
 
   // ── Request bodies ─────────────────────────────────────────────────────
-  // Schema-based request bodies are always documented INLINE, never as a
-  // named-component $ref — `crud-init-api-body.decorator.ts` converts them
-  // via the schema's raw `~standard.jsonSchema` bridge directly (Nest's
-  // `ApiBody`, unlike `ApiResponse`, has no `standardSchema` option to
-  // route through the document-level `standardSchemaConverter`), matching
-  // the same inline-body behavior already established for `cache`'s
-  // schema-based POST request body (see
-  // `cache-crud.swagger.e2e-spec.ts`). So these assert the inline object
-  // shape (photoSchema's fields) rather than a "Photo" name/ref, which
-  // never appears for a request body regardless of rename.
+  // `crud-init-api-body.decorator.ts` routes request bodies through the
+  // document-level `standardSchemaConverter`, same as responses — so a
+  // schema registered via `withNamedComponent` documents as a `$ref` (see
+  // `request bodies` in `petstore.spec.ts`). `photoCreateSchema`/
+  // `photoUpdateSchema` (the method-level bodies these operations actually
+  // use) are plain `withOpenApi`, not named components, so they still
+  // inline — matching `cache`'s schema-based POST request body (see
+  // `cache-crud.swagger.e2e-spec.ts`). These assert the inline object shape
+  // (photoSchema's fields) rather than a "Photo" name/ref.
   describe('request bodies', () => {
     it.each<[string, string, string]>([
       ['Create', '/photo', 'post'],
@@ -192,9 +191,10 @@ describe('CrudModule swagger document', () => {
   });
 
   // ── Component schemas ──────────────────────────────────────────────────
-  // The fixture uses photoSchema as the controller-level request body, so
-  // CrudInitApiBody registers that component in addition to the response
-  // types.
+  // Registered via the response schemas (photoSchema, photoPaginatedSchema)
+  // — every write op here overrides the controller-level photoSchema body
+  // with an unnamed method-level schema, so none of them contribute a body
+  // component.
   describe('components.schemas', () => {
     it.each(['Photo', 'PhotoPaginated'])('registers %s', (name) => {
       expect(doc.components?.schemas?.[name]).toBeDefined();
