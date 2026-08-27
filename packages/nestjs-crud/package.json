@@ -27,6 +27,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@apidevtools/swagger-parser": "^12.1.0",
     "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.9",
     "@concepta/typeorm-seeding": "^4.0.0",
     "@faker-js/faker": "^8.4.1",

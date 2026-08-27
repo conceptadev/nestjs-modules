@@ -1,6 +1,8 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
+import SwaggerParser from '@apidevtools/swagger-parser';
+
 import { type INestApplication } from '@nestjs/common';
 import {
   DocumentBuilder,
@@ -72,6 +74,20 @@ describe('Petstore3 CRUD-fits replication', () => {
 
   afterAll(async () => {
     await app?.close();
+  });
+
+  // ── OpenAPI spec compliance ──────────────────────────────────────────────────
+  // Validates the ACTUAL JSON written to disk above (the real output of the
+  // crud controller api decorators), not the in-memory `doc` reference —
+  // against the real OpenAPI 3.0 spec, independent of whatever shape
+  // @nestjs/swagger's own TS types claim. Catches structural defects our
+  // hand-written assertions elsewhere in this file wouldn't, e.g. #467's
+  // dangling `#/definitions/` pointers or a malformed schema object.
+  it('produces valid, spec-compliant OpenAPI 3.0 JSON', async () => {
+    const generated = JSON.parse(
+      readFileSync(join(ARTIFACT_DIR, 'petstore.json'), 'utf8'),
+    );
+    await expect(SwaggerParser.validate(generated)).resolves.toBeDefined();
   });
 
   // ── Paths ──────────────────────────────────────────────────────────────────
