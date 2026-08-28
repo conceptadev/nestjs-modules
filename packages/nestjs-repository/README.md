@@ -713,7 +713,8 @@ export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
 | `MANDATORY` | Require real transaction support; throw `TransactionRequiredException` if none |
 
 ```ts
-// Read-only transaction (always rolls back)
+// Read-only transaction (always rolls back). onRollback callbacks run
+// (the scope did roll back); onCommit callbacks never run.
 await this.txScope.runReadOnly(ctx, async () => {
   return orderRepo.find();
 });
@@ -764,7 +765,7 @@ post-commit/rollback callbacks.
 | `commitAll()` | Commit all active transactions, stopping at the first failure and rolling back the rest |
 | `rollbackAll()` | Rollback all active transactions; failures are logged, never thrown |
 | `onCommit(fn)` | Register post-commit callback |
-| `onRollback(fn)` | Register post-rollback callback |
+| `onRollback(fn)` | Register post-rollback callback; a `readOnly` scope always rolls back, so these run whether or not its operation succeeded |
 
 #### Multi-datasource commits are not two-phase
 

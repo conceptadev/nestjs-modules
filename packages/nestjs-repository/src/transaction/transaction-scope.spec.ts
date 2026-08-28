@@ -280,6 +280,53 @@ describe(TransactionScope.name, () => {
       expect(mockTx.rollback).toHaveBeenCalledTimes(1);
       expect(mockTx.commit).not.toHaveBeenCalled();
     });
+
+    it('should flush onRollback callbacks after a successful readOnly run', async () => {
+      const ctx = new AppContextHost();
+      const rollbackCb = vi.fn();
+
+      await transaction.runReadOnly(
+        ctx,
+        async (txCtx: TransactionContextInterface) => {
+          txCtx.trx.onRollback(rollbackCb);
+          return 'result';
+        },
+      );
+
+      expect(rollbackCb).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not flush onCommit callbacks after a successful readOnly run', async () => {
+      const ctx = new AppContextHost();
+      const commitCb = vi.fn();
+
+      await transaction.runReadOnly(
+        ctx,
+        async (txCtx: TransactionContextInterface) => {
+          txCtx.trx.onCommit(commitCb);
+          return 'result';
+        },
+      );
+
+      expect(commitCb).not.toHaveBeenCalled();
+    });
+
+    it('should flush onRollback callbacks exactly once when a readOnly run fails', async () => {
+      const ctx = new AppContextHost();
+      const rollbackCb = vi.fn();
+
+      await expect(
+        transaction.runReadOnly(
+          ctx,
+          async (txCtx: TransactionContextInterface) => {
+            txCtx.trx.onRollback(rollbackCb);
+            throw new Error('fail');
+          },
+        ),
+      ).rejects.toThrow('fail');
+
+      expect(rollbackCb).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('timeout handling', () => {

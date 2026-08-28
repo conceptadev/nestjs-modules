@@ -79,7 +79,9 @@ export interface TransactionManagerInterface {
   onCommit(fn: () => void | Promise<void>): void;
 
   /**
-   * Register a callback to run after transactions are rolled back.
+   * Register a callback to run after transactions are rolled back. A
+   * `readOnly` scope always rolls back, so these run whether or not its
+   * operation succeeded.
    */
   onRollback(fn: () => void | Promise<void>): void;
 

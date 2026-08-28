@@ -151,9 +151,9 @@ export class TransactionScope {
     trx.close();
     appCtx.removeOverlay(TrxCtx);
 
-    if (trx.hasFailed) {
+    if (trx.hasFailed || trx.isReadOnly) {
       await trx.flushOnRollbackCallbacks();
-    } else if (!trx.isReadOnly) {
+    } else {
       await trx.flushOnCommitCallbacks();
     }
 
