@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 
 import { TransactionClosedException } from '../exceptions/transaction-closed.exception.js';
+import { TransactionHeuristicCommitException } from '../exceptions/transaction-heuristic-commit.exception.js';
 import { type TransactionFactoryInterface } from '../interfaces/transaction-factory.interface.js';
 
 import { type TransactionManagerInterface } from './interfaces/transaction-manager.interface.js';
@@ -105,25 +106,83 @@ export class TransactionManager implements TransactionManagerInterface {
   }
 
   /**
-   * Commit all active transactions.
+   * Commit all active transactions, sequentially, stopping at the first
+   * failure. Whichever transactions haven't committed yet when that
+   * happens — the failed one and everything after it — are rolled back
+   * instead of left dangling; whatever committed before the failure
+   * cannot be undone without real two-phase commit. Throws the raw
+   * underlying error for a single datasource, or
+   * {@link TransactionHeuristicCommitException} when more than one
+   * datasource is involved, since a partial commit across datasources is
+   * an inherently mixed ("heuristic") outcome, not an ordinary failure.
    */
   async commitAll(): Promise<void> {
-    for (const tx of await this.startedTransactions()) {
-      if (tx.isActive) {
+    const active = (await this.startedTransactions()).filter(
+      (tx) => tx.isActive,
+    );
+
+    let committedCount = 0;
+    let originalError: unknown;
+
+    for (const tx of active) {
+      try {
         await tx.commit();
+        committedCount++;
+      } catch (error) {
+        originalError = error;
+        break;
       }
     }
+
+    if (originalError === undefined) {
+      return;
+    }
+
+    await this.settleAll(active.slice(committedCount), (tx) => tx.rollback());
+
+    if (active.length === 1) {
+      throw originalError;
+    }
+
+    throw new TransactionHeuristicCommitException(
+      committedCount,
+      active.length - committedCount,
+      { originalError },
+    );
   }
 
   /**
-   * Rollback all active transactions.
+   * Rollback all active transactions. Every one is attempted even if an
+   * earlier one fails — rollback is best-effort cleanup, so a failure is
+   * logged rather than thrown, and never abandons the rest.
    */
   async rollbackAll(): Promise<void> {
-    for (const tx of await this.startedTransactions()) {
-      if (tx.isActive) {
-        await tx.rollback();
+    const active = (await this.startedTransactions()).filter(
+      (tx) => tx.isActive,
+    );
+
+    await this.settleAll(active, (tx) => tx.rollback());
+  }
+
+  /**
+   * Attempt `settle` on every given transaction, even if some fail. Never
+   * throws — failures are logged, matching the swallow-and-log style of
+   * {@link flushOnCommitCallbacks}/{@link flushOnRollbackCallbacks}.
+   */
+  private async settleAll(
+    transactions: TransactionInterface[],
+    settle: (tx: TransactionInterface) => Promise<void>,
+  ): Promise<void> {
+    const results = await Promise.allSettled(transactions.map(settle));
+
+    results.forEach((result) => {
+      if (result.status === 'rejected') {
+        Logger.error(
+          `Transaction rollback failed: ${result.reason}`,
+          result.reason instanceof Error ? result.reason.stack : undefined,
+        );
       }
-    }
+    });
   }
 
   /**

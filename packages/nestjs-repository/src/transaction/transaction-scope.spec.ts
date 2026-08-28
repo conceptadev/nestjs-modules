@@ -204,6 +204,43 @@ describe(TransactionScope.name, () => {
 
       expect(mockTx.rollback).toHaveBeenCalledTimes(1);
     });
+
+    it('should surface the operation error, not a rollback failure that happens while handling it', async () => {
+      const mockTx = createMockTransaction();
+      mockRegistry.register('typeorm:default', { create: () => mockTx });
+      mockTx.rollback = vi
+        .fn()
+        .mockRejectedValue(new Error('connection dropped during rollback'));
+
+      const ctx = new AppContextHost();
+      const operationError = new Error('Operation failed');
+
+      await expect(
+        transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+          await txCtx.trx.getOrStart('typeorm:default');
+          throw operationError;
+        }),
+      ).rejects.toBe(operationError);
+    });
+
+    it('should surface the commit failure, not a rollback failure that happens while falling back from it', async () => {
+      const mockTx = createMockTransaction();
+      mockRegistry.register('typeorm:default', { create: () => mockTx });
+      const commitError = new Error('commit failed');
+      mockTx.commit = vi.fn().mockRejectedValue(commitError);
+      mockTx.rollback = vi
+        .fn()
+        .mockRejectedValue(new Error('connection dropped during rollback'));
+
+      const ctx = new AppContextHost();
+
+      await expect(
+        transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+          await txCtx.trx.getOrStart('typeorm:default');
+          return 'result';
+        }),
+      ).rejects.toBe(commitError);
+    });
   });
 
   describe('readOnly transactions', () => {

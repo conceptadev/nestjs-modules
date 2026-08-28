@@ -1,6 +1,7 @@
 import { type Mock } from 'vitest';
 
 import { TransactionClosedException } from '../exceptions/transaction-closed.exception.js';
+import { TransactionHeuristicCommitException } from '../exceptions/transaction-heuristic-commit.exception.js';
 
 import { type TransactionInterface } from './interfaces/transaction.interface.js';
 import { TransactionFactoryRegistry } from './transaction-factory-registry.js';
@@ -227,6 +228,65 @@ describe(TransactionManager.name, () => {
       expect(inactiveTx.commit).not.toHaveBeenCalled();
       expect(inactiveTx.rollback).not.toHaveBeenCalled();
     });
+
+    it('should roll back — rather than abandon — a transaction that comes after one whose commit fails', async () => {
+      const firstTx = createMockTransaction({ isActive: true });
+      const failingTx = createMockTransaction({
+        isActive: true,
+        commit: vi.fn().mockRejectedValue(new Error('commit failed')),
+      });
+      const abandonedTx = createMockTransaction({ isActive: true });
+
+      await seed(manager, registry, 'typeorm:first', firstTx);
+      await seed(manager, registry, 'typeorm:failing', failingTx);
+      await seed(manager, registry, 'typeorm:abandoned', abandonedTx);
+
+      await expect(manager.commitAll()).rejects.toThrow();
+
+      expect(firstTx.commit).toHaveBeenCalledTimes(1);
+      expect(failingTx.commit).toHaveBeenCalledTimes(1);
+      expect(abandonedTx.commit).not.toHaveBeenCalled();
+      expect(abandonedTx.rollback).toHaveBeenCalledTimes(1);
+    });
+
+    it('should reject with the original error when only one transaction is active', async () => {
+      const originalError = new Error('commit failed');
+      const failingTx = createMockTransaction({
+        isActive: true,
+        commit: vi.fn().mockRejectedValue(originalError),
+      });
+
+      await seed(manager, registry, 'typeorm:default', failingTx);
+
+      await expect(manager.commitAll()).rejects.toBe(originalError);
+    });
+
+    it('should reject with TransactionHeuristicCommitException when multiple datasources are involved and one fails', async () => {
+      const originalError = new Error('commit failed');
+      const failingTx = createMockTransaction({
+        isActive: true,
+        commit: vi.fn().mockRejectedValue(originalError),
+      });
+      const neverAttemptedTx = createMockTransaction({ isActive: true });
+
+      await seed(manager, registry, 'typeorm:failing', failingTx);
+      await seed(manager, registry, 'typeorm:neverAttempted', neverAttemptedTx);
+
+      let caught: unknown;
+      try {
+        await manager.commitAll();
+      } catch (error) {
+        caught = error;
+      }
+
+      expect(caught).toBeInstanceOf(TransactionHeuristicCommitException);
+      const exception = caught as TransactionHeuristicCommitException;
+      expect(exception.context.originalError?.message).toBe(
+        originalError.message,
+      );
+      expect(exception.message).toContain('0');
+      expect(exception.message).toContain('2');
+    });
   });
 
   describe('rollbackAll', () => {
@@ -262,6 +322,31 @@ describe(TransactionManager.name, () => {
       expect(activeTx1.rollback).toHaveBeenCalledTimes(1);
       expect(activeTx2.rollback).toHaveBeenCalledTimes(1);
       expect(inactiveTx.rollback).not.toHaveBeenCalled();
+    });
+
+    it('should still roll back the other transactions when one rollback fails', async () => {
+      const failingTx = createMockTransaction({
+        isActive: true,
+        rollback: vi.fn().mockRejectedValue(new Error('rollback failed')),
+      });
+      const otherTx = createMockTransaction({ isActive: true });
+
+      await seed(manager, registry, 'typeorm:failing', failingTx);
+      await seed(manager, registry, 'typeorm:other', otherTx);
+
+      await manager.rollbackAll();
+
+      expect(otherTx.rollback).toHaveBeenCalledTimes(1);
+    });
+
+    it('should never reject, even when a rollback fails', async () => {
+      const failingTx = createMockTransaction({
+        isActive: true,
+        rollback: vi.fn().mockRejectedValue(new Error('rollback failed')),
+      });
+      await seed(manager, registry, 'typeorm:default', failingTx);
+
+      await expect(manager.rollbackAll()).resolves.toBeUndefined();
     });
   });
 

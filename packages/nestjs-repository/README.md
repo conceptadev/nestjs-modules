@@ -761,10 +761,23 @@ post-commit/rollback callbacks.
 | Method | Description |
 | --- | --- |
 | `getOrStart(key)` | Get existing or create via factory registry; throws `TransactionClosedException` once the scope has settled |
-| `commitAll()` | Commit all active transactions |
-| `rollbackAll()` | Rollback all active transactions |
+| `commitAll()` | Commit all active transactions, stopping at the first failure and rolling back the rest |
+| `rollbackAll()` | Rollback all active transactions; failures are logged, never thrown |
 | `onCommit(fn)` | Register post-commit callback |
 | `onRollback(fn)` | Register post-rollback callback |
+
+#### Multi-datasource commits are not two-phase
+
+A factory is registered per datasource, and a single `run()` scope can hold a
+transaction on more than one of them at once. `commitAll()` commits each
+active transaction in turn; if one fails after an earlier one has already
+committed, that earlier commit cannot be undone — this library has no real
+two-phase commit to fall back on. The transactions that haven't committed
+yet are rolled back instead of left dangling, and the failure surfaces as
+`TransactionHeuristicCommitException` rather than an ordinary commit error,
+so callers can specifically detect and handle an inconsistent, mixed
+outcome across datasources. A single-datasource commit failure is unaffected
+and still throws the raw underlying error.
 
 ### TransactionFactory
 

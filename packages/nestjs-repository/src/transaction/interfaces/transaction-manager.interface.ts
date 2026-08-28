@@ -50,12 +50,19 @@ export interface TransactionManagerInterface {
   close(): void;
 
   /**
-   * Commit all active transactions.
+   * Commit all active transactions, sequentially, stopping at the first
+   * failure. Transactions that haven't committed yet at that point are
+   * rolled back rather than abandoned. Throws the raw underlying error for
+   * a single datasource, or `TransactionHeuristicCommitException` when more
+   * than one is involved, since a partial commit across datasources leaves
+   * an inherently mixed outcome that can't be undone without real 2PC.
    */
   commitAll(): Promise<void>;
 
   /**
-   * Rollback all active transactions.
+   * Rollback all active transactions. Every one is attempted even if an
+   * earlier one fails — a failure is logged, not thrown, so it never
+   * abandons the rest or replaces an error the caller is already handling.
    */
   rollbackAll(): Promise<void>;
 
