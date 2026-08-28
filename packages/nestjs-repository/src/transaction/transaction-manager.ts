@@ -1,5 +1,7 @@
 import { Logger } from '@nestjs/common';
 
+import { AppContextHost } from '@concepta/nestjs-core';
+
 import { TransactionClosedException } from '../exceptions/transaction-closed.exception.js';
 import { TransactionHeuristicCommitException } from '../exceptions/transaction-heuristic-commit.exception.js';
 import { type TransactionFactoryInterface } from '../interfaces/transaction-factory.interface.js';
@@ -33,6 +35,7 @@ export class TransactionManager implements TransactionManagerInterface {
   constructor(
     private readonly registry: TransactionFactoryRegistry,
     private readonly readOnly: boolean = false,
+    private readonly scopeHost: AppContextHost = new AppContextHost(),
   ) {}
 
   get isSupported(): boolean {
@@ -59,6 +62,18 @@ export class TransactionManager implements TransactionManagerInterface {
    */
   get signal(): AbortSignal {
     return this.abortController.signal;
+  }
+
+  /**
+   * The `AppContextHost` that created this scope — the host `run()` first
+   * saw `!supports(TrxCtx)` on, as opposed to a joining participant's own
+   * run-scoped child. `settle()` releases `TrxCtx` from this host, not from
+   * whichever participant happened to exit last, since exit order need not
+   * match creation order (e.g. an outer participant that times out exits
+   * before a still-running nested one).
+   */
+  get host(): AppContextHost {
+    return this.scopeHost;
   }
 
   enter(): number {

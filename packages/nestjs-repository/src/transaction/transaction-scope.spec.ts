@@ -519,6 +519,46 @@ describe(TransactionScope.name, () => {
     });
   });
 
+  describe('settling against the scope creator, not the last exiter (#468)', () => {
+    it('should release TrxCtx from the original ctx when a timed-out outer exits before its still-running nested participant', async () => {
+      const ctx = new AppContextHost();
+      let releaseNested: (() => void) | undefined;
+
+      const outerRun = transaction.run(
+        ctx,
+        async (txCtx: TransactionContextInterface) => {
+          // Nested run — created inside the outer operation, so it shares
+          // the outer's scope and outlives the outer's timeout.
+          return transaction.run(txCtx, async () => {
+            await new Promise<void>((resolve) => {
+              releaseNested = resolve;
+            });
+            return 'nested';
+          });
+        },
+        { timeout: 50 },
+      );
+
+      await expect(outerRun).rejects.toThrow(TransactionTimeoutException);
+
+      // The outer exited (to depth 1, not 0) without settling — the
+      // nested participant is still running and still holds the scope.
+      expect(releaseNested).toBeDefined();
+      releaseNested?.();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      // Now that the nested participant has exited too (to depth 0), the
+      // scope must have settled against ctx — the host that created it —
+      // not against the nested participant's own run-scoped child.
+      expect(ctx.supports(TrxCtx)).toBe(false);
+
+      // And a fresh run() on the same ctx must succeed rather than seeing
+      // a stale, already-closed TransactionManager.
+      const result = await transaction.run(ctx, async () => 'fresh');
+      expect(result).toBe('fresh');
+    });
+  });
+
   describe('nested run() calls', () => {
     it('should not double commit on nested run', async () => {
       const mockTx = createMockTransaction();

@@ -91,7 +91,11 @@ export class TransactionScope {
 
     if (!appCtx.supports(TrxCtx)) {
       appCtx.defineOverlay(TrxCtx, {
-        trx: new TransactionManager(this.registry, options?.readOnly ?? false),
+        trx: new TransactionManager(
+          this.registry,
+          options?.readOnly ?? false,
+          appCtx,
+        ),
       });
     }
 
@@ -110,7 +114,7 @@ export class TransactionScope {
       throw error;
     } finally {
       if (trx.exit() === 0) {
-        await this.settle(appCtx, trx);
+        await this.settle(trx);
       }
     }
   }
@@ -121,6 +125,12 @@ export class TransactionScope {
    * repository work on the same ctx gets non-transactional access rather
    * than the just-settled transaction — then flush the matching callbacks.
    *
+   * Releases `TrxCtx` from `trx.host`, the host that created the scope —
+   * not necessarily this call's own `appCtx`, since the last participant to
+   * exit need not be the first one to have entered (e.g. an outer
+   * participant that times out exits before a still-running nested one).
+   * Releasing the wrong host would leave the creator's `TrxCtx` stranded.
+   *
    * A commit failure's own fallback rollback already happens inside
    * `commitAll()` (only the transactions it didn't get to are rolled
    * back), so there is no second `rollbackAll()` here — one that would
@@ -128,10 +138,7 @@ export class TransactionScope {
    * itself never throws, so nothing between `markFailed` and the end of
    * this method can skip closing the scope.
    */
-  private async settle(
-    appCtx: AppContextHost,
-    trx: TransactionManager,
-  ): Promise<void> {
+  private async settle(trx: TransactionManager): Promise<void> {
     let settleError: unknown;
 
     try {
@@ -146,7 +153,7 @@ export class TransactionScope {
     }
 
     trx.close();
-    appCtx.removeOverlay(TrxCtx);
+    trx.host.removeOverlay(TrxCtx);
 
     if (trx.hasFailed || trx.isReadOnly) {
       await trx.flushOnRollbackCallbacks();
