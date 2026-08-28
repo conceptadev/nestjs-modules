@@ -73,9 +73,23 @@ export class AppContextHost implements AppContextInterface {
         return Object.assign(Object.create(this), values);
       },
       enumerable: false,
-      configurable: false,
+      configurable: true,
       writable: false,
     });
+  }
+
+  /**
+   * Remove a previously defined overlay from this context instance.
+   *
+   * Only removes an overlay owned directly by this instance — an overlay
+   * inherited from a parent (e.g. a `with()` child's prototype) is left
+   * untouched. Returns whether an own overlay was removed.
+   */
+  removeOverlay(
+    ref: OverlayRef<string, PlainLiteralObject, unknown[]>,
+  ): boolean {
+    if (!Object.prototype.hasOwnProperty.call(this, ref.name)) return false;
+    return Reflect.deleteProperty(this, ref.name);
   }
 
   /**

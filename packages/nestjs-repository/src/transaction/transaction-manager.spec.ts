@@ -1,5 +1,7 @@
 import { type Mock } from 'vitest';
 
+import { TransactionClosedException } from '../exceptions/transaction-closed.exception.js';
+
 import { type TransactionInterface } from './interfaces/transaction.interface.js';
 import { TransactionFactoryRegistry } from './transaction-factory-registry.js';
 import { TransactionManager } from './transaction-manager.js';
@@ -29,6 +31,16 @@ describe(TransactionManager.name, () => {
     ...overrides,
   });
 
+  const seed = async (
+    manager: TransactionManager,
+    registry: TransactionFactoryRegistry,
+    key: string,
+    tx: TransactionInterface,
+  ): Promise<void> => {
+    registry.register(key, { create: () => tx });
+    await manager.getOrStart(key);
+  };
+
   beforeEach(() => {
     registry = new TransactionFactoryRegistry();
     manager = new TransactionManager(registry);
@@ -40,9 +52,9 @@ describe(TransactionManager.name, () => {
       expect(result).toBeNull();
     });
 
-    it('should return transaction for known key', () => {
+    it('should return transaction for known key', async () => {
       const mockTx = createMockTransaction();
-      manager.push('typeorm:default', mockTx);
+      await seed(manager, registry, 'typeorm:default', mockTx);
 
       const result = manager.get('typeorm:default');
       expect(result).toBe(mockTx);
@@ -50,16 +62,6 @@ describe(TransactionManager.name, () => {
   });
 
   describe('getOrStart', () => {
-    it('should return existing transaction without creating new one', async () => {
-      const existingTx = createMockTransaction();
-      manager.push('typeorm:default', existingTx);
-
-      const result = await manager.getOrStart('typeorm:default');
-
-      expect(result).toBe(existingTx);
-      expect(existingTx.start).not.toHaveBeenCalled();
-    });
-
     it('should create and start transaction lazily via factory', async () => {
       const newTx = createMockTransaction();
       registry.register('typeorm:default', { create: () => newTx });
@@ -86,81 +88,52 @@ describe(TransactionManager.name, () => {
         'No transaction factory registered for key "unknown:key"',
       );
     });
-  });
 
-  describe('push', () => {
-    it('should store transaction', () => {
-      const mockTx = createMockTransaction();
-      manager.push('typeorm:default', mockTx);
+    it('should throw TransactionClosedException once the scope is closed', async () => {
+      manager.close();
 
-      expect(manager.get('typeorm:default')).toBe(mockTx);
-    });
-
-    it('should stack transactions for same key', () => {
-      const firstTx = createMockTransaction();
-      const secondTx = createMockTransaction();
-
-      manager.push('typeorm:default', firstTx);
-      manager.push('typeorm:default', secondTx);
-
-      // Current should be second
-      expect(manager.get('typeorm:default')).toBe(secondTx);
+      await expect(manager.getOrStart('typeorm:default')).rejects.toThrow(
+        TransactionClosedException,
+      );
     });
   });
 
-  describe('pop', () => {
-    it('should restore previous transaction', () => {
-      const firstTx = createMockTransaction();
-      const secondTx = createMockTransaction();
-
-      manager.push('typeorm:default', firstTx);
-      manager.push('typeorm:default', secondTx);
-
-      manager.pop('typeorm:default');
-
-      expect(manager.get('typeorm:default')).toBe(firstTx);
+  describe('lifecycle state', () => {
+    it('should default to not read-only, not closed, not failed', () => {
+      expect(manager.isReadOnly).toBe(false);
+      expect(manager.isClosed).toBe(false);
+      expect(manager.hasFailed).toBe(false);
     });
 
-    it('should remove transaction when no previous exists', () => {
-      const mockTx = createMockTransaction();
-      manager.push('typeorm:default', mockTx);
-
-      manager.pop('typeorm:default');
-
-      expect(manager.get('typeorm:default')).toBeNull();
+    it('should carry the readOnly flag passed at construction', () => {
+      const readOnlyManager = new TransactionManager(registry, true);
+      expect(readOnlyManager.isReadOnly).toBe(true);
     });
 
-    it('should handle multiple levels of nesting', () => {
-      const tx1 = createMockTransaction();
-      const tx2 = createMockTransaction();
-      const tx3 = createMockTransaction();
-
-      manager.push('typeorm:default', tx1);
-      manager.push('typeorm:default', tx2);
-      manager.push('typeorm:default', tx3);
-
-      expect(manager.get('typeorm:default')).toBe(tx3);
-
-      manager.pop('typeorm:default');
-      expect(manager.get('typeorm:default')).toBe(tx2);
-
-      manager.pop('typeorm:default');
-      expect(manager.get('typeorm:default')).toBe(tx1);
-
-      manager.pop('typeorm:default');
-      expect(manager.get('typeorm:default')).toBeNull();
+    it('should track enter/exit depth', () => {
+      expect(manager.enter()).toBe(1);
+      expect(manager.enter()).toBe(2);
+      expect(manager.exit()).toBe(1);
+      expect(manager.exit()).toBe(0);
     });
 
-    it('should handle pop on empty key gracefully', () => {
-      expect(() => manager.pop('unknown:key')).not.toThrow();
-      expect(manager.get('unknown:key')).toBeNull();
+    it('should record markFailed', () => {
+      expect(manager.hasFailed).toBe(false);
+      manager.markFailed();
+      expect(manager.hasFailed).toBe(true);
+    });
+
+    it('should record close', () => {
+      expect(manager.isClosed).toBe(false);
+      manager.close();
+      expect(manager.isClosed).toBe(true);
     });
   });
 
   describe('commitAll', () => {
     it('should commit dirty transactions', async () => {
       const dirtyTx = createMockTransaction({ isActive: true, isDirty: true });
-      manager.push('typeorm:default', dirtyTx);
+      await seed(manager, registry, 'typeorm:default', dirtyTx);
 
       await manager.commitAll();
 
@@ -170,7 +143,7 @@ describe(TransactionManager.name, () => {
 
     it('should rollback clean transactions', async () => {
       const cleanTx = createMockTransaction({ isActive: true, isDirty: false });
-      manager.push('typeorm:default', cleanTx);
+      await seed(manager, registry, 'typeorm:default', cleanTx);
 
       await manager.commitAll();
 
@@ -183,7 +156,7 @@ describe(TransactionManager.name, () => {
         isActive: false,
         isDirty: true,
       });
-      manager.push('typeorm:default', inactiveTx);
+      await seed(manager, registry, 'typeorm:default', inactiveTx);
 
       await manager.commitAll();
 
@@ -199,9 +172,9 @@ describe(TransactionManager.name, () => {
         isDirty: true,
       });
 
-      manager.push('typeorm:default', dirtyTx);
-      manager.push('mongoose:default', cleanTx);
-      manager.push('prisma:default', inactiveTx);
+      await seed(manager, registry, 'typeorm:default', dirtyTx);
+      await seed(manager, registry, 'mongoose:default', cleanTx);
+      await seed(manager, registry, 'prisma:default', inactiveTx);
 
       await manager.commitAll();
 
@@ -210,26 +183,12 @@ describe(TransactionManager.name, () => {
       expect(inactiveTx.commit).not.toHaveBeenCalled();
       expect(inactiveTx.rollback).not.toHaveBeenCalled();
     });
-
-    it('should only affect current (top) transactions', async () => {
-      const outerTx = createMockTransaction({ isActive: true, isDirty: true });
-      const innerTx = createMockTransaction({ isActive: true, isDirty: true });
-
-      manager.push('typeorm:default', outerTx);
-      manager.push('typeorm:default', innerTx);
-
-      await manager.commitAll();
-
-      // Only inner (current) should be committed
-      expect(innerTx.commit).toHaveBeenCalledTimes(1);
-      expect(outerTx.commit).not.toHaveBeenCalled();
-    });
   });
 
   describe('rollbackAll', () => {
     it('should rollback active transactions', async () => {
       const activeTx = createMockTransaction({ isActive: true });
-      manager.push('typeorm:default', activeTx);
+      await seed(manager, registry, 'typeorm:default', activeTx);
 
       await manager.rollbackAll();
 
@@ -238,7 +197,7 @@ describe(TransactionManager.name, () => {
 
     it('should skip inactive transactions', async () => {
       const inactiveTx = createMockTransaction({ isActive: false });
-      manager.push('typeorm:default', inactiveTx);
+      await seed(manager, registry, 'typeorm:default', inactiveTx);
 
       await manager.rollbackAll();
 
@@ -250,29 +209,15 @@ describe(TransactionManager.name, () => {
       const activeTx2 = createMockTransaction({ isActive: true });
       const inactiveTx = createMockTransaction({ isActive: false });
 
-      manager.push('typeorm:default', activeTx1);
-      manager.push('mongoose:default', activeTx2);
-      manager.push('prisma:default', inactiveTx);
+      await seed(manager, registry, 'typeorm:default', activeTx1);
+      await seed(manager, registry, 'mongoose:default', activeTx2);
+      await seed(manager, registry, 'prisma:default', inactiveTx);
 
       await manager.rollbackAll();
 
       expect(activeTx1.rollback).toHaveBeenCalledTimes(1);
       expect(activeTx2.rollback).toHaveBeenCalledTimes(1);
       expect(inactiveTx.rollback).not.toHaveBeenCalled();
-    });
-
-    it('should only affect current (top) transactions', async () => {
-      const outerTx = createMockTransaction({ isActive: true });
-      const innerTx = createMockTransaction({ isActive: true });
-
-      manager.push('typeorm:default', outerTx);
-      manager.push('typeorm:default', innerTx);
-
-      await manager.rollbackAll();
-
-      // Only inner (current) should be rolled back
-      expect(innerTx.rollback).toHaveBeenCalledTimes(1);
-      expect(outerTx.rollback).not.toHaveBeenCalled();
     });
   });
 

@@ -229,6 +229,12 @@ values for that request.
 `getAppContext(request)` returns the `AppContextHost` for a request, creating
 one on first access.
 
+Most overlays live for the whole request. For one whose lifetime is
+narrower — e.g. a single unit of work sharing a longer-lived context —
+`ctx.removeOverlay(ref)` undoes `defineOverlay`, so the same context can
+later host a fresh instance of that overlay via another `defineOverlay`
+call.
+
 **Defining a custom overlay:**
 
 ```ts
@@ -589,7 +595,7 @@ const moduleRef = await Test.createTestingModule({
 
 | Export | Description |
 | --- | --- |
-| `AppContextHost` | Per-request overlay container. Use `defineOverlay`, `with`, `require`, `supports`, `optional`. Static `from(value?)` coerces `AppContextLike` to a host. |
+| `AppContextHost` | Per-request overlay container. Use `defineOverlay`, `removeOverlay`, `with`, `require`, `supports`, `optional`. Static `from(value?)` coerces `AppContextLike` to a host. |
 | `getAppContext(request)` | Returns the `AppContextHost` for a request, creating one on first access. |
 | `Ctx` | Parameter decorator. Without args: injects the raw `AppContextHost`. With an `OverlayRef`: unwraps the overlay via `appCtx.with(ref)`. |
 | `OverlayRef` | Typed token for a named overlay. Construct with `new OverlayRef<Name, Props>('withName')`. |

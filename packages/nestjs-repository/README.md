@@ -727,9 +727,12 @@ await this.txScope.run(ctx, operation, {
 
 ### Nesting
 
-The first (outermost) `run()` call creates the `TransactionManager` and
-registers it on the context. Nested `run()` calls see the existing manager
-and join it. Only the outermost call owns the lifecycle (commit/rollback).
+The first `run()` call on a given context creates the `TransactionManager`
+and registers it on the context. Nested and concurrent `run()` calls on that
+same context see the existing manager and join it — every participant is
+refcounted, and only the last one to exit owns the lifecycle
+(commit/rollback). Once that happens, the context is released: it holds no
+transaction state, and the next `run()` on it starts a fresh scope.
 
 ```ts
 // Outermost — creates transaction
@@ -737,21 +740,28 @@ await this.txScope.run(ctx, async (txCtx) => {
   await serviceA.doWork(ctx); // joins existing transaction
   await serviceB.doWork(ctx); // joins existing transaction
 });
-// Transaction commits here (or rolls back on error)
+// Transaction commits here (or rolls back on error) — ctx is now released
+
+// A later, unrelated run() on the same ctx starts an independent scope
+await this.txScope.run(ctx, async (txCtx) => {
+  await serviceC.doWork(ctx);
+});
 ```
+
+A `txCtx` handle should not be used after its `run()` call has resolved —
+`txCtx.trx.getOrStart()` throws `TransactionClosedException` once the scope
+has settled, rather than silently running outside the transaction.
 
 ### TransactionManager
 
-`TransactionManager` is the runtime manager holding active transactions.
-It supports stack-based nesting per key, lazy creation via factory registry,
-and post-commit/rollback callbacks.
+`TransactionManager` is the runtime manager holding the transactions for a
+single `run()` scope, lazy creation via factory registry, and
+post-commit/rollback callbacks.
 
 | Method | Description |
 | --- | --- |
 | `get(key)` | Get current transaction for key (null if none) |
-| `getOrStart(key)` | Get existing or create via factory registry |
-| `push(key, tx)` | Push new transaction, preserving current |
-| `pop(key)` | Pop current transaction, restoring previous |
+| `getOrStart(key)` | Get existing or create via factory registry; throws `TransactionClosedException` once the scope has settled |
 | `commitAll()` | Commit dirty transactions, rollback clean ones |
 | `rollbackAll()` | Rollback all active transactions |
 | `onCommit(fn)` | Register post-commit callback |

@@ -1,8 +1,9 @@
 import { type TransactionInterface } from './transaction.interface.js';
 
 /**
- * Manages multiple transactions keyed by driver:datasource.
- * Supports nested transactions via push/pop stack per key.
+ * Manages the transactions (one per driver:datasource key) that belong to
+ * a single {@link TransactionScope.run} scope, plus that scope's own
+ * lifecycle (entry/exit refcount, settled state).
  */
 export interface TransactionManagerInterface {
   /**
@@ -11,36 +12,62 @@ export interface TransactionManagerInterface {
   readonly isSupported: boolean;
 
   /**
-   * Get the current (top of stack) transaction for the given key.
+   * Whether this scope was opened with `readOnly: true`.
+   */
+  readonly isReadOnly: boolean;
+
+  /**
+   * Whether the scope has settled (committed or rolled back) and can no
+   * longer be used.
+   */
+  readonly isClosed: boolean;
+
+  /**
+   * Whether the scope's operation has thrown.
+   */
+  readonly hasFailed: boolean;
+
+  /**
+   * Get the transaction for the given key.
    */
   get(key: string): TransactionInterface | null;
 
   /**
-   * Push a new transaction onto the stack for the given key.
-   * The current transaction (if any) is preserved and can be restored via pop().
+   * Mark that a `run()` call has entered this scope. Returns the resulting
+   * depth.
    */
-  push(key: string, transaction: TransactionInterface): void;
+  enter(): number;
 
   /**
-   * Pop the current transaction for the given key, restoring the previous one.
+   * Mark that a `run()` call has exited this scope. Returns the resulting
+   * depth — the scope should settle when this reaches 0.
    */
-  pop(key: string): void;
+  exit(): number;
+
+  /**
+   * Mark the scope's operation as having thrown.
+   */
+  markFailed(): void;
+
+  /**
+   * Close the scope. Once closed, `getOrStart` throws.
+   */
+  close(): void;
 
   /**
    * Commit all dirty transactions, rollback clean ones.
-   * Only affects current (top of stack) transactions.
    */
   commitAll(): Promise<void>;
 
   /**
    * Rollback all active transactions.
-   * Only affects current (top of stack) transactions.
    */
   rollbackAll(): Promise<void>;
 
   /**
    * Get the current transaction for the given key, or create one lazily
-   * via the factory registry if none exists.
+   * via the factory registry if none exists. Throws once the scope is
+   * closed.
    */
   getOrStart(key: string): Promise<TransactionInterface>;
 

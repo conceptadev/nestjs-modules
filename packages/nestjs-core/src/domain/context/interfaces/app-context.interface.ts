@@ -9,6 +9,10 @@ export interface AppContextInterface {
     values: Props,
   ): void;
 
+  removeOverlay(
+    ref: OverlayRef<string, PlainLiteralObject, unknown[]>,
+  ): boolean;
+
   require<R extends OverlayRef<string, PlainLiteralObject, unknown[]>[]>(
     ...refs: R
   ): this & RefsToMethods<R[number]>;

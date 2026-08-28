@@ -2,11 +2,15 @@ import { Test, type TestingModule } from '@nestjs/testing';
 
 import { AppContextHost } from '@concepta/nestjs-core';
 
+import { TransactionClosedException } from '../exceptions/transaction-closed.exception.js';
 import { TransactionRequiredException } from '../exceptions/transaction-required.exception.js';
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception.js';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants.js';
 
-import { type TransactionContextInterface } from './interfaces/transaction-context.interface.js';
+import {
+  type TransactionContextInterface,
+  TrxCtx,
+} from './interfaces/transaction-context.interface.js';
 import { type TransactionInterface } from './interfaces/transaction.interface.js';
 import {
   TransactionFactoryRegistry,
@@ -170,6 +174,7 @@ describe(TransactionScope.name, () => {
       ).rejects.toThrow(TransactionRequiredException);
 
       expect(operation).not.toHaveBeenCalled();
+      expect(ctx.supports(TrxCtx)).toBe(false);
     });
   });
 
@@ -402,6 +407,141 @@ describe(TransactionScope.name, () => {
       ).rejects.toThrow(error);
 
       expect(mockTx.rollback).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('sequential and concurrent run() on the same context (#468)', () => {
+    it('should give each sequential run its own transaction, started and committed once', async () => {
+      const created: TransactionInterface[] = [];
+      mockRegistry.register('typeorm:default', {
+        create: () => {
+          const tx = createMockTransaction();
+          created.push(tx);
+          return tx;
+        },
+      });
+
+      const ctx = new AppContextHost();
+
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        const tx = await txCtx.trx.getOrStart('typeorm:default');
+        tx.markDirty();
+      });
+
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        const tx = await txCtx.trx.getOrStart('typeorm:default');
+        tx.markDirty();
+      });
+
+      expect(created).toHaveLength(2);
+      expect(created[0]).not.toBe(created[1]);
+      expect(created[0].commit).toHaveBeenCalledTimes(1);
+      expect(created[1].commit).toHaveBeenCalledTimes(1);
+    });
+
+    it('should clear supports(TrxCtx) after a successful run and after a throwing run', async () => {
+      const ctx = new AppContextHost();
+
+      await transaction.run(ctx, async () => 'ok');
+      expect(ctx.supports(TrxCtx)).toBe(false);
+
+      await expect(
+        transaction.run(ctx, async () => {
+          throw new Error('fail');
+        }),
+      ).rejects.toThrow('fail');
+      expect(ctx.supports(TrxCtx)).toBe(false);
+    });
+
+    it('should not clear supports(TrxCtx) for a nested run — only the outermost settles it', async () => {
+      const ctx = new AppContextHost();
+
+      await transaction.run(ctx, async () => {
+        await transaction.run(ctx, async () => 'inner');
+
+        // Still inside the outer operation — the scope must still be live.
+        expect(ctx.supports(TrxCtx)).toBe(true);
+
+        return 'outer';
+      });
+
+      expect(ctx.supports(TrxCtx)).toBe(false);
+    });
+
+    it('should share one transaction across concurrent runs and commit once, after both resolve', async () => {
+      const mockTx = createMockTransaction();
+      mockRegistry.register('typeorm:default', { create: () => mockTx });
+
+      const ctx = new AppContextHost();
+
+      const slow = transaction.run(
+        ctx,
+        async (txCtx: TransactionContextInterface) => {
+          const tx = await txCtx.trx.getOrStart('typeorm:default');
+          tx.markDirty();
+          await new Promise((resolve) => setTimeout(resolve, 20));
+          return 'slow';
+        },
+      );
+
+      const fast = transaction.run(
+        ctx,
+        async (txCtx: TransactionContextInterface) => {
+          await txCtx.trx.getOrStart('typeorm:default');
+          // The slow run is still in flight — nobody should have settled yet.
+          expect(mockTx.commit).not.toHaveBeenCalled();
+          return 'fast';
+        },
+      );
+
+      const [slowResult, fastResult] = await Promise.all([slow, fast]);
+
+      expect(slowResult).toBe('slow');
+      expect(fastResult).toBe('fast');
+      expect(mockTx.commit).toHaveBeenCalledTimes(1);
+      expect(ctx.supports(TrxCtx)).toBe(false);
+    });
+
+    it('should have removed TrxCtx from ctx by the time onCommit callbacks run', async () => {
+      const ctx = new AppContextHost();
+      let sawDuringCallback: boolean | undefined;
+
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        txCtx.trx.onCommit(() => {
+          sawDuringCallback = ctx.supports(TrxCtx);
+        });
+      });
+
+      expect(sawDuringCallback).toBe(false);
+    });
+
+    it('should keep the run-scoped child resolving TrxCtx after the scope closes, and fail loudly on reuse', async () => {
+      const mockTx = createMockTransaction();
+      mockRegistry.register('typeorm:default', { create: () => mockTx });
+
+      const ctx = new AppContextHost();
+      let capturedTxCtx: TransactionContextInterface | undefined;
+
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        capturedTxCtx = txCtx;
+      });
+
+      expect(capturedTxCtx).toBeDefined();
+      const childHost = AppContextHost.from(
+        capturedTxCtx as TransactionContextInterface,
+      );
+
+      // The parent ctx released the scope...
+      expect(ctx.supports(TrxCtx)).toBe(false);
+      // ...but a handle still held by orphaned code keeps resolving it,
+      // rather than silently falling through to non-transactional access.
+      expect(childHost.supports(TrxCtx)).toBe(true);
+
+      await expect(
+        (capturedTxCtx as TransactionContextInterface).trx.getOrStart(
+          'typeorm:default',
+        ),
+      ).rejects.toThrow(TransactionClosedException);
     });
   });
 });

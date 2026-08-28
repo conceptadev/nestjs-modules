@@ -34,10 +34,20 @@ export interface TransactionRunOptions {
 /**
  * Orchestrates transaction lifecycle.
  *
- * Every unit of work calls `run()`. The first (outermost) call defines
- * `TrxCtx` on the context and owns the lifecycle — it commits/rolls
- * back and flushes callbacks. Nested `run()` calls detect `TrxCtx`
- * is already defined and simply join.
+ * Every unit of work calls `run()`. The first `run()` on a given context
+ * defines `TrxCtx` and owns the scope; concurrent/nested `run()` calls on
+ * the same context detect `TrxCtx` is already defined and join it — all
+ * participants share one `TransactionManager`, refcounted via
+ * `enter()`/`exit()`. The scope settles (commits/rolls back, flushes
+ * callbacks, and removes `TrxCtx` from the context) only when the last
+ * participant exits, so the context is left exactly as `run()` found it and
+ * a later, unrelated `run()` on the same context starts a fresh scope.
+ *
+ * The `TransactionManager` is also re-declared directly on the run-scoped
+ * `txCtx` child, so a handle held past its scope's settlement (e.g. an
+ * operation that outlived a timeout) keeps resolving `TrxCtx` — its next
+ * `getOrStart()` call throws `TransactionClosedException` rather than
+ * silently falling through to non-transactional access.
  *
  * @example
  * ```typescript
@@ -68,9 +78,10 @@ export class TransactionScope {
   /**
    * Execute an operation within a transaction scope.
    *
-   * Defines `TrxCtx` on the context if not already present, then
-   * runs the full lifecycle ceremony. Nesting is detected via
-   * `ctx.supports(TrxCtx)`.
+   * Defines `TrxCtx` on the context if not already present, then runs the
+   * full lifecycle ceremony. Nesting/concurrency is detected via
+   * `ctx.supports(TrxCtx)`; participants share one scope, refcounted via
+   * `enter()`/`exit()`, and the scope settles when the last one exits.
    */
   async run<T>(
     ctx: PlainLiteralObject,
@@ -79,46 +90,75 @@ export class TransactionScope {
   ): Promise<T> {
     const appCtx = AppContextHost.from(ctx);
     const propagation = options?.propagation ?? 'SUPPORTS';
-    const readOnly = options?.readOnly ?? false;
     const timeout = options?.timeout ?? this.defaultTimeout;
 
-    const isNested = appCtx.supports(TrxCtx);
+    // MANDATORY: require real transaction support. Checked before any
+    // overlay is installed, so a rejected run leaves the context untouched.
+    if (propagation === 'MANDATORY' && this.registry.count === 0) {
+      throw new TransactionRequiredException();
+    }
 
-    if (!isNested) {
+    if (!appCtx.supports(TrxCtx)) {
       appCtx.defineOverlay(TrxCtx, {
-        trx: new TransactionManager(this.registry),
+        trx: new TransactionManager(this.registry, options?.readOnly ?? false),
       });
     }
 
     const txCtx = appCtx.with(TrxCtx);
     const { trx } = txCtx;
 
-    // MANDATORY: require real transaction support
-    if (propagation === 'MANDATORY' && !trx.isSupported) {
-      throw new TransactionRequiredException();
-    }
+    // Re-declared on the run-scoped child — see class-level doc comment.
+    AppContextHost.from(txCtx).defineOverlay(TrxCtx, { trx });
 
-    // Nested call — just run, outermost owns lifecycle
-    if (isNested) {
-      return operation(txCtx);
-    }
+    trx.enter();
 
-    // Outermost — own lifecycle
     try {
-      const result = await this.withTimeout(operation(txCtx), timeout);
+      return await this.withTimeout(operation(txCtx), timeout);
+    } catch (error) {
+      trx.markFailed();
+      throw error;
+    } finally {
+      if (trx.exit() === 0) {
+        await this.settle(appCtx, trx);
+      }
+    }
+  }
 
-      if (readOnly) {
+  /**
+   * Settle a scope once its last participant has exited: commit or roll
+   * back, close the scope and remove `TrxCtx` — so a callback doing
+   * repository work on the same ctx gets non-transactional access rather
+   * than the just-settled transaction — then flush the matching callbacks.
+   */
+  private async settle(
+    appCtx: AppContextHost,
+    trx: TransactionManager,
+  ): Promise<void> {
+    let settleError: unknown;
+
+    try {
+      if (trx.hasFailed || trx.isReadOnly) {
         await trx.rollbackAll();
       } else {
         await trx.commitAll();
-        await trx.flushOnCommitCallbacks();
       }
-
-      return result;
     } catch (error) {
+      trx.markFailed();
+      settleError = error;
       await trx.rollbackAll();
+    }
+
+    trx.close();
+    appCtx.removeOverlay(TrxCtx);
+
+    if (trx.hasFailed) {
       await trx.flushOnRollbackCallbacks();
-      throw error;
+    } else if (!trx.isReadOnly) {
+      await trx.flushOnCommitCallbacks();
+    }
+
+    if (settleError !== undefined) {
+      throw settleError;
     }
   }
 
