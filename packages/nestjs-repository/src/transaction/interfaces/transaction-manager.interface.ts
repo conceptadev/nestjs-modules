@@ -28,11 +28,6 @@ export interface TransactionManagerInterface {
   readonly hasFailed: boolean;
 
   /**
-   * Get the transaction for the given key.
-   */
-  get(key: string): TransactionInterface | null;
-
-  /**
    * Mark that a `run()` call has entered this scope. Returns the resulting
    * depth.
    */
@@ -55,7 +50,7 @@ export interface TransactionManagerInterface {
   close(): void;
 
   /**
-   * Commit all dirty transactions, rollback clean ones.
+   * Commit all active transactions.
    */
   commitAll(): Promise<void>;
 

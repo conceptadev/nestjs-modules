@@ -1,6 +1,7 @@
-import { type EntityManager } from 'typeorm';
+import { type DataSource, type EntityManager } from 'typeorm';
 
 import { Test, type TestingModule } from '@nestjs/testing';
+import { getDataSourceToken } from '@nestjs/typeorm';
 
 import { AppContextHost } from '@concepta/nestjs-core';
 import {
@@ -129,5 +130,47 @@ describe('TransactionScope — commits every active transaction (defect #1)', ()
 
     const result = await testRepository.find();
     expect(result).toEqual([]);
+  });
+});
+
+/**
+ * Regression coverage against a real driver for a race in
+ * `TransactionManager.getOrStart()` — two concurrent repository calls as the
+ * first DB work in a `run()` used to each open their own `QueryRunner`
+ * before either finished starting, so only the last one written was ever
+ * committed or released, leaking the other.
+ */
+describe('TransactionScope — concurrent repository calls share one connection', () => {
+  let moduleFixture: TestingModule;
+  let txScope: TransactionScope;
+  let testRepository: TypeOrmRepository<TestEntityFixture>;
+  let dataSource: DataSource;
+
+  beforeEach(async () => {
+    moduleFixture = await Test.createTestingModule({
+      imports: [AppModuleFixture],
+    }).compile();
+
+    txScope = moduleFixture.get(TransactionScope);
+    testRepository = moduleFixture.get<TypeOrmRepository<TestEntityFixture>>(
+      getDynamicRepositoryToken(TEST_ENTITY_TOKEN),
+    );
+    dataSource = moduleFixture.get(getDataSourceToken());
+  });
+
+  it('should open only one QueryRunner for concurrent reads racing to start the same transaction', async () => {
+    const createQueryRunnerSpy = vi.spyOn(dataSource, 'createQueryRunner');
+
+    const ctx = new AppContextHost();
+
+    await txScope.run(ctx, async (txCtx: TransactionContextInterface) => {
+      await Promise.all([
+        testRepository.find({ ctx: txCtx }),
+        testRepository.find({ ctx: txCtx }),
+        testRepository.find({ ctx: txCtx }),
+      ]);
+    });
+
+    expect(createQueryRunnerSpy).toHaveBeenCalledTimes(1);
   });
 });

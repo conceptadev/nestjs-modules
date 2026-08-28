@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 
 import { TransactionClosedException } from '../exceptions/transaction-closed.exception.js';
+import { type TransactionFactoryInterface } from '../interfaces/transaction-factory.interface.js';
 
 import { type TransactionManagerInterface } from './interfaces/transaction-manager.interface.js';
 import { type TransactionInterface } from './interfaces/transaction.interface.js';
@@ -17,7 +18,10 @@ import { type TransactionFactoryRegistry } from './transaction-factory-registry.
  * silently falling through to non-transactional access.
  */
 export class TransactionManager implements TransactionManagerInterface {
-  private readonly transactions = new Map<string, TransactionInterface>();
+  private readonly transactions = new Map<
+    string,
+    Promise<TransactionInterface>
+  >();
   private readonly commitCallbacks: (() => void | Promise<void>)[] = [];
   private readonly rollbackCallbacks: (() => void | Promise<void>)[] = [];
   private depth = 0;
@@ -45,10 +49,6 @@ export class TransactionManager implements TransactionManagerInterface {
     return this.failed;
   }
 
-  get(key: string): TransactionInterface | null {
-    return this.transactions.get(key) ?? null;
-  }
-
   enter(): number {
     return ++this.depth;
   }
@@ -68,6 +68,12 @@ export class TransactionManager implements TransactionManagerInterface {
   /**
    * Get the current transaction for the given key, or create one lazily
    * via the factory registry if none exists.
+   *
+   * The in-flight promise — not the resolved transaction — is cached, and
+   * the cache write happens before anything is awaited. That keeps two
+   * concurrent calls for the same key from interleaving: whichever runs
+   * first creates and starts the transaction, and the second sees the
+   * cached promise and joins it instead of starting a rival one.
    */
   async getOrStart(key: string): Promise<TransactionInterface> {
     if (this.closed) {
@@ -84,10 +90,17 @@ export class TransactionManager implements TransactionManagerInterface {
       throw new Error(`No transaction factory registered for key "${key}"`);
     }
 
+    const pending = this.startTransaction(factory);
+    this.transactions.set(key, pending);
+
+    return pending;
+  }
+
+  private async startTransaction(
+    factory: TransactionFactoryInterface,
+  ): Promise<TransactionInterface> {
     const tx = factory.create();
     await tx.start();
-    this.transactions.set(key, tx);
-
     return tx;
   }
 
@@ -95,7 +108,7 @@ export class TransactionManager implements TransactionManagerInterface {
    * Commit all active transactions.
    */
   async commitAll(): Promise<void> {
-    for (const [, tx] of this.transactions) {
+    for (const tx of await this.startedTransactions()) {
       if (tx.isActive) {
         await tx.commit();
       }
@@ -106,11 +119,24 @@ export class TransactionManager implements TransactionManagerInterface {
    * Rollback all active transactions.
    */
   async rollbackAll(): Promise<void> {
-    for (const [, tx] of this.transactions) {
+    for (const tx of await this.startedTransactions()) {
       if (tx.isActive) {
         await tx.rollback();
       }
     }
+  }
+
+  /**
+   * Transactions whose `start()` actually succeeded. A key whose `start()`
+   * rejected never began, so there is nothing to commit or roll back for
+   * it — surfacing that rejection here would replace the caller's real
+   * error instead of the one that led to settlement.
+   */
+  private async startedTransactions(): Promise<TransactionInterface[]> {
+    const results = await Promise.allSettled(this.transactions.values());
+    return results.flatMap((result) =>
+      result.status === 'fulfilled' ? [result.value] : [],
+    );
   }
 
   onCommit(fn: () => void | Promise<void>): void {

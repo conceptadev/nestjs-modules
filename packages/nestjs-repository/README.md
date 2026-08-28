@@ -760,7 +760,6 @@ post-commit/rollback callbacks.
 
 | Method | Description |
 | --- | --- |
-| `get(key)` | Get current transaction for key (null if none) |
 | `getOrStart(key)` | Get existing or create via factory registry; throws `TransactionClosedException` once the scope has settled |
 | `commitAll()` | Commit all active transactions |
 | `rollbackAll()` | Rollback all active transactions |

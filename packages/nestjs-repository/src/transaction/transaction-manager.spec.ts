@@ -42,21 +42,6 @@ describe(TransactionManager.name, () => {
     manager = new TransactionManager(registry);
   });
 
-  describe('get', () => {
-    it('should return null for unknown key', () => {
-      const result = manager.get('unknown:key');
-      expect(result).toBeNull();
-    });
-
-    it('should return transaction for known key', async () => {
-      const mockTx = createMockTransaction();
-      await seed(manager, registry, 'typeorm:default', mockTx);
-
-      const result = manager.get('typeorm:default');
-      expect(result).toBe(mockTx);
-    });
-  });
-
   describe('getOrStart', () => {
     it('should create and start transaction lazily via factory', async () => {
       const newTx = createMockTransaction();
@@ -91,6 +76,85 @@ describe(TransactionManager.name, () => {
       await expect(manager.getOrStart('typeorm:default')).rejects.toThrow(
         TransactionClosedException,
       );
+    });
+  });
+
+  describe('concurrent calls to getOrStart for the same key', () => {
+    /**
+     * Registers a factory whose `start()` is gated on a manually-released
+     * promise, then fires two `getOrStart` calls back-to-back without
+     * awaiting either — this pins the interleaving exactly, rather than
+     * relying on timers, so the race is deterministic.
+     */
+    const raceGetOrStart = (key: string) => {
+      const created: TransactionInterface[] = [];
+      let releaseStart: () => void = () => {};
+      const gate = new Promise<void>((resolve) => {
+        releaseStart = resolve;
+      });
+
+      registry.register(key, {
+        create: () => {
+          const tx: TransactionInterface = {
+            isActive: true,
+            start: vi.fn().mockImplementation(async () => {
+              await gate;
+            }),
+            commit: vi.fn(),
+            rollback: vi.fn(),
+            getClient: vi.fn(),
+          };
+          created.push(tx);
+          return tx;
+        },
+      });
+
+      const first = manager.getOrStart(key);
+      const second = manager.getOrStart(key);
+
+      return { created, first, second, releaseStart };
+    };
+
+    it('should create only one transaction when two calls race before start() resolves', async () => {
+      const { created, first, second, releaseStart } =
+        raceGetOrStart('typeorm:default');
+
+      releaseStart();
+      const [a, b] = await Promise.all([first, second]);
+
+      expect(created).toHaveLength(1);
+      expect(a).toBe(b);
+    });
+
+    it('should settle the shared transaction once', async () => {
+      const { created, first, second, releaseStart } =
+        raceGetOrStart('typeorm:default');
+
+      releaseStart();
+      await Promise.all([first, second]);
+
+      await manager.commitAll();
+
+      expect(created[0].commit).toHaveBeenCalledTimes(1);
+    });
+
+    it('should skip a key whose start() rejected, in both commitAll and rollbackAll', async () => {
+      registry.register('typeorm:broken', {
+        create: () => ({
+          isActive: false,
+          start: vi.fn().mockRejectedValue(new Error('connect failed')),
+          commit: vi.fn(),
+          rollback: vi.fn(),
+          getClient: vi.fn(),
+        }),
+      });
+
+      await expect(manager.getOrStart('typeorm:broken')).rejects.toThrow(
+        'connect failed',
+      );
+
+      await expect(manager.commitAll()).resolves.toBeUndefined();
+      await expect(manager.rollbackAll()).resolves.toBeUndefined();
     });
   });
 
