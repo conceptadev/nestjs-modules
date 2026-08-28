@@ -1,6 +1,11 @@
 import { type PlainLiteralObject, type Type } from '@nestjs/common';
 
-import { type DeepPartial, RuntimeException } from '@concepta/nestjs-core';
+import {
+  AppContextHost,
+  type DeepPartial,
+  HooksCtx,
+  RuntimeException,
+} from '@concepta/nestjs-core';
 
 import { type JoinClause } from './interfaces/join-clause.interface.js';
 import { type RepositoryMetadataInterface } from './interfaces/repository-metadata.interface.js';
@@ -160,6 +165,10 @@ class TestRepositoryAdapter extends RepositoryAdapter<TestEntity> {
   exposedCartesianProduct(groups: WhereClause[][][]): WhereClause[][] {
     return this.cartesianProduct(groups);
   }
+
+  exposedEntityCtx(ctx?: PlainLiteralObject): PlainLiteralObject | undefined {
+    return this.entityCtx(ctx);
+  }
 }
 
 // ─── Tests ───────────────────────────────────────────────────────────────────
@@ -268,6 +277,29 @@ describe(RepositoryAdapter.name, () => {
         .filter((c) => c.isPrimary)
         .map((c) => c.name);
       expect(primaries).toEqual(['id']);
+    });
+  });
+
+  describe('entityCtx', () => {
+    it('should scope each repository to its own entity, even when repositories share one ctx', () => {
+      const repoA = new TestRepositoryAdapter('entity-a');
+      const repoB = new TestRepositoryAdapter('entity-b');
+      const ctx = new AppContextHost();
+
+      const ambientA = repoA.exposedEntityCtx(ctx);
+      const ambientB = repoB.exposedEntityCtx(ctx);
+
+      expect(ambientA?.entity).toBe('entity-a');
+      expect(ambientB?.entity).toBe('entity-b');
+    });
+
+    it('should still inherit an already-defined overlay from the shared ctx', () => {
+      const ctx = new AppContextHost();
+      ctx.defineOverlay(HooksCtx, { hooks: [] });
+
+      const ambient = adapter.exposedEntityCtx(ctx);
+
+      expect(ambient?.hooks).toEqual([]);
     });
   });
 });

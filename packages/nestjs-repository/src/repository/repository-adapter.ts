@@ -92,14 +92,23 @@ export abstract class RepositoryAdapter<
    *
    * Chains overlays via prototype inheritance so that hook methods
    * can access locals, hooks, entity, and trx through the chain.
+   *
+   * `entity` is installed on a fresh child scoped to this one call, not on
+   * `ctx` itself — unlike trx/hooks (stable for the whole scope/request),
+   * it differs per repository per call, so it can't use `defineOverlay`'s
+   * idempotent "declare once" semantics without pinning to whichever
+   * repository happened to touch `ctx` first.
    */
   protected entityCtx(
     ctx?: PlainLiteralObject,
   ): PlainLiteralObject | undefined {
     if (!ctx) return undefined;
     const appCtx = AppContextHost.from(ctx);
-    appCtx.defineOverlay(RepoCtx, { entity: this.entityKey });
-    return appCtx
+
+    const repoScoped = AppContextHost.from(Object.create(appCtx));
+    repoScoped.defineOverlay(RepoCtx, { entity: this.entityKey });
+
+    return repoScoped
       .require(RepoCtx)
       .withRepo()
       .optional()
