@@ -367,6 +367,26 @@ describe(TransactionManager.name, () => {
 
       await expect(manager.rollbackAll()).resolves.toBeUndefined();
     });
+
+    it('should never reject, even when a rollback fails with a non-Error, non-string-coercible reason', async () => {
+      const failingTx = createMockTransaction({
+        isActive: true,
+        rollback: vi.fn().mockRejectedValue(Object.create(null)),
+      });
+      await seed(manager, registry, 'typeorm:default', failingTx);
+
+      await expect(manager.rollbackAll()).resolves.toBeUndefined();
+    });
+
+    it('should never reject, even when a rollback fails with a Symbol reason', async () => {
+      const failingTx = createMockTransaction({
+        isActive: true,
+        rollback: vi.fn().mockRejectedValue(Symbol('boom')),
+      });
+      await seed(manager, registry, 'typeorm:default', failingTx);
+
+      await expect(manager.rollbackAll()).resolves.toBeUndefined();
+    });
   });
 
   describe('onCommit / flushOnCommitCallbacks', () => {
@@ -436,6 +456,25 @@ describe(TransactionManager.name, () => {
     it('should not reject when a callback rejects with null', async () => {
       manager.onCommit(async () => {
         throw null;
+      });
+
+      await expect(manager.flushOnCommitCallbacks()).resolves.toBeUndefined();
+    });
+
+    it('should not reject when a callback rejects with a non-Error, non-string-coercible reason', async () => {
+      const fn = vi.fn();
+      manager.onCommit(async () => {
+        throw Object.create(null);
+      });
+      manager.onCommit(fn);
+
+      await expect(manager.flushOnCommitCallbacks()).resolves.toBeUndefined();
+      expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not reject when a callback rejects with a Symbol', async () => {
+      manager.onCommit(async () => {
+        throw Symbol('boom');
       });
 
       await expect(manager.flushOnCommitCallbacks()).resolves.toBeUndefined();

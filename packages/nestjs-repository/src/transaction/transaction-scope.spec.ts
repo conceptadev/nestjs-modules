@@ -199,6 +199,42 @@ describe(TransactionScope.name, () => {
         }),
       ).rejects.toBe(commitError);
     });
+
+    it('should not roll back a transaction twice when the commit-failure fallback rollback already ran', async () => {
+      const mockTx = createMockTransaction();
+      mockRegistry.register('typeorm:default', { create: () => mockTx });
+      const commitError = new Error('commit failed');
+      mockTx.commit = vi.fn().mockRejectedValue(commitError);
+
+      const ctx = new AppContextHost();
+
+      await expect(
+        transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+          await txCtx.trx.getOrStart('typeorm:default');
+          return 'result';
+        }),
+      ).rejects.toBe(commitError);
+
+      expect(mockTx.rollback).toHaveBeenCalledTimes(1);
+    });
+
+    it('should release the scope even when the rollback reason is not an Error', async () => {
+      const mockTx = createMockTransaction();
+      mockRegistry.register('typeorm:default', { create: () => mockTx });
+      mockTx.rollback = vi.fn().mockRejectedValue(Object.create(null));
+
+      const ctx = new AppContextHost();
+      const operationError = new Error('Operation failed');
+
+      await expect(
+        transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+          await txCtx.trx.getOrStart('typeorm:default');
+          throw operationError;
+        }),
+      ).rejects.toBe(operationError);
+
+      expect(ctx.supports(TrxCtx)).toBe(false);
+    });
   });
 
   describe('readOnly transactions', () => {

@@ -190,9 +190,27 @@ export class TransactionManager implements TransactionManagerInterface {
   }
 
   /**
-   * Log every rejected result from an `allSettled` batch. A rejection
-   * reason can be anything a caller threw — including `null`/`undefined`
-   * — so `.stack` is only read when the reason is actually an `Error`.
+   * Log a single rejection reason. A rejection reason can be anything a
+   * caller threw — including `null`/`undefined`, a plain object, or a
+   * `Symbol` — so both the `.stack` read and the string interpolation are
+   * guarded rather than assumed safe.
+   */
+  private logRejection(reason: unknown, message: string): void {
+    let description: string;
+    try {
+      description = `${reason}`;
+    } catch {
+      description = '<unstringifiable rejection reason>';
+    }
+
+    Logger.error(
+      `${message}: ${description}`,
+      reason instanceof Error ? reason.stack : undefined,
+    );
+  }
+
+  /**
+   * Log every rejected result from an `allSettled` batch.
    */
   private logRejections(
     results: PromiseSettledResult<unknown>[],
@@ -200,10 +218,7 @@ export class TransactionManager implements TransactionManagerInterface {
   ): void {
     results.forEach((result) => {
       if (result.status === 'rejected') {
-        Logger.error(
-          `${message}: ${result.reason}`,
-          result.reason instanceof Error ? result.reason.stack : undefined,
-        );
+        this.logRejection(result.reason, message);
       }
     });
   }
