@@ -61,7 +61,6 @@ export class TransactionalRunner {
 
     return from(
       this.txScope.run(ctx, () => this.toPromise(operation()), {
-        propagation: options.propagation,
         readOnly: options.readOnly,
         timeout: options.timeout,
       }),

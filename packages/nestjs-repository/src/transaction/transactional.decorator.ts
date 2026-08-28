@@ -1,12 +1,9 @@
 import { SetMetadata, UseInterceptors, applyDecorators } from '@nestjs/common';
 
 import { TransactionInterceptor } from '../interceptors/transaction.interceptor.js';
-import {
-  PropagationBehavior,
-  TransactionalOptions,
-} from '../interfaces/transactional-options.interface.js';
+import { TransactionalOptions } from '../interfaces/transactional-options.interface.js';
 
-export { PropagationBehavior, TransactionalOptions };
+export { TransactionalOptions };
 
 export const TRANSACTIONAL_KEY = Symbol('Transactional');
 
@@ -45,7 +42,6 @@ export function Transactional(options?: TransactionalOptions | false) {
   }
 
   const resolvedOptions: TransactionalOptions = {
-    propagation: options?.propagation ?? 'SUPPORTS',
     readOnly: options?.readOnly ?? false,
     timeout: options?.timeout, // Let Transaction apply module default
   };

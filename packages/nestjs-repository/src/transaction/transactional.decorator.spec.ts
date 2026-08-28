@@ -15,57 +15,8 @@ describe('Transactional decorator', () => {
     );
 
     expect(metadata).toBeDefined();
-    expect(metadata.propagation).toBe('SUPPORTS');
     expect(metadata.readOnly).toBe(false);
     expect(metadata.timeout).toBeUndefined();
-  });
-
-  it('should apply metadata with custom propagation', () => {
-    class TestClass {
-      @Transactional({ propagation: 'MANDATORY' })
-      testMethod() {
-        return 'test';
-      }
-    }
-
-    const metadata = Reflect.getMetadata(
-      TRANSACTIONAL_KEY,
-      TestClass.prototype.testMethod,
-    );
-
-    expect(metadata.propagation).toBe('MANDATORY');
-  });
-
-  it('should apply metadata with SUPPORTS propagation', () => {
-    class TestClass {
-      @Transactional({ propagation: 'SUPPORTS' })
-      testMethod() {
-        return 'test';
-      }
-    }
-
-    const metadata = Reflect.getMetadata(
-      TRANSACTIONAL_KEY,
-      TestClass.prototype.testMethod,
-    );
-
-    expect(metadata.propagation).toBe('SUPPORTS');
-  });
-
-  it('should apply metadata with MANDATORY propagation', () => {
-    class TestClass {
-      @Transactional({ propagation: 'MANDATORY' })
-      testMethod() {
-        return 'test';
-      }
-    }
-
-    const metadata = Reflect.getMetadata(
-      TRANSACTIONAL_KEY,
-      TestClass.prototype.testMethod,
-    );
-
-    expect(metadata.propagation).toBe('MANDATORY');
   });
 
   it('should apply metadata with readOnly=true', () => {
@@ -103,7 +54,6 @@ describe('Transactional decorator', () => {
   it('should apply metadata with multiple options', () => {
     class TestClass {
       @Transactional({
-        propagation: 'SUPPORTS',
         readOnly: true,
         timeout: 10000,
       })
@@ -117,7 +67,6 @@ describe('Transactional decorator', () => {
       TestClass.prototype.testMethod,
     );
 
-    expect(metadata.propagation).toBe('SUPPORTS');
     expect(metadata.readOnly).toBe(true);
     expect(metadata.timeout).toBe(10000);
   });

@@ -4,7 +4,6 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { AppContextHost } from '@concepta/nestjs-core';
 
 import { TransactionClosedException } from '../exceptions/transaction-closed.exception.js';
-import { TransactionRequiredException } from '../exceptions/transaction-required.exception.js';
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception.js';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants.js';
 
@@ -64,7 +63,7 @@ describe(TransactionScope.name, () => {
     transaction = moduleRef.get<TransactionScope>(TransactionScope);
   });
 
-  describe('run with SUPPORTS propagation (default)', () => {
+  describe('run', () => {
     it('should auto-define TrxCtx and run lifecycle', async () => {
       const ctx = new AppContextHost();
       const operation = vi.fn().mockResolvedValue('result');
@@ -127,48 +126,6 @@ describe(TransactionScope.name, () => {
 
       expect(result).toBe('result');
       expect(operation).toHaveBeenCalled();
-    });
-  });
-
-  describe('run with MANDATORY propagation', () => {
-    it('should run when factories are registered', async () => {
-      const ctx = new AppContextHost();
-      const operation = vi.fn().mockResolvedValue('result');
-
-      const result = await transaction.run(ctx, operation, {
-        propagation: 'MANDATORY',
-      });
-
-      expect(result).toBe('result');
-    });
-
-    it('should throw when no factories are registered', async () => {
-      const emptyRegistry = new TransactionFactoryRegistry();
-      const moduleRef = await Test.createTestingModule({
-        providers: [
-          TransactionScope,
-          {
-            provide: TRANSACTION_FACTORY_REGISTRY,
-            useValue: emptyRegistry,
-          },
-          {
-            provide: REPOSITORY_MODULE_OPTIONS,
-            useValue: { defaultTimeout: 30000 },
-          },
-        ],
-      }).compile();
-
-      const txScope = moduleRef.get<TransactionScope>(TransactionScope);
-      const ctx = new AppContextHost();
-
-      const operation = vi.fn().mockResolvedValue('result');
-
-      await expect(
-        txScope.run(ctx, operation, { propagation: 'MANDATORY' }),
-      ).rejects.toThrow(TransactionRequiredException);
-
-      expect(operation).not.toHaveBeenCalled();
-      expect(ctx.supports(TrxCtx)).toBe(false);
     });
   });
 

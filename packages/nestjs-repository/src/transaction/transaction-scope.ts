@@ -8,10 +8,8 @@ import {
 
 import { AppContextHost } from '@concepta/nestjs-core';
 
-import { TransactionRequiredException } from '../exceptions/transaction-required.exception.js';
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception.js';
 import { RepositoryModuleOptionsInterface } from '../interfaces/repository-module-options.interface.js';
-import { PropagationBehavior } from '../interfaces/transactional-options.interface.js';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants.js';
 
 import {
@@ -27,7 +25,6 @@ import { TransactionManager } from './transaction-manager.js';
 const DEFAULT_TIMEOUT = 30000;
 
 export interface TransactionRunOptions {
-  propagation?: PropagationBehavior;
   readOnly?: boolean;
   timeout?: number;
 }
@@ -90,14 +87,7 @@ export class TransactionScope {
     options?: TransactionRunOptions,
   ): Promise<T> {
     const appCtx = AppContextHost.from(ctx);
-    const propagation = options?.propagation ?? 'SUPPORTS';
     const timeout = options?.timeout ?? this.defaultTimeout;
-
-    // MANDATORY: require real transaction support. Checked before any
-    // overlay is installed, so a rejected run leaves the context untouched.
-    if (propagation === 'MANDATORY' && this.registry.count === 0) {
-      throw new TransactionRequiredException();
-    }
 
     if (!appCtx.supports(TrxCtx)) {
       appCtx.defineOverlay(TrxCtx, {

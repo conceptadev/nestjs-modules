@@ -1,8 +1,8 @@
 # @concepta/nestjs-repository
 
 Repository abstraction module for NestJS. Provides a driver-agnostic
-`RepositoryAdapter` base class, transaction management with propagation
-control, and a two-level repository hook system.
+`RepositoryAdapter` base class, transaction management with automatic
+nesting, and a two-level repository hook system.
 
 ## Project
 
@@ -151,7 +151,7 @@ RepositoryModule (forRoot / forFeature)
   `RepositoryInterface` with query, create, update, delete, and lifecycle
   operations
 - **Transaction Layer** -- `TransactionScope` orchestrates transaction
-  lifecycle with propagation control; `TransactionManager` manages active
+  lifecycle with automatic nesting; `TransactionManager` manages active
   transactions with stack-based nesting; factories are registered per
   driver/datasource
 - **Hook System** -- two-level decorators (high-level semantic + fine-grained)
@@ -631,7 +631,7 @@ for details.
 ## Transaction Management
 
 The transaction layer provides automatic transaction lifecycle management
-with propagation control and nested transaction support.
+with automatic nesting support.
 
 ### TransactionScope
 
@@ -705,13 +705,6 @@ export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
 }
 ```
 
-### Propagation Behaviors
-
-| Behavior | Description |
-| --- | --- |
-| `SUPPORTS` | Run the full lifecycle; commit/rollback are no-ops when the driver does not support transactions (default) |
-| `MANDATORY` | Require real transaction support; throw `TransactionRequiredException` if none |
-
 ```ts
 // Read-only transaction (always rolls back). onRollback callbacks run
 // (the scope did roll back); onCommit callbacks never run.
@@ -719,9 +712,8 @@ await this.txScope.runReadOnly(ctx, async () => {
   return orderRepo.find();
 });
 
-// Custom propagation and timeout
+// Custom timeout
 await this.txScope.run(ctx, operation, {
-  propagation: 'MANDATORY',
   timeout: 5000,
 });
 ```
@@ -852,13 +844,11 @@ export class OrderController {
 
 ```ts
 interface TransactionalOptions {
-  propagation?: 'SUPPORTS' | 'MANDATORY';
   readOnly?: boolean;
   timeout?: number; // milliseconds (default: 30000)
 }
 ```
 
-- **`propagation`** -- transaction propagation behavior (default: `'SUPPORTS'`)
 - **`readOnly`** -- always roll back, for read-only operations (default: `false`)
 - **`timeout`** -- transaction timeout in milliseconds
 
@@ -1109,7 +1099,6 @@ also exported for manual provider wiring.
 | --- | --- |
 | `RepositoryQueryException` | Wraps any error thrown by a repository operation or its hook pipeline |
 | `RepositoryDuplicateKeyException` | Duplicate repository keys detected at bootstrap |
-| `TransactionRequiredException` | `MANDATORY` propagation requires a transaction but none exists |
 | `TransactionTimeoutException` | Transaction exceeded timeout duration |
 | `FederationException` | Unsupported federated query (e.g., OR across federated relations) |
 
