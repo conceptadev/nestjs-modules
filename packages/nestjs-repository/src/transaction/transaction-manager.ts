@@ -186,11 +186,22 @@ export class TransactionManager implements TransactionManagerInterface {
     settle: (tx: TransactionInterface) => Promise<void>,
   ): Promise<void> {
     const results = await Promise.allSettled(transactions.map(settle));
+    this.logRejections(results, 'Transaction rollback failed');
+  }
 
+  /**
+   * Log every rejected result from an `allSettled` batch. A rejection
+   * reason can be anything a caller threw — including `null`/`undefined`
+   * — so `.stack` is only read when the reason is actually an `Error`.
+   */
+  private logRejections(
+    results: PromiseSettledResult<unknown>[],
+    message: string,
+  ): void {
     results.forEach((result) => {
       if (result.status === 'rejected') {
         Logger.error(
-          `Transaction rollback failed: ${result.reason}`,
+          `${message}: ${result.reason}`,
           result.reason instanceof Error ? result.reason.stack : undefined,
         );
       }
@@ -222,29 +233,13 @@ export class TransactionManager implements TransactionManagerInterface {
     const callbacks = this.commitCallbacks.splice(0);
 
     const results = await Promise.allSettled(callbacks.map(async (cb) => cb()));
-
-    results.forEach((result) => {
-      if (result.status === 'rejected') {
-        Logger.error(
-          `Transaction onCommit Callback Error: ${result.reason}`,
-          result.reason.stack,
-        );
-      }
-    });
+    this.logRejections(results, 'Transaction onCommit Callback Error');
   }
 
   async flushOnRollbackCallbacks(): Promise<void> {
     const callbacks = this.rollbackCallbacks.splice(0);
 
     const results = await Promise.allSettled(callbacks.map(async (cb) => cb()));
-
-    results.forEach((result) => {
-      if (result.status === 'rejected') {
-        Logger.error(
-          `Transaction onRollback Callback Error: ${result.reason}`,
-          result.reason.stack,
-        );
-      }
-    });
+    this.logRejections(results, 'Transaction onRollback Callback Error');
   }
 }

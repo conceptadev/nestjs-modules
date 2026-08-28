@@ -420,6 +420,26 @@ describe(TransactionManager.name, () => {
 
       expect(fn).not.toHaveBeenCalled();
     });
+
+    it('should not reject and should still run other callbacks when one rejects with undefined', async () => {
+      const fn = vi.fn();
+      manager.onCommit(async () => {
+        throw undefined;
+      });
+      manager.onCommit(fn);
+
+      await expect(manager.flushOnCommitCallbacks()).resolves.toBeUndefined();
+
+      expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not reject when a callback rejects with null', async () => {
+      manager.onCommit(async () => {
+        throw null;
+      });
+
+      await expect(manager.flushOnCommitCallbacks()).resolves.toBeUndefined();
+    });
   });
 
   describe('onRollback / flushOnRollbackCallbacks', () => {
@@ -472,6 +492,18 @@ describe(TransactionManager.name, () => {
       manager.onRollback(fn);
 
       expect(fn).not.toHaveBeenCalled();
+    });
+
+    it('should not reject and should still run other callbacks when one rejects with undefined', async () => {
+      const fn = vi.fn();
+      manager.onRollback(async () => {
+        throw undefined;
+      });
+      manager.onRollback(fn);
+
+      await expect(manager.flushOnRollbackCallbacks()).resolves.toBeUndefined();
+
+      expect(fn).toHaveBeenCalledTimes(1);
     });
   });
 });
