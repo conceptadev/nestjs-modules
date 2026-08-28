@@ -559,6 +559,79 @@ describe(TransactionScope.name, () => {
     });
   });
 
+  describe('closing before settling, not after', () => {
+    it('should already be closed by the time commitAll() starts committing', async () => {
+      const mockTx = createMockTransaction();
+      let capturedTxCtx: TransactionContextInterface | undefined;
+      let closedDuringCommit: boolean | undefined;
+      mockTx.commit = vi.fn().mockImplementation(async () => {
+        closedDuringCommit = capturedTxCtx?.trx.isClosed;
+      });
+      mockRegistry.register('typeorm:default', { create: () => mockTx });
+
+      const ctx = new AppContextHost();
+
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        capturedTxCtx = txCtx;
+        await txCtx.trx.getOrStart('typeorm:default');
+        return 'result';
+      });
+
+      expect(closedDuringCommit).toBe(true);
+    });
+
+    it('should reject a getOrStart() call for a new key made from within commit(), rather than let it start an orphaned transaction', async () => {
+      const mockTx = createMockTransaction();
+      const otherTx = createMockTransaction();
+      let capturedTxCtx: TransactionContextInterface | undefined;
+      let getOrStartDuringCommit: Promise<TransactionInterface> | undefined;
+      mockTx.commit = vi.fn().mockImplementation(async () => {
+        getOrStartDuringCommit = capturedTxCtx?.trx.getOrStart('typeorm:other');
+      });
+      mockRegistry.register('typeorm:default', { create: () => mockTx });
+      mockRegistry.register('typeorm:other', { create: () => otherTx });
+
+      const ctx = new AppContextHost();
+
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        capturedTxCtx = txCtx;
+        await txCtx.trx.getOrStart('typeorm:default');
+        return 'result';
+      });
+
+      await expect(getOrStartDuringCommit).rejects.toThrow(
+        TransactionClosedException,
+      );
+      expect(otherTx.start).not.toHaveBeenCalled();
+    });
+
+    it('should throw TransactionClosedException rather than re-settle when run() is called again with a stale, already-closed txCtx', async () => {
+      const mockTx = createMockTransaction();
+      mockRegistry.register('typeorm:default', { create: () => mockTx });
+
+      const ctx = new AppContextHost();
+      let capturedTxCtx: TransactionContextInterface | undefined;
+
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        capturedTxCtx = txCtx;
+        await txCtx.trx.getOrStart('typeorm:default');
+      });
+
+      expect(mockTx.commit).toHaveBeenCalledTimes(1);
+
+      await expect(
+        transaction.run(
+          capturedTxCtx as TransactionContextInterface,
+          async () => 'noop',
+        ),
+      ).rejects.toThrow(TransactionClosedException);
+
+      // Re-entering a closed scope must not re-settle it.
+      expect(mockTx.commit).toHaveBeenCalledTimes(1);
+      expect(mockTx.rollback).not.toHaveBeenCalled();
+    });
+  });
+
   describe('nested run() calls', () => {
     it('should not double commit on nested run', async () => {
       const mockTx = createMockTransaction();

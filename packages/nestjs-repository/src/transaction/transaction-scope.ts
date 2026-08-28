@@ -131,14 +131,23 @@ export class TransactionScope {
    * participant that times out exits before a still-running nested one).
    * Releasing the wrong host would leave the creator's `TrxCtx` stranded.
    *
+   * Closes the scope *before* committing/rolling back, not after: a still
+   * -running orphaned operation (one that outlived a timeout) can call
+   * `getOrStart`/`onCommit`/`onRollback` at any point while settlement is
+   * in flight, and without this, it could start a transaction — or
+   * register a callback — that this settlement's already-taken snapshot
+   * will never commit, roll back, or flush.
+   *
    * A commit failure's own fallback rollback already happens inside
    * `commitAll()` (only the transactions it didn't get to are rolled
    * back), so there is no second `rollbackAll()` here — one that would
    * otherwise re-attempt a rollback that already ran. `rollbackAll()`
    * itself never throws, so nothing between `markFailed` and the end of
-   * this method can skip closing the scope.
+   * this method can skip removing the overlay.
    */
   private async settle(trx: TransactionManager): Promise<void> {
+    trx.close();
+
     let settleError: unknown;
 
     try {
@@ -152,7 +161,6 @@ export class TransactionScope {
       settleError = error;
     }
 
-    trx.close();
     trx.host.removeOverlay(TrxCtx);
 
     if (trx.hasFailed || trx.isReadOnly) {

@@ -37,7 +37,9 @@ export interface TransactionManagerInterface {
 
   /**
    * Mark that a `run()` call has entered this scope. Returns the resulting
-   * depth.
+   * depth. Throws `TransactionClosedException` once the scope is closed —
+   * a stale handle re-entering a settled scope must fail loudly rather
+   * than refcount and eventually re-settle it.
    */
   enter(): number;
 
@@ -55,7 +57,10 @@ export interface TransactionManagerInterface {
   markFailed(reason?: unknown): void;
 
   /**
-   * Close the scope. Once closed, `getOrStart` throws.
+   * Close the scope. Once closed, `getOrStart`, `enter`, `onCommit` and
+   * `onRollback` all throw `TransactionClosedException` — the scope is
+   * inert from this point on, including for a still-running orphaned
+   * operation that outlived a timeout.
    */
   close(): void;
 
@@ -85,13 +90,17 @@ export interface TransactionManagerInterface {
 
   /**
    * Register a callback to run after all transactions commit successfully.
+   * Throws `TransactionClosedException` once the scope is closed, rather
+   * than silently dropping a registration nothing will ever flush.
    */
   onCommit(fn: () => void | Promise<void>): void;
 
   /**
    * Register a callback to run after transactions are rolled back. A
    * `readOnly` scope always rolls back, so these run whether or not its
-   * operation succeeded.
+   * operation succeeded. Throws `TransactionClosedException` once the
+   * scope is closed, rather than silently dropping a registration nothing
+   * will ever flush.
    */
   onRollback(fn: () => void | Promise<void>): void;
 

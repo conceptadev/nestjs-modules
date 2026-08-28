@@ -77,6 +77,10 @@ export class TransactionManager implements TransactionManagerInterface {
   }
 
   enter(): number {
+    if (this.closed) {
+      throw new TransactionClosedException();
+    }
+
     return ++this.depth;
   }
 
@@ -252,10 +256,18 @@ export class TransactionManager implements TransactionManagerInterface {
   }
 
   onCommit(fn: () => void | Promise<void>): void {
+    if (this.closed) {
+      throw new TransactionClosedException();
+    }
+
     this.commitCallbacks.push(fn);
   }
 
   onRollback(fn: () => void | Promise<void>): void {
+    if (this.closed) {
+      throw new TransactionClosedException();
+    }
+
     this.rollbackCallbacks.push(fn);
   }
 

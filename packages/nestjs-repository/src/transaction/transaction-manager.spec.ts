@@ -208,6 +208,11 @@ describe(TransactionManager.name, () => {
       manager.close();
       expect(manager.isClosed).toBe(true);
     });
+
+    it('should throw TransactionClosedException from enter() once closed', () => {
+      manager.close();
+      expect(() => manager.enter()).toThrow(TransactionClosedException);
+    });
   });
 
   describe('commitAll', () => {
@@ -479,6 +484,13 @@ describe(TransactionManager.name, () => {
 
       await expect(manager.flushOnCommitCallbacks()).resolves.toBeUndefined();
     });
+
+    it('should throw TransactionClosedException rather than silently drop a registration after close()', () => {
+      manager.close();
+      expect(() => manager.onCommit(() => {})).toThrow(
+        TransactionClosedException,
+      );
+    });
   });
 
   describe('onRollback / flushOnRollbackCallbacks', () => {
@@ -543,6 +555,13 @@ describe(TransactionManager.name, () => {
       await expect(manager.flushOnRollbackCallbacks()).resolves.toBeUndefined();
 
       expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw TransactionClosedException rather than silently drop a registration after close()', () => {
+      manager.close();
+      expect(() => manager.onRollback(() => {})).toThrow(
+        TransactionClosedException,
+      );
     });
   });
 });
