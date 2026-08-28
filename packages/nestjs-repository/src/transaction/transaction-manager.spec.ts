@@ -184,6 +184,25 @@ describe(TransactionManager.name, () => {
       expect(manager.hasFailed).toBe(true);
     });
 
+    it('should not abort the signal until markFailed is called', () => {
+      expect(manager.signal.aborted).toBe(false);
+    });
+
+    it('should abort the signal with the given reason on markFailed', () => {
+      const reason = new Error('doomed');
+      manager.markFailed(reason);
+      expect(manager.signal.aborted).toBe(true);
+      expect(manager.signal.reason).toBe(reason);
+    });
+
+    it('should keep the first reason when markFailed is called more than once', () => {
+      const first = new Error('first');
+      const second = new Error('second');
+      manager.markFailed(first);
+      manager.markFailed(second);
+      expect(manager.signal.reason).toBe(first);
+    });
+
     it('should record close', () => {
       expect(manager.isClosed).toBe(false);
       manager.close();

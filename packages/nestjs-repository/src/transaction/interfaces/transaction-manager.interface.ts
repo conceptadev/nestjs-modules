@@ -28,6 +28,14 @@ export interface TransactionManagerInterface {
   readonly hasFailed: boolean;
 
   /**
+   * Aborts once the scope is doomed — a participant's operation threw, or
+   * the final commit failed — carrying that failure as `signal.reason`.
+   * Stays unaborted for a scope that settles successfully. Cooperative:
+   * nothing in this library forcibly stops an operation that ignores it.
+   */
+  readonly signal: AbortSignal;
+
+  /**
    * Mark that a `run()` call has entered this scope. Returns the resulting
    * depth.
    */
@@ -40,9 +48,11 @@ export interface TransactionManagerInterface {
   exit(): number;
 
   /**
-   * Mark the scope's operation as having thrown.
+   * Mark the scope's operation as having thrown, and abort `signal` with
+   * `reason` (or `undefined` if not given). Idempotent — the first reason
+   * wins.
    */
-  markFailed(): void;
+  markFailed(reason?: unknown): void;
 
   /**
    * Close the scope. Once closed, `getOrStart` throws.

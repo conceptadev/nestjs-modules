@@ -25,6 +25,7 @@ export class TransactionManager implements TransactionManagerInterface {
   >();
   private readonly commitCallbacks: (() => void | Promise<void>)[] = [];
   private readonly rollbackCallbacks: (() => void | Promise<void>)[] = [];
+  private readonly abortController = new AbortController();
   private depth = 0;
   private closed = false;
   private failed = false;
@@ -50,6 +51,16 @@ export class TransactionManager implements TransactionManagerInterface {
     return this.failed;
   }
 
+  /**
+   * Aborts once the scope is doomed — a participant's operation threw, or
+   * `settle()`'s commit failed — carrying that failure as `signal.reason`.
+   * Stays unaborted for a scope that settles successfully. Cooperative:
+   * nothing in this library forcibly stops an operation that ignores it.
+   */
+  get signal(): AbortSignal {
+    return this.abortController.signal;
+  }
+
   enter(): number {
     return ++this.depth;
   }
@@ -58,8 +69,9 @@ export class TransactionManager implements TransactionManagerInterface {
     return --this.depth;
   }
 
-  markFailed(): void {
+  markFailed(reason?: unknown): void {
     this.failed = true;
+    this.abortController.abort(reason);
   }
 
   close(): void {

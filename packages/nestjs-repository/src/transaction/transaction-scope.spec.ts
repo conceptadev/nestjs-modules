@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 
 import { AppContextHost } from '@concepta/nestjs-core';
@@ -341,6 +342,105 @@ describe(TransactionScope.name, () => {
       await expect(
         transaction.run(ctx, operation, { timeout: 50 }),
       ).rejects.toThrow(TransactionTimeoutException);
+    });
+
+    it('should abort the signal with a TransactionTimeoutException on timeout', async () => {
+      const ctx = new AppContextHost();
+      let signal: AbortSignal | undefined;
+
+      const operation = vi
+        .fn()
+        .mockImplementation(async (txCtx: TransactionContextInterface) => {
+          signal = txCtx.trx.signal;
+          return new Promise((resolve) => setTimeout(resolve, 200));
+        });
+
+      await expect(
+        transaction.run(ctx, operation, { timeout: 50 }),
+      ).rejects.toThrow(TransactionTimeoutException);
+
+      expect(signal?.aborted).toBe(true);
+      expect(signal?.reason).toBeInstanceOf(TransactionTimeoutException);
+    });
+
+    it('should log rather than swallow an operation that rejects after its transaction timed out', async () => {
+      const errorSpy = vi.spyOn(Logger, 'error').mockImplementation(() => {});
+      const ctx = new AppContextHost();
+      let releaseOrphan: (() => void) | undefined;
+      const orphanError = new Error('orphan failure');
+
+      const operation = vi.fn().mockImplementation(async () => {
+        await new Promise<void>((resolve) => {
+          releaseOrphan = resolve;
+        });
+        throw orphanError;
+      });
+
+      await expect(
+        transaction.run(ctx, operation, { timeout: 50 }),
+      ).rejects.toThrow(TransactionTimeoutException);
+
+      expect(releaseOrphan).toBeDefined();
+      releaseOrphan?.();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('orphan failure'),
+        expect.any(String),
+      );
+
+      errorSpy.mockRestore();
+    });
+  });
+
+  describe('trx.signal', () => {
+    it('should not abort the signal when the operation succeeds', async () => {
+      const ctx = new AppContextHost();
+      let signal: AbortSignal | undefined;
+
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        signal = txCtx.trx.signal;
+        return 'result';
+      });
+
+      expect(signal?.aborted).toBe(false);
+    });
+
+    it('should abort the signal with the thrown error when the operation fails', async () => {
+      const ctx = new AppContextHost();
+      let signal: AbortSignal | undefined;
+      const operationError = new Error('operation failed');
+
+      await expect(
+        transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+          signal = txCtx.trx.signal;
+          throw operationError;
+        }),
+      ).rejects.toBe(operationError);
+
+      expect(signal?.aborted).toBe(true);
+      expect(signal?.reason).toBe(operationError);
+    });
+
+    it('should abort the signal shared with the outer scope when a nested run fails', async () => {
+      const ctx = new AppContextHost();
+      let outerSignal: AbortSignal | undefined;
+      const innerError = new Error('inner failed');
+
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        outerSignal = txCtx.trx.signal;
+
+        await expect(
+          transaction.run(ctx, async () => {
+            throw innerError;
+          }),
+        ).rejects.toBe(innerError);
+
+        expect(outerSignal?.aborted).toBe(true);
+        expect(outerSignal?.reason).toBe(innerError);
+
+        return 'outer';
+      });
     });
   });
 

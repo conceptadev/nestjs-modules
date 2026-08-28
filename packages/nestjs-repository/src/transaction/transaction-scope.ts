@@ -1,6 +1,7 @@
 import {
   Injectable,
   Inject,
+  Logger,
   Optional,
   PlainLiteralObject,
 } from '@nestjs/common';
@@ -115,7 +116,7 @@ export class TransactionScope {
     try {
       return await this.withTimeout(operation(txCtx), timeout);
     } catch (error) {
-      trx.markFailed();
+      trx.markFailed(error);
       throw error;
     } finally {
       if (trx.exit() === 0) {
@@ -143,7 +144,7 @@ export class TransactionScope {
         await trx.commitAll();
       }
     } catch (error) {
-      trx.markFailed();
+      trx.markFailed(error);
       settleError = error;
       await trx.rollbackAll();
     }
@@ -175,7 +176,10 @@ export class TransactionScope {
 
   private withTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {
     return new Promise<T>((resolve, reject) => {
+      let timedOut = false;
+
       const handle = setTimeout(() => {
+        timedOut = true;
         reject(new TransactionTimeoutException(timeout));
       }, timeout);
 
@@ -186,6 +190,15 @@ export class TransactionScope {
         },
         (error) => {
           clearTimeout(handle);
+
+          if (timedOut) {
+            Logger.error(
+              `Operation failed after its transaction timed out: ${error}`,
+              error instanceof Error ? error.stack : undefined,
+            );
+            return;
+          }
+
           reject(error);
         },
       );

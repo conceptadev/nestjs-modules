@@ -766,6 +766,27 @@ post-commit/rollback callbacks.
 | `rollbackAll()` | Rollback all active transactions; failures are logged, never thrown |
 | `onCommit(fn)` | Register post-commit callback |
 | `onRollback(fn)` | Register post-rollback callback; a `readOnly` scope always rolls back, so these run whether or not its operation succeeded |
+| `signal` | `AbortSignal` that aborts once the scope is doomed (an operation threw, or the final commit failed), carrying that failure as `signal.reason` |
+
+#### Cancellation and timeouts
+
+`trx.signal` aborts as soon as the scope is doomed, so operations doing
+non-repository work (an HTTP call, a queue publish) can opt in to stopping
+early instead of running to completion against a transaction that's already
+rolling back:
+
+```ts
+await txScope.run(ctx, async (txCtx) => {
+  const res = await fetch(url, { signal: txCtx.trx.signal });
+  ...
+});
+```
+
+This is cooperative — nothing here forcibly stops an operation that ignores
+the signal. A timed-out `run()` rejects with `TransactionTimeoutException`
+and rolls back immediately; an operation that outlives the timeout keeps
+running as an abandoned orphan, and its eventual failure is logged rather
+than surfaced to the caller, who has long since moved on.
 
 #### Multi-datasource commits are not two-phase
 
