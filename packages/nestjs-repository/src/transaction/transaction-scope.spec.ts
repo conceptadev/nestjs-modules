@@ -24,14 +24,10 @@ describe(TransactionScope.name, () => {
 
   const createMockTransaction = (): TransactionInterface => {
     let isActive = false;
-    let isDirty = false;
 
     return {
       get isActive() {
         return isActive;
-      },
-      get isDirty() {
-        return isDirty;
       },
       start: vi.fn().mockImplementation(async () => {
         isActive = true;
@@ -41,9 +37,6 @@ describe(TransactionScope.name, () => {
       }),
       rollback: vi.fn().mockImplementation(async () => {
         isActive = false;
-      }),
-      markDirty: vi.fn().mockImplementation(() => {
-        isDirty = true;
       }),
       getClient: vi.fn(),
     };
@@ -179,24 +172,7 @@ describe(TransactionScope.name, () => {
   });
 
   describe('commit and rollback lifecycle', () => {
-    it('should commit dirty transactions on success', async () => {
-      const mockTx = createMockTransaction();
-      mockRegistry.register('typeorm:default', { create: () => mockTx });
-
-      const ctx = new AppContextHost();
-
-      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
-        const tx = await txCtx.trx.getOrStart('typeorm:default');
-        tx?.markDirty();
-        return 'result';
-      });
-
-      expect(mockTx.start).toHaveBeenCalledTimes(1);
-      expect(mockTx.commit).toHaveBeenCalledTimes(1);
-      expect(mockTx.rollback).not.toHaveBeenCalled();
-    });
-
-    it('should rollback clean transactions on success', async () => {
+    it('should commit active transactions on success', async () => {
       const mockTx = createMockTransaction();
       mockRegistry.register('typeorm:default', { create: () => mockTx });
 
@@ -207,8 +183,9 @@ describe(TransactionScope.name, () => {
         return 'result';
       });
 
-      expect(mockTx.rollback).toHaveBeenCalledTimes(1);
-      expect(mockTx.commit).not.toHaveBeenCalled();
+      expect(mockTx.start).toHaveBeenCalledTimes(1);
+      expect(mockTx.commit).toHaveBeenCalledTimes(1);
+      expect(mockTx.rollback).not.toHaveBeenCalled();
     });
 
     it('should rollback all on error', async () => {
@@ -239,8 +216,7 @@ describe(TransactionScope.name, () => {
       await transaction.run(
         ctx,
         async (txCtx: TransactionContextInterface) => {
-          const tx = await txCtx.trx.getOrStart('typeorm:default');
-          tx?.markDirty();
+          await txCtx.trx.getOrStart('typeorm:default');
           return 'result';
         },
         { readOnly: true },
@@ -374,8 +350,7 @@ describe(TransactionScope.name, () => {
       const ctx = new AppContextHost();
 
       await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
-        const tx = await txCtx.trx.getOrStart('typeorm:default');
-        tx?.markDirty();
+        await txCtx.trx.getOrStart('typeorm:default');
 
         // Nested run — should just execute, no lifecycle ownership
         await transaction.run(ctx, async () => 'inner');
@@ -424,13 +399,11 @@ describe(TransactionScope.name, () => {
       const ctx = new AppContextHost();
 
       await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
-        const tx = await txCtx.trx.getOrStart('typeorm:default');
-        tx.markDirty();
+        await txCtx.trx.getOrStart('typeorm:default');
       });
 
       await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
-        const tx = await txCtx.trx.getOrStart('typeorm:default');
-        tx.markDirty();
+        await txCtx.trx.getOrStart('typeorm:default');
       });
 
       expect(created).toHaveLength(2);
@@ -477,8 +450,7 @@ describe(TransactionScope.name, () => {
       const slow = transaction.run(
         ctx,
         async (txCtx: TransactionContextInterface) => {
-          const tx = await txCtx.trx.getOrStart('typeorm:default');
-          tx.markDirty();
+          await txCtx.trx.getOrStart('typeorm:default');
           await new Promise((resolve) => setTimeout(resolve, 20));
           return 'slow';
         },

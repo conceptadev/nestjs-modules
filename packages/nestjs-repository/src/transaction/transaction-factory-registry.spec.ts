@@ -13,11 +13,9 @@ describe(TransactionFactoryRegistry.name, () => {
 
     mockTransaction = {
       isActive: false,
-      isDirty: false,
       start: vi.fn(),
       commit: vi.fn(),
       rollback: vi.fn(),
-      markDirty: vi.fn(),
       getClient: vi.fn(),
     };
 

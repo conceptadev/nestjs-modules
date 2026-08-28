@@ -13,20 +13,16 @@ describe(TransactionManager.name, () => {
   const createMockTransaction = (
     overrides: Partial<{
       isActive: boolean;
-      isDirty: boolean;
       start: Mock;
       commit: Mock;
       rollback: Mock;
-      markDirty: Mock;
       getClient: Mock;
     }> = {},
   ): TransactionInterface => ({
     isActive: false,
-    isDirty: false,
     start: vi.fn(),
     commit: vi.fn(),
     rollback: vi.fn(),
-    markDirty: vi.fn(),
     getClient: vi.fn(),
     ...overrides,
   });
@@ -131,31 +127,18 @@ describe(TransactionManager.name, () => {
   });
 
   describe('commitAll', () => {
-    it('should commit dirty transactions', async () => {
-      const dirtyTx = createMockTransaction({ isActive: true, isDirty: true });
-      await seed(manager, registry, 'typeorm:default', dirtyTx);
+    it('should commit active transactions, dirtied or not', async () => {
+      const tx = createMockTransaction({ isActive: true });
+      await seed(manager, registry, 'typeorm:default', tx);
 
       await manager.commitAll();
 
-      expect(dirtyTx.commit).toHaveBeenCalledTimes(1);
-      expect(dirtyTx.rollback).not.toHaveBeenCalled();
-    });
-
-    it('should rollback clean transactions', async () => {
-      const cleanTx = createMockTransaction({ isActive: true, isDirty: false });
-      await seed(manager, registry, 'typeorm:default', cleanTx);
-
-      await manager.commitAll();
-
-      expect(cleanTx.rollback).toHaveBeenCalledTimes(1);
-      expect(cleanTx.commit).not.toHaveBeenCalled();
+      expect(tx.commit).toHaveBeenCalledTimes(1);
+      expect(tx.rollback).not.toHaveBeenCalled();
     });
 
     it('should skip inactive transactions', async () => {
-      const inactiveTx = createMockTransaction({
-        isActive: false,
-        isDirty: true,
-      });
+      const inactiveTx = createMockTransaction({ isActive: false });
       await seed(manager, registry, 'typeorm:default', inactiveTx);
 
       await manager.commitAll();
@@ -165,21 +148,18 @@ describe(TransactionManager.name, () => {
     });
 
     it('should handle multiple transactions', async () => {
-      const dirtyTx = createMockTransaction({ isActive: true, isDirty: true });
-      const cleanTx = createMockTransaction({ isActive: true, isDirty: false });
-      const inactiveTx = createMockTransaction({
-        isActive: false,
-        isDirty: true,
-      });
+      const activeTx = createMockTransaction({ isActive: true });
+      const otherActiveTx = createMockTransaction({ isActive: true });
+      const inactiveTx = createMockTransaction({ isActive: false });
 
-      await seed(manager, registry, 'typeorm:default', dirtyTx);
-      await seed(manager, registry, 'mongoose:default', cleanTx);
+      await seed(manager, registry, 'typeorm:default', activeTx);
+      await seed(manager, registry, 'mongoose:default', otherActiveTx);
       await seed(manager, registry, 'prisma:default', inactiveTx);
 
       await manager.commitAll();
 
-      expect(dirtyTx.commit).toHaveBeenCalledTimes(1);
-      expect(cleanTx.rollback).toHaveBeenCalledTimes(1);
+      expect(activeTx.commit).toHaveBeenCalledTimes(1);
+      expect(otherActiveTx.commit).toHaveBeenCalledTimes(1);
       expect(inactiveTx.commit).not.toHaveBeenCalled();
       expect(inactiveTx.rollback).not.toHaveBeenCalled();
     });

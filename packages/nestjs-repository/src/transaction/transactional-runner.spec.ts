@@ -33,7 +33,6 @@ describe(TransactionalRunner.name, () => {
       get isActive() {
         return isActive;
       },
-      isDirty: false,
       start: vi.fn().mockImplementation(async () => {
         isActive = true;
       }),
@@ -43,7 +42,6 @@ describe(TransactionalRunner.name, () => {
       rollback: vi.fn().mockImplementation(async () => {
         isActive = false;
       }),
-      markDirty: vi.fn(),
       getClient: vi.fn(),
     };
   };

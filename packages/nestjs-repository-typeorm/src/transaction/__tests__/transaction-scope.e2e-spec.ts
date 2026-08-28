@@ -1,3 +1,5 @@
+import { type EntityManager } from 'typeorm';
+
 import { Test, type TestingModule } from '@nestjs/testing';
 
 import { AppContextHost } from '@concepta/nestjs-core';
@@ -8,9 +10,10 @@ import {
 } from '@concepta/nestjs-repository';
 
 import { TEST_ENTITY_TOKEN } from '../../__fixtures__/repository/config/test.constants.fixture.js';
-import { type TestEntityFixture } from '../../__fixtures__/repository/entity/test.entity.fixture.js';
+import { TestEntityFixture } from '../../__fixtures__/repository/entity/test.entity.fixture.js';
 import { AppModuleFixture } from '../../__fixtures__/repository/module/app.module.fixture.js';
 import { type TypeOrmRepository } from '../../repository/typeorm-repository.js';
+import { resolveTransactionKey } from '../../typeorm-repository.util.js';
 
 /**
  * Regression coverage for #468 against a real TypeORM stack — a second
@@ -76,5 +79,55 @@ describe('TransactionScope — sequential run() on the same context (#468)', () 
 
     const result = await testRepository.find();
     expect(result.map((e) => e.firstName)).toEqual(['Alice']);
+  });
+});
+
+/**
+ * Regression coverage for out-of-scope defect #1 — commitAll() rolled back
+ * "clean" (never explicitly marked dirty) transactions, so a write made
+ * directly through `tx.getClient()` (the documented escape hatch) was
+ * silently discarded while `run()` still resolved successfully.
+ */
+describe('TransactionScope — commits every active transaction (defect #1)', () => {
+  let moduleFixture: TestingModule;
+  let txScope: TransactionScope;
+  let testRepository: TypeOrmRepository<TestEntityFixture>;
+
+  beforeEach(async () => {
+    moduleFixture = await Test.createTestingModule({
+      imports: [AppModuleFixture],
+    }).compile();
+
+    txScope = moduleFixture.get(TransactionScope);
+    testRepository = moduleFixture.get<TypeOrmRepository<TestEntityFixture>>(
+      getDynamicRepositoryToken(TEST_ENTITY_TOKEN),
+    );
+  });
+
+  it('should persist a write made directly through tx.getClient(), with no markDirty() call', async () => {
+    const ctx = new AppContextHost();
+
+    await txScope.run(ctx, async (txCtx: TransactionContextInterface) => {
+      const tx = await txCtx.trx.getOrStart(resolveTransactionKey());
+      const manager = tx.getClient<EntityManager>();
+      await manager.save(TestEntityFixture, { firstName: 'Ghost' });
+    });
+
+    const result = await testRepository.find();
+    expect(result.map((e) => e.firstName)).toEqual(['Ghost']);
+  });
+
+  it('should leave the database untouched for a readOnly run through the repository', async () => {
+    const ctx = new AppContextHost();
+
+    await txScope.runReadOnly(
+      ctx,
+      async (txCtx: TransactionContextInterface) => {
+        return testRepository.create({ firstName: 'Alice' }, { ctx: txCtx });
+      },
+    );
+
+    const result = await testRepository.find();
+    expect(result).toEqual([]);
   });
 });

@@ -762,7 +762,7 @@ post-commit/rollback callbacks.
 | --- | --- |
 | `get(key)` | Get current transaction for key (null if none) |
 | `getOrStart(key)` | Get existing or create via factory registry; throws `TransactionClosedException` once the scope has settled |
-| `commitAll()` | Commit dirty transactions, rollback clean ones |
+| `commitAll()` | Commit all active transactions |
 | `rollbackAll()` | Rollback all active transactions |
 | `onCommit(fn)` | Register post-commit callback |
 | `onRollback(fn)` | Register post-rollback callback |

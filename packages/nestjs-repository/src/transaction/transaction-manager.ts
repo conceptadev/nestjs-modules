@@ -92,16 +92,12 @@ export class TransactionManager implements TransactionManagerInterface {
   }
 
   /**
-   * Commit all dirty transactions, rollback clean ones.
+   * Commit all active transactions.
    */
   async commitAll(): Promise<void> {
     for (const [, tx] of this.transactions) {
       if (tx.isActive) {
-        if (tx.isDirty) {
-          await tx.commit();
-        } else {
-          await tx.rollback();
-        }
+        await tx.commit();
       }
     }
   }

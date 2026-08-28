@@ -184,7 +184,6 @@ When a `PlainLiteralObject` context with an active `trx` is provided,
 
 1. Resolves the TypeORM transaction via `ctx.trx.getOrStart(transactionKey)`
 2. Uses the transactional `EntityManager` for all operations
-3. Marks the transaction as dirty on write operations
 
 ## WhereClause Translation
 
@@ -277,7 +276,6 @@ await tx.start();
 
 const manager = tx.getClient<EntityManager>();
 await manager.save(entity);
-tx.markDirty();
 
 await tx.commit();
 ```
@@ -285,9 +283,7 @@ await tx.commit();
 | Property / Method | Description |
 | --- | --- |
 | `isActive` | Whether the transaction is currently active |
-| `isDirty` | Whether any write operations have occurred |
 | `start()` | Create a QueryRunner and begin a transaction |
-| `markDirty()` | Mark the transaction as dirty (write occurred) |
 | `commit()` | Commit the transaction and release the QueryRunner |
 | `rollback()` | Rollback the transaction and release the QueryRunner |
 | `getClient<T>()` | Get the transactional `EntityManager` |

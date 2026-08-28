@@ -54,17 +54,6 @@ describe(TypeOrmTransaction.name, () => {
     });
   });
 
-  describe('isDirty', () => {
-    it('should return false initially', () => {
-      expect(transaction.isDirty).toBe(false);
-    });
-
-    it('should return true after markDirty', () => {
-      transaction.markDirty();
-      expect(transaction.isDirty).toBe(true);
-    });
-  });
-
   describe('start', () => {
     it('should create query runner, connect, and start transaction', async () => {
       await transaction.start();
@@ -72,14 +61,6 @@ describe(TypeOrmTransaction.name, () => {
       expect(mockDataSource.createQueryRunner).toHaveBeenCalled();
       expect(mockQueryRunner.connect).toHaveBeenCalled();
       expect(mockQueryRunner.startTransaction).toHaveBeenCalled();
-    });
-  });
-
-  describe('markDirty', () => {
-    it('should set isDirty to true', () => {
-      expect(transaction.isDirty).toBe(false);
-      transaction.markDirty();
-      expect(transaction.isDirty).toBe(true);
     });
   });
 
@@ -96,15 +77,6 @@ describe(TypeOrmTransaction.name, () => {
 
       expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
       expect(mockQueryRunner.release).toHaveBeenCalled();
-    });
-
-    it('should reset isDirty after commit', async () => {
-      await transaction.start();
-      transaction.markDirty();
-      expect(transaction.isDirty).toBe(true);
-
-      await transaction.commit();
-      expect(transaction.isDirty).toBe(false);
     });
 
     it('should release query runner even if commit fails', async () => {
@@ -142,15 +114,6 @@ describe(TypeOrmTransaction.name, () => {
 
       expect(mockQueryRunner.rollbackTransaction).not.toHaveBeenCalled();
       expect(mockQueryRunner.release).toHaveBeenCalled();
-    });
-
-    it('should reset isDirty after rollback', async () => {
-      await transaction.start();
-      transaction.markDirty();
-      mockQueryRunner.isTransactionActive = true;
-
-      await transaction.rollback();
-      expect(transaction.isDirty).toBe(false);
     });
 
     it('should release query runner even if rollback fails', async () => {

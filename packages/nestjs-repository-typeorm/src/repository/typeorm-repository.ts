@@ -121,22 +121,6 @@ export class TypeOrmRepository<
     return this.repo;
   }
 
-  /**
-   * Mark the transaction as dirty (write operation occurred)
-   */
-  protected markDirty(ctx?: AppContextLike): void {
-    if (!this.options.transactionKey) return;
-
-    const context = AppContextHost.from(ctx);
-    if (!context.supports(TrxCtx)) return;
-
-    const { trx } = context.with(TrxCtx);
-    if (!trx?.isSupported) return;
-
-    const tx = trx.get(this.options.transactionKey);
-    tx?.markDirty();
-  }
-
   // ═══════════════════════════════════════════════════════════════════════════
   // WhereClause → TypeORM translation
   // ═══════════════════════════════════════════════════════════════════════════
@@ -345,7 +329,6 @@ export class TypeOrmRepository<
     options?: RepositoryCreateOptions,
   ): Promise<Entity> {
     const repo = await this.getRepo(options?.ctx);
-    this.markDirty(options?.ctx);
     return repo.save(entity);
   }
 
@@ -354,7 +337,6 @@ export class TypeOrmRepository<
     options?: RepositoryCreateOptions,
   ): Promise<Entity[]> {
     const repo = await this.getRepo(options?.ctx);
-    this.markDirty(options?.ctx);
     return repo.save(entities);
   }
 
@@ -366,7 +348,6 @@ export class TypeOrmRepository<
     options?: RepositoryUpdateOptions,
   ): Promise<Entity> {
     const repo = await this.getRepo(options?.ctx);
-    this.markDirty(options?.ctx);
     const merged = repo.merge(entity, data);
     return repo.save(merged);
   }
@@ -376,7 +357,6 @@ export class TypeOrmRepository<
     options?: RepositoryUpsertOptions,
   ): Promise<Entity> {
     const repo = await this.getRepo(options?.ctx);
-    this.markDirty(options?.ctx);
     const conflictPaths = this.getPrimaryColumns();
     const entityInstance = repo.create(entity);
     const insertResult = await repo.upsert(entityInstance, conflictPaths);
@@ -409,7 +389,6 @@ export class TypeOrmRepository<
     options?: RepositoryUpdateOptions,
   ): Promise<Entity> {
     const repo = await this.getRepo(options?.ctx);
-    this.markDirty(options?.ctx);
     const replaced = repo.merge(entity, data);
     return repo.save(replaced);
   }
@@ -421,7 +400,6 @@ export class TypeOrmRepository<
     options?: RepositoryDeleteOptions,
   ): Promise<Entity> {
     const repo = await this.getRepo(options?.ctx);
-    this.markDirty(options?.ctx);
     return repo.remove(entity);
   }
 
@@ -430,7 +408,6 @@ export class TypeOrmRepository<
     options?: RepositoryDeleteOptions,
   ): Promise<Entity[]> {
     const repo = await this.getRepo(options?.ctx);
-    this.markDirty(options?.ctx);
     return repo.remove(entities);
   }
 
@@ -439,7 +416,6 @@ export class TypeOrmRepository<
     options?: RepositoryDeleteOptions,
   ): Promise<Entity> {
     const repo = await this.getRepo(options?.ctx);
-    this.markDirty(options?.ctx);
     return repo.softRemove(entity);
   }
 
@@ -448,7 +424,6 @@ export class TypeOrmRepository<
     options?: RepositoryRestoreOptions,
   ): Promise<Entity> {
     const repo = await this.getRepo(options?.ctx);
-    this.markDirty(options?.ctx);
     return repo.recover(entity);
   }
 
