@@ -29,6 +29,7 @@ export { FederationException } from './federation/exceptions/federation.exceptio
 export { TransactionTimeoutException } from './exceptions/transaction-timeout.exception.js';
 export { TransactionClosedException } from './exceptions/transaction-closed.exception.js';
 export { TransactionHeuristicCommitException } from './exceptions/transaction-heuristic-commit.exception.js';
+export { TransactionReadOnlyConflictException } from './exceptions/transaction-read-only-conflict.exception.js';
 
 // ═══════════════════════════════════════════════════════════════════
 // Transaction

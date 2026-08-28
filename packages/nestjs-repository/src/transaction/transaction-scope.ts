@@ -8,6 +8,7 @@ import {
 
 import { AppContextHost } from '@concepta/nestjs-core';
 
+import { TransactionReadOnlyConflictException } from '../exceptions/transaction-read-only-conflict.exception.js';
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception.js';
 import { RepositoryModuleOptionsInterface } from '../interfaces/repository-module-options.interface.js';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants.js';
@@ -97,6 +98,15 @@ export class TransactionScope {
           appCtx,
         ),
       });
+    } else if (
+      options?.readOnly !== undefined &&
+      options.readOnly !== appCtx.with(TrxCtx).trx.isReadOnly
+    ) {
+      // readOnly is decided once, by whichever run() created the scope —
+      // joining it with a conflicting readOnly would either silently roll
+      // back writes the caller expected to persist, or silently drop
+      // runReadOnly()'s "must not persist" guarantee.
+      throw new TransactionReadOnlyConflictException();
     }
 
     const txCtx = appCtx.with(TrxCtx);

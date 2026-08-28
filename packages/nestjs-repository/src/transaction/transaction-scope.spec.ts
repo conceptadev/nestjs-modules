@@ -4,6 +4,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { AppContextHost } from '@concepta/nestjs-core';
 
 import { TransactionClosedException } from '../exceptions/transaction-closed.exception.js';
+import { TransactionReadOnlyConflictException } from '../exceptions/transaction-read-only-conflict.exception.js';
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception.js';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants.js';
 
@@ -320,6 +321,76 @@ describe(TransactionScope.name, () => {
       ).rejects.toThrow('fail');
 
       expect(rollbackCb).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw TransactionReadOnlyConflictException when a read-write run joins a readOnly scope', async () => {
+      const ctx = new AppContextHost();
+
+      await expect(
+        transaction.runReadOnly(
+          ctx,
+          async (txCtx: TransactionContextInterface) => {
+            return transaction.run(txCtx, async () => 'inner', {
+              readOnly: false,
+            });
+          },
+        ),
+      ).rejects.toThrow(TransactionReadOnlyConflictException);
+    });
+
+    it('should throw TransactionReadOnlyConflictException when a runReadOnly joins a read-write scope', async () => {
+      const ctx = new AppContextHost();
+
+      await expect(
+        transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+          return transaction.runReadOnly(txCtx, async () => 'inner');
+        }),
+      ).rejects.toThrow(TransactionReadOnlyConflictException);
+    });
+
+    it('should join a readOnly scope silently when the joining run does not specify readOnly', async () => {
+      const ctx = new AppContextHost();
+
+      const result = await transaction.runReadOnly(
+        ctx,
+        async (txCtx: TransactionContextInterface) => {
+          return transaction.run(txCtx, async () => 'inner');
+        },
+      );
+
+      expect(result).toBe('inner');
+    });
+
+    it('should join a read-write scope silently when the joining run does not specify readOnly', async () => {
+      const ctx = new AppContextHost();
+
+      const result = await transaction.run(
+        ctx,
+        async (txCtx: TransactionContextInterface) => {
+          return transaction.run(txCtx, async () => 'inner');
+        },
+      );
+
+      expect(result).toBe('inner');
+    });
+
+    it('should not corrupt the refcount when a conflicting join is rejected — the outer scope still settles once', async () => {
+      const mockTx = createMockTransaction();
+      mockRegistry.register('typeorm:default', { create: () => mockTx });
+      const ctx = new AppContextHost();
+
+      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+        await txCtx.trx.getOrStart('typeorm:default');
+
+        await expect(
+          transaction.run(txCtx, async () => 'inner', { readOnly: true }),
+        ).rejects.toThrow(TransactionReadOnlyConflictException);
+
+        return 'outer';
+      });
+
+      expect(mockTx.commit).toHaveBeenCalledTimes(1);
+      expect(mockTx.rollback).not.toHaveBeenCalled();
     });
   });
 
