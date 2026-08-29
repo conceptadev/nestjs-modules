@@ -207,6 +207,12 @@ describe(TransactionScope.name, () => {
       mockRegistry.register('typeorm:default', { create: () => mockTx });
       const commitError = new Error('commit failed');
       mockTx.commit = vi.fn().mockRejectedValue(commitError);
+      // Rejects without clearing isActive — unlike the default mock, whose
+      // rollback always clears it — so a genuine second rollback attempt
+      // stays visible here instead of being filtered out by isActive.
+      mockTx.rollback = vi
+        .fn()
+        .mockRejectedValue(new Error('rollback also failed'));
 
       const ctx = new AppContextHost();
 
@@ -915,16 +921,18 @@ describe(TransactionScope.name, () => {
 
       expect(mockTx.commit).toHaveBeenCalledTimes(1);
 
+      const staleOperation = vi.fn().mockResolvedValue('noop');
+
       await expect(
         transaction.run(
           capturedTxCtx as TransactionContextInterface,
-          async () => 'noop',
+          staleOperation,
         ),
       ).rejects.toThrow(TransactionClosedException);
 
-      // Re-entering a closed scope must not re-settle it.
-      expect(mockTx.commit).toHaveBeenCalledTimes(1);
-      expect(mockTx.rollback).not.toHaveBeenCalled();
+      // enter() must reject before the stale participant's operation ever
+      // runs — not merely before the scope re-settles.
+      expect(staleOperation).not.toHaveBeenCalled();
     });
   });
 
