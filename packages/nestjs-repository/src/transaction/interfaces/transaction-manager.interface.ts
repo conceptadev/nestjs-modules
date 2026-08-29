@@ -51,7 +51,9 @@ export interface TransactionManagerInterface {
 
   /**
    * Mark the scope's operation as having thrown, and abort `signal` with
-   * `reason` (or `undefined` if not given). Idempotent — the first reason
+   * `reason`. If `reason` is not given, `signal.reason` is not `undefined`
+   * — `AbortController.abort()` installs a synthetic `AbortError` instead,
+   * per the platform `AbortSignal` contract. Idempotent — the first reason
    * wins.
    */
   markFailed(reason?: unknown): void;

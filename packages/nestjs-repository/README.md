@@ -647,9 +647,14 @@ export class OrderService {
 
   async createOrder(ctx: PlainLiteralObject, dto: DeepPartial<OrderEntity>) {
     return this.txScope.run(ctx, async (txCtx) => {
-      // All repository operations share the same transaction
-      const order = await orderRepo.create(dto);
-      await inventoryRepo.update(order.itemId, { reserved: true });
+      // All repository operations share the same transaction — pass ctx
+      // (or txCtx, equivalently) so each call resolves it
+      const order = await orderRepo.create(dto, { ctx });
+      const item = await inventoryRepo.findOne({
+        where: { id: order.itemId },
+        ctx,
+      });
+      await inventoryRepo.update(item, { reserved: true }, { ctx });
 
       // Register post-commit callback
       txCtx.trx.onCommit(() => {
@@ -709,7 +714,7 @@ export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
 // Read-only transaction (always rolls back). onRollback callbacks run
 // (the scope did roll back); onCommit callbacks never run.
 await this.txScope.runReadOnly(ctx, async () => {
-  return orderRepo.find();
+  return orderRepo.find({ ctx });
 });
 
 // Custom timeout
@@ -723,10 +728,10 @@ await this.txScope.run(ctx, operation, {
 The first `run()` call on a given context creates the `TransactionManager`
 and registers it on the context. Nested and concurrent `run()` calls on that
 same context see the existing manager and join it — every participant is
-refcounted, and the scope settles (commits or rolls back) only when the
-last one exits, whichever participant that turns out to be. Once that
-happens, the context is released: it holds no transaction state, and the
-next `run()` on it starts a fresh scope.
+refcounted, and the scope settles (commits or rolls back) when the last one
+exits, or immediately if any participant's `run()` times out, whichever
+happens first. Once that happens, the context is released: it holds no
+transaction state, and the next `run()` on it starts a fresh scope.
 
 ```ts
 // Outermost — creates transaction
@@ -744,7 +749,30 @@ await this.txScope.run(ctx, async (txCtx) => {
 
 A `txCtx` handle should not be used after its `run()` call has resolved —
 `txCtx.trx.getOrStart()` throws `TransactionClosedException` once the scope
-has settled, rather than silently running outside the transaction.
+has settled, rather than silently running outside the transaction. `ctx`
+itself does not carry this guarantee: it's a plain object (or, if reused
+across an app, must actually be the same `AppContextHost` — a fresh `{}`
+resolves to a new host on every call and never joins anything), and after
+the scope settles, a repository call made with it simply runs
+non-transactionally — which is the point for ordinary code that runs
+*after* `run()` resolves. Watch for anything that keeps a `ctx` reference
+and keeps writing once settlement has already happened, since the scope
+can settle out from under code that's still going:
+
+- An operation that outlives its own timeout keeps running as a logged-only
+  orphan (see [Cancellation and timeouts](#cancellation-and-timeouts)).
+- A sibling — nested or concurrent, sharing the same scope, and well within
+  *its own* timeout — is settled out from under it the moment any other
+  participant times out.
+- Anything spawned inside the operation without being awaited outlives
+  settlement on every path, not just a timeout — including an ordinary
+  rollback once the last participant exits.
+
+In each case, a write made via `ctx` after settlement lands outside the
+transaction instead of failing loudly; the same call via `txCtx` throws
+`TransactionClosedException` instead. Passing `ctx` everywhere is fine and
+is the common pattern — this only matters for code that keeps running, or
+keeps a `ctx` reference for later, past the point its scope settles.
 
 Because every participant shares one scope, a sibling's failure can doom
 work that otherwise succeeded:
@@ -805,9 +833,17 @@ This is cooperative — nothing here forcibly stops an operation that ignores
 the signal. A timed-out `run()` rejects with `TransactionTimeoutException`;
 an operation that outlives the timeout keeps running as an abandoned orphan,
 and its eventual failure is logged rather than surfaced to the caller, who
-has long since moved on. Settlement itself only happens once the last
-participant actually exits, so if a sibling is still running when the
-timeout fires, rollback waits for it rather than happening immediately.
+has long since moved on. A timeout settles the scope immediately, rolling
+back rather than waiting for every participant to exit — including any
+sibling still running, nested or concurrent, even one well within its own
+timeout. From that point on, a `getOrStart`/`onCommit`/`onRollback` call
+made through that sibling's `txCtx` throws `TransactionClosedException`;
+the same call made through the outer `ctx` instead runs non-transactionally
+(see [Nesting](#nesting)) — so a sibling holding `ctx` can still write
+outside the now-rolled-back transaction before it's done. Either way, if
+the sibling's own operation goes on to resolve successfully in spite of
+this, its `run()` rejects with `TransactionScopeFailedException` rather
+than returning as if nothing happened.
 
 The timeout covers the operation, not settlement — a `commit()` or
 `rollback()` call that hangs (a dead connection, a lock wait) is not
@@ -911,13 +947,7 @@ export class CustomInterceptor implements NestInterceptor {
   constructor(private readonly txRunner: TransactionalRunner) {}
 
   intercept(context: ExecutionContext, next: CallHandler) {
-    const ctx = getAppContext<TransactionContextInterface>(req);
-    return this.txRunner.run(
-      context.getHandler(),
-      context.getClass(),
-      ctx,
-      () => next.handle(),
-    );
+    return this.txRunner.run(context, () => next.handle());
   }
 }
 ```

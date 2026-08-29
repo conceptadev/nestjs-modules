@@ -38,13 +38,13 @@ export interface TransactionRunOptions {
  * defines `TrxCtx` and owns the scope; concurrent/nested `run()` calls on
  * the same context detect `TrxCtx` is already defined and join it — all
  * participants share one `TransactionManager`, refcounted via
- * `enter()`/`exit()`. The scope settles only when the last participant
- * exits: closes, commits/rolls back, removes `TrxCtx` from the context, then
- * flushes the matching callbacks — in that order, so a callback doing
- * repository work on the same ctx gets non-transactional access rather than
- * the just-settled transaction. The context is left exactly as `run()`
- * found it, so a later, unrelated `run()` on the same context starts a
- * fresh scope.
+ * `enter()`/`exit()`. The scope settles when the last participant exits, or
+ * immediately if any participant times out — closes, commits/rolls back,
+ * removes `TrxCtx` from the context, then flushes the matching callbacks —
+ * in that order, so a callback doing repository work on the same ctx gets
+ * non-transactional access rather than the just-settled transaction. The
+ * context is left exactly as `run()` found it, so a later, unrelated
+ * `run()` on the same context starts a fresh scope.
  *
  * The `TransactionManager` is also re-declared directly on the run-scoped
  * `txCtx` child, so a handle held past its scope's settlement (e.g. an
@@ -162,10 +162,16 @@ export class TransactionScope {
   }
 
   /**
-   * Settle a scope once its last participant has exited: commit or roll
-   * back, close the scope and remove `TrxCtx` — so a callback doing
-   * repository work on the same ctx gets non-transactional access rather
-   * than the just-settled transaction — then flush the matching callbacks.
+   * Settle a scope: close it, commit or roll back, remove `TrxCtx` — so a
+   * callback doing repository work on the same ctx gets non-transactional
+   * access rather than the just-settled transaction — then flush the
+   * matching callbacks. Called once the last participant exits, or sooner
+   * if a participant's `run()` times out.
+   *
+   * Idempotent: a timeout forces settlement ahead of the refcount reaching
+   * 0 (see `run()`), so the participant that eventually does bring it to 0
+   * may find the scope already closed and must do nothing further — this
+   * is a no-op in that case.
    *
    * Releases `TrxCtx` from `trx.host`, the host that created the scope —
    * not necessarily this call's own `appCtx`, since the last participant to
