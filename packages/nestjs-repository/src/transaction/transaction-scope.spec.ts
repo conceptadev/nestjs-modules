@@ -5,6 +5,7 @@ import { AppContextHost } from '@concepta/nestjs-core';
 
 import { TransactionClosedException } from '../exceptions/transaction-closed.exception.js';
 import { TransactionReadOnlyConflictException } from '../exceptions/transaction-read-only-conflict.exception.js';
+import { TransactionScopeFailedException } from '../exceptions/transaction-scope-failed.exception.js';
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception.js';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants.js';
 
@@ -491,20 +492,112 @@ describe(TransactionScope.name, () => {
       let outerSignal: AbortSignal | undefined;
       const innerError = new Error('inner failed');
 
-      await transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
-        outerSignal = txCtx.trx.signal;
+      await expect(
+        transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+          outerSignal = txCtx.trx.signal;
 
-        await expect(
-          transaction.run(ctx, async () => {
-            throw innerError;
-          }),
-        ).rejects.toBe(innerError);
+          await expect(
+            transaction.run(ctx, async () => {
+              throw innerError;
+            }),
+          ).rejects.toBe(innerError);
 
-        expect(outerSignal?.aborted).toBe(true);
-        expect(outerSignal?.reason).toBe(innerError);
+          expect(outerSignal?.aborted).toBe(true);
+          expect(outerSignal?.reason).toBe(innerError);
 
-        return 'outer';
+          // The outer's own operation "succeeds" from here — it caught
+          // the nested failure — but the scope they share is doomed.
+          return 'outer';
+        }),
+      ).rejects.toThrow(TransactionScopeFailedException);
+    });
+  });
+
+  describe('rejecting a participant whose shared scope already failed', () => {
+    it('should carry the failure that doomed the scope as originalError', async () => {
+      const ctx = new AppContextHost();
+      const innerError = new Error('inner failed');
+      let caught: unknown;
+
+      try {
+        await transaction.run(
+          ctx,
+          async (txCtx: TransactionContextInterface) => {
+            await expect(
+              transaction.run(txCtx, async () => {
+                throw innerError;
+              }),
+            ).rejects.toBe(innerError);
+
+            return 'outer';
+          },
+        );
+      } catch (error) {
+        caught = error;
+      }
+
+      expect(caught).toBeInstanceOf(TransactionScopeFailedException);
+      const exception = caught as TransactionScopeFailedException;
+      expect(exception.context.originalError).toBe(innerError);
+    });
+
+    it('should reject the other side of a concurrent pair when its sibling fails', async () => {
+      const ctx = new AppContextHost();
+      const siblingError = new Error('sibling failed');
+
+      const failing = transaction.run(ctx, async () => {
+        throw siblingError;
       });
+      const succeeding = transaction.run(ctx, async () => 'ok');
+
+      const [failingResult, succeedingResult] = await Promise.allSettled([
+        failing,
+        succeeding,
+      ]);
+
+      expect(failingResult).toEqual({
+        status: 'rejected',
+        reason: siblingError,
+      });
+      expect(succeedingResult.status).toBe('rejected');
+      expect(
+        succeedingResult.status === 'rejected'
+          ? succeedingResult.reason
+          : undefined,
+      ).toBeInstanceOf(TransactionScopeFailedException);
+    });
+
+    it('should not flush onCommit callbacks registered by a participant whose scope already failed', async () => {
+      const ctx = new AppContextHost();
+      const commitCb = vi.fn();
+      const innerError = new Error('inner failed');
+
+      await expect(
+        transaction.run(ctx, async (txCtx: TransactionContextInterface) => {
+          txCtx.trx.onCommit(commitCb);
+
+          await expect(
+            transaction.run(txCtx, async () => {
+              throw innerError;
+            }),
+          ).rejects.toBe(innerError);
+
+          return 'outer';
+        }),
+      ).rejects.toThrow(TransactionScopeFailedException);
+
+      expect(commitCb).not.toHaveBeenCalled();
+    });
+
+    it("should still surface a participant's own thrown error, unwrapped, when that participant is the one that failed", async () => {
+      const ctx = new AppContextHost();
+      const error = new Error('own failure');
+
+      await expect(
+        transaction.run(ctx, async () => {
+          throw error;
+        }),
+      ).rejects.toBe(error);
     });
   });
 

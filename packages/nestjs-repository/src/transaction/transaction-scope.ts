@@ -9,6 +9,7 @@ import {
 import { AppContextHost } from '@concepta/nestjs-core';
 
 import { TransactionReadOnlyConflictException } from '../exceptions/transaction-read-only-conflict.exception.js';
+import { TransactionScopeFailedException } from '../exceptions/transaction-scope-failed.exception.js';
 import { TransactionTimeoutException } from '../exceptions/transaction-timeout.exception.js';
 import { RepositoryModuleOptionsInterface } from '../interfaces/repository-module-options.interface.js';
 import { REPOSITORY_MODULE_OPTIONS } from '../repository.constants.js';
@@ -117,8 +118,10 @@ export class TransactionScope {
 
     trx.enter();
 
+    let result: T;
+
     try {
-      return await this.withTimeout(operation(txCtx), timeout);
+      result = await this.withTimeout(operation(txCtx), timeout);
     } catch (error) {
       trx.markFailed(error);
       throw error;
@@ -127,6 +130,18 @@ export class TransactionScope {
         await this.settle(trx);
       }
     }
+
+    // This participant's own operation succeeded, but a sibling — nested
+    // or concurrent, sharing the same scope — may have failed and doomed
+    // it anyway. Checked after the finally, not inside the try, so it
+    // can't mask a real error from the operation or from settle().
+    if (trx.hasFailed) {
+      throw new TransactionScopeFailedException({
+        originalError: trx.signal.reason,
+      });
+    }
+
+    return result;
   }
 
   /**
