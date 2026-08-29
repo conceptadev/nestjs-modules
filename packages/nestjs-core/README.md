@@ -233,7 +233,9 @@ Most overlays live for the whole request. For one whose lifetime is
 narrower — e.g. a single unit of work sharing a longer-lived context —
 `ctx.removeOverlay(ref)` undoes `defineOverlay`, so the same context can
 later host a fresh instance of that overlay via another `defineOverlay`
-call.
+call. It only removes an overlay defined directly on that host — one
+inherited from a parent context (e.g. via `with()`) is left untouched, and
+the call returns `false` rather than removing anything.
 
 **Defining a custom overlay:**
 

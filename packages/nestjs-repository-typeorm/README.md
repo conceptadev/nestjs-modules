@@ -314,9 +314,9 @@ export class OrderService {
   ) {}
 
   async createOrder(ctx: PlainLiteralObject, dto: DeepPartial<OrderEntity>) {
-    return this.txScope.run(ctx, async () => {
+    return this.txScope.run(ctx, async (txCtx) => {
       // TypeOrmRepository automatically uses the transactional EntityManager
-      return this.orderRepo.create(dto, { ctx });
+      return this.orderRepo.create(dto, { ctx: txCtx });
     });
   }
 }

@@ -463,10 +463,11 @@ Two rules for hand-written controllers:
   defined by `CrudContextOverlay`.
 - Supply a body schema for validation: either explicitly via
   `@CrudBody({ schema })`, or by setting `request.body` (or `bodyBatch`) on
-  the operation decorator — the validation pipe resolves
-  `@CrudBody({ schema })` first, then falls back to the operation's own
-  `request.body`. The controller-level `request.body` default is never used
-  for validation (it is typically the full entity schema).
+  the operation decorator or the controller. The validation pipe resolves
+  `@CrudBody({ schema })` first, then falls back to `request.body`/
+  `bodyBatch` resolved through the metadata hierarchy (method → class) — so
+  a controller-level default is validated, not just a docs placeholder for
+  `@ApiBody` to render.
 
 ### Hybrid
 
@@ -897,9 +898,11 @@ Schemas wrapped with `withNamedComponent(schema, 'Photo')` register under
 bare component ids (`Photo`, `PhotoPaginated`); schemas wrapped with
 `withOpenApi(schema)` are documented inline (typical for request bodies).
 
-Per-operation `request.body`/`bodyBatch` overrides take precedence over the
-controller-level default in the generated docs, so PATCH/PUT document their
-own narrower schemas.
+A parameter-level `@CrudBody({ schema })` takes precedence over the
+per-operation `request.body`/`bodyBatch` schema, which in turn takes
+precedence over the controller-level default — so PATCH/PUT document their
+own narrower schemas, and a hand-written controller's explicit `@CrudBody`
+schema always wins.
 
 ## Resolvers
 

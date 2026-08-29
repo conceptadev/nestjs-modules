@@ -614,19 +614,22 @@ const orders = await orderRepo.find({
 const order = await orderRepo.create(dto, { ctx });
 
 // Nested service calls share the same transaction via ctx
-await this.txScope.run(ctx, async () => {
+await this.txScope.run(ctx, async (txCtx) => {
   const orders = await orderRepo.find({
     ...w.where(w.gt('total', 100)),
-    ctx,
+    ctx: txCtx,
   });
-  await auditRepo.create({ action: 'query', count: orders.length }, { ctx });
+  await auditRepo.create(
+    { action: 'query', count: orders.length },
+    { ctx: txCtx },
+  );
 });
 ```
 
 The `ctx` is propagated through nested `TransactionScope.run()` calls. Inner
-calls join the outer transaction automatically — only the outermost call owns
-the commit/rollback lifecycle. See [Transaction Management](#transaction-management)
-for details.
+calls join the outer transaction automatically. Pass the `txCtx` handed to
+the operation — not the outer `ctx` — to repository calls inside it. See
+[Transaction Management](#transaction-management) for details.
 
 ## Transaction Management
 
@@ -725,10 +728,10 @@ await this.txScope.run(ctx, operation, {
 ### Nesting
 
 Nested and concurrent `run()` calls on the same context join a single
-transaction, which commits or rolls back when the outermost call completes
-(or immediately if any participant times out). After that, the context
-carries no transaction state — a later `run()` on it starts a fresh,
-independent transaction.
+transaction, which commits or rolls back when the last participant exits —
+not necessarily the first one to have entered (or immediately if any
+participant times out). After that, the context carries no transaction
+state — a later `run()` on it starts a fresh, independent transaction.
 
 ```ts
 // Outermost — creates transaction
