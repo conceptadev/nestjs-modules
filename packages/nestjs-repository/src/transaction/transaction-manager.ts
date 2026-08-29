@@ -140,12 +140,13 @@ export class TransactionManager implements TransactionManagerInterface {
    * Commit all active transactions, sequentially, stopping at the first
    * failure. Whichever transactions haven't committed yet when that
    * happens — the failed one and everything after it — are rolled back
-   * instead of left dangling; whatever committed before the failure
-   * cannot be undone without real two-phase commit. Throws the raw
-   * underlying error for a single datasource, or
-   * {@link TransactionHeuristicCommitException} when more than one
-   * datasource is involved, since a partial commit across datasources is
-   * an inherently mixed ("heuristic") outcome, not an ordinary failure.
+   * instead of left dangling. Throws the raw underlying error when nothing
+   * had committed yet — rolling everything back is then a clean, atomic
+   * outcome, whether one datasource was involved or several — or
+   * {@link TransactionHeuristicCommitException} once at least one
+   * datasource has already committed, since that earlier commit can't be
+   * undone without real two-phase commit, leaving an inherently mixed
+   * ("heuristic") outcome across datasources.
    */
   async commitAll(): Promise<void> {
     const active = (await this.startedTransactions()).filter(
@@ -171,7 +172,7 @@ export class TransactionManager implements TransactionManagerInterface {
 
     await this.settleAll(active.slice(committedCount), (tx) => tx.rollback());
 
-    if (active.length === 1) {
+    if (committedCount === 0) {
       throw originalError;
     }
 

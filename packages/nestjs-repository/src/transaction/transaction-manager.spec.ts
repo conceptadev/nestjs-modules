@@ -285,7 +285,7 @@ describe(TransactionManager.name, () => {
       await expect(manager.commitAll()).rejects.toBe(originalError);
     });
 
-    it('should reject with TransactionHeuristicCommitException when multiple datasources are involved and one fails', async () => {
+    it('should reject with the original error, not a heuristic exception, when multiple datasources are involved but none committed', async () => {
       const originalError = new Error('commit failed');
       const failingTx = createMockTransaction({
         isActive: true,
@@ -295,6 +295,23 @@ describe(TransactionManager.name, () => {
 
       await seed(manager, registry, 'typeorm:failing', failingTx);
       await seed(manager, registry, 'typeorm:neverAttempted', neverAttemptedTx);
+
+      // Nothing committed and both were rolled back — a clean, atomic
+      // outcome, not a mixed one. The real error should surface directly
+      // rather than be buried in a heuristic exception's originalError.
+      await expect(manager.commitAll()).rejects.toBe(originalError);
+    });
+
+    it('should reject with TransactionHeuristicCommitException when a later datasource fails after an earlier one already committed', async () => {
+      const originalError = new Error('commit failed');
+      const committedTx = createMockTransaction({ isActive: true });
+      const failingTx = createMockTransaction({
+        isActive: true,
+        commit: vi.fn().mockRejectedValue(originalError),
+      });
+
+      await seed(manager, registry, 'typeorm:committed', committedTx);
+      await seed(manager, registry, 'typeorm:failing', failingTx);
 
       let caught: unknown;
       try {
@@ -308,8 +325,9 @@ describe(TransactionManager.name, () => {
       expect(exception.context.originalError?.message).toBe(
         originalError.message,
       );
-      expect(exception.message).toContain('0');
-      expect(exception.message).toContain('2');
+      expect(exception.message).toContain('1');
+      expect(committedTx.commit).toHaveBeenCalledTimes(1);
+      expect(committedTx.rollback).not.toHaveBeenCalled();
     });
   });
 
