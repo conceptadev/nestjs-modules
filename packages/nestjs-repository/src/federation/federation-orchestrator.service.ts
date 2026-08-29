@@ -313,11 +313,13 @@ export class FederationOrchestrator {
         if (constraint) peerConditions.push(constraint);
       }
 
-      // Determine pagination for this relation
+      // Determine pagination for this relation. `offset` tracks the
+      // buffer's own progress through successive discovery batches, so it
+      // must stay relative to the caller's skip — not replace it — or a
+      // later batch reads data from before the caller's requested window.
       let effectiveSkip: number | undefined;
       if (shouldPaginate) {
-        const useOriginalSkip = isDriving && isFirst && offset === 0;
-        effectiveSkip = useOriginalSkip ? userSkip : offset;
+        effectiveSkip = userSkip + offset;
       }
 
       const peerOptions: RepositoryFindOptions = {
