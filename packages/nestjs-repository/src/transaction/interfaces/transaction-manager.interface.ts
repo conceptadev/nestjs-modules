@@ -106,12 +106,16 @@ export interface TransactionManagerInterface {
   onRollback(fn: () => void | Promise<void>): void;
 
   /**
-   * Execute and clear all onCommit callbacks.
+   * Execute and clear all onCommit callbacks, one at a time in
+   * registration order — not concurrently. A rejection is logged, not
+   * thrown, and doesn't stop the callbacks after it from running.
    */
   flushOnCommitCallbacks(): Promise<void>;
 
   /**
-   * Execute and clear all onRollback callbacks.
+   * Execute and clear all onRollback callbacks, one at a time in
+   * registration order — not concurrently. A rejection is logged, not
+   * thrown, and doesn't stop the callbacks after it from running.
    */
   flushOnRollbackCallbacks(): Promise<void>;
 }

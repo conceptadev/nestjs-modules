@@ -430,12 +430,15 @@ describe(TransactionManager.name, () => {
       expect(order).toEqual([1, 2, 3]);
     });
 
-    it('should execute async callbacks in order on flush', async () => {
+    it('should run async callbacks sequentially, in registration order, not concurrently', async () => {
       const order: number[] = [];
       manager.onCommit(async () => {
+        // Slower than the others — a concurrent flush would let callbacks
+        // 2 and 3 finish first, since they never yield.
+        await new Promise((resolve) => setTimeout(resolve, 20));
         order.push(1);
       });
-      manager.onCommit(() => {
+      manager.onCommit(async () => {
         order.push(2);
       });
       manager.onCommit(async () => {
@@ -529,12 +532,15 @@ describe(TransactionManager.name, () => {
       expect(order).toEqual([1, 2, 3]);
     });
 
-    it('should execute async callbacks in order on flush', async () => {
+    it('should run async callbacks sequentially, in registration order, not concurrently', async () => {
       const order: number[] = [];
       manager.onRollback(async () => {
+        // Slower than the others — a concurrent flush would let callbacks
+        // 2 and 3 finish first, since they never yield.
+        await new Promise((resolve) => setTimeout(resolve, 20));
         order.push(1);
       });
-      manager.onRollback(() => {
+      manager.onRollback(async () => {
         order.push(2);
       });
       manager.onRollback(async () => {

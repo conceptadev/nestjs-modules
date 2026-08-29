@@ -273,16 +273,35 @@ export class TransactionManager implements TransactionManagerInterface {
   }
 
   async flushOnCommitCallbacks(): Promise<void> {
-    const callbacks = this.commitCallbacks.splice(0);
-
-    const results = await Promise.allSettled(callbacks.map(async (cb) => cb()));
-    this.logRejections(results, 'Transaction onCommit Callback Error');
+    await this.flushCallbacks(
+      this.commitCallbacks.splice(0),
+      'Transaction onCommit Callback Error',
+    );
   }
 
   async flushOnRollbackCallbacks(): Promise<void> {
-    const callbacks = this.rollbackCallbacks.splice(0);
+    await this.flushCallbacks(
+      this.rollbackCallbacks.splice(0),
+      'Transaction onRollback Callback Error',
+    );
+  }
 
-    const results = await Promise.allSettled(callbacks.map(async (cb) => cb()));
-    this.logRejections(results, 'Transaction onRollback Callback Error');
+  /**
+   * Run callbacks one at a time, in registration order, rather than
+   * concurrently — each callback fully resolves (or rejects) before the
+   * next one starts. Every callback still runs even if an earlier one
+   * rejects; a rejection is logged, not thrown.
+   */
+  private async flushCallbacks(
+    callbacks: (() => void | Promise<void>)[],
+    message: string,
+  ): Promise<void> {
+    for (const callback of callbacks) {
+      try {
+        await callback();
+      } catch (error) {
+        this.logRejection(error, message);
+      }
+    }
   }
 }
