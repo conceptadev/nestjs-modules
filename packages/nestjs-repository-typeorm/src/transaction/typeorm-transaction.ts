@@ -1,5 +1,7 @@
 import { type DataSource, type QueryRunner, type EntityManager } from 'typeorm';
 
+import { Logger } from '@nestjs/common';
+
 import { type TransactionInterface } from '@concepta/nestjs-repository';
 
 /**
@@ -32,12 +34,33 @@ export class TypeOrmTransaction implements TransactionInterface {
   }
 
   /**
-   * Start the transaction by creating a QueryRunner and beginning a transaction.
+   * Start the transaction by creating a QueryRunner and beginning a
+   * transaction.
+   *
+   * `this.queryRunner` is only assigned once both steps succeed. A
+   * `connect()`/`startTransaction()` failure still leaves a real,
+   * connected QueryRunner behind — it's released here rather than left to
+   * leak a pool connection, since nothing else holds a reference to it.
    */
   async start(): Promise<void> {
-    this.queryRunner = this.dataSource.createQueryRunner();
-    await this.queryRunner.connect();
-    await this.queryRunner.startTransaction();
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+    } catch (error) {
+      try {
+        await queryRunner.release();
+      } catch (releaseError) {
+        Logger.error(
+          `Failed to release QueryRunner after start() failed: ${releaseError}`,
+          releaseError instanceof Error ? releaseError.stack : undefined,
+        );
+      }
+      throw error;
+    }
+
+    this.queryRunner = queryRunner;
   }
 
   /**

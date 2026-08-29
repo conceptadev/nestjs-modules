@@ -62,6 +62,49 @@ describe(TypeOrmTransaction.name, () => {
       expect(mockQueryRunner.connect).toHaveBeenCalled();
       expect(mockQueryRunner.startTransaction).toHaveBeenCalled();
     });
+
+    it('should release the query runner and rethrow when startTransaction() rejects', async () => {
+      const startError = new Error('deadlock detected');
+      mockQueryRunner.startTransaction.mockRejectedValueOnce(startError);
+
+      await expect(transaction.start()).rejects.toBe(startError);
+
+      expect(mockQueryRunner.release).toHaveBeenCalledTimes(1);
+      expect(transaction.isActive).toBe(false);
+    });
+
+    it('should release the query runner and rethrow when connect() rejects', async () => {
+      const connectError = new Error('connection pool exhausted');
+      mockQueryRunner.connect.mockRejectedValueOnce(connectError);
+
+      await expect(transaction.start()).rejects.toBe(connectError);
+
+      expect(mockQueryRunner.release).toHaveBeenCalledTimes(1);
+      expect(mockQueryRunner.startTransaction).not.toHaveBeenCalled();
+      expect(transaction.isActive).toBe(false);
+    });
+
+    it('should still rethrow the original error when the release-on-failure itself also fails', async () => {
+      const startError = new Error('deadlock detected');
+      mockQueryRunner.startTransaction.mockRejectedValueOnce(startError);
+      mockQueryRunner.release.mockRejectedValueOnce(
+        new Error('release failed'),
+      );
+
+      await expect(transaction.start()).rejects.toBe(startError);
+    });
+
+    it('should not leave a stale query runner behind after a failed start(), so getClient() still throws', async () => {
+      mockQueryRunner.startTransaction.mockRejectedValueOnce(
+        new Error('deadlock detected'),
+      );
+
+      await expect(transaction.start()).rejects.toThrow();
+
+      expect(() => transaction.getClient()).toThrow(
+        'No active transaction - cannot get client',
+      );
+    });
   });
 
   describe('commit', () => {
