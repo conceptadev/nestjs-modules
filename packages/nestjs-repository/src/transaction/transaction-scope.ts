@@ -38,10 +38,13 @@ export interface TransactionRunOptions {
  * defines `TrxCtx` and owns the scope; concurrent/nested `run()` calls on
  * the same context detect `TrxCtx` is already defined and join it — all
  * participants share one `TransactionManager`, refcounted via
- * `enter()`/`exit()`. The scope settles (commits/rolls back, flushes
- * callbacks, and removes `TrxCtx` from the context) only when the last
- * participant exits, so the context is left exactly as `run()` found it and
- * a later, unrelated `run()` on the same context starts a fresh scope.
+ * `enter()`/`exit()`. The scope settles only when the last participant
+ * exits: closes, commits/rolls back, removes `TrxCtx` from the context, then
+ * flushes the matching callbacks — in that order, so a callback doing
+ * repository work on the same ctx gets non-transactional access rather than
+ * the just-settled transaction. The context is left exactly as `run()`
+ * found it, so a later, unrelated `run()` on the same context starts a
+ * fresh scope.
  *
  * The `TransactionManager` is also re-declared directly on the run-scoped
  * `txCtx` child, so a handle held past its scope's settlement (e.g. an

@@ -4,10 +4,14 @@ import {
 } from '@concepta/nestjs-core';
 
 /**
- * Exception thrown when committing more than one datasource's transaction
- * and at least one fails partway through. Without real two-phase commit,
- * whatever committed before the failure cannot be undone — the outcome is
- * "heuristic" (mixed/undetermined) rather than atomic across datasources.
+ * Exception thrown when a multi-datasource commit fails after at least one
+ * datasource has already committed. Without real two-phase commit, that
+ * earlier commit cannot be undone — the outcome is "heuristic"
+ * (mixed/undetermined) rather than atomic across datasources.
+ *
+ * Not thrown when nothing had committed yet — rolling everything back is
+ * then a clean, atomic outcome, and the raw underlying error is thrown
+ * instead, however many datasources were involved.
  */
 export class TransactionHeuristicCommitException extends RuntimeException {
   constructor(

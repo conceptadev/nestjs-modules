@@ -152,8 +152,8 @@ RepositoryModule (forRoot / forFeature)
   operations
 - **Transaction Layer** -- `TransactionScope` orchestrates transaction
   lifecycle with automatic nesting; `TransactionManager` manages active
-  transactions with stack-based nesting; factories are registered per
-  driver/datasource
+  transactions for one scope, shared by every participant via a refcount;
+  factories are registered per driver/datasource
 - **Hook System** -- two-level decorators (high-level semantic + fine-grained)
   for cross-cutting concerns like auditing, tenant filtering, and validation
 - **Registry** -- validates at application bootstrap that no duplicate
@@ -723,9 +723,10 @@ await this.txScope.run(ctx, operation, {
 The first `run()` call on a given context creates the `TransactionManager`
 and registers it on the context. Nested and concurrent `run()` calls on that
 same context see the existing manager and join it — every participant is
-refcounted, and only the last one to exit owns the lifecycle
-(commit/rollback). Once that happens, the context is released: it holds no
-transaction state, and the next `run()` on it starts a fresh scope.
+refcounted, and the scope settles (commits or rolls back) only when the
+last one exits, whichever participant that turns out to be. Once that
+happens, the context is released: it holds no transaction state, and the
+next `run()` on it starts a fresh scope.
 
 ```ts
 // Outermost — creates transaction
@@ -745,6 +746,25 @@ A `txCtx` handle should not be used after its `run()` call has resolved —
 `txCtx.trx.getOrStart()` throws `TransactionClosedException` once the scope
 has settled, rather than silently running outside the transaction.
 
+Because every participant shares one scope, a sibling's failure can doom
+work that otherwise succeeded:
+
+- If a participant's own operation succeeds, but a nested or concurrent
+  sibling sharing the same scope fails, that participant's `run()` call
+  rejects with `TransactionScopeFailedException` (carrying the sibling's
+  error as `context.originalError`) rather than resolving as if nothing
+  happened — even if the caller caught the sibling's error itself. Only a
+  failure that lands *after* a participant has already resolved and
+  returned control to its caller falls outside this — `trx.signal` is the
+  only channel for that narrower case (see
+  [Cancellation and timeouts](#cancellation-and-timeouts)).
+- `readOnly` is decided once, by whichever `run()` call creates the scope —
+  every later participant just joins it. A nested or concurrent `run()`
+  (or `runReadOnly()`) call whose explicit `readOnly` option conflicts with
+  the scope it's joining throws `TransactionReadOnlyConflictException`
+  instead of silently discarding one side's intent. `timeout`, by contrast,
+  is honored per participant, not scope-wide.
+
 ### TransactionManager
 
 `TransactionManager` is the runtime manager holding the transactions for a
@@ -753,12 +773,19 @@ post-commit/rollback callbacks.
 
 | Method | Description |
 | --- | --- |
-| `getOrStart(key)` | Get existing or create via factory registry; throws `TransactionClosedException` once the scope has settled |
-| `commitAll()` | Commit all active transactions, stopping at the first failure and rolling back the rest |
+| `getOrStart(key)` | Get existing or create via factory registry; throws `TransactionClosedException` once the scope has closed |
+| `commitAll()` | Commit all active transactions, stopping at the first failure and rolling back the rest; throws the raw error if nothing had committed yet, or `TransactionHeuristicCommitException` once at least one datasource has |
 | `rollbackAll()` | Rollback all active transactions; failures are logged, never thrown |
-| `onCommit(fn)` | Register post-commit callback |
-| `onRollback(fn)` | Register post-rollback callback; a `readOnly` scope always rolls back, so these run whether or not its operation succeeded |
-| `signal` | `AbortSignal` that aborts once the scope is doomed (an operation threw, or the final commit failed), carrying that failure as `signal.reason` |
+| `onCommit(fn)` | Register post-commit callback; throws `TransactionClosedException` once the scope has closed |
+| `onRollback(fn)` | Register post-rollback callback; a `readOnly` scope always rolls back, so these run whether or not its operation succeeded; throws `TransactionClosedException` once the scope has closed |
+| `signal` | `AbortSignal` that aborts once the scope is doomed (an operation threw, or the final commit failed), carrying that failure as `signal.reason`. Stays unaborted for a scope that settles cleanly — it signals "doomed", not "settled" |
+
+The scope closes *before* it commits or rolls back, not after, so a still
+-running orphaned operation (one that outlived a timeout) can't start a new
+transaction, or register a callback, that the already-in-flight settlement
+will never see. `onCommit`/`onRollback` callbacks flush one at a time, in
+registration order, once the scope settles — not concurrently — so a later
+callback can rely on an earlier one having fully finished first.
 
 #### Cancellation and timeouts
 
@@ -775,10 +802,17 @@ await txScope.run(ctx, async (txCtx) => {
 ```
 
 This is cooperative — nothing here forcibly stops an operation that ignores
-the signal. A timed-out `run()` rejects with `TransactionTimeoutException`
-and rolls back immediately; an operation that outlives the timeout keeps
-running as an abandoned orphan, and its eventual failure is logged rather
-than surfaced to the caller, who has long since moved on.
+the signal. A timed-out `run()` rejects with `TransactionTimeoutException`;
+an operation that outlives the timeout keeps running as an abandoned orphan,
+and its eventual failure is logged rather than surfaced to the caller, who
+has long since moved on. Settlement itself only happens once the last
+participant actually exits, so if a sibling is still running when the
+timeout fires, rollback waits for it rather than happening immediately.
+
+The timeout covers the operation, not settlement — a `commit()` or
+`rollback()` call that hangs (a dead connection, a lock wait) is not
+bounded by it and can leave `run()` unresolved indefinitely. There is no
+safe way to abandon an in-flight commit without knowing whether it landed.
 
 #### Multi-datasource commits are not two-phase
 
@@ -790,8 +824,16 @@ two-phase commit to fall back on. The transactions that haven't committed
 yet are rolled back instead of left dangling, and the failure surfaces as
 `TransactionHeuristicCommitException` rather than an ordinary commit error,
 so callers can specifically detect and handle an inconsistent, mixed
-outcome across datasources. A single-datasource commit failure is unaffected
-and still throws the raw underlying error.
+outcome across datasources. If *nothing* had committed yet, rolling
+everything back is a clean, atomic outcome regardless of how many
+datasources were involved, so the raw underlying error is thrown instead.
+
+A heuristic partial commit still flushes `onRollback` callbacks, never
+`onCommit` — even for the datasource(s) that durably committed. It's the
+conservative choice: from the scope's point of view the unit of work as a
+whole failed, so domain events registered via `onCommit(() => agg.commit())`
+are treated as not-yet-safe-to-publish, even though some of the underlying
+data did persist.
 
 ### TransactionFactory
 
@@ -1100,6 +1142,10 @@ also exported for manual provider wiring.
 | `RepositoryQueryException` | Wraps any error thrown by a repository operation or its hook pipeline |
 | `RepositoryDuplicateKeyException` | Duplicate repository keys detected at bootstrap |
 | `TransactionTimeoutException` | Transaction exceeded timeout duration |
+| `TransactionClosedException` | A settled scope was used again — `getOrStart`, `enter`, `onCommit`, or `onRollback` after close |
+| `TransactionHeuristicCommitException` | A multi-datasource commit failed after at least one datasource had already committed |
+| `TransactionReadOnlyConflictException` | A joining `run()`/`runReadOnly()` call's `readOnly` option conflicts with the scope it's joining |
+| `TransactionScopeFailedException` | A participant's own operation succeeded, but its shared scope had already failed via a sibling |
 | `FederationException` | Unsupported federated query (e.g., OR across federated relations) |
 
 ## Entry Points
