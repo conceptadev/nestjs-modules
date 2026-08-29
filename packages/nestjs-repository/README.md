@@ -647,14 +647,13 @@ export class OrderService {
 
   async createOrder(ctx: PlainLiteralObject, dto: DeepPartial<OrderEntity>) {
     return this.txScope.run(ctx, async (txCtx) => {
-      // All repository operations share the same transaction — pass ctx
-      // (or txCtx, equivalently) so each call resolves it
-      const order = await orderRepo.create(dto, { ctx });
+      // Pass txCtx, not ctx, to repository calls inside the operation
+      const order = await orderRepo.create(dto, { ctx: txCtx });
       const item = await inventoryRepo.findOne({
         where: { id: order.itemId },
-        ctx,
+        ctx: txCtx,
       });
-      await inventoryRepo.update(item, { reserved: true }, { ctx });
+      await inventoryRepo.update(item, { reserved: true }, { ctx: txCtx });
 
       // Register post-commit callback
       txCtx.trx.onCommit(() => {
@@ -699,7 +698,7 @@ export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
         Order.create(eventContext, dto),
       );
 
-      await orderRepo.save(ctx, order);
+      await orderRepo.save(txCtx, order);
 
       txCtx.trx.onCommit(() => order.commit());     // publish domain events
       txCtx.trx.onRollback(() => order.uncommit());  // discard domain events
@@ -713,8 +712,8 @@ export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
 ```ts
 // Read-only transaction (always rolls back). onRollback callbacks run
 // (the scope did roll back); onCommit callbacks never run.
-await this.txScope.runReadOnly(ctx, async () => {
-  return orderRepo.find({ ctx });
+await this.txScope.runReadOnly(ctx, async (txCtx) => {
+  return orderRepo.find({ ctx: txCtx });
 });
 
 // Custom timeout
@@ -725,13 +724,11 @@ await this.txScope.run(ctx, operation, {
 
 ### Nesting
 
-The first `run()` call on a given context creates the `TransactionManager`
-and registers it on the context. Nested and concurrent `run()` calls on that
-same context see the existing manager and join it — every participant is
-refcounted, and the scope settles (commits or rolls back) when the last one
-exits, or immediately if any participant's `run()` times out, whichever
-happens first. Once that happens, the context is released: it holds no
-transaction state, and the next `run()` on it starts a fresh scope.
+Nested and concurrent `run()` calls on the same context join a single
+transaction, which commits or rolls back when the outermost call completes
+(or immediately if any participant times out). After that, the context
+carries no transaction state — a later `run()` on it starts a fresh,
+independent transaction.
 
 ```ts
 // Outermost — creates transaction
@@ -747,32 +744,13 @@ await this.txScope.run(ctx, async (txCtx) => {
 });
 ```
 
-A `txCtx` handle should not be used after its `run()` call has resolved —
-`txCtx.trx.getOrStart()` throws `TransactionClosedException` once the scope
-has settled, rather than silently running outside the transaction. `ctx`
-itself does not carry this guarantee: it's a plain object (or, if reused
-across an app, must actually be the same `AppContextHost` — a fresh `{}`
-resolves to a new host on every call and never joins anything), and after
-the scope settles, a repository call made with it simply runs
-non-transactionally — which is the point for ordinary code that runs
-*after* `run()` resolves. Watch for anything that keeps a `ctx` reference
-and keeps writing once settlement has already happened, since the scope
-can settle out from under code that's still going:
-
-- An operation that outlives its own timeout keeps running as a logged-only
-  orphan (see [Cancellation and timeouts](#cancellation-and-timeouts)).
-- A sibling — nested or concurrent, sharing the same scope, and well within
-  *its own* timeout — is settled out from under it the moment any other
-  participant times out.
-- Anything spawned inside the operation without being awaited outlives
-  settlement on every path, not just a timeout — including an ordinary
-  rollback once the last participant exits.
-
-In each case, a write made via `ctx` after settlement lands outside the
-transaction instead of failing loudly; the same call via `txCtx` throws
-`TransactionClosedException` instead. Passing `ctx` everywhere is fine and
-is the common pattern — this only matters for code that keeps running, or
-keeps a `ctx` reference for later, past the point its scope settles.
+Inside the operation, prefer the `txCtx` handed to you over the outer `ctx`
+for repository calls: a stale `txCtx` fails loudly with
+`TransactionClosedException` once its scope has settled, while a stale
+`ctx` silently falls back to running non-transactionally. Don't hold either
+one past the point `run()` resolves, and don't spawn unawaited work inside
+the operation — anything still running once the transaction settles writes
+outside it either way.
 
 Because every participant shares one scope, a sibling's failure can doom
 work that otherwise succeeded:
@@ -781,11 +759,7 @@ work that otherwise succeeded:
   sibling sharing the same scope fails, that participant's `run()` call
   rejects with `TransactionScopeFailedException` (carrying the sibling's
   error as `context.originalError`) rather than resolving as if nothing
-  happened — even if the caller caught the sibling's error itself. Only a
-  failure that lands *after* a participant has already resolved and
-  returned control to its caller falls outside this — `trx.signal` is the
-  only channel for that narrower case (see
-  [Cancellation and timeouts](#cancellation-and-timeouts)).
+  happened — even if the caller caught the sibling's error itself.
 - `readOnly` is decided once, by whichever `run()` call creates the scope —
   every later participant just joins it. A nested or concurrent `run()`
   (or `runReadOnly()`) call whose explicit `readOnly` option conflicts with
@@ -795,25 +769,25 @@ work that otherwise succeeded:
 
 ### TransactionManager
 
-`TransactionManager` is the runtime manager holding the transactions for a
-single `run()` scope, lazy creation via factory registry, and
-post-commit/rollback callbacks.
+`txCtx.trx` is a `TransactionManager` — the handle for registering
+post-commit/rollback work and, for non-repository work, reading the
+cancellation signal.
 
 | Method | Description |
 | --- | --- |
-| `getOrStart(key)` | Get existing or create via factory registry; throws `TransactionClosedException` once the scope has closed |
-| `commitAll()` | Commit all active transactions, stopping at the first failure and rolling back the rest; throws the raw error if nothing had committed yet, or `TransactionHeuristicCommitException` once at least one datasource has |
-| `rollbackAll()` | Rollback all active transactions; failures are logged, never thrown |
 | `onCommit(fn)` | Register post-commit callback; throws `TransactionClosedException` once the scope has closed |
 | `onRollback(fn)` | Register post-rollback callback; a `readOnly` scope always rolls back, so these run whether or not its operation succeeded; throws `TransactionClosedException` once the scope has closed |
 | `signal` | `AbortSignal` that aborts once the scope is doomed (an operation threw, or the final commit failed), carrying that failure as `signal.reason`. Stays unaborted for a scope that settles cleanly — it signals "doomed", not "settled" |
 
-The scope closes *before* it commits or rolls back, not after, so a still
--running orphaned operation (one that outlived a timeout) can't start a new
-transaction, or register a callback, that the already-in-flight settlement
-will never see. `onCommit`/`onRollback` callbacks flush one at a time, in
-registration order, once the scope settles — not concurrently — so a later
-callback can rely on an earlier one having fully finished first.
+`getOrStart(key)` also exists but is used by repository/driver internals —
+application code doesn't call it directly.
+
+`onCommit`/`onRollback` callbacks flush one at a time, in registration
+order, once the scope settles, so a later callback can rely on an earlier
+one having fully finished first. A callback that throws is logged, not
+rethrown — it doesn't fail `run()` and doesn't stop the callbacks after it
+from running, so a callback that must not fail silently should handle its
+own errors.
 
 #### Cancellation and timeouts
 
@@ -833,43 +807,27 @@ This is cooperative — nothing here forcibly stops an operation that ignores
 the signal. A timed-out `run()` rejects with `TransactionTimeoutException`;
 an operation that outlives the timeout keeps running as an abandoned orphan,
 and its eventual failure is logged rather than surfaced to the caller, who
-has long since moved on. A timeout settles the scope immediately, rolling
-back rather than waiting for every participant to exit — including any
-sibling still running, nested or concurrent, even one well within its own
-timeout. From that point on, a `getOrStart`/`onCommit`/`onRollback` call
-made through that sibling's `txCtx` throws `TransactionClosedException`;
-the same call made through the outer `ctx` instead runs non-transactionally
-(see [Nesting](#nesting)) — so a sibling holding `ctx` can still write
-outside the now-rolled-back transaction before it's done. Either way, if
-the sibling's own operation goes on to resolve successfully in spite of
-this, its `run()` rejects with `TransactionScopeFailedException` rather
-than returning as if nothing happened.
+has long since moved on. A timeout settles the scope immediately rather
+than waiting for every participant to exit, so a sibling still running —
+nested or concurrent, even one well within its own timeout — gets
+`TransactionClosedException` from its `txCtx`, and its `run()` rejects with
+`TransactionScopeFailedException` even if its own operation goes on to
+succeed.
 
 The timeout covers the operation, not settlement — a `commit()` or
 `rollback()` call that hangs (a dead connection, a lock wait) is not
 bounded by it and can leave `run()` unresolved indefinitely. There is no
 safe way to abandon an in-flight commit without knowing whether it landed.
 
-#### Multi-datasource commits are not two-phase
+#### Multiple datasources
 
-A factory is registered per datasource, and a single `run()` scope can hold a
-transaction on more than one of them at once. `commitAll()` commits each
-active transaction in turn; if one fails after an earlier one has already
-committed, that earlier commit cannot be undone — this library has no real
-two-phase commit to fall back on. The transactions that haven't committed
-yet are rolled back instead of left dangling, and the failure surfaces as
-`TransactionHeuristicCommitException` rather than an ordinary commit error,
-so callers can specifically detect and handle an inconsistent, mixed
-outcome across datasources. If *nothing* had committed yet, rolling
-everything back is a clean, atomic outcome regardless of how many
-datasources were involved, so the raw underlying error is thrown instead.
-
-A heuristic partial commit still flushes `onRollback` callbacks, never
-`onCommit` — even for the datasource(s) that durably committed. It's the
-conservative choice: from the scope's point of view the unit of work as a
-whole failed, so domain events registered via `onCommit(() => agg.commit())`
-are treated as not-yet-safe-to-publish, even though some of the underlying
-data did persist.
+A single `run()` scope can span transactions on more than one datasource.
+Commits are sequential, not two-phase: if one fails after another has
+already committed, `run()` rejects with `TransactionHeuristicCommitException`
+instead of an ordinary commit error, since that earlier commit can't be
+undone. `onRollback` callbacks run in that case — never `onCommit` — even
+for the datasource(s) that durably committed, so domain events registered
+via `onCommit(() => agg.commit())` are treated as not-yet-safe-to-publish.
 
 ### TransactionFactory
 
