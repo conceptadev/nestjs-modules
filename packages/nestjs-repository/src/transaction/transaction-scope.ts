@@ -122,14 +122,28 @@ export class TransactionScope {
     trx.enter();
 
     let result: T;
+    let timedOut = false;
 
     try {
       result = await this.withTimeout(operation(txCtx), timeout);
     } catch (error) {
+      timedOut = error instanceof TransactionTimeoutException;
       trx.markFailed(error);
       throw error;
     } finally {
-      if (trx.exit() === 0) {
+      // A timeout abandons this participant's operation while it may still
+      // be running — possibly forever, if it's hung on a dead connection or
+      // a stuck lock wait. Waiting for the refcount to reach 0 would leave
+      // the scope, and ctx, doomed but live for as long as that takes.
+      // Settling right away — regardless of depth — releases ctx
+      // immediately: a retry starts a genuinely fresh scope instead of
+      // joining the doomed one, and the still-running orphan's next
+      // getOrStart/onCommit/onRollback throws TransactionClosedException
+      // rather than silently racing an in-flight settlement. Safe because
+      // `settle()` is idempotent and, on this path, trx.hasFailed is
+      // already set — it can only take the rollbackAll() branch, which
+      // never throws, so this can't replace the timeout error below.
+      if (trx.exit() === 0 || timedOut) {
         await this.settle(trx);
       }
     }
@@ -174,6 +188,13 @@ export class TransactionScope {
    * this method can skip removing the overlay.
    */
   private async settle(trx: TransactionManager): Promise<void> {
+    // Idempotent: a timeout can force settlement (see run()) before the
+    // refcount reaches 0, so the participant that eventually does bring it
+    // to 0 must find the scope already settled and do nothing further.
+    if (trx.isClosed) {
+      return;
+    }
+
     trx.close();
 
     let settleError: unknown;
