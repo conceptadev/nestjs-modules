@@ -27,6 +27,7 @@ export class FilterAnalyzer {
     string,
     WhereCondition<PlainLiteralObject>[]
   >();
+  private readonly userFilteredRelationNames: Set<string>;
 
   constructor(
     where: WhereClause | undefined,
@@ -35,6 +36,11 @@ export class FilterAnalyzer {
   ) {
     const federatedNames = new Set(relations.map((r) => r.name));
     this.rootWhere = this.extractRelationConditions(where, federatedNames);
+    // Snapshot before injection: NOT_NULL (INNER JOIN) and distinctFilter
+    // conditions are structural, not caller-specified, so they shouldn't
+    // count as a "filter" for validation that only cares about what the
+    // caller actually asked to filter by.
+    this.userFilteredRelationNames = new Set(this.relationConditions.keys());
 
     if (relations.length > 0) {
       this.injectInnerJoinFilters(relations, sortedRelationNames);
@@ -58,6 +64,15 @@ export class FilterAnalyzer {
   hasFiltersForRelation(relation: FederatedRelation): boolean {
     const conditions = this.relationConditions.get(relation.name);
     return conditions !== undefined && conditions.length > 0;
+  }
+
+  /**
+   * Whether the caller specified a filter condition on this relation,
+   * excluding structural conditions this class injects itself (INNER JOIN
+   * NOT_NULL, distinctFilter).
+   */
+  hasUserFiltersForRelation(relation: FederatedRelation): boolean {
+    return this.userFilteredRelationNames.has(relation.name);
   }
 
   hasRelationFilters(relations: FederatedRelation[]): boolean {

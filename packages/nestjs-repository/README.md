@@ -1071,8 +1071,10 @@ IDs, then fetches only those roots.
 ### distinctFilter
 
 For many-cardinality federated relations that use sorts or filters, provide
-a `distinctFilter` to ensure one relation entity per root (required for
-deterministic ordering):
+a `distinctFilter` to ensure one relation entity per root. Without it,
+sorting is non-deterministic and a filtered total counts matching relation
+rows rather than distinct roots (e.g. two matching posts for one user would
+report a total of 2 instead of 1). Missing it throws `FederationException`:
 
 ```ts
 relations: {
@@ -1095,6 +1097,10 @@ relations: {
 
 - OR conditions across federated relations are not supported (throws
   `FederationException`)
+- Filtering or sorting by the owning side of a federated relation (the
+  side holding the foreign key, e.g. the many side of a `@ManyToOne`) is
+  not supported — only the non-owning side can drive relation-first
+  discovery (throws `FederationException`)
 - Only `findAndCount` is federated; `find`, `findOne`, and `count` use
   standard ORM queries
 

@@ -319,7 +319,13 @@ describe('FederationOrchestrator', () => {
 
   describe('RELATION_FIRST strategy (relation filter)', () => {
     it('should discover root IDs via relation query when filter targets relation', async () => {
-      const postsRelation = mockOneToManyRelation('posts', 'PostEntity');
+      const postsRelation = mockOneToManyRelation('posts', 'PostEntity', {
+        distinctFilter: {
+          field: 'isLatest',
+          operator: WhereOperator.EQ,
+          value: true,
+        },
+      });
       const rootRepo = mockTestRepo<TestRoot>('UserEntity', {
         relations: [postsRelation],
       });
@@ -369,7 +375,13 @@ describe('FederationOrchestrator', () => {
     });
 
     it('should return empty when relation discovery finds no matches', async () => {
-      const postsRelation = mockOneToManyRelation('posts', 'PostEntity');
+      const postsRelation = mockOneToManyRelation('posts', 'PostEntity', {
+        distinctFilter: {
+          field: 'isLatest',
+          operator: WhereOperator.EQ,
+          value: true,
+        },
+      });
       const rootRepo = mockTestRepo<TestRoot>('UserEntity', {
         relations: [postsRelation],
       });
@@ -544,7 +556,13 @@ describe('FederationOrchestrator', () => {
     });
 
     it('should compute accurate total in RELATION_FIRST as min of root and relation totals', async () => {
-      const postsRelation = mockOneToManyRelation('posts', 'PostEntity');
+      const postsRelation = mockOneToManyRelation('posts', 'PostEntity', {
+        distinctFilter: {
+          field: 'isLatest',
+          operator: WhereOperator.EQ,
+          value: true,
+        },
+      });
       const rootRepo = mockTestRepo<TestRoot>('UserEntity', {
         relations: [postsRelation],
       });
@@ -788,7 +806,13 @@ describe('FederationOrchestrator', () => {
 
   describe('combined root and relation filters', () => {
     it('should separate root where from relation-tagged conditions', async () => {
-      const postsRelation = mockOneToManyRelation('posts', 'PostEntity');
+      const postsRelation = mockOneToManyRelation('posts', 'PostEntity', {
+        distinctFilter: {
+          field: 'isLatest',
+          operator: WhereOperator.EQ,
+          value: true,
+        },
+      });
       const rootRepo = mockTestRepo<TestRoot>('UserEntity', {
         relations: [postsRelation],
       });

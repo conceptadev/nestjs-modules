@@ -31,11 +31,36 @@ export function analyzeExecution(
     separateOrder(order, relations);
 
   validateRelationSorts(sortedRelationNames, relations);
+  validateNoOwningRelationConstraints(
+    relations,
+    sortedRelationNames,
+    filterAnalyzer,
+  );
 
   // Driving relation: first with sort, then first with filter
   const effectiveDrivingRelation =
     drivingRelation ??
     relations.find((r) => filterAnalyzer.hasFiltersForRelation(r));
+
+  // A many-cardinality relation chosen to drive discovery purely by a
+  // caller-specified filter (not a sort — that's covered by
+  // validateRelationSorts above) reports its total from matching child
+  // rows, not distinct root ids, unless distinctFilter narrows it to one
+  // row per root. Structural NOT_NULL injection alone doesn't trigger
+  // this — see FilterAnalyzer.hasUserFiltersForRelation.
+  if (
+    !drivingRelation &&
+    effectiveDrivingRelation &&
+    effectiveDrivingRelation.cardinality === 'many' &&
+    !effectiveDrivingRelation.distinctFilter &&
+    filterAnalyzer.hasUserFiltersForRelation(effectiveDrivingRelation)
+  ) {
+    throw new FederationException({
+      message:
+        'Filtering on many-cardinality relation "%s" requires distinctFilter configuration',
+      messageParams: [effectiveDrivingRelation.name],
+    });
+  }
 
   const hasRelationSorts = sortedRelationNames.size > 0;
   const hasRelationFilters = filterAnalyzer.hasRelationFilters(relations);
@@ -107,6 +132,36 @@ function separateOrder(
     sortedRelationNames,
     drivingRelation,
   };
+}
+
+/**
+ * Reject filtering or sorting on an owning relation (root FK \> target PK).
+ *
+ * RELATION_FIRST discovery only chains non-owning relations — an owning
+ * relation's target rows carry no root id to extract, so it can't drive
+ * discovery. Without this check, a filter/sort on an owning-only relation
+ * set silently produces an empty discovery batch and returns `[[], 0]` as
+ * if nothing matched, rather than failing loudly.
+ */
+function validateNoOwningRelationConstraints(
+  relations: FederatedRelation[],
+  sortedRelationNames: Set<string>,
+  filterAnalyzer: FilterAnalyzer,
+): void {
+  for (const relation of relations) {
+    if (!relation.isOwning) continue;
+
+    if (
+      sortedRelationNames.has(relation.name) ||
+      filterAnalyzer.hasFiltersForRelation(relation)
+    ) {
+      throw new FederationException({
+        message:
+          'Filtering or sorting on owning federated relation "%s" is not supported',
+        messageParams: [relation.name],
+      });
+    }
+  }
 }
 
 /**

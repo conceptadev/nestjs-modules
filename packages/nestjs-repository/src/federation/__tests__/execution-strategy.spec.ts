@@ -71,11 +71,17 @@ describe('analyzeExecution', () => {
       value: 'hello',
       relation: 'posts',
     };
-    const filterAnalyzer = new FilterAnalyzer(where, [posts], new Set());
-    const result = analyzeExecution(filterAnalyzer, undefined, [posts]);
+    const filterAnalyzer = new FilterAnalyzer(
+      where,
+      [postsWithDistinct],
+      new Set(),
+    );
+    const result = analyzeExecution(filterAnalyzer, undefined, [
+      postsWithDistinct,
+    ]);
 
     expect(result.strategy).toBe(FederationStrategy.RELATION_FIRST);
-    expect(result.drivingRelation).toBe(posts);
+    expect(result.drivingRelation).toBe(postsWithDistinct);
   });
 
   it('should separate mixed root and relation orders', () => {
