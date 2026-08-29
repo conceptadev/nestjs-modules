@@ -24,14 +24,6 @@ export class TransactionFactoryRegistry {
     return this.factories.get(key);
   }
 
-  getAll(): Map<string, TransactionFactoryInterface> {
-    return new Map(this.factories);
-  }
-
-  has(key: string): boolean {
-    return this.factories.has(key);
-  }
-
   get count(): number {
     return this.factories.size;
   }
