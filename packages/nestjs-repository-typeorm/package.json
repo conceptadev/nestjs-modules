@@ -17,18 +17,19 @@
   "dependencies": {
     "@concepta/nestjs-core": "^8.0.0-alpha.10",
     "@concepta/nestjs-repository": "8.0.0-alpha.10",
-    "@nestjs/common": "^12.0.1",
     "@nestjs/typeorm": "^12.0.1",
     "@tsyche/membrane": "^0.7.0"
   },
   "devDependencies": {
     "@concepta/typeorm-seeding": "^4.0.0",
     "@faker-js/faker": "^8.4.1",
+    "@nestjs/common": "^12.0.1",
     "@nestjs/testing": "^12.0.1",
     "sqlite3": "^5.1.4",
     "vitest-mock-extended": "^4.0.0"
   },
   "peerDependencies": {
+    "@nestjs/common": "^12.0.1",
     "typeorm": "^0.3.0"
   },
   "exports": {

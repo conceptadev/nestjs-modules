@@ -7,7 +7,10 @@
 Single priority order across everything below (Fable review, 2026-08-30), ranked by
 (impact of leaving it undone) vs (effort × blast radius) — not grouped by the old
 Critical/High/Nice-To-Have labels, which were rough guesses and sometimes wrong (see
-#4, promoted out of what used to be "Nice To Have"). Effort tags: S/M/L.
+#2, promoted out of what used to be "Nice To Have"). Effort tags: S/M/L. Completed items
+are removed from this list rather than marked done — see git history for what shipped
+(the `peerDependencies` restructuring for `@nestjs/common`/`core`/`config`/`swagger` and
+`@nestjs/cqrs` across all 13 v8 packages, plus the `.yarnrc.yml` cleanup it unblocked).
 
   1. **[L] Optimistic locking in the base repo adapter** — `@VersionColumn` exists on the
      audit entities (`nestjs-repository-typeorm/src/entities/audit/audit-{postgres,sqlite}.entity.ts:41`)
@@ -15,30 +18,14 @@ Critical/High/Nice-To-Have labels, which were rough guesses and sometimes wrong 
      repository adapter checks it before saving — silent lost-update bug today. Real
      production data-loss class of bug for a published library; effort doesn't demote it.
 
-  2. **[M] Move `@nestjs/common`/`core`/`config`/`swagger` to `peerDependencies`** —
-     exact-pinned `dependencies` in all 13 v8 packages; a consumer on a different NestJS 12
-     patch resolves a second copy, splitting the decorator metadata registry. Already a live
-     risk for the real downstream consumer on the published alphas.
-
-  3. **[S/M] Move `@nestjs/cqrs` to `peerDependencies`** — same defect class as #2, smaller
-     and already unblocked (`@nestjs/cqrs@12.0.0` GA is installed). Do in the same commit
-     series as #2. 9 packages: nestjs-access-control, nestjs-authentication, nestjs-cache,
-     nestjs-federated, nestjs-invitation, nestjs-otp, nestjs-password, nestjs-role,
-     nestjs-user. nestjs-core and nestjs-crud already show the target shape
-     (`devDependencies` + optional `peerDependencies`) — copy it. Then re-test whether the
-     `packageExtensions` block in `.yarnrc.yml` is still needed: cqrs@12 declares
-     `@nestjs/common`/`@nestjs/core` `^12.0.0` as required peers, which the v8 packages now
-     satisfy, so the optional-peer override is likely dead — drop it and confirm with a
-     clean `yarn install`.
-
-  4. **[S] `CrudQueryBuilder.paramNamesMap` has no `join` entry** — confirmed shipping bug,
+  2. **[S] `CrudQueryBuilder.paramNamesMap` has no `join` entry** — confirmed shipping bug,
      not cosmetic: every generated `@CrudList`/`@CrudRead` route emits an unnamed OpenAPI
      parameter (`crud-query.builder.ts:43-54`), currently masked by filtering falsy names
      out of both sides of the assertion in `crud-query-params-api.decorator.spec.ts`.
      Small, TDD-friendly fix — un-filter the spec assertion first (red), then add the
      `join` key.
 
-  5. **[S/M] Audit the `@nestjs/common/utils/shared.utils` imports** — 9 v8 files import
+  3. **[S/M] Audit the `@nestjs/common/utils/shared.utils` imports** — 9 v8 files import
      this undocumented internal path. It resolves today via v12's wildcard `./*` export
      but could disappear in any minor. Migrate each to a public equivalent or a local
      utility. nestjs-crud (8): `interceptors/crud-serialize.interceptor.ts`,
@@ -49,46 +36,46 @@ Critical/High/Nice-To-Have labels, which were rough guesses and sometimes wrong 
      `repository/repository-adapter.ts`. (`nestjs-common/src/filters/exceptions.filter.ts`
      also matches — deprecated package, out of the v8 workspace, ignore.)
 
-  6. **[S/M] System-wide scan for direct settings injection** — smaller than the original
+  4. **[S/M] System-wide scan for direct settings injection** — smaller than the original
      note implied: exactly 7 sites inject the raw `*_SETTINGS_TOKEN` into a handler instead
      of the module definition providing narrowed values — nestjs-otp (5: 4 command/query
      handlers + 1 listener), nestjs-access-control (2: handlers). No options/settings
      should escape the module definitions this way. Architectural hygiene, nothing
      currently broken by it.
 
-  7. **[S] `roleCreateSchema`/`roleUpdateSchema` allow empty `name`/`description` via
+  5. **[S] `roleCreateSchema`/`roleUpdateSchema` allow empty `name`/`description` via
      `.default('')`** — a faithful reproduction of the v7 class defaults, but it means
      empty-named roles validate successfully today. 3 fixtures/specs currently assert on
      `name: ''` and will need updating in the same change if `name` becomes required.
 
-  8. **[M] Per-operation `api.body` options silently dropped** — `ApiBodyOptions`
+  6. **[M] Per-operation `api.body` options silently dropped** — `ApiBodyOptions`
      overrides (description, examples, `required`) are lost for schema-based request
      bodies; needs metadata plumbing to carry the options alongside the per-operation
      schema into `CrudInitApiBody` (root cause documented in the migration plan's
      post-Phase-4 audit). Docs-only degradation, not a runtime bug.
 
-  9. **[M/L — needs design first] Domain services should generate their own event
+  7. **[M/L — needs design first] Domain services should generate their own event
      contexts** — 32 call sites across 7 packages currently pass
      `new EventContextHost({}, {})` (empty). What the real context should be derived
      from isn't decided — user confirmed this needs a design pass (not sure yet whether
      it's the active transaction, request context, or something else) before it's
      actionable. Don't pick this up as a quick win; scope a design session first.
 
-  10. **[S] Add an ESLint `import/extensions` rule** — belt-and-suspenders guard for the
-      `nodenext` `.js`-extension requirement on relative imports (`eslint-plugin-import`
-      is already a configured dependency, no conflicting rule exists). Not essential —
-      `tsc` itself already makes a missing extension a hard `TS2835` compile error. Do
-      opportunistically.
+  8. **[S] Add an ESLint `import/extensions` rule** — belt-and-suspenders guard for the
+     `nodenext` `.js`-extension requirement on relative imports (`eslint-plugin-import`
+     is already a configured dependency, no conflicting rule exists). Not essential —
+     `tsc` itself already makes a missing extension a hard `TS2835` compile error. Do
+     opportunistically.
 
-  11. **[needs research first] Optional exports patterns are different across the
-      modules** — user confirmed no canonical pattern has been chosen yet; needs research
-      into the existing per-module variations before a target shape can even be proposed.
-      Not a quick win.
+  9. **[needs research first] Optional exports patterns are different across the
+     modules** — user confirmed no canonical pattern has been chosen yet; needs research
+     into the existing per-module variations before a target shape can even be proposed.
+     Not a quick win.
 
-  12. **Tutorial Topics** — Support of the minimum interface; Provider Overrides. Docs
-      work; sequence after the API stabilizes, especially after #1 and #2 land.
+  10. **Tutorial Topics** — Support of the minimum interface; Provider Overrides. Docs
+      work; sequence after the API stabilizes, especially after #1 lands.
 
-  13. **When non-v8 packages are migrated to NestJS 12** — not actionable until triggered.
+  11. **When non-v8 packages are migrated to NestJS 12** — not actionable until triggered.
       Full restore checklist per package:
       1. Root `package.json` `workspaces` array — add dir (or revert to glob `packages/*`
          when all are migrated)

@@ -35,11 +35,6 @@
   "dependencies": {
     "@concepta/nestjs-core": "^8.0.0-alpha.10",
     "@concepta/nestjs-repository": "8.0.0-alpha.10",
-    "@nestjs/common": "^12.0.1",
-    "@nestjs/config": "^12.0.0",
-    "@nestjs/core": "^12.0.1",
-    "@nestjs/cqrs": "^12.0.0",
-    "@nestjs/swagger": "^12.0.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -47,6 +42,11 @@
     "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.10",
     "@concepta/typeorm-seeding": "^4.0.0",
     "@faker-js/faker": "^8.4.1",
+    "@nestjs/common": "^12.0.1",
+    "@nestjs/config": "^12.0.0",
+    "@nestjs/core": "^12.0.1",
+    "@nestjs/cqrs": "^12.0.0",
+    "@nestjs/swagger": "^12.0.1",
     "@nestjs/testing": "^12.0.1",
     "@nestjs/typeorm": "^12.0.1",
     "@types/supertest": "^6.0.3",
@@ -57,6 +57,10 @@
     "@concepta/nestjs-crud": "8.0.0-alpha.10",
     "@concepta/typeorm-seeding": "^4.0.0",
     "@faker-js/faker": "^8.4.1",
+    "@nestjs/common": "^12.0.1",
+    "@nestjs/config": "^12.0.0",
+    "@nestjs/core": "^12.0.1",
+    "@nestjs/cqrs": "^12.0.0",
     "typeorm": "^0.3.0"
   },
   "peerDependenciesMeta": {
@@ -67,6 +71,9 @@
       "optional": true
     },
     "@faker-js/faker": {
+      "optional": true
+    },
+    "@nestjs/cqrs": {
       "optional": true
     }
   }
