@@ -35,7 +35,8 @@
     "@nestjs/testing": "^12.0.1",
     "@nestjs/typeorm": "^12.0.1",
     "supertest": "^6.3.4",
-    "typeorm": "^0.3.28"
+    "typeorm": "^0.3.28",
+    "vitest-mock-extended": "^4.0.0"
   },
   "peerDependencies": {
     "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.9",

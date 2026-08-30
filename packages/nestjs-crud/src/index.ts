@@ -65,6 +65,7 @@ export { CrudReturnRestored } from './infrastructure/decorators/routes/crud-retu
 export { CrudSerialize } from './infrastructure/decorators/routes/crud-serialize.decorator.js';
 export { CrudSort } from './infrastructure/decorators/routes/crud-sort.decorator.js';
 export { CrudValidate } from './infrastructure/decorators/routes/crud-validate.decorator.js';
+export { CrudQueryParamsApi } from './infrastructure/decorators/routes/crud-query-params-api.decorator.js';
 // interceptors
 export {
   CrudContextOverlay,
@@ -73,6 +74,7 @@ export {
 
 // param decorators
 export { CrudBody } from './infrastructure/decorators/params/crud-body.decorator.js';
+export { CrudQueryParams } from './infrastructure/decorators/params/crud-query-params.decorator.js';
 
 // api decorators
 export { CrudApiBody } from './infrastructure/decorators/openapi/crud-api-body.decorator.js';

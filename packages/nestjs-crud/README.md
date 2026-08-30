@@ -37,7 +37,7 @@ build modes: fully generated, pre-decorated, and hybrid.
 yarn add @concepta/nestjs-crud
 ```
 
-This package is **ESM-only** and targets **NestJS 12 (alpha)** on
+This package is **ESM-only** and targets **NestJS 12** on
 **Node >= 22.12**. Request and response shapes are defined with **Zod v4**
 schemas (Standard Schema) — `zod` is a direct dependency.
 
@@ -468,6 +468,41 @@ Two rules for hand-written controllers:
   `bodyBatch` resolved through the metadata hierarchy (method → class) — so
   a controller-level default is validated, not just a docs placeholder for
   `@ApiBody` to render.
+
+#### Query-String Filtering Outside the Nine Operations
+
+A hand-written route only gets `@Ctx(CrudCtx)` — and with it `ctx.query`'s
+parsed filter/sort/pagination — when it carries one of the nine
+`@Crud<Operation>` decorators (`@CrudList`, `@CrudRead`, etc.). A custom
+search/aggregate/report endpoint that doesn't fit any of them still needs a
+way to reuse CRUD's validated query-string contract. `@CrudQueryParams()`
+does that independently of `@CrudController`, an entity, or an operation tag
+— it works on any route:
+
+```ts
+import { Controller, Get } from '@nestjs/common';
+import {
+  CrudParsedQueryInterface,
+  CrudQueryParams,
+  CrudQueryParamsApi,
+} from '@concepta/nestjs-crud';
+
+@Controller('photos/search')
+export class PhotoSearchController {
+  @Get()
+  @CrudQueryParamsApi()
+  async search(@CrudQueryParams() query: CrudParsedQueryInterface<PhotoEntity>) {
+    // query.filter, query.sort, query.limit, etc. — parsed and validated
+    // the same way a generated @CrudList route's ctx.query would be.
+  }
+}
+```
+
+`@CrudQueryParamsApi()` documents the same standard filter/sort/pagination
+`@ApiQuery` set generated List/Read routes get. Both decorators are optional
+and independent — use either on its own if you don't need the other. Route
+**path** params aren't covered here; Nest's native `@Param()` already handles
+those with no friction.
 
 ### Hybrid
 
