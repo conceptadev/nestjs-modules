@@ -11,6 +11,7 @@ import { type PlainLiteralObject } from '@nestjs/common';
 import {
   type DeepPartial,
   type HookMethodKeyType,
+  RuntimeException,
 } from '@concepta/nestjs-core';
 
 import { RepositoryQueryException } from '../exceptions/repository-query.exception.js';
@@ -76,7 +77,7 @@ export class RepoPermeatorFactory<
 
     const options: PermeatorOptions = {
       onError: (error: unknown): never => {
-        if (error instanceof RepositoryQueryException) throw error;
+        if (error instanceof RuntimeException) throw error;
         throw new RepositoryQueryException(entityName, {
           originalError: error,
         });

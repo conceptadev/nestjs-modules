@@ -12,10 +12,8 @@ import { ActionEnum, AppContextHost, Operation } from '@concepta/nestjs-core';
 import {
   getDynamicRepositoryToken,
   RepoCtx,
-  TrxCtx,
   RepositoryModule,
   Where,
-  TransactionContextInterface,
 } from '@concepta/nestjs-repository';
 import {
   CommonSqliteEntity,
@@ -51,9 +49,6 @@ const ENTITY_TOKEN = 'test-adapter-entity';
 function ctx(overrides?: Partial<CrudContextInterface<TestEntityFixture>>) {
   const host = new AppContextHost();
   host.defineOverlay(RepoCtx, { entity: ENTITY_TOKEN });
-  host.defineOverlay(TrxCtx, {
-    trx: { onCommit() {}, onRollback() {} },
-  } as unknown as TransactionContextInterface);
   host.defineOverlay(CrudCtx, {
     entity: 'TestEntityFixture',
     params: {},

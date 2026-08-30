@@ -22,6 +22,7 @@ export interface TypeOrmColumnMetadata {
   readonly propertyName: string;
   readonly isPrimary: boolean;
   readonly isDeleteDate: boolean;
+  readonly isVersion: boolean;
 }
 
 /**

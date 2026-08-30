@@ -10,19 +10,15 @@ Critical/High/Nice-To-Have labels, which were rough guesses and sometimes wrong.
 tags: S/M/L. Completed items are removed from this list rather than marked done — see
 git history for what shipped: the `peerDependencies` restructuring for
 `@nestjs/common`/`core`/`config`/`swagger` and `@nestjs/cqrs` across all 13 v8 packages
-(plus the `.yarnrc.yml` cleanup it unblocked), and the `Swagger.createQueryParamsMeta`
+(plus the `.yarnrc.yml` cleanup it unblocked), the `Swagger.createQueryParamsMeta`
 `join`-parameter removal (turned out to be a phantom OpenAPI parameter — `join` isn't a
 real query-string capability at all, relations are configured server-side via
 `@CrudJoin()` — so the fix removed the undocumented-because-broken parameter rather than
-just naming it).
+just naming it), and optimistic locking in `TypeOrmRepository` (`OptimisticLockException`,
+409, on a stale `update`/`replace` — see `nestjs-repository-typeorm/README.md`'s
+"Optimistic Locking" section for the full mechanism).
 
-  1. **[L] Optimistic locking in the base repo adapter** — `@VersionColumn` exists on the
-     audit entities (`nestjs-repository-typeorm/src/entities/audit/audit-{postgres,sqlite}.entity.ts:41`)
-     but neither `typeorm-repository.ts` (plain `repo.save()` on update/replace) nor the
-     repository adapter checks it before saving — silent lost-update bug today. Real
-     production data-loss class of bug for a published library; effort doesn't demote it.
-
-  2. **[S/M] Audit the `@nestjs/common/utils/shared.utils` imports** — 9 v8 files import
+  1. **[S/M] Audit the `@nestjs/common/utils/shared.utils` imports** — 9 v8 files import
      this undocumented internal path. It resolves today via v12's wildcard `./*` export
      but could disappear in any minor. Migrate each to a public equivalent or a local
      utility. nestjs-crud (8): `interceptors/crud-serialize.interceptor.ts`,
@@ -33,12 +29,32 @@ just naming it).
      `repository/repository-adapter.ts`. (`nestjs-common/src/filters/exceptions.filter.ts`
      also matches — deprecated package, out of the v8 workspace, ignore.)
 
-  3. **[S/M] System-wide scan for direct settings injection** — smaller than the original
+  2. **[S/M] System-wide scan for direct settings injection** — smaller than the original
      note implied: exactly 7 sites inject the raw `*_SETTINGS_TOKEN` into a handler instead
      of the module definition providing narrowed values — nestjs-otp (5: 4 command/query
      handlers + 1 listener), nestjs-access-control (2: handlers). No options/settings
      should escape the module definitions this way. Architectural hygiene, nothing
      currently broken by it.
+
+  3. **[M] Audit hook/interceptor error-swallowing boundaries** — user has had prior
+     negative feedback specifically about this. The optimistic-locking work fixed one
+     instance: `RepoPermeatorFactory`'s `onError`
+     (`nestjs-repository/src/hooks/repo-permeator-factory.ts`) used to only pass through
+     `RepositoryQueryException` unchanged, silently swallowing/rewrapping any other thrown
+     exception (including well-formed `RuntimeException` subclasses) into a generic
+     `RepositoryQueryException` — losing status code, error code, and `instanceof`
+     identity. Widened to `instanceof RuntimeException` (verified non-breaking — the
+     existing "throws RepositoryQueryException on error" tests throw plain `Error`s, not
+     `RuntimeException`s). That fix is narrow — there's at least one more instance of the
+     same pattern already in the repo:
+     `CrudContextOverlay.buildContext()`'s catch block
+     (`nestjs-crud/src/infrastructure/interceptors/crud-context.overlay.ts:102-110`)
+     always wraps into `CrudContextException`, preserving `httpStatus` when the original
+     error was a `RuntimeException` but still discarding `errorCode`/`context`/`instanceof`
+     unconditionally. Do a proper grep pass across the hook/interceptor layers for the same
+     "catch error → wrap into a generic exception" shape and establish one consistent
+     policy: if the caught error is already a `RuntimeException` subclass, rethrow it
+     unchanged; only wrap genuinely opaque/unexpected errors.
 
   4. **[S] `roleCreateSchema`/`roleUpdateSchema` allow empty `name`/`description` via
      `.default('')`** — a faithful reproduction of the v7 class defaults, but it means
@@ -70,7 +86,7 @@ just naming it).
      Not a quick win.
 
   9. **Tutorial Topics** — Support of the minimum interface; Provider Overrides. Docs
-     work; sequence after the API stabilizes, especially after #1 lands.
+     work; sequence after the API stabilizes.
 
   10. **When non-v8 packages are migrated to NestJS 12** — not actionable until triggered.
       Full restore checklist per package:

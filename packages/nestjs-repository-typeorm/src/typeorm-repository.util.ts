@@ -16,6 +16,7 @@ import { HookResolverService } from '@concepta/nestjs-core';
 import {
   getDynamicRepositoryToken,
   type RelationActionConfig,
+  TransactionScope,
 } from '@concepta/nestjs-repository';
 
 import { type TypeOrmProviderOptionsInterface } from './repository/typeorm-provider-options.interface.js';
@@ -63,12 +64,14 @@ export function createTypeOrmRepository<E extends PlainLiteralObject>(
   dataSource?: string,
   hookResolver?: HookResolverService,
   relationsConfig?: Record<string, RelationActionConfig>,
+  transactionScope?: TransactionScope,
 ): TypeOrmRepository<E> {
   return new TypeOrmRepository(repo, {
     entityKey,
     transactionKey: resolveTransactionKey(dataSource),
     hookResolver,
     relationsConfig,
+    transactionScope,
   });
 }
 
@@ -78,6 +81,17 @@ export function createTypeOrmRepository<E extends PlainLiteralObject>(
  */
 export const OPTIONAL_HOOK_RESOLVER_INJECT = {
   token: HookResolverService,
+  optional: true,
+};
+
+/**
+ * Injection token for optional TransactionScope.
+ * `RepositoryModule.forRoot()` provides it globally, but repository
+ * providers must still resolve cleanly for hand-wired/test usage that
+ * doesn't import it.
+ */
+export const OPTIONAL_TRANSACTION_SCOPE_INJECT = {
+  token: TransactionScope,
   optional: true,
 };
 
@@ -94,14 +108,23 @@ export function createTypeOrmProvider<E extends PlainLiteralObject>(
   if (factory) {
     return {
       provide: getDynamicRepositoryToken(key),
-      inject: [getDataSourceToken(dsToken), OPTIONAL_HOOK_RESOLVER_INJECT],
-      useFactory: (ds: DataSource, hookResolver?: HookResolverService) => {
+      inject: [
+        getDataSourceToken(dsToken),
+        OPTIONAL_HOOK_RESOLVER_INJECT,
+        OPTIONAL_TRANSACTION_SCOPE_INJECT,
+      ],
+      useFactory: (
+        ds: DataSource,
+        hookResolver?: HookResolverService,
+        transactionScope?: TransactionScope,
+      ) => {
         return createTypeOrmRepository(
           factory(ds),
           key,
           dsName,
           hookResolver,
           relations,
+          transactionScope,
         );
       },
     };
@@ -111,14 +134,20 @@ export function createTypeOrmProvider<E extends PlainLiteralObject>(
       inject: [
         getRepositoryToken(entity, dsToken),
         OPTIONAL_HOOK_RESOLVER_INJECT,
+        OPTIONAL_TRANSACTION_SCOPE_INJECT,
       ],
-      useFactory: (repo: Repository<E>, hookResolver?: HookResolverService) => {
+      useFactory: (
+        repo: Repository<E>,
+        hookResolver?: HookResolverService,
+        transactionScope?: TransactionScope,
+      ) => {
         return createTypeOrmRepository(
           repo,
           key,
           dsName,
           hookResolver,
           relations,
+          transactionScope,
         );
       },
     };

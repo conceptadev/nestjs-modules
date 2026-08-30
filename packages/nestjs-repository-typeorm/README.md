@@ -177,6 +177,36 @@ runs repository hooks, and throws `RepositoryQueryException` on errors.
 All query and mutation methods accept an `options` parameter that includes
 an optional `ctx` (repository context) for transaction and hook support.
 
+### Optimistic Locking
+
+`update`/`replace` automatically enforce optimistic locking whenever the
+target entity carries a version column (any entity extending
+`CommonPostgresEntity`/`CommonSqliteEntity` — see
+[Base Entities](#base-entities)). The check derives entirely from the
+`entity` argument the caller already passes in: its version is compared,
+atomically, against the row's current version at write time, and a stale
+write — one based on an `entity` fetched before someone else already
+updated it — is rejected with `OptimisticLockException` (HTTP 409) instead
+of silently overwriting the concurrent change. No extra API surface, no
+opt-in required; existing `update`/`replace` call sites behave identically
+except that a stale write now throws.
+
+The check runs inside a transaction, opening one scoped to just that call
+if the caller isn't already inside one (e.g. via `@Transactional()`), so a
+third writer can't interleave between the version check and the field
+write — **when `RepositoryModule.forRoot()` is imported**, since it's the
+one that provides `TransactionScope`. If `TypeOrmRepositoryModule` is used
+directly without it (see [Module Registration](#module-registration)) and
+the caller isn't already inside their own active transaction, `update`/
+`replace` on a versioned entity throws immediately rather than silently
+running the guard and the write as two separate, unprotected statements.
+A version value supplied by the caller in `data` is always ignored — only
+the version read from the `entity` argument, and the row's own
+auto-incrementing column, ever determine the real version.
+
+Entities without a version column are unaffected — `update`/`replace`
+behave exactly as before.
+
 ### Transaction Awareness
 
 When a `PlainLiteralObject` context with an active `trx` is provided,
@@ -389,6 +419,7 @@ This gives `OrderEntity` the `id`, `dateCreated`, `dateUpdated`,
 | Exception | Package | Description |
 | --- | --- | --- |
 | `RepositoryQueryException` | `@concepta/nestjs-repository` | Repository query error (wraps original error) |
+| `OptimisticLockException` | `@concepta/nestjs-repository` | An `update`/`replace` targeted a stale version — see [Optimistic Locking](#optimistic-locking) |
 
 ## Entry Points
 

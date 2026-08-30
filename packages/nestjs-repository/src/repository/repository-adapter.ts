@@ -373,6 +373,13 @@ export abstract class RepositoryAdapter<
       .map((col) => col.name);
   }
 
+  /**
+   * Get the optimistic-locking version column name from metadata, if any.
+   */
+  protected getVersionColumn(): (keyof Entity & string) | undefined {
+    return this.metadata.columns.find((col) => col.isVersion)?.name;
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // Federation helpers
   // ═══════════════════════════════════════════════════════════════════════════

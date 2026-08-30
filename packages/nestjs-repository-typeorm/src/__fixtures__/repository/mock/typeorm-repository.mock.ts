@@ -15,7 +15,14 @@ export function mockTypeOrmRepository(): TypeOrmRepository<TestEntity> {
     metadata: {
       name: 'TestEntity',
       targetName: 'TestEntity',
-      columns: [{ propertyName: 'id', isPrimary: true, isDeleteDate: false }],
+      columns: [
+        {
+          propertyName: 'id',
+          isPrimary: true,
+          isDeleteDate: false,
+          isVersion: false,
+        },
+      ],
       relations: [],
     },
     target: TestEntityClass,

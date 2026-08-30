@@ -28,9 +28,19 @@ describe('CrudAdapter', () => {
       name: 'TestEntity',
       type: TestEntityClass as never,
       columns: [
-        { name: 'id', isPrimary: true, isRemoveDate: false },
-        { name: 'name', isPrimary: false, isRemoveDate: false },
-        { name: 'age', isPrimary: false, isRemoveDate: false },
+        { name: 'id', isPrimary: true, isRemoveDate: false, isVersion: false },
+        {
+          name: 'name',
+          isPrimary: false,
+          isRemoveDate: false,
+          isVersion: false,
+        },
+        {
+          name: 'age',
+          isPrimary: false,
+          isRemoveDate: false,
+          isVersion: false,
+        },
       ],
     });
     repo.prepare.mockImplementation((dto) => dto as TestEntity);

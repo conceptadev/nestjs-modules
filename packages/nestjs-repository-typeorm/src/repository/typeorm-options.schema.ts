@@ -47,6 +47,7 @@ export function buildColumns<Entity extends PlainLiteralObject>(
       name: col.propertyName,
       isPrimary: col.isPrimary,
       isRemoveDate: col.isDeleteDate,
+      isVersion: col.isVersion,
     };
   });
 }

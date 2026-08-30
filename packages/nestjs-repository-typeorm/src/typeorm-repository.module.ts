@@ -16,7 +16,12 @@ import {
 /**
  * TypeORM Repository module providing data access with transaction support.
  *
- * Can be used directly or wrapped by RepositoryModule.
+ * Can be used directly or wrapped by RepositoryModule. Direct usage does
+ * NOT provide `TransactionScope` (only `RepositoryModule.forRoot()` does),
+ * so optimistic locking on a versioned entity (see
+ * `TypeOrmRepository`'s "Optimistic Locking" docs) throws immediately on
+ * `update`/`replace` unless the caller is already inside their own active
+ * transaction — it never silently runs unprotected.
  *
  * @example Direct usage
  * ```typescript

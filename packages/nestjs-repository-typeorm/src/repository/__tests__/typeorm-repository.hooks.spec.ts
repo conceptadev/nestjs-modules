@@ -86,8 +86,6 @@ import {
   RepositoryFindOneOptions,
   Where,
   getDynamicRepositoryToken,
-  TrxCtx,
-  TransactionContextInterface,
 } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
 
@@ -379,9 +377,6 @@ function createHookContext(...hookClasses: Type[]) {
   ctx.defineOverlay(HooksCtx, {
     hooks: hookClasses.map((hook) => ({ hook, type: RepoHook.KEY })),
   });
-  ctx.defineOverlay(TrxCtx, {
-    trx: { onCommit() {}, onRollback() {} },
-  } as unknown as TransactionContextInterface);
   return ctx;
 }
 

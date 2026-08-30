@@ -12,4 +12,6 @@ export interface RepositoryColumnMetadataInterface<
   isPrimary: boolean;
   /** Whether this column is the soft-remove date column */
   isRemoveDate: boolean;
+  /** Whether this column is the optimistic-locking version column */
+  isVersion: boolean;
 }

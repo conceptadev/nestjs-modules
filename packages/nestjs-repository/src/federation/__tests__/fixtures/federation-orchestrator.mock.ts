@@ -62,7 +62,14 @@ export function mockTestRepo<T extends PlainLiteralObject = PlainLiteralObject>(
 
   return createMockRepository<T>({
     name: entityName,
-    columns: [{ name: primaryKey, isPrimary: true, isRemoveDate: false }],
+    columns: [
+      {
+        name: primaryKey,
+        isPrimary: true,
+        isRemoveDate: false,
+        isVersion: false,
+      },
+    ],
     relations,
   });
 }

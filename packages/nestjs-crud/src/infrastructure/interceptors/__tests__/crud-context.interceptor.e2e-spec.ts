@@ -112,9 +112,24 @@ describe('#crud', () => {
                 name: 'TestModel',
                 type: TestModel,
                 columns: [
-                  { name: 'id', isPrimary: true, isRemoveDate: false },
-                  { name: 'firstName', isPrimary: false, isRemoveDate: false },
-                  { name: 'lastName', isPrimary: false, isRemoveDate: false },
+                  {
+                    name: 'id',
+                    isPrimary: true,
+                    isRemoveDate: false,
+                    isVersion: false,
+                  },
+                  {
+                    name: 'firstName',
+                    isPrimary: false,
+                    isRemoveDate: false,
+                    isVersion: false,
+                  },
+                  {
+                    name: 'lastName',
+                    isPrimary: false,
+                    isRemoveDate: false,
+                    isVersion: false,
+                  },
                 ],
               },
               find: vi.fn(),

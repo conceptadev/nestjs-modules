@@ -1,9 +1,12 @@
 import { Test, type TestingModule } from '@nestjs/testing';
 import { getDataSourceToken } from '@nestjs/typeorm';
 
+import { RuntimeException } from '@concepta/nestjs-core';
 import {
   getDynamicRepositoryToken,
+  OptimisticLockException,
   RepositoryQueryException,
+  TransactionScope,
   Where,
 } from '@concepta/nestjs-repository';
 import { SeedingSource } from '@concepta/typeorm-seeding';
@@ -15,12 +18,13 @@ import { AppModuleFixture } from '../../__fixtures__/repository/module/app.modul
 import { TypeOrmRepository } from '../typeorm-repository.js';
 
 describe(TypeOrmRepository, () => {
+  let moduleFixture: TestingModule;
   let testRepository: TypeOrmRepository<TestEntityFixture>;
   let seedingSource: SeedingSource;
   let testFactory: TestFactoryFixture;
 
   beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+    moduleFixture = await Test.createTestingModule({
       imports: [AppModuleFixture],
     }).compile();
 
@@ -52,6 +56,23 @@ describe(TypeOrmRepository, () => {
   describe('entityName', () => {
     it('should return the entity name', () => {
       expect(testRepository.metadata.name).toBe('TestEntityFixture');
+    });
+  });
+
+  describe('metadata.columns', () => {
+    it('should mark the version column as isVersion', () => {
+      const versionColumn = testRepository.metadata.columns.find(
+        (c) => c.name === 'version',
+      );
+      expect(versionColumn?.isVersion).toBe(true);
+    });
+
+    it('should not mark other columns as isVersion', () => {
+      const otherColumns = testRepository.metadata.columns.filter(
+        (c) => c.name !== 'version',
+      );
+      expect(otherColumns.length).toBeGreaterThan(0);
+      expect(otherColumns.every((c) => c.isVersion === false)).toBe(true);
     });
   });
 
@@ -450,6 +471,44 @@ describe(TypeOrmRepository, () => {
       expect(updated.firstName).toBe('Bob');
       expect(updated.lastName).toBe('Smith');
     });
+
+    it('should increment version by exactly 1 on a successful update', async () => {
+      const entity = await testFactory.create({
+        firstName: 'Alice',
+        lastName: 'Smith',
+      });
+      const updated = await testRepository.update(entity, { firstName: 'Bob' });
+
+      expect(updated.version).toBe(entity.version + 1);
+    });
+
+    it('should throw OptimisticLockException when the entity was concurrently modified since it was read', async () => {
+      const entity = await testFactory.create({
+        firstName: 'Alice',
+        lastName: 'Smith',
+      });
+      // A concurrent writer updates first, using the same originally-read entity.
+      await testRepository.update(entity, { firstName: 'Concurrent' });
+
+      // Our caller still holds the stale, pre-update `entity` — its version
+      // no longer matches the row.
+      await expect(
+        testRepository.update(entity, { firstName: 'Bob' }),
+      ).rejects.toThrow(OptimisticLockException);
+    });
+
+    it('should not let a client-supplied version in data override the real version', async () => {
+      const entity = await testFactory.create({
+        firstName: 'Alice',
+        lastName: 'Smith',
+      });
+      const updated = await testRepository.update(entity, {
+        firstName: 'Bob',
+        version: 999, // deliberately spoofing version via the DTO
+      });
+
+      expect(updated.version).toBe(entity.version + 1);
+    });
   });
 
   describe('replace', () => {
@@ -465,6 +524,34 @@ describe(TypeOrmRepository, () => {
 
       expect(replaced.firstName).toBe('Bob');
       expect(replaced.lastName).toBe('Jones');
+    });
+
+    it('should increment version by exactly 1 on a successful replace', async () => {
+      const entity = await testFactory.create({
+        firstName: 'Alice',
+        lastName: 'Smith',
+      });
+      const replaced = await testRepository.replace(entity, {
+        firstName: 'Bob',
+        lastName: 'Jones',
+      });
+
+      expect(replaced.version).toBe(entity.version + 1);
+    });
+
+    it('should throw OptimisticLockException when the entity was concurrently modified since it was read', async () => {
+      const entity = await testFactory.create({
+        firstName: 'Alice',
+        lastName: 'Smith',
+      });
+      await testRepository.replace(entity, {
+        firstName: 'Concurrent',
+        lastName: 'Writer',
+      });
+
+      await expect(
+        testRepository.replace(entity, { firstName: 'Bob', lastName: 'Jones' }),
+      ).rejects.toThrow(OptimisticLockException);
     });
   });
 
@@ -584,6 +671,42 @@ describe(TypeOrmRepository, () => {
       entity.firstName = 'Alice';
       const result = testRepository.prepare(entity);
       expect(result).toBe(entity);
+    });
+  });
+
+  describe('optimistic locking without TransactionScope wired', () => {
+    // Mirrors TypeOrmRepositoryModule used directly, without
+    // RepositoryModule.forRoot() — TransactionScope is only provided by
+    // the latter, so a repository constructed this way never receives one.
+    let bareRepository: TypeOrmRepository<TestEntityFixture>;
+    let transactionScope: TransactionScope;
+
+    beforeEach(() => {
+      const dataSource = moduleFixture.get(getDataSourceToken());
+      bareRepository = new TypeOrmRepository(
+        dataSource.getRepository(TestEntityFixture),
+        { entityKey: 'bare-test-entity' },
+      );
+      transactionScope = moduleFixture.get(TransactionScope);
+    });
+
+    it('should throw rather than silently run unprotected when no transaction is active', async () => {
+      const entity = await testFactory.create({ firstName: 'Alice' });
+
+      await expect(
+        bareRepository.update(entity, { firstName: 'Bob' }),
+      ).rejects.toThrow(RuntimeException);
+    });
+
+    it('should still work correctly when the caller already provides an active transaction', async () => {
+      const entity = await testFactory.create({ firstName: 'Alice' });
+
+      const updated = await transactionScope.run({}, async (txCtx) =>
+        bareRepository.update(entity, { firstName: 'Bob' }, { ctx: txCtx }),
+      );
+
+      expect(updated.firstName).toBe('Bob');
+      expect(updated.version).toBe(entity.version + 1);
     });
   });
 });

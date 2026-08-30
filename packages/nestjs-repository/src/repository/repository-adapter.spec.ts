@@ -43,9 +43,14 @@ class TestRepositoryAdapter extends RepositoryAdapter<TestEntity> {
     name: 'TestEntity',
     type: TestEntityClass as Type<TestEntity>,
     columns: [
-      { name: 'id', isPrimary: true, isRemoveDate: false },
-      { name: 'name', isPrimary: false, isRemoveDate: false },
-      { name: 'version', isPrimary: false, isRemoveDate: false },
+      { name: 'id', isPrimary: true, isRemoveDate: false, isVersion: false },
+      { name: 'name', isPrimary: false, isRemoveDate: false, isVersion: false },
+      {
+        name: 'version',
+        isPrimary: false,
+        isRemoveDate: false,
+        isVersion: true,
+      },
     ],
     relations: [
       {
@@ -169,6 +174,10 @@ class TestRepositoryAdapter extends RepositoryAdapter<TestEntity> {
   exposedEntityCtx(ctx?: PlainLiteralObject): PlainLiteralObject | undefined {
     return this.entityCtx(ctx);
   }
+
+  exposedGetVersionColumn(): (keyof TestEntity & string) | undefined {
+    return this.getVersionColumn();
+  }
 }
 
 // ─── Tests ───────────────────────────────────────────────────────────────────
@@ -277,6 +286,12 @@ describe(RepositoryAdapter.name, () => {
         .filter((c) => c.isPrimary)
         .map((c) => c.name);
       expect(primaries).toEqual(['id']);
+    });
+  });
+
+  describe('getVersionColumn', () => {
+    it('should return the version column name', () => {
+      expect(adapter.exposedGetVersionColumn()).toBe('version');
     });
   });
 

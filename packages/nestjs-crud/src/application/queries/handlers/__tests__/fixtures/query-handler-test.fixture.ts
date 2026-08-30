@@ -31,8 +31,13 @@ export function createTestAdapter(): TestCrudAdapter {
     createMockRepository<TestEntity>({
       name: 'TestEntity',
       columns: [
-        { name: 'id', isPrimary: true, isRemoveDate: false },
-        { name: 'name', isPrimary: false, isRemoveDate: false },
+        { name: 'id', isPrimary: true, isRemoveDate: false, isVersion: false },
+        {
+          name: 'name',
+          isPrimary: false,
+          isRemoveDate: false,
+          isVersion: false,
+        },
       ],
     }),
   );

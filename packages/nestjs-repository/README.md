@@ -202,6 +202,7 @@ The public `find`, `findOne`, `count`, `findAndCount`, `create`,
 | --- | --- | --- |
 | `prepare(dto)` | public | Returns `dto` unchanged if it is already an entity instance, otherwise `Object.assign(new entityType(), dto)` |
 | `getPrimaryColumns()` | protected | Get primary key column names from metadata (subclass-author API) |
+| `getVersionColumn()` | protected | Get the optimistic-locking version column name from metadata, if any (subclass-author API) |
 | `toDnf(clause)` | protected | Convert `WhereClause` AST to Disjunctive Normal Form (subclass-author API) |
 | `runHooks(methodKey, payload, ctx)` | protected | Execute repository hooks for a lifecycle event (subclass-author API) |
 | `resolveJoinClauses(join?)` | protected | Resolve structural join properties from relation metadata (subclass-author API) |
@@ -1156,7 +1157,8 @@ also exported for manual provider wiring.
 
 | Exception | Description |
 | --- | --- |
-| `RepositoryQueryException` | Wraps any error thrown by a repository operation or its hook pipeline |
+| `RepositoryQueryException` | Wraps any opaque error thrown by a repository operation or its hook pipeline. `RuntimeException` subclasses (e.g. `OptimisticLockException`) pass through unwrapped |
+| `OptimisticLockException` | An `update`/`replace` targeted a stale version — the row was modified by another request since it was read |
 | `RepositoryDuplicateKeyException` | Duplicate repository keys detected at bootstrap |
 | `TransactionTimeoutException` | Transaction exceeded timeout duration |
 | `TransactionClosedException` | A settled scope was used again — `getOrStart`, `enter`, `onCommit`, or `onRollback` after close |
