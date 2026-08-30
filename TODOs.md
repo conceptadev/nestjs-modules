@@ -6,11 +6,15 @@
 
 Single priority order across everything below (Fable review, 2026-08-30), ranked by
 (impact of leaving it undone) vs (effort × blast radius) — not grouped by the old
-Critical/High/Nice-To-Have labels, which were rough guesses and sometimes wrong (see
-#2, promoted out of what used to be "Nice To Have"). Effort tags: S/M/L. Completed items
-are removed from this list rather than marked done — see git history for what shipped
-(the `peerDependencies` restructuring for `@nestjs/common`/`core`/`config`/`swagger` and
-`@nestjs/cqrs` across all 13 v8 packages, plus the `.yarnrc.yml` cleanup it unblocked).
+Critical/High/Nice-To-Have labels, which were rough guesses and sometimes wrong. Effort
+tags: S/M/L. Completed items are removed from this list rather than marked done — see
+git history for what shipped: the `peerDependencies` restructuring for
+`@nestjs/common`/`core`/`config`/`swagger` and `@nestjs/cqrs` across all 13 v8 packages
+(plus the `.yarnrc.yml` cleanup it unblocked), and the `Swagger.createQueryParamsMeta`
+`join`-parameter removal (turned out to be a phantom OpenAPI parameter — `join` isn't a
+real query-string capability at all, relations are configured server-side via
+`@CrudJoin()` — so the fix removed the undocumented-because-broken parameter rather than
+just naming it).
 
   1. **[L] Optimistic locking in the base repo adapter** — `@VersionColumn` exists on the
      audit entities (`nestjs-repository-typeorm/src/entities/audit/audit-{postgres,sqlite}.entity.ts:41`)
@@ -18,14 +22,7 @@ are removed from this list rather than marked done — see git history for what 
      repository adapter checks it before saving — silent lost-update bug today. Real
      production data-loss class of bug for a published library; effort doesn't demote it.
 
-  2. **[S] `CrudQueryBuilder.paramNamesMap` has no `join` entry** — confirmed shipping bug,
-     not cosmetic: every generated `@CrudList`/`@CrudRead` route emits an unnamed OpenAPI
-     parameter (`crud-query.builder.ts:43-54`), currently masked by filtering falsy names
-     out of both sides of the assertion in `crud-query-params-api.decorator.spec.ts`.
-     Small, TDD-friendly fix — un-filter the spec assertion first (red), then add the
-     `join` key.
-
-  3. **[S/M] Audit the `@nestjs/common/utils/shared.utils` imports** — 9 v8 files import
+  2. **[S/M] Audit the `@nestjs/common/utils/shared.utils` imports** — 9 v8 files import
      this undocumented internal path. It resolves today via v12's wildcard `./*` export
      but could disappear in any minor. Migrate each to a public equivalent or a local
      utility. nestjs-crud (8): `interceptors/crud-serialize.interceptor.ts`,
@@ -36,46 +33,46 @@ are removed from this list rather than marked done — see git history for what 
      `repository/repository-adapter.ts`. (`nestjs-common/src/filters/exceptions.filter.ts`
      also matches — deprecated package, out of the v8 workspace, ignore.)
 
-  4. **[S/M] System-wide scan for direct settings injection** — smaller than the original
+  3. **[S/M] System-wide scan for direct settings injection** — smaller than the original
      note implied: exactly 7 sites inject the raw `*_SETTINGS_TOKEN` into a handler instead
      of the module definition providing narrowed values — nestjs-otp (5: 4 command/query
      handlers + 1 listener), nestjs-access-control (2: handlers). No options/settings
      should escape the module definitions this way. Architectural hygiene, nothing
      currently broken by it.
 
-  5. **[S] `roleCreateSchema`/`roleUpdateSchema` allow empty `name`/`description` via
+  4. **[S] `roleCreateSchema`/`roleUpdateSchema` allow empty `name`/`description` via
      `.default('')`** — a faithful reproduction of the v7 class defaults, but it means
      empty-named roles validate successfully today. 3 fixtures/specs currently assert on
      `name: ''` and will need updating in the same change if `name` becomes required.
 
-  6. **[M] Per-operation `api.body` options silently dropped** — `ApiBodyOptions`
+  5. **[M] Per-operation `api.body` options silently dropped** — `ApiBodyOptions`
      overrides (description, examples, `required`) are lost for schema-based request
      bodies; needs metadata plumbing to carry the options alongside the per-operation
      schema into `CrudInitApiBody` (root cause documented in the migration plan's
      post-Phase-4 audit). Docs-only degradation, not a runtime bug.
 
-  7. **[M/L — needs design first] Domain services should generate their own event
+  6. **[M/L — needs design first] Domain services should generate their own event
      contexts** — 32 call sites across 7 packages currently pass
      `new EventContextHost({}, {})` (empty). What the real context should be derived
      from isn't decided — user confirmed this needs a design pass (not sure yet whether
      it's the active transaction, request context, or something else) before it's
      actionable. Don't pick this up as a quick win; scope a design session first.
 
-  8. **[S] Add an ESLint `import/extensions` rule** — belt-and-suspenders guard for the
+  7. **[S] Add an ESLint `import/extensions` rule** — belt-and-suspenders guard for the
      `nodenext` `.js`-extension requirement on relative imports (`eslint-plugin-import`
      is already a configured dependency, no conflicting rule exists). Not essential —
      `tsc` itself already makes a missing extension a hard `TS2835` compile error. Do
      opportunistically.
 
-  9. **[needs research first] Optional exports patterns are different across the
+  8. **[needs research first] Optional exports patterns are different across the
      modules** — user confirmed no canonical pattern has been chosen yet; needs research
      into the existing per-module variations before a target shape can even be proposed.
      Not a quick win.
 
-  10. **Tutorial Topics** — Support of the minimum interface; Provider Overrides. Docs
-      work; sequence after the API stabilizes, especially after #1 lands.
+  9. **Tutorial Topics** — Support of the minimum interface; Provider Overrides. Docs
+     work; sequence after the API stabilizes, especially after #1 lands.
 
-  11. **When non-v8 packages are migrated to NestJS 12** — not actionable until triggered.
+  10. **When non-v8 packages are migrated to NestJS 12** — not actionable until triggered.
       Full restore checklist per package:
       1. Root `package.json` `workspaces` array — add dir (or revert to glob `packages/*`
          when all are migrated)

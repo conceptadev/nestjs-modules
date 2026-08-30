@@ -18,7 +18,6 @@ export class Swagger {
       search,
       filter,
       or,
-      join,
       sort,
       limit,
       offset,
@@ -76,16 +75,6 @@ export class Swagger {
       explode: true,
     };
 
-    const joinMeta = {
-      name: join,
-      description: `Adds relational resources. ${docsLink}`,
-      required: false,
-      in: 'query',
-      schema: { type: 'array', items: { type: 'string' } },
-      style: 'form',
-      explode: true,
-    };
-
     const limitMeta = {
       name: limit,
       description: `Limit amount of resources. ${docsLink}`,
@@ -134,7 +123,6 @@ export class Swagger {
           filterMeta,
           orMeta,
           sortMeta,
-          joinMeta,
           limitMeta,
           offsetMeta,
           pageMeta,
@@ -142,7 +130,7 @@ export class Swagger {
           includeDeletedMeta,
         ];
       case Operation.Read:
-        return [fieldsMeta, joinMeta, cacheMeta, includeDeletedMeta];
+        return [fieldsMeta, cacheMeta, includeDeletedMeta];
       default:
         return [];
     }

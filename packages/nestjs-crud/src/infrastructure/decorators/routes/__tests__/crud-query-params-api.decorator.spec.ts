@@ -47,18 +47,11 @@ describe('CrudQueryParamsApi', () => {
       )
       .filter((name): name is string => typeof name === 'string');
 
-    // `CrudQueryBuilder`'s paramNamesMap has no `join` entry, so that one
-    // meta object's `name` is `undefined` even for real generated CRUD List
-    // routes going through the same `Swagger.createQueryParamsMeta` — a
-    // pre-existing gap, not something this decorator introduces. Compare
-    // only the names both sides can actually produce.
-    const expectedNames = Swagger.createQueryParamsMeta(Operation.List)
-      .map((meta) => meta.name)
-      .filter((name): name is string => typeof name === 'string');
+    const expectedNames = Swagger.createQueryParamsMeta(Operation.List).map(
+      (meta) => meta.name,
+    );
 
     expect(expectedNames.length).toBeGreaterThan(0);
-    expect(names.filter(Boolean)).toEqual(
-      expect.arrayContaining(expectedNames),
-    );
+    expect(names).toEqual(expect.arrayContaining(expectedNames));
   });
 });
