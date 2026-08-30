@@ -26,15 +26,15 @@
   "dependencies": {
     "@concepta/nestjs-core": "^8.0.0-alpha.9",
     "@concepta/nestjs-repository": "8.0.0-alpha.9",
-    "@nestjs/common": "12.0.0-alpha.6",
-    "@nestjs/config": "12.0.0-next.0",
-    "@nestjs/cqrs": "^11.0.0",
-    "@nestjs/swagger": "12.0.0-alpha.2",
+    "@nestjs/common": "^12.0.1",
+    "@nestjs/config": "^12.0.0",
+    "@nestjs/cqrs": "^12.0.0",
+    "@nestjs/swagger": "^12.0.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.9",
-    "@nestjs/testing": "12.0.0-alpha.6",
+    "@nestjs/testing": "^12.0.1",
     "vitest-mock-extended": "^4.0.0"
   },
   "peerDependencies": {

@@ -5,25 +5,6 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
-"@angular-devkit/core@npm:21.2.1":
-  version: 21.2.1
-  resolution: "@angular-devkit/core@npm:21.2.1"
-  dependencies:
-    ajv: "npm:8.18.0"
-    ajv-formats: "npm:3.0.1"
-    jsonc-parser: "npm:3.3.1"
-    picomatch: "npm:4.0.3"
-    rxjs: "npm:7.8.2"
-    source-map: "npm:0.7.6"
-  peerDependencies:
-    chokidar: ^5.0.0
-  peerDependenciesMeta:
-    chokidar:
-      optional: true
-  checksum: 10c0/efa2b4fc86aeccc1b05e2e65c44a1ccab1e3fb277c93b4ac141b928f2b6fdf0205f2f2e97477bd2423c53b43e22518cf8f609232266845df4957b74ec7bed7db
-  languageName: node
-  linkType: hard
-
 "@angular-devkit/core@npm:22.1.5":
   version: 22.1.5
   resolution: "@angular-devkit/core@npm:22.1.5"
@@ -53,19 +34,6 @@ __metadata:
   bin:
     schematics: bin/schematics.js
   checksum: 10c0/9c96c7ed681d1cd64020cc097d326710348635b5310c18ee9b7198a6aabed28153b3499e09286a9016dd719349c60cadb11025cc305893805cbf80bf5199c136
-  languageName: node
-  linkType: hard
-
-"@angular-devkit/schematics@npm:21.2.1":
-  version: 21.2.1
-  resolution: "@angular-devkit/schematics@npm:21.2.1"
-  dependencies:
-    "@angular-devkit/core": "npm:21.2.1"
-    jsonc-parser: "npm:3.3.1"
-    magic-string: "npm:0.30.21"
-    ora: "npm:9.3.0"
-    rxjs: "npm:7.8.2"
-  checksum: 10c0/8f9c3e830e12f8e84d3b813b8dcb1182d3fac807d2132ef91b2ae6771caf4899fcca46170a28647f5ed56e238d7faf4817c2f7d43e737a5bc159df93569c56aa
   languageName: node
   linkType: hard
 
@@ -416,12 +384,12 @@ __metadata:
   resolution: "@concepta/nestjs-access-control@workspace:packages/nestjs-access-control"
   dependencies:
     "@concepta/nestjs-core": "npm:^8.0.0-alpha.9"
-    "@nestjs/common": "npm:12.0.0-alpha.6"
-    "@nestjs/config": "npm:12.0.0-next.0"
-    "@nestjs/core": "npm:12.0.0-alpha.6"
-    "@nestjs/cqrs": "npm:^11.0.0"
-    "@nestjs/swagger": "npm:12.0.0-alpha.2"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
+    "@nestjs/common": "npm:^12.0.1"
+    "@nestjs/config": "npm:^12.0.0"
+    "@nestjs/core": "npm:^12.0.1"
+    "@nestjs/cqrs": "npm:^12.0.0"
+    "@nestjs/swagger": "npm:^12.0.1"
+    "@nestjs/testing": "npm:^12.0.1"
     "@types/supertest": "npm:^6.0.3"
     accesscontrol: "npm:^2.2.1"
     rxjs: "npm:^7.8.1"
@@ -439,14 +407,14 @@ __metadata:
     "@concepta/nestjs-otp": "npm:8.0.0-alpha.9"
     "@concepta/nestjs-password": "npm:8.0.0-alpha.9"
     "@concepta/nestjs-user": "npm:8.0.0-alpha.9"
-    "@nestjs/common": "npm:12.0.0-alpha.6"
-    "@nestjs/config": "npm:12.0.0-next.0"
-    "@nestjs/core": "npm:12.0.0-alpha.6"
-    "@nestjs/cqrs": "npm:^11.0.0"
-    "@nestjs/jwt": "npm:^11.0.1"
-    "@nestjs/passport": "npm:^11.0.5"
-    "@nestjs/swagger": "npm:12.0.0-alpha.2"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
+    "@nestjs/common": "npm:^12.0.1"
+    "@nestjs/config": "npm:^12.0.0"
+    "@nestjs/core": "npm:^12.0.1"
+    "@nestjs/cqrs": "npm:^12.0.0"
+    "@nestjs/jwt": "npm:^12.0.1"
+    "@nestjs/passport": "npm:^12.0.0"
+    "@nestjs/swagger": "npm:^12.0.1"
+    "@nestjs/testing": "npm:^12.0.1"
     "@standard-schema/spec": "npm:^1.0.0"
     "@types/passport-jwt": "npm:^4.0.1"
     "@types/passport-local": "npm:^1.0.38"
@@ -476,13 +444,13 @@ __metadata:
     "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.9"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
-    "@nestjs/common": "npm:12.0.0-alpha.6"
-    "@nestjs/config": "npm:12.0.0-next.0"
-    "@nestjs/core": "npm:12.0.0-alpha.6"
-    "@nestjs/cqrs": "npm:^11.0.0"
-    "@nestjs/swagger": "npm:12.0.0-alpha.2"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
-    "@nestjs/typeorm": "npm:^11.0.3"
+    "@nestjs/common": "npm:^12.0.1"
+    "@nestjs/config": "npm:^12.0.0"
+    "@nestjs/core": "npm:^12.0.1"
+    "@nestjs/cqrs": "npm:^12.0.0"
+    "@nestjs/swagger": "npm:^12.0.1"
+    "@nestjs/testing": "npm:^12.0.1"
+    "@nestjs/typeorm": "npm:^12.0.1"
     "@types/supertest": "npm:^6.0.3"
     supertest: "npm:^6.3.4"
     vitest-mock-extended: "npm:^4.0.0"
@@ -506,11 +474,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@concepta/nestjs-core@workspace:packages/nestjs-core"
   dependencies:
-    "@nestjs/common": "npm:12.0.0-alpha.6"
-    "@nestjs/core": "npm:12.0.0-alpha.6"
-    "@nestjs/cqrs": "npm:^11.0.3"
-    "@nestjs/swagger": "npm:12.0.0-alpha.2"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
+    "@nestjs/common": "npm:^12.0.1"
+    "@nestjs/core": "npm:^12.0.1"
+    "@nestjs/cqrs": "npm:^12.0.0"
+    "@nestjs/swagger": "npm:^12.0.1"
+    "@nestjs/testing": "npm:^12.0.1"
     "@types/supertest": "npm:^6.0.3"
     ms: "npm:^2.1.3"
     rxjs: "npm:^7.8.1"
@@ -518,7 +486,7 @@ __metadata:
     vitest-mock-extended: "npm:^4.0.0"
     zod: "npm:^4.4.3"
   peerDependencies:
-    "@nestjs/cqrs": ^11.0.0
+    "@nestjs/cqrs": ^12.0.0
     rxjs: ^7.8.1
   peerDependenciesMeta:
     "@nestjs/cqrs":
@@ -536,13 +504,13 @@ __metadata:
     "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.9"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
-    "@nestjs/common": "npm:12.0.0-alpha.6"
-    "@nestjs/config": "npm:12.0.0-next.0"
-    "@nestjs/core": "npm:12.0.0-alpha.6"
-    "@nestjs/cqrs": "npm:^11.0.0"
-    "@nestjs/swagger": "npm:12.0.0-alpha.2"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
-    "@nestjs/typeorm": "npm:^11.0.3"
+    "@nestjs/common": "npm:^12.0.1"
+    "@nestjs/config": "npm:^12.0.0"
+    "@nestjs/core": "npm:^12.0.1"
+    "@nestjs/cqrs": "npm:^12.0.0"
+    "@nestjs/swagger": "npm:^12.0.1"
+    "@nestjs/testing": "npm:^12.0.1"
+    "@nestjs/typeorm": "npm:^12.0.1"
     "@standard-schema/spec": "npm:^1.0.0"
     deepmerge: "npm:^3.2.0"
     qs: "npm:^6.14.0"
@@ -551,7 +519,7 @@ __metadata:
     zod: "npm:^4.4.3"
   peerDependencies:
     "@concepta/nestjs-repository-typeorm": 8.0.0-alpha.9
-    "@nestjs/cqrs": ^11.0.0
+    "@nestjs/cqrs": ^12.0.0
     rxjs: ^7.1.0
   peerDependenciesMeta:
     "@concepta/nestjs-repository-typeorm":
@@ -568,11 +536,11 @@ __metadata:
     "@concepta/nestjs-core": "npm:^8.0.0-alpha.9"
     "@concepta/nestjs-repository": "npm:8.0.0-alpha.9"
     "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.9"
-    "@nestjs/common": "npm:12.0.0-alpha.6"
-    "@nestjs/config": "npm:12.0.0-next.0"
-    "@nestjs/cqrs": "npm:^11.0.0"
-    "@nestjs/swagger": "npm:12.0.0-alpha.2"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
+    "@nestjs/common": "npm:^12.0.1"
+    "@nestjs/config": "npm:^12.0.0"
+    "@nestjs/cqrs": "npm:^12.0.0"
+    "@nestjs/swagger": "npm:^12.0.1"
+    "@nestjs/testing": "npm:^12.0.1"
     vitest-mock-extended: "npm:^4.0.0"
     zod: "npm:^4.4.3"
   peerDependencies:
@@ -601,13 +569,13 @@ __metadata:
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
     "@nestjs-modules/mailer": "npm:^1.11.2"
-    "@nestjs/common": "npm:12.0.0-alpha.6"
-    "@nestjs/config": "npm:12.0.0-next.0"
-    "@nestjs/core": "npm:12.0.0-alpha.6"
-    "@nestjs/cqrs": "npm:^11.0.0"
-    "@nestjs/swagger": "npm:12.0.0-alpha.2"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
-    "@nestjs/typeorm": "npm:^11.0.3"
+    "@nestjs/common": "npm:^12.0.1"
+    "@nestjs/config": "npm:^12.0.0"
+    "@nestjs/core": "npm:^12.0.1"
+    "@nestjs/cqrs": "npm:^12.0.0"
+    "@nestjs/swagger": "npm:^12.0.1"
+    "@nestjs/testing": "npm:^12.0.1"
+    "@nestjs/typeorm": "npm:^12.0.1"
     supertest: "npm:^6.3.4"
     vitest-mock-extended: "npm:^4.0.0"
     zod: "npm:^4.4.3"
@@ -631,12 +599,12 @@ __metadata:
     "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.9"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
-    "@nestjs/common": "npm:12.0.0-alpha.6"
-    "@nestjs/config": "npm:12.0.0-next.0"
-    "@nestjs/core": "npm:12.0.0-alpha.6"
-    "@nestjs/cqrs": "npm:^11.0.0"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
-    "@nestjs/typeorm": "npm:^11.0.3"
+    "@nestjs/common": "npm:^12.0.1"
+    "@nestjs/config": "npm:^12.0.0"
+    "@nestjs/core": "npm:^12.0.1"
+    "@nestjs/cqrs": "npm:^12.0.0"
+    "@nestjs/testing": "npm:^12.0.1"
+    "@nestjs/typeorm": "npm:^12.0.1"
     "@standard-schema/spec": "npm:^1.0.0"
     vitest-mock-extended: "npm:^4.0.0"
     zod: "npm:^4.4.3"
@@ -660,11 +628,11 @@ __metadata:
   resolution: "@concepta/nestjs-password@workspace:packages/nestjs-password"
   dependencies:
     "@concepta/nestjs-core": "npm:^8.0.0-alpha.9"
-    "@nestjs/common": "npm:12.0.0-alpha.6"
-    "@nestjs/config": "npm:12.0.0-next.0"
-    "@nestjs/core": "npm:12.0.0-alpha.6"
-    "@nestjs/cqrs": "npm:^11.0.0"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
+    "@nestjs/common": "npm:^12.0.1"
+    "@nestjs/config": "npm:^12.0.0"
+    "@nestjs/core": "npm:^12.0.1"
+    "@nestjs/cqrs": "npm:^12.0.0"
+    "@nestjs/testing": "npm:^12.0.1"
     "@types/bcrypt": "npm:^5.0.2"
     "@types/zxcvbn": "npm:^4.4.4"
     bcrypt: "npm:^5.1.1"
@@ -681,9 +649,9 @@ __metadata:
     "@concepta/nestjs-repository": "npm:8.0.0-alpha.9"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
-    "@nestjs/common": "npm:12.0.0-alpha.6"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
-    "@nestjs/typeorm": "npm:^11.0.3"
+    "@nestjs/common": "npm:^12.0.1"
+    "@nestjs/testing": "npm:^12.0.1"
+    "@nestjs/typeorm": "npm:^12.0.1"
     "@tsyche/membrane": "npm:^0.7.0"
     sqlite3: "npm:^5.1.4"
     vitest-mock-extended: "npm:^4.0.0"
@@ -697,9 +665,9 @@ __metadata:
   resolution: "@concepta/nestjs-repository@workspace:packages/nestjs-repository"
   dependencies:
     "@concepta/nestjs-core": "npm:^8.0.0-alpha.9"
-    "@nestjs/common": "npm:12.0.0-alpha.6"
-    "@nestjs/core": "npm:12.0.0-alpha.6"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
+    "@nestjs/common": "npm:^12.0.1"
+    "@nestjs/core": "npm:^12.0.1"
+    "@nestjs/testing": "npm:^12.0.1"
     "@tsyche/membrane": "npm:^0.7.0"
     vitest: "npm:^4.1.9"
     vitest-mock-extended: "npm:^4.0.0"
@@ -718,12 +686,12 @@ __metadata:
     "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.9"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
-    "@nestjs/common": "npm:12.0.0-alpha.6"
-    "@nestjs/core": "npm:12.0.0-alpha.6"
-    "@nestjs/cqrs": "npm:^11.0.0"
-    "@nestjs/swagger": "npm:12.0.0-alpha.2"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
-    "@nestjs/typeorm": "npm:^11.0.3"
+    "@nestjs/common": "npm:^12.0.1"
+    "@nestjs/core": "npm:^12.0.1"
+    "@nestjs/cqrs": "npm:^12.0.0"
+    "@nestjs/swagger": "npm:^12.0.1"
+    "@nestjs/testing": "npm:^12.0.1"
+    "@nestjs/typeorm": "npm:^12.0.1"
     supertest: "npm:^6.3.4"
     vitest-mock-extended: "npm:^4.0.0"
     zod: "npm:^4.4.3"
@@ -753,13 +721,13 @@ __metadata:
     "@concepta/nestjs-repository-typeorm": "npm:8.0.0-alpha.9"
     "@concepta/typeorm-seeding": "npm:^4.0.0"
     "@faker-js/faker": "npm:^8.4.1"
-    "@nestjs/common": "npm:12.0.0-alpha.6"
-    "@nestjs/config": "npm:12.0.0-next.0"
-    "@nestjs/core": "npm:12.0.0-alpha.6"
-    "@nestjs/cqrs": "npm:^11.0.0"
-    "@nestjs/swagger": "npm:12.0.0-alpha.2"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
-    "@nestjs/typeorm": "npm:^11.0.3"
+    "@nestjs/common": "npm:^12.0.1"
+    "@nestjs/config": "npm:^12.0.0"
+    "@nestjs/core": "npm:^12.0.1"
+    "@nestjs/cqrs": "npm:^12.0.0"
+    "@nestjs/swagger": "npm:^12.0.1"
+    "@nestjs/testing": "npm:^12.0.1"
+    "@nestjs/typeorm": "npm:^12.0.1"
     accesscontrol: "npm:^2.2.1"
     rxjs: "npm:^7.8.1"
     supertest: "npm:^6.3.4"
@@ -1192,7 +1160,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/checkbox@npm:^5.2.1, @inquirer/checkbox@npm:^5.2.2":
+"@inquirer/checkbox@npm:^5.2.1":
   version: 5.2.2
   resolution: "@inquirer/checkbox@npm:5.2.2"
   dependencies:
@@ -1209,7 +1177,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/confirm@npm:^6.1.1, @inquirer/confirm@npm:^6.2.0":
+"@inquirer/checkbox@npm:^5.2.3":
+  version: 5.2.3
+  resolution: "@inquirer/checkbox@npm:5.2.3"
+  dependencies:
+    "@inquirer/ansi": "npm:^2.0.7"
+    "@inquirer/core": "npm:^12.0.1"
+    "@inquirer/figures": "npm:^2.0.8"
+    "@inquirer/type": "npm:^4.1.0"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/30c67c95d4097b0782516c7bac74aedd330a4ec9ab2638496f6d8b08e0a0e9935103f8f66156fe9c51c18a0aaca77036e0badf964501e30b9de5c52f26196e22
+  languageName: node
+  linkType: hard
+
+"@inquirer/confirm@npm:^6.1.1":
   version: 6.2.0
   resolution: "@inquirer/confirm@npm:6.2.0"
   dependencies:
@@ -1221,6 +1206,21 @@ __metadata:
     "@types/node":
       optional: true
   checksum: 10c0/dd673ce6db0e0e7ae96c5a4520ae24cb2e10f33e2347bdc99805aaaccd310c05a338c87f56d350a290ca60d9c65bbd1db8fd500e432ab6074d39140cafc793d6
+  languageName: node
+  linkType: hard
+
+"@inquirer/confirm@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "@inquirer/confirm@npm:6.3.0"
+  dependencies:
+    "@inquirer/core": "npm:^12.0.1"
+    "@inquirer/type": "npm:^4.1.0"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/4efebb84000ac085aac874f914fbcd130bdf3c12c68632c98a4f2793442d13e9b89f6c07976db7c6903a35495f4dbeda7c3107bb3ac27f9628ea9ff51ef05793
   languageName: node
   linkType: hard
 
@@ -1244,7 +1244,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/editor@npm:^5.2.2, @inquirer/editor@npm:^5.3.0":
+"@inquirer/core@npm:^12.0.1":
+  version: 12.0.1
+  resolution: "@inquirer/core@npm:12.0.1"
+  dependencies:
+    "@inquirer/ansi": "npm:^2.0.7"
+    "@inquirer/figures": "npm:^2.0.8"
+    "@inquirer/type": "npm:^4.1.0"
+    cli-width: "npm:^4.1.0"
+    fast-wrap-ansi: "npm:^0.2.0"
+    mute-stream: "npm:^3.0.0"
+    signal-exit: "npm:^4.1.0"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/425124870ddd7798ceea7edb4fe7ee3c76c79472b1e51249ed5b460e9ba56ec3a794d989ad0a8b3ec7b1bed0dacf847d7e22ead7d08027b44818bf5e6eda21ff
+  languageName: node
+  linkType: hard
+
+"@inquirer/editor@npm:^5.2.2":
   version: 5.3.0
   resolution: "@inquirer/editor@npm:5.3.0"
   dependencies:
@@ -1260,7 +1280,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/expand@npm:^5.1.1, @inquirer/expand@npm:^5.1.2":
+"@inquirer/editor@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "@inquirer/editor@npm:5.3.1"
+  dependencies:
+    "@inquirer/core": "npm:^12.0.1"
+    "@inquirer/external-editor": "npm:^3.0.4"
+    "@inquirer/type": "npm:^4.1.0"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/7261667c9b4fa43bb230755188f3178c1afcac3fcb07ffedd5b4a326db390a79597a0844013d89163c03d0ca98b488872c6152ba020ff55914175cab9284da6c
+  languageName: node
+  linkType: hard
+
+"@inquirer/expand@npm:^5.1.1":
   version: 5.1.2
   resolution: "@inquirer/expand@npm:5.1.2"
   dependencies:
@@ -1272,6 +1308,21 @@ __metadata:
     "@types/node":
       optional: true
   checksum: 10c0/3ca2cd5e42802b0c7daad15c2d44c16ef04fffb6f434e676185afba9868aa561930c5a19032cae0066abfe7820949ed2776ca4d8bf03519009ef2cc7472db900
+  languageName: node
+  linkType: hard
+
+"@inquirer/expand@npm:^5.1.3":
+  version: 5.1.3
+  resolution: "@inquirer/expand@npm:5.1.3"
+  dependencies:
+    "@inquirer/core": "npm:^12.0.1"
+    "@inquirer/type": "npm:^4.1.0"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/da585217cfa6f042c89b5c5d82040a598c8a2b54d3f02f8385d95293ef324d993bb7c306fd4b414496c2763e178f9178d45767ac6d598c687bf76382e748a670
   languageName: node
   linkType: hard
 
@@ -1297,7 +1348,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/input@npm:^5.1.2, @inquirer/input@npm:^5.1.3":
+"@inquirer/input@npm:^5.1.2":
   version: 5.1.3
   resolution: "@inquirer/input@npm:5.1.3"
   dependencies:
@@ -1312,7 +1363,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/number@npm:^4.1.1, @inquirer/number@npm:^4.2.0":
+"@inquirer/input@npm:^5.1.4":
+  version: 5.1.4
+  resolution: "@inquirer/input@npm:5.1.4"
+  dependencies:
+    "@inquirer/core": "npm:^12.0.1"
+    "@inquirer/type": "npm:^4.1.0"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/35856a48c2134e1fcfc0391af65854e75895c19bc098d59b274743655e55cf3d9bc6b682e25515fa8a6acdbc267c8e85ce7ae4791809a3d3f6f72538c1740417
+  languageName: node
+  linkType: hard
+
+"@inquirer/number@npm:^4.1.1":
   version: 4.2.0
   resolution: "@inquirer/number@npm:4.2.0"
   dependencies:
@@ -1327,7 +1393,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/password@npm:^5.1.1, @inquirer/password@npm:^5.1.2":
+"@inquirer/number@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "@inquirer/number@npm:4.2.1"
+  dependencies:
+    "@inquirer/core": "npm:^12.0.1"
+    "@inquirer/type": "npm:^4.1.0"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/06f23b36bf325c32ca218a669106c7e43422fd01e92b26caec6adc7eeeedef965275a029626fb0b9751f32a8d2d18c60347d141ba5a71872560b64332f977068
+  languageName: node
+  linkType: hard
+
+"@inquirer/password@npm:^5.1.1":
   version: 5.1.2
   resolution: "@inquirer/password@npm:5.1.2"
   dependencies:
@@ -1340,6 +1421,22 @@ __metadata:
     "@types/node":
       optional: true
   checksum: 10c0/5b0fc1f7e81e64c9f379c3a303ee317cf237b470dc61e1b54afb29a670bceaf6369d6d0dc4b63471590fc79d82b6e1fdcdb7a4ccfe22117478596f9775302a66
+  languageName: node
+  linkType: hard
+
+"@inquirer/password@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "@inquirer/password@npm:5.2.0"
+  dependencies:
+    "@inquirer/ansi": "npm:^2.0.7"
+    "@inquirer/core": "npm:^12.0.1"
+    "@inquirer/type": "npm:^4.1.0"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/1ead60a0c7a752a69cf7723aef03054fbdc43958b6ce75c1d02eee06596cdc0aef9f363b04dc2590c70d179083058f9715a865f29854b6d0d0e1541794f1f827
   languageName: node
   linkType: hard
 
@@ -1366,30 +1463,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/prompts@npm:8.6.0":
-  version: 8.6.0
-  resolution: "@inquirer/prompts@npm:8.6.0"
+"@inquirer/prompts@npm:8.7.0":
+  version: 8.7.0
+  resolution: "@inquirer/prompts@npm:8.7.0"
   dependencies:
-    "@inquirer/checkbox": "npm:^5.2.2"
-    "@inquirer/confirm": "npm:^6.2.0"
-    "@inquirer/editor": "npm:^5.3.0"
-    "@inquirer/expand": "npm:^5.1.2"
-    "@inquirer/input": "npm:^5.1.3"
-    "@inquirer/number": "npm:^4.2.0"
-    "@inquirer/password": "npm:^5.1.2"
-    "@inquirer/rawlist": "npm:^5.3.2"
-    "@inquirer/search": "npm:^4.3.0"
-    "@inquirer/select": "npm:^5.2.2"
+    "@inquirer/checkbox": "npm:^5.2.3"
+    "@inquirer/confirm": "npm:^6.3.0"
+    "@inquirer/editor": "npm:^5.3.1"
+    "@inquirer/expand": "npm:^5.1.3"
+    "@inquirer/input": "npm:^5.1.4"
+    "@inquirer/number": "npm:^4.2.1"
+    "@inquirer/password": "npm:^5.2.0"
+    "@inquirer/rawlist": "npm:^5.3.3"
+    "@inquirer/search": "npm:^4.3.1"
+    "@inquirer/select": "npm:^5.2.3"
   peerDependencies:
     "@types/node": ">=18"
   peerDependenciesMeta:
     "@types/node":
       optional: true
-  checksum: 10c0/9d175bc185cd7d5df0e0560b58bb40b5339f099b223c1bdf5b3ded8b1117030eb89f0a38056a4971dd59e78c8e88a639a7f61751a8e850af29791e9da5ed2277
+  checksum: 10c0/0d373c37c8c2f405f964976fac381746bc28d8d1879e01b2f58400cc7f6338c77c0a6163ea938399a5e85e7d67d09060a50fbc7b5bcd77d38327299bdbe9ea74
   languageName: node
   linkType: hard
 
-"@inquirer/rawlist@npm:^5.3.1, @inquirer/rawlist@npm:^5.3.2":
+"@inquirer/rawlist@npm:^5.3.1":
   version: 5.3.2
   resolution: "@inquirer/rawlist@npm:5.3.2"
   dependencies:
@@ -1404,7 +1501,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/search@npm:^4.2.1, @inquirer/search@npm:^4.3.0":
+"@inquirer/rawlist@npm:^5.3.3":
+  version: 5.3.3
+  resolution: "@inquirer/rawlist@npm:5.3.3"
+  dependencies:
+    "@inquirer/core": "npm:^12.0.1"
+    "@inquirer/type": "npm:^4.1.0"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/41a5268328b75081fc46b2b7a26fbf0ecc0dbd40f151dc8d87c4b6c6c4e0cac0dffe8e91d1df76b07ee366e3bad72767163fcc9ab6cc2225aeb387cdde27ca36
+  languageName: node
+  linkType: hard
+
+"@inquirer/search@npm:^4.2.1":
   version: 4.3.0
   resolution: "@inquirer/search@npm:4.3.0"
   dependencies:
@@ -1420,7 +1532,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/select@npm:^5.2.1, @inquirer/select@npm:^5.2.2":
+"@inquirer/search@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "@inquirer/search@npm:4.3.1"
+  dependencies:
+    "@inquirer/core": "npm:^12.0.1"
+    "@inquirer/figures": "npm:^2.0.8"
+    "@inquirer/type": "npm:^4.1.0"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/1e0d150c7930c5bfc6baf85fbda629d9020307fb9453fe2b64efc7f808ae62ada4eb79a0e0356b7472d1279eee02f47a89710121af7afc9b63fbbb2f14495c97
+  languageName: node
+  linkType: hard
+
+"@inquirer/select@npm:^5.2.1":
   version: 5.2.2
   resolution: "@inquirer/select@npm:5.2.2"
   dependencies:
@@ -1437,6 +1565,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@inquirer/select@npm:^5.2.3":
+  version: 5.2.3
+  resolution: "@inquirer/select@npm:5.2.3"
+  dependencies:
+    "@inquirer/ansi": "npm:^2.0.7"
+    "@inquirer/core": "npm:^12.0.1"
+    "@inquirer/figures": "npm:^2.0.8"
+    "@inquirer/type": "npm:^4.1.0"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/f714eb669f0d63178d011f0658943c15537a57344152fdefabed74cf38cdbdaae5c98099a49e6d5c03c68255570a6da16818986fdb775017b40cdbce3cbd41b7
+  languageName: node
+  linkType: hard
+
 "@inquirer/type@npm:^4.0.7":
   version: 4.0.7
   resolution: "@inquirer/type@npm:4.0.7"
@@ -1446,6 +1591,18 @@ __metadata:
     "@types/node":
       optional: true
   checksum: 10c0/80678ac1c6e19ce309909e4a54a69adc95697ea3abc2cb92f17b1bc52f4caadbcb4003ae7339fb5a70c0d36d3bde975e1bb4450069662f41c953a0d28695bb70
+  languageName: node
+  linkType: hard
+
+"@inquirer/type@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@inquirer/type@npm:4.1.0"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/70460dfbf0afcaa435799be786454fb8454c96f1392af0fe4e10298ee586c62d079c443a605f8de9d8ece4098c9099eaf328b0e34a1b57826a761beab3d895f3
   languageName: node
   linkType: hard
 
@@ -2410,15 +2567,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/cli@npm:12.0.0-alpha.9":
-  version: 12.0.0-alpha.9
-  resolution: "@nestjs/cli@npm:12.0.0-alpha.9"
+"@nestjs/cli@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "@nestjs/cli@npm:12.0.0"
   dependencies:
     "@angular-devkit/core": "npm:22.1.5"
     "@angular-devkit/schematics": "npm:22.1.5"
     "@angular-devkit/schematics-cli": "npm:22.1.5"
-    "@inquirer/prompts": "npm:8.6.0"
-    "@nestjs/schematics": "npm:next"
+    "@inquirer/prompts": "npm:8.7.0"
+    "@nestjs/schematics": "npm:^12.0.0"
     ansis: "npm:4.3.1"
     chokidar: "npm:5.0.0"
     cli-table3: "npm:0.6.5"
@@ -2456,13 +2613,13 @@ __metadata:
       optional: true
   bin:
     nest: bin/nest.js
-  checksum: 10c0/f61f347116b583986941914770a2accfc7a5bbc1761b4d85e2bd304c3cae15eafc0d7d10c4dc478d6dd720f5e38608112fa4ac8c91414f3abbced5311d379fd5
+  checksum: 10c0/3378ba9186571d1d81bdf582db52fcaef32622694bdeff74e165163be9f9dc153ea2ef5027790fb1fcc3d8b4531c17521ba2d112398b99de94d64b0a1f795d12
   languageName: node
   linkType: hard
 
-"@nestjs/common@npm:12.0.0-alpha.6":
-  version: 12.0.0-alpha.6
-  resolution: "@nestjs/common@npm:12.0.0-alpha.6"
+"@nestjs/common@npm:^12.0.1":
+  version: 12.0.1
+  resolution: "@nestjs/common@npm:12.0.1"
   dependencies:
     "@standard-schema/spec": "npm:1.1.0"
     file-type: "npm:22.0.2"
@@ -2480,27 +2637,28 @@ __metadata:
       optional: true
     class-validator:
       optional: true
-  checksum: 10c0/10b8a4e254a4b715b422e6aa0ca66f88ce4f543020840c069a3cf1b27be2d8a5cc327a4c8d83c6cc18fb9f86ea9a9750bc83551cbaa158e761f5bd5c73eff601
+  checksum: 10c0/5a4c18372b0ebc4974e3e1032fa3e860702a28621e49d04634af7664752f5d71ae5794e97cf0efc9b6a48ba8886a077dc4f340bea4f323d3109ae84060d3952b
   languageName: node
   linkType: hard
 
-"@nestjs/config@npm:12.0.0-next.0":
-  version: 12.0.0-next.0
-  resolution: "@nestjs/config@npm:12.0.0-next.0"
+"@nestjs/config@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "@nestjs/config@npm:12.0.0"
   dependencies:
+    "@standard-schema/spec": "npm:1.1.0"
     dotenv: "npm:17.4.2"
     dotenv-expand: "npm:13.0.0"
-    es-toolkit: "npm:1.39.3"
+    es-toolkit: "npm:1.51.0"
   peerDependencies:
-    "@nestjs/common": ^10.0.0 || ^11.0.0
+    "@nestjs/common": ^11.0.0 || ^12.0.0
     rxjs: ^7.1.0
-  checksum: 10c0/a3a82aaac4ab30f8484fed3ae8d070e096ac7430f0c98167075ef2fa8d56eab197f0d8e68f7c1aa58484e6af874bc5254506791b5408d05ac5adcd9ce12d65e0
+  checksum: 10c0/d6241185a7a43a8eda2daae346f06aca497b53a5a5ffeea5449040a1469c3fa56867a722164b1cb290f747fb4c5c40a6650abe15f28a25098963318c01c37381
   languageName: node
   linkType: hard
 
-"@nestjs/core@npm:12.0.0-alpha.6":
-  version: 12.0.0-alpha.6
-  resolution: "@nestjs/core@npm:12.0.0-alpha.6"
+"@nestjs/core@npm:^12.0.1":
+  version: 12.0.1
+  resolution: "@nestjs/core@npm:12.0.1"
   dependencies:
     fast-safe-stringify: "npm:2.1.1"
     iterare: "npm:1.2.1"
@@ -2508,10 +2666,10 @@ __metadata:
     tslib: "npm:2.8.1"
     uid: "npm:2.0.2"
   peerDependencies:
-    "@nestjs/common": ^11.0.0
-    "@nestjs/microservices": ^11.0.0
-    "@nestjs/platform-express": ^11.0.0
-    "@nestjs/websockets": ^11.0.0
+    "@nestjs/common": ^12.0.0
+    "@nestjs/microservices": ^12.0.0
+    "@nestjs/platform-express": ^12.0.0
+    "@nestjs/websockets": ^12.0.0
     reflect-metadata: ^0.1.12 || ^0.2.0
     rxjs: ^7.1.0
   peerDependenciesMeta:
@@ -2521,39 +2679,39 @@ __metadata:
       optional: true
     "@nestjs/websockets":
       optional: true
-  checksum: 10c0/58996fa6e033a576fd1116adc9ebaada10e1169fb151aa350307d889eefef5880cee9375cfa9de15f8cd8fa0b6d0632d031bf5ab04ba130efa973eb3adcb36e7
+  checksum: 10c0/ccf18a31ce5d1409466f722805cc8bd1f1525ce13ea4a19dfad83a930a35c9de602b9e8e55a6837a46856ee107966763db2bb79b4e2e691bc29f22d2728fd897
   languageName: node
   linkType: hard
 
-"@nestjs/cqrs@npm:^11.0.0, @nestjs/cqrs@npm:^11.0.3":
-  version: 11.0.3
-  resolution: "@nestjs/cqrs@npm:11.0.3"
+"@nestjs/cqrs@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "@nestjs/cqrs@npm:12.0.0"
   peerDependencies:
-    "@nestjs/common": ^10.0.0 || ^11.0.0
-    "@nestjs/core": ^10.0.0 || ^11.0.0
+    "@nestjs/common": ^12.0.0
+    "@nestjs/core": ^12.0.0
     reflect-metadata: ^0.1.13 || ^0.2.0
     rxjs: ^7.2.0
-  checksum: 10c0/f6dd3c9a802a0f2ae8399f629d5833ba51cc905891b5852fde4aeb119d29a88be1e9bce2722091314d7e7e84661f0aeb52970cdacc98b6c2e280c90d882daf8e
+  checksum: 10c0/43856fb3805ad03473fa948b4ffce63d791efbf1d9f6681546953281cb7e7d6c64a5a72022d6546d632e5ff95f9914701f007315194652277cc17f5bc130afe6
   languageName: node
   linkType: hard
 
-"@nestjs/jwt@npm:^11.0.1":
-  version: 11.0.2
-  resolution: "@nestjs/jwt@npm:11.0.2"
+"@nestjs/jwt@npm:^12.0.1":
+  version: 12.0.1
+  resolution: "@nestjs/jwt@npm:12.0.1"
   dependencies:
     "@types/jsonwebtoken": "npm:9.0.10"
     jsonwebtoken: "npm:9.0.3"
   peerDependencies:
-    "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
-  checksum: 10c0/3010253608209728bea0222c98e590765e7cf43b12a23acfae90b0c1f03993383e7a7dc27d2cbc3b2465e7c9fdac4795fadf18f96888740d23d51603f480d9d8
+    "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0 || ^12.0.0
+  checksum: 10c0/35f79f8704ffd276ddc0156910108e8350251f599ea6a59fb1368ef45b1b9153f24306c8a121ddd2f3748fab36660b78d36bb785f5c81dd344075c0abdcc3d22
   languageName: node
   linkType: hard
 
-"@nestjs/mapped-types@npm:2.1.1":
-  version: 2.1.1
-  resolution: "@nestjs/mapped-types@npm:2.1.1"
+"@nestjs/mapped-types@npm:12.0.0":
+  version: 12.0.0
+  resolution: "@nestjs/mapped-types@npm:12.0.0"
   peerDependencies:
-    "@nestjs/common": ^10.0.0 || ^11.0.0
+    "@nestjs/common": ^10.0.0 || ^11.0.0 || ^12.0.0
     class-transformer: ^0.4.0 || ^0.5.0
     class-validator: ^0.13.0 || ^0.14.0 || ^0.15.0
     reflect-metadata: ^0.1.12 || ^0.2.0
@@ -2562,23 +2720,23 @@ __metadata:
       optional: true
     class-validator:
       optional: true
-  checksum: 10c0/985e7232921a7f79338b0247778994afcb1d7e74b14506bddc6996b39ff511f3847b4013b9bbcba66a0b9f370e747e7521e6b22a61dd630cfdead667b5b3c056
+  checksum: 10c0/6b5d61f402b163b985060b3f8484b04ae6c176a46e3a7b49d006a2b19614b0640b18c327faf494288c3c48ae8fbaf1142b83ecd2c02bc29ca9f7c3b7f7cfc9bf
   languageName: node
   linkType: hard
 
-"@nestjs/passport@npm:^11.0.5":
-  version: 11.0.5
-  resolution: "@nestjs/passport@npm:11.0.5"
+"@nestjs/passport@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "@nestjs/passport@npm:12.0.0"
   peerDependencies:
-    "@nestjs/common": ^10.0.0 || ^11.0.0
+    "@nestjs/common": ^11.0.0 || ^12.0.0
     passport: ^0.5.0 || ^0.6.0 || ^0.7.0
-  checksum: 10c0/24175f6791abf02b70c3c0705ce56fefd3981fdece0da7e58325f790ce71aa6932b31a87a2ceaa52b6d9d8edab3a7c049f6081e4b4d59bcdfcaa00383b64ae02
+  checksum: 10c0/9aa3db90c590023f791055948152c42943775abb17e653971599b0bdb2514b6c84c93bf10303b37f4cd9ded27a116f21e8d2ee97d422e66fd6748a32a3dacbf3
   languageName: node
   linkType: hard
 
-"@nestjs/platform-express@npm:12.0.0-alpha.6":
-  version: 12.0.0-alpha.6
-  resolution: "@nestjs/platform-express@npm:12.0.0-alpha.6"
+"@nestjs/platform-express@npm:^12.0.1":
+  version: 12.0.1
+  resolution: "@nestjs/platform-express@npm:12.0.1"
   dependencies:
     cors: "npm:2.8.6"
     express: "npm:5.2.1"
@@ -2586,15 +2744,15 @@ __metadata:
     path-to-regexp: "npm:8.4.2"
     tslib: "npm:2.8.1"
   peerDependencies:
-    "@nestjs/common": ^11.0.0
-    "@nestjs/core": ^11.0.0
-  checksum: 10c0/7b39e1367dc0cec22d80904c985ed7610c439d8da834aec1bdb747a4c8d36e8ff1bc343bd7df0d39b11a254c7fc23300ea2719227f4031f07c53034b966a9540
+    "@nestjs/common": ^12.0.0
+    "@nestjs/core": ^12.0.0
+  checksum: 10c0/84083f9e85bcbd0609be09860c71096c623e3c21186f245e1172644169cad4d3951f9486e932dabbf4ff3ff74d072aaed0f1a7c7f69f9a39ce7f01879d981281
   languageName: node
   linkType: hard
 
-"@nestjs/schematics@npm:12.0.0-alpha.11":
-  version: 12.0.0-alpha.11
-  resolution: "@nestjs/schematics@npm:12.0.0-alpha.11"
+"@nestjs/schematics@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "@nestjs/schematics@npm:12.0.0"
   dependencies:
     "@angular-devkit/core": "npm:22.1.5"
     "@angular-devkit/schematics": "npm:22.1.5"
@@ -2607,44 +2765,25 @@ __metadata:
   peerDependenciesMeta:
     prettier:
       optional: true
-  checksum: 10c0/52dcb06bf93ecc79d40492c9cad08fbc2be7edabf9cccf244a8dcdcd52e88734026bac875ae1c03bd4b87c534a7463f13d222d567dbe9ec7c778fc1fb61fc807
+  checksum: 10c0/df0027bfc7dc450a25a103f8d924e45b936fc7c793664acc91acbbe9aede194310dd95d501742c0c80aae01786ff56e74302e064c00ec06ea83059ec5f515f32
   languageName: node
   linkType: hard
 
-"@nestjs/schematics@npm:next":
-  version: 12.0.0-alpha.9
-  resolution: "@nestjs/schematics@npm:12.0.0-alpha.9"
-  dependencies:
-    "@angular-devkit/core": "npm:21.2.1"
-    "@angular-devkit/schematics": "npm:21.2.1"
-    comment-json: "npm:4.6.2"
-    jsonc-parser: "npm:3.3.1"
-    pluralize: "npm:8.0.0"
-  peerDependencies:
-    prettier: ^3.0.0
-    typescript: ">=6.0.0"
-  peerDependenciesMeta:
-    prettier:
-      optional: true
-  checksum: 10c0/38d79be8a3bd9db185b5b7ab644d0423d1d51ef904a64d4f2270791e88ee7e2fe5056edcc6c4586f373521d2e5201d713c45bf2e7e59eb552d74d6d817b1708e
-  languageName: node
-  linkType: hard
-
-"@nestjs/swagger@npm:12.0.0-alpha.2":
-  version: 12.0.0-alpha.2
-  resolution: "@nestjs/swagger@npm:12.0.0-alpha.2"
+"@nestjs/swagger@npm:^12.0.1":
+  version: 12.0.1
+  resolution: "@nestjs/swagger@npm:12.0.1"
   dependencies:
     "@microsoft/tsdoc": "npm:0.16.0"
-    "@nestjs/mapped-types": "npm:2.1.1"
+    "@nestjs/mapped-types": "npm:12.0.0"
     "@standard-schema/spec": "npm:1.1.0"
-    es-toolkit: "npm:1.46.1"
-    js-yaml: "npm:4.1.1"
+    es-toolkit: "npm:1.51.0"
+    js-yaml: "npm:5.4.1"
     path-to-regexp: "npm:8.4.2"
-    swagger-ui-dist: "npm:5.32.6"
+    swagger-ui-dist: "npm:5.32.14"
   peerDependencies:
-    "@fastify/static": ^8.0.0 || ^9.0.0
-    "@nestjs/common": "*"
-    "@nestjs/core": "*"
+    "@fastify/static": ^8.0.0 || ^9.0.0 || ^10.0.0
+    "@nestjs/common": ^12.0.0
+    "@nestjs/core": ^12.0.0
     class-transformer: "*"
     class-validator: "*"
     reflect-metadata: ^0.1.12 || ^0.2.0
@@ -2655,39 +2794,39 @@ __metadata:
       optional: true
     class-validator:
       optional: true
-  checksum: 10c0/89e857ef067d3a50ddc609da9db76fc1a471e6a5e28742ebc86f143680e4d0e2dd8219ffb8ec0f0d073abf81906553faf47c8bf16c2c1d4f78e52778475d3208
+  checksum: 10c0/f77e53c452af97e91eed574de0aefc11dda5ec2fb0b767a5b23fe92cb586458990e399244c03fc96875fc118112ae7937e6f2d391a55617a907de3ed83cb9482
   languageName: node
   linkType: hard
 
-"@nestjs/testing@npm:12.0.0-alpha.6":
-  version: 12.0.0-alpha.6
-  resolution: "@nestjs/testing@npm:12.0.0-alpha.6"
+"@nestjs/testing@npm:^12.0.1":
+  version: 12.0.1
+  resolution: "@nestjs/testing@npm:12.0.1"
   dependencies:
     tslib: "npm:2.8.1"
   peerDependencies:
-    "@nestjs/common": ^11.0.0
-    "@nestjs/core": ^11.0.0
-    "@nestjs/microservices": ^11.0.0
-    "@nestjs/platform-express": ^11.0.0
+    "@nestjs/common": ^12.0.0
+    "@nestjs/core": ^12.0.0
+    "@nestjs/microservices": ^12.0.0
+    "@nestjs/platform-express": ^12.0.0
   peerDependenciesMeta:
     "@nestjs/microservices":
       optional: true
     "@nestjs/platform-express":
       optional: true
-  checksum: 10c0/e0722507674a670cc1fcd065e6f8466e53510b9efc38b49afeb7e3c964208068518c45cc75c8ecc7194ab7bf60dc9c16d9e07cbfe9af2acad53ee4765c3579fb
+  checksum: 10c0/79efea430bd359b4d98ad20b81d9f2b589a3dbcb680dbe6e105622395ef953574e2ec6d92b4ce02e64ee45b5873efa1f16d94a27b03da72e5051accf16837711
   languageName: node
   linkType: hard
 
-"@nestjs/typeorm@npm:^11.0.3":
-  version: 11.0.3
-  resolution: "@nestjs/typeorm@npm:11.0.3"
+"@nestjs/typeorm@npm:^12.0.1":
+  version: 12.0.1
+  resolution: "@nestjs/typeorm@npm:12.0.1"
   peerDependencies:
-    "@nestjs/common": ^10.0.0 || ^11.0.0
-    "@nestjs/core": ^10.0.0 || ^11.0.0
+    "@nestjs/common": ^10.0.0 || ^11.0.0 || ^12.0.0
+    "@nestjs/core": ^10.0.0 || ^11.0.0 || ^12.0.0
     reflect-metadata: ^0.1.13 || ^0.2.0
     rxjs: ^7.2.0
     typeorm: ^0.3.0 || ^1.0.0-dev
-  checksum: 10c0/afa01e6c8e7761b179971765048b47ea8c5c1fb7ec7abcea00d5cd0fbeaeda3f356640545329639cff52926e3b94817c17865d84437bcc144b02b9a3629ebd58
+  checksum: 10c0/18dfb0847e4fbb9ac6382552ee9e90750c761f325a4fdd8084306865c9b129370a47de93d0f1d40e40ba0feba93987279258683036c8cb385210caad549ff42e
   languageName: node
   linkType: hard
 
@@ -4007,18 +4146,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:8.18.0, ajv@npm:~8.18.0":
-  version: 8.18.0
-  resolution: "ajv@npm:8.18.0"
-  dependencies:
-    fast-deep-equal: "npm:^3.1.3"
-    fast-uri: "npm:^3.0.1"
-    json-schema-traverse: "npm:^1.0.0"
-    require-from-string: "npm:^2.0.2"
-  checksum: 10c0/e7517c426173513a07391be951879932bdf3348feaebd2199f5b901c20f99d60db8cd1591502d4d551dc82f594e82a05c4fe1c70139b15b8937f7afeaed9532f
-  languageName: node
-  linkType: hard
-
 "ajv@npm:8.20.0, ajv@npm:^8.0.0, ajv@npm:^8.11.0, ajv@npm:^8.17.1":
   version: 8.20.0
   resolution: "ajv@npm:8.20.0"
@@ -4040,6 +4167,18 @@ __metadata:
     json-schema-traverse: "npm:^0.4.1"
     uri-js: "npm:^4.2.2"
   checksum: 10c0/67966499dd272ecde1c2e467084411132891523d057487587879d39ac04207f4351b7b2324c83198013967fbfa632c1612adc960114a30770fbe07a0773b32c2
+  languageName: node
+  linkType: hard
+
+"ajv@npm:~8.18.0":
+  version: 8.18.0
+  resolution: "ajv@npm:8.18.0"
+  dependencies:
+    fast-deep-equal: "npm:^3.1.3"
+    fast-uri: "npm:^3.0.1"
+    json-schema-traverse: "npm:^1.0.0"
+    require-from-string: "npm:^2.0.2"
+  checksum: 10c0/e7517c426173513a07391be951879932bdf3348feaebd2199f5b901c20f99d60db8cd1591502d4d551dc82f594e82a05c4fe1c70139b15b8937f7afeaed9532f
   languageName: node
   linkType: hard
 
@@ -5471,16 +5610,6 @@ __metadata:
   version: 12.1.0
   resolution: "commander@npm:12.1.0"
   checksum: 10c0/6e1996680c083b3b897bfc1cfe1c58dfbcd9842fd43e1aaf8a795fbc237f65efcc860a3ef457b318e73f29a4f4a28f6403c3d653d021d960e4632dd45bde54a9
-  languageName: node
-  linkType: hard
-
-"comment-json@npm:4.6.2":
-  version: 4.6.2
-  resolution: "comment-json@npm:4.6.2"
-  dependencies:
-    array-timsort: "npm:^1.0.3"
-    esprima: "npm:^4.0.1"
-  checksum: 10c0/8965ec6c40612aa0cc66d4324ff5819cf205c997f3a84dd82dffe4e6398449e37bbc5765184bc9149e95d15994f0c2740cee82284828fa1c0f733a669022d3dd
   languageName: node
   linkType: hard
 
@@ -6957,27 +7086,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-toolkit@npm:1.39.3":
-  version: 1.39.3
-  resolution: "es-toolkit@npm:1.39.3"
+"es-toolkit@npm:1.51.0":
+  version: 1.51.0
+  resolution: "es-toolkit@npm:1.51.0"
   dependenciesMeta:
     "@trivago/prettier-plugin-sort-imports@4.3.0":
       unplugged: true
     prettier-plugin-sort-re-exports@0.0.1:
       unplugged: true
-  checksum: 10c0/1c85e518b1d129d38fdc5796af353f45e8dcb8a20968ff25da1ae1749fc4a36f914570fcd992df33b47c7bca9f3866d53e4e6fa6411c21eb424e99a3e479c96e
-  languageName: node
-  linkType: hard
-
-"es-toolkit@npm:1.46.1":
-  version: 1.46.1
-  resolution: "es-toolkit@npm:1.46.1"
-  dependenciesMeta:
-    "@trivago/prettier-plugin-sort-imports@4.3.0":
+    vitepress-plugin-sandpack@1.1.4:
       unplugged: true
-    prettier-plugin-sort-re-exports@0.0.1:
-      unplugged: true
-  checksum: 10c0/6a4c3dd0ddc2138fa13d983d93ebaf8061759c52c2cf7c3101315139fc1fca826d253daa67fe85ad880c03cc4c092bd53a83a7cbf58b4721c251479122ba5303
+  checksum: 10c0/ad519228a317a27b11144b582c1168c552143dd58ce4e62be50c185de48c69dea996f6ad6ebc518129ebd58c34da150c1a2134d4a3d7cdc75120c626e57ce7c4
   languageName: node
   linkType: hard
 
@@ -10020,14 +10139,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:4.1.1":
-  version: 4.1.1
-  resolution: "js-yaml@npm:4.1.1"
+"js-yaml@npm:5.4.1":
+  version: 5.4.1
+  resolution: "js-yaml@npm:5.4.1"
   dependencies:
     argparse: "npm:^2.0.1"
   bin:
-    js-yaml: bin/js-yaml.js
-  checksum: 10c0/561c7d7088c40a9bb53cc75becbfb1df6ae49b34b5e6e5a81744b14ae8667ec564ad2527709d1a6e7d5e5fa6d483aa0f373a50ad98d42fde368ec4a190d4fae7
+    js-yaml: bin/js-yaml.mjs
+  checksum: 10c0/efe9dfaf222809694d375ad5ecca825561d2432eb55bc0f628911c0dfa4dbce98a71dcbc3252f630208bbdf5f4e9ac363847e4a7f49845b577ae2548b8fcf147
   languageName: node
   linkType: hard
 
@@ -10861,21 +10980,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:0.30.21, magic-string@npm:^0.30.21":
-  version: 0.30.21
-  resolution: "magic-string@npm:0.30.21"
-  dependencies:
-    "@jridgewell/sourcemap-codec": "npm:^1.5.5"
-  checksum: 10c0/299378e38f9a270069fc62358522ddfb44e94244baa0d6a8980ab2a9b2490a1d03b236b447eee309e17eb3bddfa482c61259d47960eb018a904f0ded52780c4a
-  languageName: node
-  linkType: hard
-
 "magic-string@npm:1.0.0":
   version: 1.0.0
   resolution: "magic-string@npm:1.0.0"
   dependencies:
     "@jridgewell/sourcemap-codec": "npm:^1.5.5"
   checksum: 10c0/89a21967ce44f0a81136eb57d42449731262e300bab5442ccf9c61e054e90dbd1a1895ad5b9cf8a82d8945463b53cdbafc43db6bca0551b635a4942e0866e60f
+  languageName: node
+  linkType: hard
+
+"magic-string@npm:^0.30.21":
+  version: 0.30.21
+  resolution: "magic-string@npm:0.30.21"
+  dependencies:
+    "@jridgewell/sourcemap-codec": "npm:^1.5.5"
+  checksum: 10c0/299378e38f9a270069fc62358522ddfb44e94244baa0d6a8980ab2a9b2490a1d03b236b447eee309e17eb3bddfa482c61259d47960eb018a904f0ded52780c4a
   languageName: node
   linkType: hard
 
@@ -12747,22 +12866,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ora@npm:9.3.0":
-  version: 9.3.0
-  resolution: "ora@npm:9.3.0"
-  dependencies:
-    chalk: "npm:^5.6.2"
-    cli-cursor: "npm:^5.0.0"
-    cli-spinners: "npm:^3.2.0"
-    is-interactive: "npm:^2.0.0"
-    is-unicode-supported: "npm:^2.1.0"
-    log-symbols: "npm:^7.0.1"
-    stdin-discarder: "npm:^0.3.1"
-    string-width: "npm:^8.1.0"
-  checksum: 10c0/1d25c0f43e20389757285f740686958bce78ccb9d03dda190ecc92ae585cbc498fa54cf13933fea2f96cb97a0be82e927cf0fd8c96217459f9c43d915a380531
-  languageName: node
-  linkType: hard
-
 "ora@npm:9.4.1":
   version: 9.4.1
   resolution: "ora@npm:9.4.1"
@@ -13372,13 +13475,6 @@ __metadata:
   version: 1.1.1
   resolution: "picocolors@npm:1.1.1"
   checksum: 10c0/e2e3e8170ab9d7c7421969adaa7e1b31434f789afb9b3f115f6b96d91945041ac3ceb02e9ec6fe6510ff036bcc0bf91e69a1772edc0b707e12b19c0f2d6bcf58
-  languageName: node
-  linkType: hard
-
-"picomatch@npm:4.0.3":
-  version: 4.0.3
-  resolution: "picomatch@npm:4.0.3"
-  checksum: 10c0/9582c951e95eebee5434f59e426cddd228a7b97a0161a375aed4be244bd3fe8e3a31b846808ea14ef2c8a2527a6eeab7b3946a67d5979e81694654f939473ae2
   languageName: node
   linkType: hard
 
@@ -14524,10 +14620,10 @@ __metadata:
     "@concepta/prettier-config": "npm:2.0.0-alpha.4"
     "@darraghor/eslint-plugin-nestjs-typed": "npm:^6.9.3"
     "@eslint/js": "npm:^9.39.1"
-    "@nestjs/cli": "npm:12.0.0-alpha.9"
-    "@nestjs/platform-express": "npm:12.0.0-alpha.6"
-    "@nestjs/schematics": "npm:12.0.0-alpha.11"
-    "@nestjs/testing": "npm:12.0.0-alpha.6"
+    "@nestjs/cli": "npm:^12.0.0"
+    "@nestjs/platform-express": "npm:^12.0.1"
+    "@nestjs/schematics": "npm:^12.0.0"
+    "@nestjs/testing": "npm:^12.0.1"
     "@types/express": "npm:^4.17.21"
     "@types/jest": "npm:^27.5.2"
     "@types/node": "npm:^20.19.25"
@@ -15412,7 +15508,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stdin-discarder@npm:^0.3.1, stdin-discarder@npm:^0.3.2":
+"stdin-discarder@npm:^0.3.2":
   version: 0.3.2
   resolution: "stdin-discarder@npm:0.3.2"
   checksum: 10c0/5dbaba9efbcb447a4450d5ae19794641ea9166abe96dc4b5547a109db1bb6e8bdb17bbe1029e02ca8d9d8ee996b7c7cbcce12b12c18c121871cd4f574292381a
@@ -15772,12 +15868,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-ui-dist@npm:5.32.6":
-  version: 5.32.6
-  resolution: "swagger-ui-dist@npm:5.32.6"
+"swagger-ui-dist@npm:5.32.14":
+  version: 5.32.14
+  resolution: "swagger-ui-dist@npm:5.32.14"
   dependencies:
     "@scarf/scarf": "npm:=1.4.0"
-  checksum: 10c0/c8755531e1475679f633ff1bbeb83a8c12860ee4e4a9165b6c9f8b875b2e6d179aba5b28b6152caae746428c55d5ddf84fc33a806edc974b8e966161aa565422
+  checksum: 10c0/1457c4ee9d4e18411c6561b1df96c547c5f71334afb0f8c32bc787af05746b0d1f301f95d7483f6092e71eb40f96ea96f14444ee7cc9dfebeab7835c44c4bd31
   languageName: node
   linkType: hard
 

@@ -35,10 +35,10 @@
   "dependencies": {
     "@concepta/nestjs-core": "^8.0.0-alpha.9",
     "@concepta/nestjs-repository": "8.0.0-alpha.9",
-    "@nestjs/common": "12.0.0-alpha.6",
-    "@nestjs/core": "12.0.0-alpha.6",
-    "@nestjs/cqrs": "^11.0.0",
-    "@nestjs/swagger": "12.0.0-alpha.2",
+    "@nestjs/common": "^12.0.1",
+    "@nestjs/core": "^12.0.1",
+    "@nestjs/cqrs": "^12.0.0",
+    "@nestjs/swagger": "^12.0.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -46,8 +46,8 @@
     "@concepta/nestjs-repository-typeorm": "8.0.0-alpha.9",
     "@concepta/typeorm-seeding": "^4.0.0",
     "@faker-js/faker": "^8.4.1",
-    "@nestjs/testing": "12.0.0-alpha.6",
-    "@nestjs/typeorm": "^11.0.3",
+    "@nestjs/testing": "^12.0.1",
+    "@nestjs/typeorm": "^12.0.1",
     "supertest": "^6.3.4",
     "vitest-mock-extended": "^4.0.0"
   },

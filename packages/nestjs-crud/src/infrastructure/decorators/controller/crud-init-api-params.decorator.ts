@@ -41,7 +41,12 @@ export const CrudInitApiParams =
         // - ApiParamMetadata has `type` and `enum` at top level (accepts Function like Number/String)
         // - ApiParamSchemaHost has `schema.type` and `schema.enum` (OpenAPI string format)
         const isSchemaHost = options && 'schema' in options;
-        const optType = isSchemaHost ? options.schema?.type : options?.type;
+        const schemaType = isSchemaHost ? options.schema?.type : undefined;
+        const optType = isSchemaHost
+          ? Array.isArray(schemaType)
+            ? schemaType[0]
+            : schemaType
+          : options?.type;
         const optEnum = isSchemaHost ? options.schema?.enum : options?.enum;
 
         // Build final options: spread decorator options first, then set defaults
