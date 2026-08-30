@@ -36,7 +36,7 @@ entries keyed by `key`, `type`, and `assigneeId` with optional TTL expiration.
 yarn add @concepta/nestjs-cache
 ```
 
-This package is **ESM-only** and targets **NestJS 12 (alpha)** on
+This package is **ESM-only** and targets **NestJS 12** on
 **Node >= 22.12**.
 
 ### Dependencies

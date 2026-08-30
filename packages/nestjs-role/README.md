@@ -34,8 +34,7 @@ queries, and domain events.
 yarn add @concepta/nestjs-role
 ```
 
-This package is ESM-only and requires Node.js >= 22.12 and NestJS 12
-(currently alpha).
+This package is ESM-only and requires Node.js >= 22.12 and NestJS 12.
 
 ### Dependencies
 

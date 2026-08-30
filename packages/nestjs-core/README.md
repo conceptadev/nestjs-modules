@@ -42,7 +42,7 @@ yarn add @concepta/nestjs-core
 ### Requirements
 
 ESM-only — no CJS build is published. Requires Node `>= 22.12` and
-NestJS 12 (currently alpha).
+NestJS 12.
 
 ### Subpath exports
 

@@ -31,7 +31,7 @@ yarn add @concepta/nestjs-password
 ```
 
 Requirements: the package is **ESM-only** (no CommonJS build), targets
-**Node.js >= 22.12**, and runs on **NestJS 12** (currently alpha).
+**Node.js >= 22.12**, and runs on **NestJS 12**.
 
 ### Dependencies
 

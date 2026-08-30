@@ -55,8 +55,7 @@ IDs and Client Secrets. Refer to the provider-specific auth modules:
 yarn add @concepta/nestjs-federated
 ```
 
-This package is ESM-only and requires Node.js >= 22.12 and NestJS 12
-(currently alpha).
+This package is ESM-only and requires Node.js >= 22.12 and NestJS 12.
 
 For TypeORM entity base classes (optional):
 

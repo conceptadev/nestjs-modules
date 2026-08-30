@@ -34,7 +34,7 @@ yarn add @concepta/nestjs-repository-typeorm
 ### Requirements
 
 ESM-only — no CJS build is published. Requires Node `>= 22.12` and
-NestJS 12 (currently alpha).
+NestJS 12.
 
 ### Dependencies
 
