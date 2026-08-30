@@ -99,7 +99,7 @@ Requirements:
 
 - **ESM-only** — the package ships native ES modules (no CommonJS build).
 - **Node.js >= 22.12**
-- **NestJS 12** (currently alpha)
+- **NestJS 12**
 
 Zod v4 and `@standard-schema/spec` are regular dependencies — you do not need
 to install them yourself unless you author your own schemas.
@@ -561,6 +561,19 @@ export class PrivateController {
     return user;
   }
 }
+```
+
+**Detecting `@AuthPublic()`:**
+
+`isAuthPublic()` reads the metadata `@AuthPublic()` sets, without depending
+on the underlying metadata key — useful for building tooling (route audits,
+a custom guard) that needs to know whether a route was marked public.
+Checks every target given, not just the first:
+
+```typescript
+import { isAuthPublic } from '@concepta/nestjs-authentication';
+
+isAuthPublic(context.getHandler(), context.getClass()); // boolean
 ```
 
 **Guards exported:**

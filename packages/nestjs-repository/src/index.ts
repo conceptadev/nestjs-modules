@@ -42,6 +42,8 @@ export { RepoCtx } from './context/interfaces/repository-context.interface.js';
 export { TrxCtx } from './transaction/interfaces/transaction-context.interface.js';
 export { TransactionalRunner } from './transaction/transactional-runner.js';
 export {
+  getTransactionalOptions,
+  isTransactional,
   Transactional,
   TransactionalOptions,
 } from './transaction/transactional.decorator.js';

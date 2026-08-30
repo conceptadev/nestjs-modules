@@ -39,7 +39,7 @@ yarn add @concepta/nestjs-repository
 ### Requirements
 
 ESM-only — no CJS build is published. Requires Node `>= 22.12` and
-NestJS 12 (currently alpha).
+NestJS 12.
 
 ### Dependencies
 
@@ -911,6 +911,26 @@ export class CustomInterceptor implements NestInterceptor {
     return this.txRunner.run(context, () => next.handle());
   }
 }
+```
+
+### Detecting `@Transactional()`
+
+`isTransactional()` and `getTransactionalOptions()` read the metadata
+`@Transactional()` sets, without depending on the underlying metadata key —
+useful for building tooling (route audits, OpenAPI generation, custom
+interceptors) that needs to know whether a route is transactional:
+
+```ts
+import { getTransactionalOptions, isTransactional } from '@concepta/nestjs-repository';
+
+// Pass targets in override order (e.g. handler before class), same as
+// Nest's own Reflector.getAllAndOverride — the first target that carries
+// the metadata wins.
+isTransactional(context.getHandler(), context.getClass()); // boolean
+
+// Resolve the options themselves (undefined if none, false if explicitly
+// disabled with `@Transactional(false)`)
+getTransactionalOptions(context.getHandler(), context.getClass());
 ```
 
 ## Repository Hooks

@@ -51,3 +51,36 @@ export function Transactional(options?: TransactionalOptions | false) {
     UseInterceptors(TransactionInterceptor),
   );
 }
+
+/**
+ * Resolve the `@Transactional()` metadata for the given targets, in order —
+ * the first target that carries the metadata wins (e.g. a method overriding
+ * its class). Returns `undefined` when none of the targets are decorated.
+ *
+ * `TRANSACTIONAL_KEY` itself stays unexported so consumers don't couple to
+ * how this metadata is stored — read it through this function instead.
+ */
+export function getTransactionalOptions(
+  ...targets: object[]
+): TransactionalOptions | false | undefined {
+  for (const target of targets) {
+    const value: TransactionalOptions | false | undefined = Reflect.getMetadata(
+      TRANSACTIONAL_KEY,
+      target,
+    );
+    if (value !== undefined) {
+      return value;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Whether any of the given targets is effectively wrapped by
+ * `@Transactional()` — `false` both when no target carries the metadata and
+ * when the metadata explicitly opts out (`@Transactional(false)`).
+ */
+export function isTransactional(...targets: object[]): boolean {
+  const options = getTransactionalOptions(...targets);
+  return options !== undefined && options !== false;
+}
