@@ -10,60 +10,52 @@ Critical/High/Nice-To-Have labels, which were rough guesses and sometimes wrong.
 tags: S/M/L. Completed items are removed from this list rather than marked done — see
 git history for what shipped.
 
-  1. **[M] Misconfiguration errors are indistinguishable from client errors** — e.g.
-     `CrudContextException`'s `CRUD_CONTEXT_ERROR` covers both "you forgot `@CrudEntity`"
-     (a wiring bug, unfixable by the caller) and "your `?filter=` is malformed" (an actual
-     client mistake), with no marker distinguishing them. `RuntimeException.fault` now
-     carries this distinction (`'usage'` vs `'client'`) at the field level, but
-     `CrudContextException` itself is still one class for both — a `ConfigurationException`
-     family would make wiring errors greppable too.
-
-  2. **[S] Eager validation in `CrudModule.forFeature`** — `ConfigurableCrudBuilder` knows
+  1. **[S] Eager validation in `CrudModule.forFeature`** — `ConfigurableCrudBuilder` knows
      entity and operations at build time, so wiring errors like a missing `@CrudEntity`
      could fail at boot instead of on first request. Hand-rolled `@CrudController` classes
      without `forFeature` would still need `DiscoveryService`, which the repo doesn't use
      today — scope this to the `forFeature` path only.
 
-  3. **[S] Notification-send failures are silently discarded** — `VerifyNotificationPort`/
+  2. **[S] Notification-send failures are silently discarded** — `VerifyNotificationPort`/
      `RecoveryNotificationPort` fire-and-forget a command dispatch and swallow any failure
      with no delivery mechanism (no log, no event, no injected callback). The silence itself
      is deliberate — see the comment at `verify.service.ts` about not leaking whether an
      email exists — but a real send failure (provider outage, bad template) currently
      reaches no one. Needs a decision on the delivery channel before it's actionable.
 
-  4. **[S] `roleCreateSchema`/`roleUpdateSchema` allow empty `name`/`description` via
+  3. **[S] `roleCreateSchema`/`roleUpdateSchema` allow empty `name`/`description` via
      `.default('')`** — a faithful reproduction of the v7 class defaults, but it means
      empty-named roles validate successfully today. 3 fixtures/specs currently assert on
      `name: ''` and will need updating in the same change if `name` becomes required.
 
-  5. **[M] Per-operation `api.body` options silently dropped** — `ApiBodyOptions`
+  4. **[M] Per-operation `api.body` options silently dropped** — `ApiBodyOptions`
      overrides (description, examples, `required`) are lost for schema-based request
      bodies; needs metadata plumbing to carry the options alongside the per-operation
      schema into `CrudInitApiBody` (root cause documented in the migration plan's
      post-Phase-4 audit). Docs-only degradation, not a runtime bug.
 
-  6. **[M/L — needs design first] Domain services should generate their own event
+  5. **[M/L — needs design first] Domain services should generate their own event
      contexts** — 32 call sites across 7 packages currently pass
      `new EventContextHost({}, {})` (empty). What the real context should be derived
      from isn't decided — user confirmed this needs a design pass (not sure yet whether
      it's the active transaction, request context, or something else) before it's
      actionable. Don't pick this up as a quick win; scope a design session first.
 
-  7. **[S] Add an ESLint `import/extensions` rule** — belt-and-suspenders guard for the
+  6. **[S] Add an ESLint `import/extensions` rule** — belt-and-suspenders guard for the
      `nodenext` `.js`-extension requirement on relative imports (`eslint-plugin-import`
      is already a configured dependency, no conflicting rule exists). Not essential —
      `tsc` itself already makes a missing extension a hard `TS2835` compile error. Do
      opportunistically.
 
-  8. **[needs research first] Optional exports patterns are different across the
+  7. **[needs research first] Optional exports patterns are different across the
       modules** — user confirmed no canonical pattern has been chosen yet; needs research
       into the existing per-module variations before a target shape can even be proposed.
       Not a quick win.
 
-  9. **Tutorial Topics** — Support of the minimum interface; Provider Overrides. Docs
+  8. **Tutorial Topics** — Support of the minimum interface; Provider Overrides. Docs
       work; sequence after the API stabilizes.
 
-  10. **When non-v8 packages are migrated to NestJS 12** — not actionable until triggered.
+  9. **When non-v8 packages are migrated to NestJS 12** — not actionable until triggered.
       Full restore checklist per package:
       1. Root `package.json` `workspaces` array — add dir (or revert to glob `packages/*`
          when all are migrated)
