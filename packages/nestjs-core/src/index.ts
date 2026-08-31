@@ -87,7 +87,10 @@ export { AuditVersionInterface } from './domain/audit/interfaces/audit-version.i
 export { AuditInterface } from './domain/audit/interfaces/audit.interface.js';
 
 // exception types
-export { RuntimeExceptionContext } from './domain/exceptions/exception.types.js';
+export {
+  RuntimeExceptionContext,
+  RuntimeExceptionFault,
+} from './domain/exceptions/exception.types.js';
 
 // exception interfaces
 export { RuntimeExceptionOptions } from './domain/exceptions/interfaces/runtime-exception-options.interface.js';

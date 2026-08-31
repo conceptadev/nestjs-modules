@@ -14,6 +14,7 @@ export class AuthenticationUserPortRequiredException extends AuthenticationExcep
         'User port is required when requireUserValidation is enabled, but no user port was configured.',
       ...options,
       httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+      fault: 'usage',
     });
     this.errorCode = 'AUTHENTICATION_USER_PORT_REQUIRED_ERROR';
   }

@@ -12,6 +12,7 @@ export class TokenAlreadyRevokedException extends TokenException {
       httpStatus: HttpStatus.CONFLICT,
       message: 'Token %s has already been revoked',
       messageParams: [tokenId],
+      fault: 'client',
     });
     this.errorCode = 'TOKEN_ALREADY_REVOKED_ERROR';
     this.context = { ...this.context, tokenId };

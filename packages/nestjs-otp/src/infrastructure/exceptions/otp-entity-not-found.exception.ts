@@ -14,6 +14,7 @@ export class OtpEntityNotFoundException extends OtpException {
     super({
       message: 'Entity %s was not registered to be used.',
       messageParams: [entityName],
+      fault: 'usage',
       ...options,
     });
 

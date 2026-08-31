@@ -7,6 +7,7 @@ export function assertCacheId(value: unknown): asserts value is ReferenceId {
     throw new CacheException({
       message: 'Expected cache id to be a non-empty string, got %s',
       messageParams: [typeof value],
+      fault: 'client',
     });
   }
 }

@@ -8,6 +8,7 @@ export class CrudQueryValidatorException extends CrudException {
   constructor(options?: RuntimeExceptionOptions) {
     super({
       httpStatus: HttpStatus.BAD_REQUEST,
+      fault: 'client',
       ...options,
     });
     this.errorCode = 'CRUD_QUERY_VALIDATOR_ERROR';

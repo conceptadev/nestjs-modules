@@ -1,6 +1,9 @@
 import { type HttpExceptionBody, type HttpStatus } from '@nestjs/common';
 
-import { type RuntimeExceptionContext } from '../exception.types.js';
+import {
+  type RuntimeExceptionContext,
+  type RuntimeExceptionFault,
+} from '../exception.types.js';
 import { type ExceptionInterface } from '../interfaces/exception.interface.js';
 
 export interface RuntimeExceptionInterface extends ExceptionInterface {
@@ -9,6 +12,13 @@ export interface RuntimeExceptionInterface extends ExceptionInterface {
    * to `HttpStatus.INTERNAL_SERVER_ERROR` — see `getStatus()`).
    */
   httpStatus: HttpStatus;
+
+  /**
+   * Who is at fault for this exception. Always set (defaults to
+   * `'internal'`). Never rendered on the wire — see
+   * {@link RuntimeExceptionFault}.
+   */
+  fault: RuntimeExceptionFault;
 
   /**
    * If set, this message will be used on responses instead of `message`.

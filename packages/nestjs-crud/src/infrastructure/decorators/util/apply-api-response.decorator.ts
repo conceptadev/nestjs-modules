@@ -37,6 +37,7 @@ export function applyApiResponse(
       throw new CrudException({
         message:
           'Cannot decorate with apply api response, target must be a class',
+        fault: 'usage',
       });
     }
 
@@ -158,6 +159,7 @@ function assertBridged(schema: z.ZodType, context: string): void {
   if (!schema['~standard'].jsonSchema?.output) {
     throw new CrudException({
       message: `CRUD ${context} is missing its OpenAPI bridge — wrap it with withOpenApi() before using it as a CRUD response.`,
+      fault: 'usage',
     });
   }
 }

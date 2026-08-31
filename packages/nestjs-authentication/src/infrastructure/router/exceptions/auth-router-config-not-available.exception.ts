@@ -6,6 +6,7 @@ export class AuthRouterConfigNotAvailableException extends AuthRouterException {
   constructor(options?: RuntimeExceptionOptions) {
     super({
       safeMessage: 'Auth Router configuration is not available or invalid.',
+      fault: 'usage',
       ...options,
     });
 

@@ -9,6 +9,7 @@ export function assertInvitationId(
     throw new InvitationException({
       message: 'Expected invitation id to be a non-empty string, got %s',
       messageParams: [typeof value],
+      fault: 'client',
     });
   }
 }

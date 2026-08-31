@@ -14,6 +14,7 @@ export class IdentityCreateUserException extends FederatedException {
     super({
       message: 'Error while trying to create a %s reference',
       messageParams: [entityName],
+      fault: 'internal',
       ...options,
     });
 

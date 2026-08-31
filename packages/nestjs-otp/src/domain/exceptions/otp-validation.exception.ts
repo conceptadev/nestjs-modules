@@ -21,6 +21,7 @@ export class OtpValidationException extends OtpException {
       message: 'Data for the %s schema is not valid',
       messageParams: [schemaName],
       httpStatus: HttpStatus.BAD_REQUEST,
+      fault: 'client',
       ...options,
     });
 

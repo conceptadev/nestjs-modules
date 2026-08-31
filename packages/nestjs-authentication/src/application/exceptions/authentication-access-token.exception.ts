@@ -13,6 +13,7 @@ export class AuthenticationAccessTokenException extends AuthenticationException 
       message: 'Access token was verified, but failed further validation.',
       ...options,
       httpStatus: HttpStatus.UNAUTHORIZED,
+      fault: 'client',
     });
     this.errorCode = 'AUTHENTICATION_ACCESS_TOKEN_ERROR';
   }

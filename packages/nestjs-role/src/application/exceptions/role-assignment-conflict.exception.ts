@@ -22,6 +22,7 @@ export class RoleAssignmentConflictException extends RoleException {
       message: 'Role %s is already assigned to assignee %s.',
       messageParams: [roleId, assigneeId],
       httpStatus: HttpStatus.CONFLICT,
+      fault: 'client',
       ...options,
     });
 

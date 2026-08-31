@@ -123,6 +123,7 @@ export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
       // undocumented request body — fail loudly instead.
       throw new CrudException({
         message: `Request body schema for "${methodName}" is missing its OpenAPI bridge — wrap it with withOpenApi() before using it as a CRUD request body.`,
+        fault: 'usage',
       });
     }
 

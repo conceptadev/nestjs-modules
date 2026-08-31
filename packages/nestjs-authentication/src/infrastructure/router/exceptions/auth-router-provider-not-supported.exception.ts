@@ -9,6 +9,7 @@ export class AuthRouterProviderNotSupportedException extends AuthRouterException
     super({
       safeMessage: `Auth Router provider '${provider}' is not supported.`,
       httpStatus: HttpStatus.BAD_REQUEST,
+      fault: 'client',
       ...options,
     });
 

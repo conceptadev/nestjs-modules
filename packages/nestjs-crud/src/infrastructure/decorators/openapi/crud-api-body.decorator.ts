@@ -21,6 +21,7 @@ export function CrudApiBody(options?: ApiBodyOptions): MethodDecorator {
       if (!descriptor) {
         throw new CrudException({
           message: 'Did not find property descriptor',
+          fault: 'usage',
         });
       }
 
@@ -28,6 +29,7 @@ export function CrudApiBody(options?: ApiBodyOptions): MethodDecorator {
     } else {
       throw new CrudException({
         message: 'Cannot decorate with api body, target must be a class',
+        fault: 'usage',
       });
     }
   };

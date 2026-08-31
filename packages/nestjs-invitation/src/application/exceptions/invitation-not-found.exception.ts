@@ -14,6 +14,7 @@ export class InvitationNotFoundException extends InvitationException {
       httpStatus: HttpStatus.NOT_FOUND,
       message,
       messageParams: [id],
+      fault: 'client',
     });
 
     this.errorCode = 'INVITATION_NOT_FOUND_ERROR';

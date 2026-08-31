@@ -9,6 +9,7 @@ export class PasswordRequiredException extends PasswordException {
     super({
       message: 'Password is required for hashing, but none was provided.',
       httpStatus: HttpStatus.BAD_REQUEST,
+      fault: 'client',
       ...options,
     });
 

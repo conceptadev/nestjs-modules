@@ -18,6 +18,7 @@ export class OptimisticLockException extends RuntimeException {
         'Update conflict on %s: the record was modified by another request',
       messageParams: [entityName],
       httpStatus: HttpStatus.CONFLICT,
+      fault: 'client',
       ...options,
     });
 

@@ -6,6 +6,7 @@ export class HookNotDecoratedException extends RuntimeException {
     super({
       message: `Hook class "%s" is registered via @UseHooks() but is missing the class-level @Hook() (or subsystem-specific, e.g. @RepoHook()) decorator, so its methods will never run.`,
       messageParams: [hookName],
+      fault: 'usage',
       ...options,
     });
 

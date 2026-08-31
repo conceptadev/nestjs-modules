@@ -58,7 +58,10 @@ export class LocalStrategy extends PassportStrategyFactory<Strategy>(
     const { loginSchema, usernameField, passwordField } = this.policy;
 
     if (!loginSchema) {
-      throw new LocalException({ message: 'Login schema is not configured.' });
+      throw new LocalException({
+        message: 'Login schema is not configured.',
+        fault: 'usage',
+      });
     }
 
     const result = await loginSchema['~standard'].validate({

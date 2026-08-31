@@ -10,6 +10,7 @@ export class AuthRouterAuthenticationFailedException extends AuthRouterException
   ) {
     super({
       safeMessage: `Auth Router authentication failed for provider '${provider}': ${errorMessage}`,
+      fault: 'client',
       ...options,
     });
 

@@ -14,6 +14,7 @@ export class OtpTypeNotDefinedException extends OtpException {
     super({
       message: 'Type %s was not defined to be used. please check config.',
       messageParams: [type],
+      fault: 'usage',
       ...options,
     });
 

@@ -11,6 +11,7 @@ export class InvitationNotAcceptedException extends InvitationException {
   constructor(options?: RuntimeExceptionOptions) {
     super({
       httpStatus: HttpStatus.BAD_REQUEST,
+      fault: 'internal',
       ...options,
     });
     this.errorCode = 'INVITATION_NOT_ACCEPTED_ERROR';

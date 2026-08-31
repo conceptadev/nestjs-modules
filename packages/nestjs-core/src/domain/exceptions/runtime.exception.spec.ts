@@ -15,6 +15,7 @@ describe(RuntimeException.name, () => {
     expect(exception.httpStatus).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(exception.getStatus()).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(exception.name).toEqual('RuntimeException');
+    expect(exception.fault).toEqual('internal');
   });
 
   it('should accept only message param', () => {
@@ -66,6 +67,46 @@ describe(RuntimeException.name, () => {
 
     expect(exception.cause).toBeInstanceOf(Error);
     expect(exception.context.originalError).toBe(exception.cause);
+  });
+
+  describe('fault', () => {
+    it('defaults to internal', () => {
+      const exception = new RuntimeException();
+      expect(exception.fault).toEqual('internal');
+    });
+
+    it('accepts an explicit fault via options', () => {
+      const exception = new RuntimeException({ fault: 'client' });
+      expect(exception.fault).toEqual('client');
+    });
+
+    it('lets a subclass set its own default fault, independent of httpStatus', () => {
+      class ConfigException extends RuntimeException {
+        constructor() {
+          super({ httpStatus: HttpStatus.BAD_REQUEST, fault: 'usage' });
+        }
+      }
+
+      const exception = new ConfigException();
+      expect(exception.fault).toEqual('usage');
+      expect(exception.httpStatus).toEqual(HttpStatus.BAD_REQUEST);
+    });
+
+    it('lets a caller override a subclass default fault, same as httpStatus', () => {
+      class ClientException extends RuntimeException {
+        constructor(options?: RuntimeExceptionOptions) {
+          super({ fault: 'client', ...options });
+        }
+      }
+
+      const exception = new ClientException({ fault: 'internal' });
+      expect(exception.fault).toEqual('internal');
+    });
+
+    it('is never rendered on the wire', () => {
+      const exception = new RuntimeException({ fault: 'client' });
+      expect(exception.getResponse()).not.toHaveProperty('fault');
+    });
   });
 
   it('should allow setting error code', () => {

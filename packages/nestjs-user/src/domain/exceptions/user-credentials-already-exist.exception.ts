@@ -8,6 +8,7 @@ export class UserCredentialsAlreadyExistException extends UserException {
       message: options?.message ?? 'User credentials already exist',
       httpStatus: HttpStatus.CONFLICT,
       originalError: options?.originalError,
+      fault: 'client',
     });
     this.errorCode = 'USER_CREDENTIALS_ALREADY_EXIST';
   }

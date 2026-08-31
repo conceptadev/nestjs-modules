@@ -12,6 +12,7 @@ export class JwtVerifyException extends JwtException {
     super({
       safeMessage: 'Error on JWT verification',
       httpStatus: HttpStatus.UNAUTHORIZED,
+      fault: 'client',
       ...options,
     });
     this.errorCode = 'JWT_VERIFY_ERROR';

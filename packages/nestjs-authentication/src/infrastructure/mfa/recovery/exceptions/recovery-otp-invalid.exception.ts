@@ -9,6 +9,7 @@ export class RecoveryOtpInvalidException extends RecoveryException {
     super({
       message: `Invalid recovery code provided`,
       httpStatus: HttpStatus.BAD_REQUEST,
+      fault: 'client',
       ...options,
     });
 

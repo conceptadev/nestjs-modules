@@ -8,6 +8,7 @@ export class UserPasswordCurrentInvalidException extends UserException {
       message: options?.message ?? 'Current password is not valid',
       httpStatus: HttpStatus.BAD_REQUEST,
       originalError: options?.originalError,
+      fault: 'client',
     });
     this.errorCode = 'USER_PASSWORD_CURRENT_INVALID';
   }

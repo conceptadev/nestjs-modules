@@ -12,6 +12,7 @@ export class RoleEntityNotFoundException extends RoleException {
     super({
       message: 'Entity %s was not registered to be used.',
       messageParams: [entityName],
+      fault: 'usage',
       ...options,
     });
 

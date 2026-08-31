@@ -9,6 +9,7 @@ export class CrudContextException extends CrudException {
   constructor(options?: RuntimeExceptionOptions) {
     super({
       safeMessage: 'Error on crud context processing',
+      fault: 'internal',
       ...options,
     });
     this.errorCode = 'CRUD_CONTEXT_ERROR';

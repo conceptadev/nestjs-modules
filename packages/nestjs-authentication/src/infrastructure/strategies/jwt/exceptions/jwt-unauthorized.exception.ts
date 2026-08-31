@@ -10,6 +10,7 @@ export class JwtUnauthorizedException extends JwtAuthenticationException {
       safeMessage: 'Unable to authenticate user with provided JWT token.',
       ...options,
       httpStatus: HttpStatus.UNAUTHORIZED,
+      fault: 'client',
     });
 
     this.errorCode = 'AUTH_JWT_UNAUTHORIZED_ERROR';

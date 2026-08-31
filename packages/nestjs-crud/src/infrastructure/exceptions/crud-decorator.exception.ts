@@ -4,7 +4,7 @@ import { CrudException } from './crud.exception.js';
 
 export class CrudDecoratorException extends CrudException {
   constructor(options?: RuntimeExceptionOptions) {
-    super(options);
+    super({ fault: 'usage', ...options });
     this.errorCode = 'CRUD_DECORATOR_ERROR';
   }
 }

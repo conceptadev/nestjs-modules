@@ -12,6 +12,7 @@ export class InvitationUserUndefinedException extends InvitationException {
   constructor(options?: RuntimeExceptionOptions) {
     super({
       message: InvitationUserUndefinedException.errorMessage,
+      fault: 'usage',
       ...options,
     });
     this.errorCode = 'INVITATION_USER_UNDEFINED_ERROR';

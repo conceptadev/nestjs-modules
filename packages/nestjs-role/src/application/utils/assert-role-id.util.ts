@@ -7,6 +7,7 @@ export function assertRoleId(value: unknown): asserts value is ReferenceId {
     throw new RoleException({
       message: 'Expected role id to be a non-empty string, got %s',
       messageParams: [typeof value],
+      fault: 'client',
     });
   }
 }

@@ -10,6 +10,7 @@ export class LocalInvalidLoginDataException extends LocalException {
       message: 'Data validation error occurred before user validation.',
       safeMessage: 'The login data provided is invalid.',
       httpStatus: HttpStatus.BAD_REQUEST,
+      fault: 'client',
       ...options,
     });
 

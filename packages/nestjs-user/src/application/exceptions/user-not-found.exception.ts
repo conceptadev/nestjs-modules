@@ -16,6 +16,7 @@ export class UserNotFoundException extends UserException {
       httpStatus: HttpStatus.NOT_FOUND,
       message,
       messageParams: [id],
+      fault: 'client',
     });
 
     this.errorCode = 'USER_NOT_FOUND_ERROR';

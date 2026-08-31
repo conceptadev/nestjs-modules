@@ -10,6 +10,7 @@ export class TypeOrmEntityNameException extends RuntimeException {
   constructor(options?: RuntimeExceptionOptions) {
     super({
       message: 'Unable to resolve entity name from TypeORM repository metadata',
+      fault: 'usage',
       ...options,
     });
 

@@ -10,6 +10,7 @@ export class AuthRouterProviderMissingException extends AuthRouterException {
       safeMessage:
         'Auth Router provider is required in the request query parameters.',
       httpStatus: HttpStatus.BAD_REQUEST,
+      fault: 'client',
       ...options,
     });
 

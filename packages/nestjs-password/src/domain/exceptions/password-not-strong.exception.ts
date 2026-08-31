@@ -9,6 +9,7 @@ export class PasswordNotStrongException extends PasswordException {
     super({
       message: 'Password is not strong enough',
       httpStatus: HttpStatus.BAD_REQUEST,
+      fault: 'client',
       ...options,
     });
 

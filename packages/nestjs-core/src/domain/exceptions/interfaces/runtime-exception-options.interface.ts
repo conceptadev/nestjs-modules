@@ -1,5 +1,7 @@
 import { type HttpStatus } from '@nestjs/common';
 
+import { type RuntimeExceptionFault } from '../exception.types.js';
+
 export interface RuntimeExceptionOptions {
   httpStatus?: HttpStatus;
   message?: string;
@@ -11,4 +13,9 @@ export interface RuntimeExceptionOptions {
    * `HttpException`'s `options.cause`) and `context.originalError`.
    */
   originalError?: unknown;
+  /**
+   * Who is at fault for this exception. Defaults to `'internal'` — see
+   * {@link RuntimeExceptionFault}.
+   */
+  fault?: RuntimeExceptionFault;
 }

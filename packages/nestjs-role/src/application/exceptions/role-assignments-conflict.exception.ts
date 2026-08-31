@@ -17,6 +17,7 @@ export class RoleAssignmentsConflictException extends RoleException {
       message: 'One or more roles are already assigned to assignee %s.',
       messageParams: [assigneeId],
       httpStatus: HttpStatus.CONFLICT,
+      fault: 'client',
       ...options,
     });
 

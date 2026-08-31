@@ -6,6 +6,7 @@ export class AuthRouterGuardInvalidException extends AuthRouterException {
   constructor(provider: string, options?: RuntimeExceptionOptions) {
     super({
       safeMessage: `Invalid guard configuration for Auth Router provider '${provider}'.`,
+      fault: 'usage',
       ...options,
     });
 

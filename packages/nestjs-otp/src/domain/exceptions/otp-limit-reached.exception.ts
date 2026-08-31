@@ -9,6 +9,7 @@ export class OtpLimitReachedException extends OtpException {
     super({
       message: 'OTP creation limit reached for the time window.',
       httpStatus: HttpStatus.TOO_MANY_REQUESTS,
+      fault: 'client',
       ...options,
     });
 

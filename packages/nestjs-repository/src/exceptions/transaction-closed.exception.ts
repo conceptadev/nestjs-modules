@@ -11,6 +11,7 @@ export class TransactionClosedException extends RuntimeException {
   constructor(options?: RuntimeExceptionOptions) {
     super({
       message: 'Transaction scope is closed and can no longer be used',
+      fault: 'usage',
       ...options,
     });
 

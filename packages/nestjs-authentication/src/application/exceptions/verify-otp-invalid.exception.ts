@@ -9,6 +9,7 @@ export class VerifyOtpInvalidException extends VerifyException {
     super({
       message: `Invalid confirmation code provided`,
       httpStatus: HttpStatus.BAD_REQUEST,
+      fault: 'client',
       ...options,
     });
 

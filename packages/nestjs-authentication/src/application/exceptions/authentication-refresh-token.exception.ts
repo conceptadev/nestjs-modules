@@ -13,6 +13,7 @@ export class AuthenticationRefreshTokenException extends AuthenticationException
       message: 'Refresh token was verified, but failed further validation.',
       ...options,
       httpStatus: HttpStatus.UNAUTHORIZED,
+      fault: 'client',
     });
     this.errorCode = 'AUTHENTICATION_REFRESH_TOKEN_ERROR';
   }

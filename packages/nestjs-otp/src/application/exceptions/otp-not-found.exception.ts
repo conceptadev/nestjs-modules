@@ -16,6 +16,7 @@ export class OtpNotFoundException extends OtpException {
       httpStatus: HttpStatus.NOT_FOUND,
       message,
       messageParams: [id],
+      fault: 'client',
     });
 
     this.errorCode = 'OTP_NOT_FOUND_ERROR';

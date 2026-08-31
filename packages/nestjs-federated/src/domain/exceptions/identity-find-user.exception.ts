@@ -23,6 +23,7 @@ export class IdentityFindUserException extends FederatedException {
       message: 'Error while trying to find user %s',
       messageParams: [user.id],
       httpStatus: HttpStatus.NOT_FOUND,
+      fault: 'client',
       ...options,
     });
 

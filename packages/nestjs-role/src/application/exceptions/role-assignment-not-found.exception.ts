@@ -17,6 +17,7 @@ export class RoleAssignmentNotFoundException extends RoleException {
       message: 'Role assignment not found for id=%s.',
       messageParams: [assignmentId],
       httpStatus: HttpStatus.NOT_FOUND,
+      fault: 'client',
       ...options,
     });
 

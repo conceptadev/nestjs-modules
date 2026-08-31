@@ -9,6 +9,7 @@ export class PasswordCurrentRequiredException extends PasswordException {
     super({
       message: 'Current password is required',
       httpStatus: HttpStatus.BAD_REQUEST,
+      fault: 'client',
       ...options,
     });
 

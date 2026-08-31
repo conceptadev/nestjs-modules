@@ -7,6 +7,7 @@ export class LocalInvalidCredentialsException extends LocalUnauthorizedException
     super({
       safeMessage:
         'The provided username or password is incorrect. Please try again.',
+      fault: 'client',
       ...options,
     });
 

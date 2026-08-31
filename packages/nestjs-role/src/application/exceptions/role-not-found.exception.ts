@@ -16,6 +16,7 @@ export class RoleNotFoundException extends RoleException {
       httpStatus: HttpStatus.NOT_FOUND,
       message,
       messageParams: [id],
+      fault: 'client',
     });
 
     this.errorCode = 'ROLE_NOT_FOUND_ERROR';

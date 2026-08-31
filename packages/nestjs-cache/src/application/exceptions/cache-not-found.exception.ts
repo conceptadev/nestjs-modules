@@ -14,6 +14,7 @@ export class CacheNotFoundException extends CacheException {
       httpStatus: HttpStatus.NOT_FOUND,
       message,
       messageParams: [id],
+      fault: 'client',
     });
 
     this.errorCode = 'CACHE_NOT_FOUND_ERROR';

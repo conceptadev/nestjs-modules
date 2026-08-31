@@ -6,6 +6,7 @@ export class HookProviderNotFoundException extends RuntimeException {
     super({
       message: `Hook class "%s" is registered via @UseHooks() but could not be resolved. Ensure it is registered in the module's providers.`,
       messageParams: [hookName],
+      fault: 'usage',
       ...options,
     });
 

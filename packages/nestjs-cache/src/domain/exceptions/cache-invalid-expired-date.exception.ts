@@ -4,6 +4,7 @@ export class CacheInvalidExpiredDateException extends CacheException {
   constructor() {
     super({
       message: 'Invalid expiresIn',
+      fault: 'client',
     });
     this.errorCode = 'CACHE_INVALID_EXPIRES_IN';
   }

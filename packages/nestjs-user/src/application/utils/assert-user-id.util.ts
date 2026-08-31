@@ -7,6 +7,7 @@ export function assertUserId(value: unknown): asserts value is ReferenceId {
     throw new UserException({
       message: 'Expected user id to be a non-empty string, got %s',
       messageParams: [typeof value],
+      fault: 'client',
     });
   }
 }

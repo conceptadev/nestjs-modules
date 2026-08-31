@@ -10,6 +10,7 @@ export class RepositoryQueryException extends RuntimeException {
     super({
       message: 'Error while trying to query the %s repository',
       messageParams: [entityName],
+      fault: 'internal',
       ...options,
     });
 

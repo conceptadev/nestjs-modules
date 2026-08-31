@@ -5,6 +5,7 @@ export class OverlayNotDefinedException extends RuntimeException {
   constructor(name: string, options?: RuntimeExceptionOptions) {
     super({
       message: `Overlay "${name}" is not defined on the context. Ensure the corresponding interceptor is applied to this route.`,
+      fault: 'usage',
       ...options,
     });
 

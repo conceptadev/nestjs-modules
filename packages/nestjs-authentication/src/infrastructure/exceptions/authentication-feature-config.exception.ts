@@ -22,6 +22,7 @@ export class AuthenticationFeatureConfigException extends AuthenticationExceptio
       messageParams: [feature, missingPorts.join(', ')],
       ...options,
       httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+      fault: 'usage',
     });
     this.errorCode = 'AUTHENTICATION_FEATURE_CONFIG_ERROR';
   }

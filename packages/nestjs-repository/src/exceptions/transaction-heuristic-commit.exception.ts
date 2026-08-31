@@ -27,6 +27,7 @@ export class TransactionHeuristicCommitException extends RuntimeException {
         committedCount + rolledBackCount,
         rolledBackCount,
       ],
+      fault: 'internal',
       ...options,
     });
 

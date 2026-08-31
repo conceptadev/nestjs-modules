@@ -10,6 +10,7 @@ export class PasswordUsedRecentlyException extends PasswordException {
       message:
         'The new password has been used too recently, please use a different password',
       httpStatus: HttpStatus.BAD_REQUEST,
+      fault: 'client',
       ...options,
     });
 

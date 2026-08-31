@@ -19,6 +19,7 @@ export class RepositoryDuplicateKeyException extends RuntimeException {
     super({
       message: 'Duplicate repository keys: %s',
       messageParams: [details.join(', ')],
+      fault: 'usage',
       ...options,
     });
 

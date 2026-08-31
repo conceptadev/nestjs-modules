@@ -72,6 +72,7 @@ export class CrudSerializeInterceptor<
     if (schema === undefined || !isStandardSchema(schema)) {
       throw new CrudException({
         message: 'Impossible to serialize data without a response schema.',
+        fault: 'usage',
       });
     }
 
@@ -97,6 +98,7 @@ export class CrudSerializeInterceptor<
         message: 'Response failed schema validation: %s',
         messageParams: [result.issues.map((issue) => issue.message).join('; ')],
         originalError: new Error(JSON.stringify(result.issues)),
+        fault: 'usage',
       });
     }
     return result.value;

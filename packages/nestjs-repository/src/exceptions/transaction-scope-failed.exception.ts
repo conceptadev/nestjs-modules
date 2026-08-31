@@ -22,6 +22,7 @@ export class TransactionScopeFailedException extends RuntimeException {
     super({
       message:
         'run() succeeded, but its shared transaction scope had already failed and rolled back',
+      fault: 'internal',
       ...options,
     });
 

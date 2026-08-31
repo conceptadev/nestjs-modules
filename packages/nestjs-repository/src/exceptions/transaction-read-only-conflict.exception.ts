@@ -18,6 +18,7 @@ export class TransactionReadOnlyConflictException extends RuntimeException {
     super({
       message:
         'run() was called with a readOnly option that conflicts with the transaction scope it joined',
+      fault: 'usage',
       ...options,
     });
 

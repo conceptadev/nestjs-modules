@@ -11,6 +11,7 @@ export class TransactionTimeoutException extends RuntimeException {
     super({
       message: 'Transaction timeout after %dms',
       messageParams: [timeoutMs],
+      fault: 'internal',
       ...options,
     });
 

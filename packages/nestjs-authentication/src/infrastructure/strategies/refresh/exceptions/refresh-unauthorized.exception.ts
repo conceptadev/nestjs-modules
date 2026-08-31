@@ -11,6 +11,7 @@ export class RefreshUnauthorizedException extends RefreshException {
       safeMessage: 'Unauthorized refresh attempt.',
       ...options,
       httpStatus: HttpStatus.UNAUTHORIZED,
+      fault: 'client',
     });
 
     this.errorCode = 'AUTH_REFRESH_NOT_AUTHORIZED_ERROR';

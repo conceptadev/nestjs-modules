@@ -9,7 +9,10 @@ import {
 
 import { mapNonErrorToException } from '../../infrastructure/utils/map-non-error-to-exception.util.js';
 
-import { type RuntimeExceptionContext } from './exception.types.js';
+import {
+  type RuntimeExceptionContext,
+  type RuntimeExceptionFault,
+} from './exception.types.js';
 import { type RuntimeExceptionOptions } from './interfaces/runtime-exception-options.interface.js';
 import { type RuntimeExceptionInterface } from './interfaces/runtime-exception.interface.js';
 
@@ -51,6 +54,19 @@ export class RuntimeException
    * read `.httpStatus` directly instead of calling `getStatus()`).
    */
   readonly httpStatus: HttpStatus;
+
+  /**
+   * Who is at fault for this exception — `'client'`, `'usage'` (the
+   * integrating developer misused the library), or `'internal'` (a bug or
+   * unexpected infrastructure failure). Defaults to `'internal'` so an
+   * unclassified exception fails loud rather than silently under-logging.
+   *
+   * Independent of `httpStatus` (a 400 can be `'usage'`; a 500 can be
+   * `'client'`) and deliberately absent from {@link getResponse} — this is
+   * triage data for a peer logging/observability module, not part of the
+   * wire contract.
+   */
+  readonly fault: RuntimeExceptionFault;
 
   /**
    * If set, this message is used on responses instead of `message`.
@@ -100,6 +116,7 @@ export class RuntimeException
       safeMessageParams = [],
       originalError,
       httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+      fault = 'internal',
     } = finalOptions;
 
     const formattedMessage = format(message ?? '', ...messageParams);
@@ -120,6 +137,7 @@ export class RuntimeException
     );
 
     this.httpStatus = httpStatus;
+    this.fault = fault;
 
     if (formattedSafeMessage.length) {
       this.safeMessage = formattedSafeMessage;

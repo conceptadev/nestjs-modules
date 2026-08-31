@@ -14,6 +14,7 @@ export class CrudQueryException extends CrudException {
     super({
       message: 'Error while trying to query the %s entity',
       messageParams: [entityName],
+      fault: 'internal',
       ...options,
     });
 

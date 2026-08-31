@@ -17,6 +17,7 @@ export class IdentityUserRelationshipException extends FederatedException {
       message: 'Error while trying to load user relationship from identity %s',
       messageParams: [identityId],
       httpStatus: HttpStatus.NOT_FOUND,
+      fault: 'client',
       ...options,
     });
 

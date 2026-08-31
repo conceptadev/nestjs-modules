@@ -31,6 +31,7 @@ export function CrudApiOperation(
       if (!descriptor) {
         throw new CrudException({
           message: 'Did not find property descriptor',
+          fault: 'usage',
         });
       }
 
@@ -42,6 +43,7 @@ export function CrudApiOperation(
     } else {
       throw new CrudException({
         message: 'Cannot decorate with api operation, target must be a class',
+        fault: 'usage',
       });
     }
   };

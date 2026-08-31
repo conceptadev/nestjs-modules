@@ -8,7 +8,7 @@ import {
  */
 export class FederationException extends RuntimeException {
   constructor(options?: RuntimeExceptionOptions) {
-    super(options);
+    super({ fault: 'internal', ...options });
     this.errorCode = 'FEDERATION_ERROR';
   }
 }
