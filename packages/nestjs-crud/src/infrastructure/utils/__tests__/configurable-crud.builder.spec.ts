@@ -67,6 +67,23 @@ describe('ConfigurableCrudBuilder', () => {
       expect(result.queryHandlers['Decorated_read_Handler']).toBeDefined();
       expect(result.commandHandlers['Decorated_create_Handler']).toBeDefined();
     });
+
+    it('should throw when entity metadata is missing', () => {
+      // Controller without @CrudController decorator → no entity metadata
+      class BareController {
+        async list() {
+          return [];
+        }
+      }
+
+      const builder = new ConfigurableCrudBuilder<TestEntity>({
+        controller: { class: BareController },
+      });
+
+      expect(() => builder.build()).toThrow(
+        'Controller BareController must have @CrudEntity or @CrudController with entity specified',
+      );
+    });
   });
 
   describe('build() - Path 2: Generated controller', () => {
@@ -423,7 +440,7 @@ describe('ConfigurableCrudBuilder', () => {
       });
 
       expect(() => builder.build()).toThrow(
-        'Hybrid controller must have @CrudController with entity specified',
+        'Controller BareController must have @CrudController with entity specified',
       );
     });
   });

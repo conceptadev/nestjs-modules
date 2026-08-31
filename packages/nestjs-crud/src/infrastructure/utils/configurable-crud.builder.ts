@@ -28,6 +28,7 @@ import { CrudUpdate } from '../decorators/operations/crud-update.decorator.js';
 import { CrudBody } from '../decorators/params/crud-body.decorator.js';
 import { CrudCommandHandler } from '../decorators/routes/crud-command-handler.decorator.js';
 import { CrudQueryHandler } from '../decorators/routes/crud-query-handler.decorator.js';
+import { CrudDecoratorException } from '../exceptions/crud-decorator.exception.js';
 import { CrudCtx } from '../interceptors/crud-context.overlay.js';
 import { CrudContextInterface } from '../interceptors/interfaces/crud-context.interface.js';
 import {
@@ -132,6 +133,12 @@ export class ConfigurableCrudBuilder<
       const reflectionService = new CrudMetaview<Entity>();
       const entity = reflectionService.getEntity(controllerClass);
       const adapter = reflectionService.getAdapter(controllerClass);
+
+      if (!entity) {
+        throw new CrudDecoratorException({
+          message: `Controller ${controllerClass.name} must have @CrudEntity or @CrudController with entity specified`,
+        });
+      }
 
       const providers: Provider[] = [...handlers];
       const adapters: ConfigurableCrudClassesMap = {};
@@ -637,9 +644,9 @@ export class ConfigurableCrudBuilder<
     const adapter = reflectionService.getAdapter(controllerClass);
 
     if (!entity) {
-      throw new Error(
-        'Hybrid controller must have @CrudController with entity specified',
-      );
+      throw new CrudDecoratorException({
+        message: `Controller ${controllerClass.name} must have @CrudController with entity specified`,
+      });
     }
 
     // Get effective controller name for operationId prefix
