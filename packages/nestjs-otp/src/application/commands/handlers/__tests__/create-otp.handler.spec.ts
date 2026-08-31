@@ -11,13 +11,17 @@ import {
 import { Otp } from '../../../../domain/aggregates/otp.js';
 import { OtpLimitReachedException } from '../../../../domain/exceptions/otp-limit-reached.exception.js';
 import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception.js';
+import { OtpPolicy } from '../../../../domain/policies/otp.policy.js';
+import { type OtpSettingsInterface } from '../../../../infrastructure/config/interfaces/otp-settings.interface.js';
 import { CreateOtpCommand } from '../../impl/create-otp.command.js';
 import { CreateOtpHandler } from '../create-otp.handler.js';
 
 describe(CreateOtpHandler.name, () => {
   let handler: CreateOtpHandler;
   let mockRepo: ReturnType<typeof createMockOtpRepository>;
+  let mockResolver: ReturnType<typeof createMockRepositoryResolver>;
   let mockTx: ReturnType<typeof createMockTransaction>;
+  let mockPublisher: ReturnType<typeof createMockEventPublisher>;
   let mockSettings: ReturnType<typeof createMockOtpSettings>;
 
   const ctx = {};
@@ -29,19 +33,25 @@ describe(CreateOtpHandler.name, () => {
     expiresIn: '1h',
   };
 
-  beforeEach(() => {
-    mockRepo = createMockOtpRepository();
-    const mockResolver = createMockRepositoryResolver(mockRepo);
-    mockTx = createMockTransaction();
-    const mockPublisher = createMockEventPublisher();
-    mockSettings = createMockOtpSettings();
-
-    handler = new CreateOtpHandler(
+  function makeHandler(
+    settingsOverrides: Partial<OtpSettingsInterface> = {},
+  ): CreateOtpHandler {
+    return new CreateOtpHandler(
       mockResolver,
       mockTx.transaction,
       mockPublisher,
-      mockSettings,
+      new OtpPolicy({ ...mockSettings, ...settingsOverrides }),
     );
+  }
+
+  beforeEach(() => {
+    mockRepo = createMockOtpRepository();
+    mockResolver = createMockRepositoryResolver(mockRepo);
+    mockTx = createMockTransaction();
+    mockPublisher = createMockEventPublisher();
+    mockSettings = createMockOtpSettings();
+
+    handler = makeHandler();
   });
 
   it('should create an OTP and save it', async () => {
@@ -114,7 +124,7 @@ describe(CreateOtpHandler.name, () => {
     });
 
     it('should use settings.duplicateStrategy when not specified in command', async () => {
-      mockSettings.duplicateStrategy = 'DEACTIVATE';
+      handler = makeHandler({ duplicateStrategy: 'DEACTIVATE' });
       mockRepo.findActiveByAssignee.mockResolvedValue(null);
 
       const command = new CreateOtpCommand(
@@ -176,8 +186,7 @@ describe(CreateOtpHandler.name, () => {
     });
 
     it('should use settings rate values when command does not specify them', async () => {
-      mockSettings.rateSeconds = 60;
-      mockSettings.rateThreshold = 5;
+      handler = makeHandler({ rateSeconds: 60, rateThreshold: 5 });
       mockRepo.countCreatedSince.mockResolvedValue(0);
 
       const command = new CreateOtpCommand(

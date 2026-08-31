@@ -1,11 +1,9 @@
-import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { TransactionScope } from '@concepta/nestjs-repository';
 
+import { OtpPolicy } from '../../../domain/policies/otp.policy.js';
 import { OtpHistoryCleanupService } from '../../../domain/services/otp-history-cleanup.service.js';
-import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface.js';
-import { OTP_MODULE_SETTINGS_TOKEN } from '../../../otp.constants.js';
 import { ClearOtpHistoryCommand } from '../impl/clear-otp-history.command.js';
 
 @CommandHandler(ClearOtpHistoryCommand)
@@ -13,18 +11,16 @@ export class ClearOtpHistoryHandler implements ICommandHandler<ClearOtpHistoryCo
   constructor(
     private readonly txScope: TransactionScope,
     private readonly historyCleanup: OtpHistoryCleanupService,
-    @Inject(OTP_MODULE_SETTINGS_TOKEN)
-    private readonly settings: OtpSettingsInterface,
+    private readonly policy: OtpPolicy,
   ) {}
 
   async execute(command: ClearOtpHistoryCommand): Promise<void> {
     const { ctx, namespace, otp } = command;
     const { assigneeId, category } = otp;
 
-    const keepHistoryDays =
-      command.keepHistoryDays !== undefined
-        ? command.keepHistoryDays
-        : this.settings.keepHistoryDays;
+    const keepHistoryDays = this.policy.resolveKeepHistoryDays(
+      command.keepHistoryDays,
+    );
 
     if (keepHistoryDays === undefined) return;
 

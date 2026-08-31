@@ -9,16 +9,12 @@ import {
 
 import { Otp } from '../../../domain/aggregates/otp.js';
 import { OtpLimitReachedException } from '../../../domain/exceptions/otp-limit-reached.exception.js';
-import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception.js';
 import { OtpCreatableInterface } from '../../../domain/interfaces/otp-creatable.interface.js';
+import { OtpPolicy } from '../../../domain/policies/otp.policy.js';
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface.js';
 import { OtpRepositoryInterface } from '../../../domain/repositories/otp-repository.interface.js';
-import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface.js';
 import { otpCreateSchema } from '../../../infrastructure/schemas/otp-create.schema.js';
-import {
-  OTP_MODULE_SETTINGS_TOKEN,
-  OTP_REPOSITORY_RESOLVER_TOKEN,
-} from '../../../otp.constants.js';
+import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../../otp.constants.js';
 import { validateOtpSchema } from '../../utils/validate-otp-schema.util.js';
 import { CreateOtpCommand } from '../impl/create-otp.command.js';
 
@@ -29,8 +25,7 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
     private readonly repositoryResolver: OtpRepositoryResolverInterface,
     private readonly txScope: TransactionScope,
     private readonly eventPublisher: EventPublisher,
-    @Inject(OTP_MODULE_SETTINGS_TOKEN)
-    private readonly settings: OtpSettingsInterface,
+    private readonly policy: OtpPolicy,
   ) {}
 
   async execute(command: CreateOtpCommand): Promise<Otp> {
@@ -42,9 +37,7 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
       rateSeconds,
       rateThreshold,
     } = command;
-    if (!this.settings.types[dto.type]) {
-      throw new OtpTypeNotDefinedException(dto.type);
-    }
+    const typeService = this.policy.resolveTypeService(dto.type);
 
     const validatedDto = await validateOtpSchema(
       'OtpCreate',
@@ -55,7 +48,7 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
 
     const otpRepo = this.repositoryResolver.resolve(namespace);
 
-    const passcode = this.settings.types[dto.type].generator();
+    const passcode = typeService.generator();
 
     const eventContext = new EventContextHost({ namespace }, {});
 
@@ -69,7 +62,7 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
       });
 
       const resolvedDuplicateStrategy =
-        duplicateStrategy ?? this.settings.duplicateStrategy;
+        this.policy.resolveDuplicateStrategy(duplicateStrategy);
 
       if (resolvedDuplicateStrategy === 'DEACTIVATE') {
         const activeOtp = await otpRepo.findActiveByAssignee(txCtx, {
@@ -115,14 +108,14 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
   }): Promise<void> {
     const { otpRepo, dto, ctx, rateSeconds, rateThreshold } = params;
 
-    const finalRateSeconds =
-      rateSeconds !== undefined ? rateSeconds : this.settings.rateSeconds;
-    const finalRateThreshold =
-      rateThreshold !== undefined ? rateThreshold : this.settings.rateThreshold;
+    const rateLimit = this.policy.resolveRateLimit({
+      rateSeconds,
+      rateThreshold,
+    });
 
-    if (finalRateSeconds && finalRateThreshold) {
+    if (rateLimit) {
       const cutoffDate = new Date();
-      cutoffDate.setSeconds(cutoffDate.getSeconds() - finalRateSeconds);
+      cutoffDate.setSeconds(cutoffDate.getSeconds() - rateLimit.rateSeconds);
 
       const recentCount = await otpRepo.countCreatedSince(ctx, {
         assigneeId: dto.assigneeId,
@@ -130,7 +123,7 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
         cutoffDate,
       });
 
-      if (recentCount >= finalRateThreshold) {
+      if (recentCount >= rateLimit.rateThreshold) {
         throw new OtpLimitReachedException();
       }
     }

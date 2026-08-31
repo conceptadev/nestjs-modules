@@ -5,34 +5,39 @@ import {
   createMockTransaction,
   DEFAULT_OTP_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers.js';
+import { OtpPolicy } from '../../../../domain/policies/otp.policy.js';
 import { OtpHistoryCleanupService } from '../../../../domain/services/otp-history-cleanup.service.js';
+import { type OtpSettingsInterface } from '../../../../infrastructure/config/interfaces/otp-settings.interface.js';
 import { ClearOtpHistoryCommand } from '../../impl/clear-otp-history.command.js';
 import { ClearOtpHistoryHandler } from '../clear-otp-history.handler.js';
 
 describe(ClearOtpHistoryHandler.name, () => {
-  let handler: ClearOtpHistoryHandler;
-  let mockSettings: ReturnType<typeof createMockOtpSettings>;
+  let mockTx: ReturnType<typeof createMockTransaction>;
   let historyCleanup: OtpHistoryCleanupService;
 
   const ctx = {};
 
+  function makeHandler(
+    settingsOverrides: Partial<OtpSettingsInterface> = {},
+  ): ClearOtpHistoryHandler {
+    const settings = createMockOtpSettings(settingsOverrides);
+    return new ClearOtpHistoryHandler(
+      mockTx.transaction,
+      historyCleanup,
+      new OtpPolicy(settings),
+    );
+  }
+
   beforeEach(() => {
     const mockRepo = createMockOtpRepository();
     const mockResolver = createMockRepositoryResolver(mockRepo);
-    const mockTx = createMockTransaction();
-    mockSettings = createMockOtpSettings();
+    mockTx = createMockTransaction();
     historyCleanup = new OtpHistoryCleanupService(mockResolver);
     vi.spyOn(historyCleanup, 'cleanup').mockResolvedValue();
-
-    handler = new ClearOtpHistoryHandler(
-      mockTx.transaction,
-      historyCleanup,
-      mockSettings,
-    );
   });
 
   it('should call cleanup when keepHistoryDays is set', async () => {
-    mockSettings.keepHistoryDays = 30;
+    const handler = makeHandler({ keepHistoryDays: 30 });
 
     const command = new ClearOtpHistoryCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'test-assignee',
@@ -52,7 +57,7 @@ describe(ClearOtpHistoryHandler.name, () => {
   });
 
   it('should call cleanup when keepHistoryDays is 0', async () => {
-    mockSettings.keepHistoryDays = 0;
+    const handler = makeHandler({ keepHistoryDays: 0 });
 
     const command = new ClearOtpHistoryCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'test-assignee',
@@ -70,7 +75,7 @@ describe(ClearOtpHistoryHandler.name, () => {
   });
 
   it('should early return when keepHistoryDays is undefined', async () => {
-    mockSettings.keepHistoryDays = undefined;
+    const handler = makeHandler({ keepHistoryDays: undefined });
 
     const command = new ClearOtpHistoryCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'test-assignee',
@@ -83,7 +88,7 @@ describe(ClearOtpHistoryHandler.name, () => {
   });
 
   it('should use command keepHistoryDays override over settings', async () => {
-    mockSettings.keepHistoryDays = 30;
+    const handler = makeHandler({ keepHistoryDays: 30 });
 
     const command = new ClearOtpHistoryCommand(
       ctx,
@@ -103,7 +108,7 @@ describe(ClearOtpHistoryHandler.name, () => {
   });
 
   it('should use command keepHistoryDays of 0 to override settings', async () => {
-    mockSettings.keepHistoryDays = 30;
+    const handler = makeHandler({ keepHistoryDays: 30 });
 
     const command = new ClearOtpHistoryCommand(
       ctx,
@@ -123,7 +128,7 @@ describe(ClearOtpHistoryHandler.name, () => {
   });
 
   it('should fall back to settings when command keepHistoryDays is undefined', async () => {
-    mockSettings.keepHistoryDays = undefined;
+    const handler = makeHandler({ keepHistoryDays: undefined });
 
     const command = new ClearOtpHistoryCommand(ctx, DEFAULT_OTP_NAMESPACE, {
       assigneeId: 'test-assignee',

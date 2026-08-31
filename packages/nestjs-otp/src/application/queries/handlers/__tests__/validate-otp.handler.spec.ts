@@ -9,6 +9,7 @@ import {
   toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers.js';
 import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception.js';
+import { OtpPolicy } from '../../../../domain/policies/otp.policy.js';
 import { type OtpSettingsInterface } from '../../../../infrastructure/config/interfaces/otp-settings.interface.js';
 import { ValidateOtpQuery } from '../../impl/validate-otp.query.js';
 import { ValidateOtpHandler } from '../validate-otp.handler.js';
@@ -25,7 +26,7 @@ describe(ValidateOtpHandler.name, () => {
     const mockResolver = createMockRepositoryResolver(mockRepo);
     mockSettings = createMockOtpSettings();
 
-    handler = new ValidateOtpHandler(mockResolver, mockSettings);
+    handler = new ValidateOtpHandler(mockResolver, new OtpPolicy(mockSettings));
   });
 
   it('should return assigneeId when OTP is valid and active', async () => {

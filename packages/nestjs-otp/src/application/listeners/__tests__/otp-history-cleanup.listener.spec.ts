@@ -7,32 +7,36 @@ import {
   createMockTransaction,
 } from '../../../__tests__/helpers/mock.helpers.js';
 import { OtpCreatedEvent } from '../../../domain/events/otp-created.event.js';
+import { OtpPolicy } from '../../../domain/policies/otp.policy.js';
 import { OtpHistoryCleanupService } from '../../../domain/services/otp-history-cleanup.service.js';
 import { type OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface.js';
 import { OtpHistoryCleanupListener } from '../otp-history-cleanup.listener.js';
 
 describe(OtpHistoryCleanupListener.name, () => {
-  let listener: OtpHistoryCleanupListener;
-  let mockSettings: OtpSettingsInterface;
+  let mockTx: ReturnType<typeof createMockTransaction>;
   let historyCleanup: OtpHistoryCleanupService;
+
+  function makeListener(
+    settingsOverrides: Partial<OtpSettingsInterface> = {},
+  ): OtpHistoryCleanupListener {
+    const settings = createMockOtpSettings(settingsOverrides);
+    return new OtpHistoryCleanupListener(
+      mockTx.transaction,
+      historyCleanup,
+      new OtpPolicy(settings),
+    );
+  }
 
   beforeEach(() => {
     const mockRepo = createMockOtpRepository();
     const mockResolver = createMockRepositoryResolver(mockRepo);
-    const mockTx = createMockTransaction();
-    mockSettings = createMockOtpSettings();
+    mockTx = createMockTransaction();
     historyCleanup = new OtpHistoryCleanupService(mockResolver);
     vi.spyOn(historyCleanup, 'cleanup').mockResolvedValue();
-
-    listener = new OtpHistoryCleanupListener(
-      mockTx.transaction,
-      historyCleanup,
-      mockSettings,
-    );
   });
 
   it('should call cleanup when keepHistoryDays is set', async () => {
-    mockSettings.keepHistoryDays = 30;
+    const listener = makeListener({ keepHistoryDays: 30 });
 
     const eventContext = createMockEventContext();
     const otp = createMockOtpEntity();
@@ -51,7 +55,7 @@ describe(OtpHistoryCleanupListener.name, () => {
   });
 
   it('should skip cleanup when keepHistoryDays is undefined', async () => {
-    mockSettings.keepHistoryDays = undefined;
+    const listener = makeListener({ keepHistoryDays: undefined });
 
     const eventContext = createMockEventContext();
     const otp = createMockOtpEntity();

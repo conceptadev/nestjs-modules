@@ -20,6 +20,7 @@ import { FindActiveOtpHandler } from './application/queries/handlers/find-active
 import { FindAssignedOtpsHandler } from './application/queries/handlers/find-assigned-otps.handler.js';
 import { GetOtpHandler } from './application/queries/handlers/get-otp.handler.js';
 import { ValidateOtpHandler } from './application/queries/handlers/validate-otp.handler.js';
+import { OtpPolicy } from './domain/policies/otp.policy.js';
 import { OtpHistoryCleanupService } from './domain/services/otp-history-cleanup.service.js';
 import { OtpContextOverlay } from './gateways/otp-context.overlay.js';
 import { type OtpExtrasInterface } from './infrastructure/config/interfaces/otp-extras.interface.js';
@@ -28,6 +29,7 @@ import { type OtpSettingsInterface } from './infrastructure/config/interfaces/ot
 import { otpDefaultConfig } from './infrastructure/config/otp-default.config.js';
 import { OtpRepositoryResolver } from './infrastructure/persistence/otp-repository.resolver.js';
 import { OtpMapper } from './infrastructure/persistence/otp.mapper.js';
+import { createOtpPolicyProvider } from './infrastructure/utils/create-otp-policy-provider.js';
 import {
   OTP_CUSTOM_REPOSITORY_TOKEN,
   OTP_MODULE_SETTINGS_TOKEN,
@@ -85,6 +87,7 @@ export function createOtpProviders(options: {
 }): Provider[] {
   return [
     createOtpSettingsProvider(options.overrides),
+    createOtpPolicyProvider(),
     OtpMapper,
     {
       provide: OTP_CUSTOM_REPOSITORY_TOKEN,
@@ -119,7 +122,7 @@ export function createOtpProviders(options: {
 export function createOtpExports(): Required<
   Pick<DynamicModule, 'exports'>
 >['exports'] {
-  return [OTP_MODULE_SETTINGS_TOKEN, OtpMapper];
+  return [OTP_MODULE_SETTINGS_TOKEN, OtpPolicy, OtpMapper];
 }
 
 export function createOtpSettingsProvider(

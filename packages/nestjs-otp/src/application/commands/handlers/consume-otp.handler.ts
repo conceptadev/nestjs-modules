@@ -7,13 +7,9 @@ import {
 } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
-import { OtpTypeNotDefinedException } from '../../../domain/exceptions/otp-type-not-defined.exception.js';
+import { OtpPolicy } from '../../../domain/policies/otp.policy.js';
 import { OtpRepositoryResolverInterface } from '../../../domain/repositories/otp-repository-resolver.interface.js';
-import { OtpSettingsInterface } from '../../../infrastructure/config/interfaces/otp-settings.interface.js';
-import {
-  OTP_MODULE_SETTINGS_TOKEN,
-  OTP_REPOSITORY_RESOLVER_TOKEN,
-} from '../../../otp.constants.js';
+import { OTP_REPOSITORY_RESOLVER_TOKEN } from '../../../otp.constants.js';
 import { ConsumeOtpCommand } from '../impl/consume-otp.command.js';
 
 @CommandHandler(ConsumeOtpCommand)
@@ -26,8 +22,7 @@ export class ConsumeOtpHandler implements ICommandHandler<
     private readonly repositoryResolver: OtpRepositoryResolverInterface,
     private readonly txScope: TransactionScope,
     private readonly eventPublisher: EventPublisher,
-    @Inject(OTP_MODULE_SETTINGS_TOKEN)
-    private readonly settings: OtpSettingsInterface,
+    private readonly policy: OtpPolicy,
   ) {}
 
   async execute(
@@ -51,13 +46,9 @@ export class ConsumeOtpHandler implements ICommandHandler<
       }
 
       const { type } = activeOtp;
-      const typeConfig = this.settings.types[type];
+      const typeService = this.policy.resolveTypeService(type);
 
-      if (!typeConfig) {
-        throw new OtpTypeNotDefinedException(type);
-      }
-
-      if (!typeConfig.validator(passcode, activeOtp.passcode)) {
+      if (!typeService.validator(passcode, activeOtp.passcode)) {
         return;
       }
 

@@ -66,7 +66,9 @@ export function toOtpDomain(entity: OtpEntityInterface): Otp {
   return otpMapper.toDomain(entity);
 }
 
-export function createMockOtpSettings(): OtpSettingsInterface {
+export function createMockOtpSettings(
+  overrides: Partial<OtpSettingsInterface> = {},
+): OtpSettingsInterface {
   return {
     types: {
       uuid: {
@@ -78,5 +80,6 @@ export function createMockOtpSettings(): OtpSettingsInterface {
     keepHistoryDays: undefined,
     rateSeconds: undefined,
     rateThreshold: undefined,
+    ...overrides,
   };
 }

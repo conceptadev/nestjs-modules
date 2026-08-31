@@ -10,14 +10,7 @@ Critical/High/Nice-To-Have labels, which were rough guesses and sometimes wrong.
 tags: S/M/L. Completed items are removed from this list rather than marked done — see
 git history for what shipped.
 
-  1. **[S/M] System-wide scan for direct settings injection** — smaller than the original
-     note implied: exactly 7 sites inject the raw `*_SETTINGS_TOKEN` into a handler instead
-     of the module definition providing narrowed values — nestjs-otp (5: 4 command/query
-     handlers + 1 listener), nestjs-access-control (2: handlers). No options/settings
-     should escape the module definitions this way. Architectural hygiene, nothing
-     currently broken by it.
-
-  2. **[M] Audit hook/interceptor error-swallowing boundaries** — user has had prior
+  1. **[M] Audit hook/interceptor error-swallowing boundaries** — user has had prior
      negative feedback specifically about this. At least one known instance:
      `CrudContextOverlay.buildContext()`'s catch block
      (`nestjs-crud/src/infrastructure/interceptors/crud-context.overlay.ts:102-110`)
@@ -28,39 +21,39 @@ git history for what shipped.
      policy: if the caught error is already a `RuntimeException` subclass, rethrow it
      unchanged; only wrap genuinely opaque/unexpected errors.
 
-  3. **[S] `roleCreateSchema`/`roleUpdateSchema` allow empty `name`/`description` via
+  2. **[S] `roleCreateSchema`/`roleUpdateSchema` allow empty `name`/`description` via
      `.default('')`** — a faithful reproduction of the v7 class defaults, but it means
      empty-named roles validate successfully today. 3 fixtures/specs currently assert on
      `name: ''` and will need updating in the same change if `name` becomes required.
 
-  4. **[M] Per-operation `api.body` options silently dropped** — `ApiBodyOptions`
+  3. **[M] Per-operation `api.body` options silently dropped** — `ApiBodyOptions`
      overrides (description, examples, `required`) are lost for schema-based request
      bodies; needs metadata plumbing to carry the options alongside the per-operation
      schema into `CrudInitApiBody` (root cause documented in the migration plan's
      post-Phase-4 audit). Docs-only degradation, not a runtime bug.
 
-  5. **[M/L — needs design first] Domain services should generate their own event
+  4. **[M/L — needs design first] Domain services should generate their own event
      contexts** — 32 call sites across 7 packages currently pass
      `new EventContextHost({}, {})` (empty). What the real context should be derived
      from isn't decided — user confirmed this needs a design pass (not sure yet whether
      it's the active transaction, request context, or something else) before it's
      actionable. Don't pick this up as a quick win; scope a design session first.
 
-  6. **[S] Add an ESLint `import/extensions` rule** — belt-and-suspenders guard for the
+  5. **[S] Add an ESLint `import/extensions` rule** — belt-and-suspenders guard for the
      `nodenext` `.js`-extension requirement on relative imports (`eslint-plugin-import`
      is already a configured dependency, no conflicting rule exists). Not essential —
      `tsc` itself already makes a missing extension a hard `TS2835` compile error. Do
      opportunistically.
 
-  7. **[needs research first] Optional exports patterns are different across the
+  6. **[needs research first] Optional exports patterns are different across the
      modules** — user confirmed no canonical pattern has been chosen yet; needs research
      into the existing per-module variations before a target shape can even be proposed.
      Not a quick win.
 
-  8. **Tutorial Topics** — Support of the minimum interface; Provider Overrides. Docs
+  7. **Tutorial Topics** — Support of the minimum interface; Provider Overrides. Docs
      work; sequence after the API stabilizes.
 
-  9. **When non-v8 packages are migrated to NestJS 12** — not actionable until triggered.
+  8. **When non-v8 packages are migrated to NestJS 12** — not actionable until triggered.
       Full restore checklist per package:
       1. Root `package.json` `workspaces` array — add dir (or revert to glob `packages/*`
          when all are migrated)

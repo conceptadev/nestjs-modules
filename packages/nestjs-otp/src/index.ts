@@ -59,6 +59,10 @@ export { OtpNamespace } from './gateways/decorators/otp-namespace.decorator.js';
 // domain interfaces
 export { OtpInterface } from './domain/interfaces/otp.interface.js';
 export { OtpCreatableInterface } from './domain/interfaces/otp-creatable.interface.js';
+export { OtpTypeServiceInterface } from './domain/interfaces/otp-type-service.interface.js';
+
+// domain policies
+export { OtpPolicy, OtpPolicySettings } from './domain/policies/otp.policy.js';
 
 // persistence interfaces
 export { OtpEntityInterface } from './infrastructure/persistence/interfaces/otp-entity.interface.js';
@@ -67,7 +71,6 @@ export { OtpEntityInterface } from './infrastructure/persistence/interfaces/otp-
 export { OtpExtrasInterface } from './infrastructure/config/interfaces/otp-extras.interface.js';
 export { OtpOptionsInterface } from './infrastructure/config/interfaces/otp-options.interface.js';
 export { OtpSettingsInterface } from './infrastructure/config/interfaces/otp-settings.interface.js';
-export { OtpTypeServiceInterface } from './infrastructure/config/interfaces/otp-type-service.interface.js';
 
 // exceptions
 export { OtpException } from './domain/exceptions/otp.exception.js';

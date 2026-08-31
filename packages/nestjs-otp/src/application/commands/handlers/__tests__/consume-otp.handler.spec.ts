@@ -11,6 +11,7 @@ import {
   toOtpDomain,
 } from '../../../../__tests__/helpers/mock.helpers.js';
 import { OtpTypeNotDefinedException } from '../../../../domain/exceptions/otp-type-not-defined.exception.js';
+import { OtpPolicy } from '../../../../domain/policies/otp.policy.js';
 import { type OtpSettingsInterface } from '../../../../infrastructure/config/interfaces/otp-settings.interface.js';
 import { ConsumeOtpCommand } from '../../impl/consume-otp.command.js';
 import { ConsumeOtpHandler } from '../consume-otp.handler.js';
@@ -34,7 +35,7 @@ describe(ConsumeOtpHandler.name, () => {
       mockResolver,
       mockTx.transaction,
       mockPublisher,
-      mockSettings,
+      new OtpPolicy(mockSettings),
     );
   });
 
