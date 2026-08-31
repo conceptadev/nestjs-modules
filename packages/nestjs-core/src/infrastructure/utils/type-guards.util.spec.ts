@@ -30,10 +30,10 @@ const SAMPLE_VALUES: unknown[] = [
   /re/,
 ];
 
-// These local copies exist only to avoid the undocumented deep import
-// `@nestjs/common/utils/shared.utils` (see TODOs.md). This spec pins their
-// behavior against that same Nest internal so any future drift between the
-// two fails loudly here instead of silently in consumers.
+// These local copies exist only to avoid an undocumented deep import into
+// `@nestjs/common/utils/shared.utils`. This spec pins their behavior against
+// that same Nest internal so any future drift between the two fails loudly
+// here instead of silently in consumers.
 describe('type-guards.util drift against @nestjs/common/utils/shared.utils', () => {
   it.each(SAMPLE_VALUES)('isUndefined matches for %s', (val) => {
     expect(isUndefined(val)).toBe(nestShared.isUndefined(val));

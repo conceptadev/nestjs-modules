@@ -8,20 +8,7 @@ Single priority order across everything below (Fable review, 2026-08-30), ranked
 (impact of leaving it undone) vs (effort × blast radius) — not grouped by the old
 Critical/High/Nice-To-Have labels, which were rough guesses and sometimes wrong. Effort
 tags: S/M/L. Completed items are removed from this list rather than marked done — see
-git history for what shipped: the `peerDependencies` restructuring for
-`@nestjs/common`/`core`/`config`/`swagger` and `@nestjs/cqrs` across all 13 v8 packages
-(plus the `.yarnrc.yml` cleanup it unblocked), the `Swagger.createQueryParamsMeta`
-`join`-parameter removal (turned out to be a phantom OpenAPI parameter — `join` isn't a
-real query-string capability at all, relations are configured server-side via
-`@CrudJoin()` — so the fix removed the undocumented-because-broken parameter rather than
-just naming it), optimistic locking in `TypeOrmRepository` (`OptimisticLockException`,
-409, on a stale `update`/`replace` — see `nestjs-repository-typeorm/README.md`'s
-"Optimistic Locking" section for the full mechanism), and the
-`@nestjs/common/utils/shared.utils` deep-import migration (the 9 v8 files that used it now
-import `isNil`/`isNumber`/`isObject`/`isString`/`isUndefined` from
-`@concepta/nestjs-core`'s new `infrastructure/utils/type-guards.util.ts`; a dedicated spec
-compares every guard against the original Nest internal across a battery of values so any
-future behavioral drift between the two fails loudly instead of silently).
+git history for what shipped.
 
   1. **[S/M] System-wide scan for direct settings injection** — smaller than the original
      note implied: exactly 7 sites inject the raw `*_SETTINGS_TOKEN` into a handler instead
@@ -31,16 +18,7 @@ future behavioral drift between the two fails loudly instead of silently).
      currently broken by it.
 
   2. **[M] Audit hook/interceptor error-swallowing boundaries** — user has had prior
-     negative feedback specifically about this. The optimistic-locking work fixed one
-     instance: `RepoPermeatorFactory`'s `onError`
-     (`nestjs-repository/src/hooks/repo-permeator-factory.ts`) used to only pass through
-     `RepositoryQueryException` unchanged, silently swallowing/rewrapping any other thrown
-     exception (including well-formed `RuntimeException` subclasses) into a generic
-     `RepositoryQueryException` — losing status code, error code, and `instanceof`
-     identity. Widened to `instanceof RuntimeException` (verified non-breaking — the
-     existing "throws RepositoryQueryException on error" tests throw plain `Error`s, not
-     `RuntimeException`s). That fix is narrow — there's at least one more instance of the
-     same pattern already in the repo:
+     negative feedback specifically about this. At least one known instance:
      `CrudContextOverlay.buildContext()`'s catch block
      (`nestjs-crud/src/infrastructure/interceptors/crud-context.overlay.ts:102-110`)
      always wraps into `CrudContextException`, preserving `httpStatus` when the original
