@@ -1,7 +1,9 @@
 import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
-import { Command, CommandBus } from '@nestjs/cqrs';
+import { Command, CommandBus, EventBus } from '@nestjs/cqrs';
 
 import { ReferenceEmail } from '@concepta/nestjs-core';
+
+import { NotificationSendFailedEvent } from '../events/notification-send-failed.event.js';
 
 export interface SendRecoverLoginNotificationCommandInterface extends Command<void> {
   ctx: PlainLiteralObject;
@@ -32,6 +34,7 @@ export class RecoveryNotificationPort {
   constructor(
     private readonly portSettings: RecoveryNotificationPortSettings,
     private readonly commandBus: CommandBus,
+    private readonly eventBus: EventBus,
   ) {}
 
   sendRecoverLogin(
@@ -39,16 +42,15 @@ export class RecoveryNotificationPort {
     email: ReferenceEmail,
     username: string,
   ): void {
+    const command = this.portSettings.sendRecoverLoginNotificationCommand;
     void this.commandBus
-      .execute(
-        new this.portSettings.sendRecoverLoginNotificationCommand(
-          ctx,
-          email,
-          username,
-        ),
-      )
+      .execute(new command(ctx, email, username))
       // Fire-and-forget: a throw here would reject an unawaited promise and crash the process.
-      .catch(() => undefined);
+      .catch((error: unknown) =>
+        this.eventBus.publish(
+          new NotificationSendFailedEvent(ctx, email, command, error),
+        ),
+      );
   }
 
   sendRecoverPassword(
@@ -56,28 +58,26 @@ export class RecoveryNotificationPort {
     email: ReferenceEmail,
     params: { passcode: string; tokenExp: Date },
   ): void {
+    const command = this.portSettings.sendRecoverPasswordNotificationCommand;
     void this.commandBus
-      .execute(
-        new this.portSettings.sendRecoverPasswordNotificationCommand(
-          ctx,
-          email,
-          params.passcode,
-          params.tokenExp,
-        ),
-      )
+      .execute(new command(ctx, email, params.passcode, params.tokenExp))
       // Fire-and-forget: a throw here would reject an unawaited promise and crash the process.
-      .catch(() => undefined);
+      .catch((error: unknown) =>
+        this.eventBus.publish(
+          new NotificationSendFailedEvent(ctx, email, command, error),
+        ),
+      );
   }
 
   sendPasswordUpdated(ctx: PlainLiteralObject, email: ReferenceEmail): void {
+    const command = this.portSettings.sendPasswordUpdatedNotificationCommand;
     void this.commandBus
-      .execute(
-        new this.portSettings.sendPasswordUpdatedNotificationCommand(
-          ctx,
-          email,
-        ),
-      )
+      .execute(new command(ctx, email))
       // Fire-and-forget: a throw here would reject an unawaited promise and crash the process.
-      .catch(() => undefined);
+      .catch((error: unknown) =>
+        this.eventBus.publish(
+          new NotificationSendFailedEvent(ctx, email, command, error),
+        ),
+      );
   }
 }

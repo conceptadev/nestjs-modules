@@ -1,8 +1,9 @@
 import { mock } from 'vitest-mock-extended';
 
 import { type PlainLiteralObject } from '@nestjs/common';
-import { Command, type CommandBus } from '@nestjs/cqrs';
+import { Command, type CommandBus, type EventBus } from '@nestjs/cqrs';
 
+import { NotificationSendFailedEvent } from '../../events/notification-send-failed.event.js';
 import {
   RecoveryNotificationPort,
   type RecoveryNotificationPortSettings,
@@ -55,6 +56,7 @@ const flush = () => new Promise<void>((resolve) => setImmediate(resolve));
 describe(RecoveryNotificationPort.name, () => {
   let port: RecoveryNotificationPort;
   let commandBus: CommandBus;
+  let eventBus: EventBus;
 
   const portSettings: RecoveryNotificationPortSettings = {
     sendRecoverLoginNotificationCommand: MockSendRecoverLoginCommand,
@@ -64,7 +66,8 @@ describe(RecoveryNotificationPort.name, () => {
 
   beforeEach(() => {
     commandBus = mock<CommandBus>();
-    port = new RecoveryNotificationPort(portSettings, commandBus);
+    eventBus = mock<EventBus>();
+    port = new RecoveryNotificationPort(portSettings, commandBus, eventBus);
   });
 
   describe('sendRecoverLogin', () => {
@@ -88,6 +91,25 @@ describe(RecoveryNotificationPort.name, () => {
       port.sendRecoverLogin({}, 'me@mail.com', 'username');
 
       await expect(flush()).resolves.toBeUndefined();
+    });
+
+    it('should publish a NotificationSendFailedEvent when the command fails', async () => {
+      void commandBus.execute;
+      const error = new Error('send failed');
+      vi.spyOn(commandBus, 'execute').mockRejectedValue(error);
+
+      port.sendRecoverLogin({}, 'me@mail.com', 'username');
+
+      await flush();
+
+      expect(eventBus.publish).toHaveBeenCalledWith(
+        new NotificationSendFailedEvent(
+          {},
+          'me@mail.com',
+          MockSendRecoverLoginCommand,
+          error,
+        ),
+      );
     });
   });
 
@@ -119,6 +141,28 @@ describe(RecoveryNotificationPort.name, () => {
 
       await expect(flush()).resolves.toBeUndefined();
     });
+
+    it('should publish a NotificationSendFailedEvent when the command fails', async () => {
+      void commandBus.execute;
+      const error = new Error('send failed');
+      vi.spyOn(commandBus, 'execute').mockRejectedValue(error);
+
+      port.sendRecoverPassword({}, 'me@mail.com', {
+        passcode: 'abc123',
+        tokenExp: new Date(),
+      });
+
+      await flush();
+
+      expect(eventBus.publish).toHaveBeenCalledWith(
+        new NotificationSendFailedEvent(
+          {},
+          'me@mail.com',
+          MockSendRecoverPasswordCommand,
+          error,
+        ),
+      );
+    });
   });
 
   describe('sendPasswordUpdated', () => {
@@ -142,6 +186,25 @@ describe(RecoveryNotificationPort.name, () => {
       port.sendPasswordUpdated({}, 'me@mail.com');
 
       await expect(flush()).resolves.toBeUndefined();
+    });
+
+    it('should publish a NotificationSendFailedEvent when the command fails', async () => {
+      void commandBus.execute;
+      const error = new Error('send failed');
+      vi.spyOn(commandBus, 'execute').mockRejectedValue(error);
+
+      port.sendPasswordUpdated({}, 'me@mail.com');
+
+      await flush();
+
+      expect(eventBus.publish).toHaveBeenCalledWith(
+        new NotificationSendFailedEvent(
+          {},
+          'me@mail.com',
+          MockSendPasswordUpdatedCommand,
+          error,
+        ),
+      );
     });
   });
 });

@@ -1,7 +1,9 @@
 import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
-import { Command, CommandBus } from '@nestjs/cqrs';
+import { Command, CommandBus, EventBus } from '@nestjs/cqrs';
 
 import { ReferenceEmail } from '@concepta/nestjs-core';
+
+import { NotificationSendFailedEvent } from '../events/notification-send-failed.event.js';
 
 export interface SendVerifyNotificationCommandInterface extends Command<void> {
   ctx: PlainLiteralObject;
@@ -19,6 +21,7 @@ export class VerifyNotificationPort {
   constructor(
     private readonly portSettings: VerifyNotificationPortSettings,
     private readonly commandBus: CommandBus,
+    private readonly eventBus: EventBus,
   ) {}
 
   sendVerify(
@@ -26,16 +29,14 @@ export class VerifyNotificationPort {
     email: ReferenceEmail,
     params: { passcode: string; tokenExp: Date },
   ): void {
+    const command = this.portSettings.sendVerifyNotificationCommand;
     void this.commandBus
-      .execute(
-        new this.portSettings.sendVerifyNotificationCommand(
-          ctx,
-          email,
-          params.passcode,
-          params.tokenExp,
-        ),
-      )
+      .execute(new command(ctx, email, params.passcode, params.tokenExp))
       // Fire-and-forget: a throw here would reject an unawaited promise and crash the process.
-      .catch(() => undefined);
+      .catch((error: unknown) =>
+        this.eventBus.publish(
+          new NotificationSendFailedEvent(ctx, email, command, error),
+        ),
+      );
   }
 }

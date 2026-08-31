@@ -1,8 +1,9 @@
 import { mock } from 'vitest-mock-extended';
 
 import { type PlainLiteralObject } from '@nestjs/common';
-import { Command, type CommandBus } from '@nestjs/cqrs';
+import { Command, type CommandBus, type EventBus } from '@nestjs/cqrs';
 
+import { NotificationSendFailedEvent } from '../../events/notification-send-failed.event.js';
 import {
   type SendVerifyNotificationCommandInterface,
   VerifyNotificationPort,
@@ -28,6 +29,7 @@ const flush = () => new Promise<void>((resolve) => setImmediate(resolve));
 describe(VerifyNotificationPort.name, () => {
   let port: VerifyNotificationPort;
   let commandBus: CommandBus;
+  let eventBus: EventBus;
 
   const portSettings: VerifyNotificationPortSettings = {
     sendVerifyNotificationCommand: MockSendVerifyNotificationCommand,
@@ -35,7 +37,8 @@ describe(VerifyNotificationPort.name, () => {
 
   beforeEach(() => {
     commandBus = mock<CommandBus>();
-    port = new VerifyNotificationPort(portSettings, commandBus);
+    eventBus = mock<EventBus>();
+    port = new VerifyNotificationPort(portSettings, commandBus, eventBus);
   });
 
   describe('sendVerify', () => {
@@ -65,6 +68,28 @@ describe(VerifyNotificationPort.name, () => {
       });
 
       await expect(flush()).resolves.toBeUndefined();
+    });
+
+    it('should publish a NotificationSendFailedEvent when the command fails', async () => {
+      void commandBus.execute;
+      const error = new Error('send failed');
+      vi.spyOn(commandBus, 'execute').mockRejectedValue(error);
+
+      port.sendVerify({}, 'me@mail.com', {
+        passcode: 'abc123',
+        tokenExp: new Date(),
+      });
+
+      await flush();
+
+      expect(eventBus.publish).toHaveBeenCalledWith(
+        new NotificationSendFailedEvent(
+          {},
+          'me@mail.com',
+          MockSendVerifyNotificationCommand,
+          error,
+        ),
+      );
     });
   });
 });

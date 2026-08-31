@@ -24,6 +24,7 @@ export { TokenCreatableInterface } from './domain/interfaces/token-creatable.int
 // domain events
 export { TokenIssuedEvent } from './domain/events/token-issued.event.js';
 export { TokenRevokedEvent } from './domain/events/token-revoked.event.js';
+export { NotificationSendFailedEvent } from './domain/events/notification-send-failed.event.js';
 
 export { AuthenticationModule } from './authentication.module.js';
 
