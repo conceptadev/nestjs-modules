@@ -1,3 +1,5 @@
+import { HttpStatus } from '@nestjs/common';
+
 import { type RuntimeExceptionOptions } from '@concepta/nestjs-core';
 
 import { AuthRouterException } from './auth-router.exception.js';
@@ -10,6 +12,7 @@ export class AuthRouterAuthenticationFailedException extends AuthRouterException
   ) {
     super({
       safeMessage: `Auth Router authentication failed for provider '${provider}': ${errorMessage}`,
+      httpStatus: HttpStatus.UNAUTHORIZED,
       fault: 'client',
       ...options,
     });
