@@ -2,6 +2,8 @@ import { Injectable, PlainLiteralObject } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
 
 import { HookMethodKeyType } from './decorators/hook-method.decorator.js';
+import { HookNotDecoratedException } from './exceptions/hook-not-decorated.exception.js';
+import { HookProviderNotFoundException } from './exceptions/hook-provider-not-found.exception.js';
 import { HOOK_METHODS_CACHE_KEY } from './hook.constants.js';
 import { HookMethodMapInterface, ResolvedHook } from './hook.interfaces.js';
 import { HookWithSpec } from './hook.types.js';
@@ -131,12 +133,24 @@ export class HookResolverService {
    * Uses pre-computed method mappings from `@Hook()` decorator for O(1) lookup.
    */
   private resolveConfig(config: HookWithSpec): ResolvedHook {
-    const hook = this.moduleRef.get(config.hook, { strict: false });
+    let hook: object;
+
+    try {
+      hook = this.moduleRef.get(config.hook, { strict: false });
+    } catch (error) {
+      throw new HookProviderNotFoundException(config.hook.name, {
+        originalError: error,
+      });
+    }
 
     // Get pre-computed method mappings from @Hook() decorator
     const methods = this.reflector.get<
       Map<HookMethodKeyType, HookMethodMapInterface[]>
     >(HOOK_METHODS_CACHE_KEY, config.hook);
+
+    if (!methods) {
+      throw new HookNotDecoratedException(config.hook.name);
+    }
 
     return { hook, spec: config.spec, methods };
   }

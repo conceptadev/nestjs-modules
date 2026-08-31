@@ -17,8 +17,10 @@ export class RoleAssignmentRepositoryResolver implements RoleAssignmentRepositor
       return this.moduleRef.get<RoleAssignmentRepositoryInterface>(token, {
         strict: false,
       });
-    } catch {
-      throw new RoleEntityNotFoundException(entityKey);
+    } catch (error) {
+      throw new RoleEntityNotFoundException(entityKey, {
+        originalError: error,
+      });
     }
   }
 }

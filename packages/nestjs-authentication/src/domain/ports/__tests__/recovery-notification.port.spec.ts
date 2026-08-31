@@ -50,6 +50,8 @@ class MockSendPasswordUpdatedCommand
   }
 }
 
+const flush = () => new Promise<void>((resolve) => setImmediate(resolve));
+
 describe(RecoveryNotificationPort.name, () => {
   let port: RecoveryNotificationPort;
   let commandBus: CommandBus;
@@ -76,6 +78,17 @@ describe(RecoveryNotificationPort.name, () => {
         expect.any(MockSendRecoverLoginCommand),
       );
     });
+
+    it('should not leave an unhandled rejection when the command fails', async () => {
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockRejectedValue(
+        new Error('send failed'),
+      );
+
+      port.sendRecoverLogin({}, 'me@mail.com', 'username');
+
+      await expect(flush()).resolves.toBeUndefined();
+    });
   });
 
   describe('sendRecoverPassword', () => {
@@ -92,6 +105,20 @@ describe(RecoveryNotificationPort.name, () => {
         expect.any(MockSendRecoverPasswordCommand),
       );
     });
+
+    it('should not leave an unhandled rejection when the command fails', async () => {
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockRejectedValue(
+        new Error('send failed'),
+      );
+
+      port.sendRecoverPassword({}, 'me@mail.com', {
+        passcode: 'abc123',
+        tokenExp: new Date(),
+      });
+
+      await expect(flush()).resolves.toBeUndefined();
+    });
   });
 
   describe('sendPasswordUpdated', () => {
@@ -104,6 +131,17 @@ describe(RecoveryNotificationPort.name, () => {
       expect(commandBus.execute).toHaveBeenCalledWith(
         expect.any(MockSendPasswordUpdatedCommand),
       );
+    });
+
+    it('should not leave an unhandled rejection when the command fails', async () => {
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockRejectedValue(
+        new Error('send failed'),
+      );
+
+      port.sendPasswordUpdated({}, 'me@mail.com');
+
+      await expect(flush()).resolves.toBeUndefined();
     });
   });
 });

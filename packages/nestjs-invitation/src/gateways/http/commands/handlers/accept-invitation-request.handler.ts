@@ -1,3 +1,4 @@
+import { HttpException } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { AcceptInvitationCommand } from '../../../../application/commands/impl/accept-invitation.command.js';
@@ -23,6 +24,10 @@ export class AcceptInvitationRequestHandler implements ICommandHandler<AcceptInv
         new AcceptInvitationCommand(context, code, dto),
       );
     } catch (e: unknown) {
+      if (e instanceof HttpException) {
+        throw e;
+      }
+
       throw new InvitationNotAcceptedException({
         originalError: e,
       });

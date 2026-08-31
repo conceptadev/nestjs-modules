@@ -180,9 +180,9 @@ describe('#crud', () => {
         const query = qb.setFilter(['foo', WhereOperator.GT]).query();
         const expected = {
           statusCode: 400,
-          message: 'Error on crud context processing',
+          message: 'Invalid filter value',
           error: 'Bad Request',
-          errorCode: 'CRUD_CONTEXT_ERROR',
+          errorCode: 'CRUD_QUERY_PARSER_ERROR',
         };
         const res = await request(server).get('/test').query(query).expect(400);
         expect(res.body).toEqual(expected);
@@ -196,9 +196,9 @@ describe('#crud', () => {
       it('should return status 400', async () => {
         const expected = {
           statusCode: 400,
-          message: 'Error on crud context processing',
+          message: 'Invalid param id. Number expected',
           error: 'Bad Request',
-          errorCode: 'CRUD_CONTEXT_ERROR',
+          errorCode: 'CRUD_QUERY_VALIDATOR_ERROR',
         };
         const res = await request(server).get('/test/invalid').expect(400);
         expect(res.body).toEqual(expected);

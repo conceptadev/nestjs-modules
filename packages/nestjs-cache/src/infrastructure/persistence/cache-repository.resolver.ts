@@ -17,8 +17,10 @@ export class CacheRepositoryResolver implements CacheRepositoryResolverInterface
       return this.moduleRef.get<CacheRepositoryInterface>(token, {
         strict: false,
       });
-    } catch {
-      throw new CacheEntityNotFoundException(entityKey);
+    } catch (error) {
+      throw new CacheEntityNotFoundException(entityKey, {
+        originalError: error,
+      });
     }
   }
 }

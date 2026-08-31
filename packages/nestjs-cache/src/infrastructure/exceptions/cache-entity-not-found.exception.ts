@@ -1,4 +1,7 @@
-import { type RuntimeException } from '@concepta/nestjs-core';
+import {
+  type RuntimeException,
+  type RuntimeExceptionOptions,
+} from '@concepta/nestjs-core';
 
 import { CacheException } from '../../domain/exceptions/cache.exception.js';
 
@@ -7,13 +10,11 @@ export class CacheEntityNotFoundException extends CacheException {
     entityName: string;
   };
 
-  constructor(
-    entityName: string,
-    message = 'Entity %s was not registered to be used.',
-  ) {
+  constructor(entityName: string, options?: RuntimeExceptionOptions) {
     super({
-      message,
+      message: 'Entity %s was not registered to be used.',
       messageParams: [entityName],
+      ...options,
     });
 
     this.errorCode = 'CACHE_ENTITY_NOT_FOUND_ERROR';

@@ -89,7 +89,10 @@ export class LocalStrategy extends PassportStrategyFactory<Strategy>(
         // yes, use theirs
         throw e;
       } else {
-        // something else went wrong
+        // something else went wrong — deliberately flattened to a generic
+        // 500 rather than passed through: a distinguishable status
+        // (e.g. a 404 UserNotFoundException) here is a username-enumeration
+        // oracle on a login endpoint.
         throw new LocalException({ originalError: e });
       }
     }

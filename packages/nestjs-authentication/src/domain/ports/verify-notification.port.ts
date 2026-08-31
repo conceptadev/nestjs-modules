@@ -3,8 +3,6 @@ import { Command, CommandBus } from '@nestjs/cqrs';
 
 import { ReferenceEmail } from '@concepta/nestjs-core';
 
-import { AuthenticationEmailException } from '../exceptions/authentication-email.exception.js';
-
 export interface SendVerifyNotificationCommandInterface extends Command<void> {
   ctx: PlainLiteralObject;
   email: ReferenceEmail;
@@ -37,8 +35,7 @@ export class VerifyNotificationPort {
           params.tokenExp,
         ),
       )
-      .catch((err: unknown) => {
-        throw new AuthenticationEmailException({ originalError: err });
-      });
+      // Fire-and-forget: a throw here would reject an unawaited promise and crash the process.
+      .catch(() => undefined);
   }
 }

@@ -3,8 +3,6 @@ import { Command, CommandBus } from '@nestjs/cqrs';
 
 import { ReferenceEmail } from '@concepta/nestjs-core';
 
-import { AuthenticationEmailException } from '../exceptions/authentication-email.exception.js';
-
 export interface SendRecoverLoginNotificationCommandInterface extends Command<void> {
   ctx: PlainLiteralObject;
   email: ReferenceEmail;
@@ -49,9 +47,8 @@ export class RecoveryNotificationPort {
           username,
         ),
       )
-      .catch((err: unknown) => {
-        throw new AuthenticationEmailException({ originalError: err });
-      });
+      // Fire-and-forget: a throw here would reject an unawaited promise and crash the process.
+      .catch(() => undefined);
   }
 
   sendRecoverPassword(
@@ -68,9 +65,8 @@ export class RecoveryNotificationPort {
           params.tokenExp,
         ),
       )
-      .catch((err: unknown) => {
-        throw new AuthenticationEmailException({ originalError: err });
-      });
+      // Fire-and-forget: a throw here would reject an unawaited promise and crash the process.
+      .catch(() => undefined);
   }
 
   sendPasswordUpdated(ctx: PlainLiteralObject, email: ReferenceEmail): void {
@@ -81,8 +77,7 @@ export class RecoveryNotificationPort {
           email,
         ),
       )
-      .catch((err: unknown) => {
-        throw new AuthenticationEmailException({ originalError: err });
-      });
+      // Fire-and-forget: a throw here would reject an unawaited promise and crash the process.
+      .catch(() => undefined);
   }
 }

@@ -1,6 +1,7 @@
 import {
   ExecutionContext,
   forwardRef,
+  HttpException,
   HttpStatus,
   Inject,
   Injectable,
@@ -12,7 +13,6 @@ import {
   getAppContext,
   Operation,
   OverlayRef,
-  RuntimeException,
 } from '@concepta/nestjs-core';
 
 import { ControllerTarget, MethodHandler } from '../../crud.types.js';
@@ -100,11 +100,12 @@ export class CrudContextOverlay<
 
       return result;
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
       throw new CrudContextException({
-        httpStatus:
-          error instanceof RuntimeException
-            ? error.httpStatus
-            : HttpStatus.BAD_REQUEST,
+        httpStatus: HttpStatus.BAD_REQUEST,
         originalError: error,
       });
     }

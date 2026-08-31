@@ -4,6 +4,7 @@ import {
   createMockInvitationEntity,
   toInvitationDomain,
 } from '../../../../../__tests__/helpers/mock.helpers.js';
+import { InvitationNotFoundException } from '../../../../../application/exceptions/invitation-not-found.exception.js';
 import { type InvitationAcceptableInterface } from '../../../../../domain/interfaces/invitation-acceptable.interface.js';
 import { InvitationNotAcceptedException } from '../../../../exceptions/invitation-not-accepted.exception.js';
 import { AcceptInvitationRequest } from '../../impl/accept-invitation.request.js';
@@ -69,5 +70,23 @@ describe(AcceptInvitationRequestHandler.name, () => {
     await expect(
       handler.execute(new AcceptInvitationRequest(context, dto)),
     ).rejects.toThrow(InvitationNotAcceptedException);
+  });
+
+  it('should propagate an HttpException thrown by the command unchanged', async () => {
+    commandBus.execute.mockRejectedValue(
+      new InvitationNotFoundException('test-code'),
+    );
+
+    const context = {
+      entity: 'invitation',
+      params: { code: 'test-code' },
+    } as never;
+    const dto: InvitationAcceptableInterface = {
+      passcode: 'test-passcode',
+    };
+
+    await expect(
+      handler.execute(new AcceptInvitationRequest(context, dto)),
+    ).rejects.toThrow(InvitationNotFoundException);
   });
 });

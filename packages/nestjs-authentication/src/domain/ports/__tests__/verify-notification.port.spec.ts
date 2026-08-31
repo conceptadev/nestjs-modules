@@ -23,6 +23,8 @@ class MockSendVerifyNotificationCommand
   }
 }
 
+const flush = () => new Promise<void>((resolve) => setImmediate(resolve));
+
 describe(VerifyNotificationPort.name, () => {
   let port: VerifyNotificationPort;
   let commandBus: CommandBus;
@@ -49,6 +51,20 @@ describe(VerifyNotificationPort.name, () => {
       expect(commandBus.execute).toHaveBeenCalledWith(
         expect.any(MockSendVerifyNotificationCommand),
       );
+    });
+
+    it('should not leave an unhandled rejection when the command fails', async () => {
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockRejectedValue(
+        new Error('send failed'),
+      );
+
+      port.sendVerify({}, 'me@mail.com', {
+        passcode: 'abc123',
+        tokenExp: new Date(),
+      });
+
+      await expect(flush()).resolves.toBeUndefined();
     });
   });
 });

@@ -24,6 +24,8 @@ export class JwtGuard extends AuthGuard(JWT_STRATEGY_NAME, {
   ) {
     // You can throw an exception based on either "info" or "err" arguments
     if (err || !user) {
+      // deliberately collapsed to one status: distinguishing "expired" from
+      // "invalid signature" from "user deleted" is an oracle for an attacker.
       throw new JwtUnauthorizedException({ originalError: err ?? info });
     }
     return user;

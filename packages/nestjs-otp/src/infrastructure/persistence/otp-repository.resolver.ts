@@ -17,8 +17,10 @@ export class OtpRepositoryResolver implements OtpRepositoryResolverInterface {
       return this.moduleRef.get<OtpRepositoryInterface>(token, {
         strict: false,
       });
-    } catch {
-      throw new OtpEntityNotFoundException(entityKey);
+    } catch (error) {
+      throw new OtpEntityNotFoundException(entityKey, {
+        originalError: error,
+      });
     }
   }
 }
