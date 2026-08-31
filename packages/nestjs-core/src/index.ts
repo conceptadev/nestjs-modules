@@ -45,6 +45,13 @@ export { NotAnErrorException } from './domain/exceptions/not-an-error.exception.
 export { DeepPartial } from './domain/utils/deep-partial.js';
 export { mapNonErrorToException } from './infrastructure/utils/map-non-error-to-exception.util.js';
 export { toMilliseconds } from './infrastructure/utils/to-milliseconds.js';
+export {
+  isNil,
+  isNumber,
+  isObject,
+  isString,
+  isUndefined,
+} from './infrastructure/utils/type-guards.util.js';
 
 // Reference types
 export {

@@ -1,13 +1,8 @@
 import { stringify } from 'qs';
 
 import { type PlainLiteralObject } from '@nestjs/common';
-import {
-  isNil,
-  isObject,
-  isString,
-  isUndefined,
-} from '@nestjs/common/utils/shared.utils';
 
+import { isNil, isObject, isString, isUndefined } from '@concepta/nestjs-core';
 import {
   type EntityColumn,
   type OrderSortKey,

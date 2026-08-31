@@ -14,29 +14,23 @@ git history for what shipped: the `peerDependencies` restructuring for
 `join`-parameter removal (turned out to be a phantom OpenAPI parameter — `join` isn't a
 real query-string capability at all, relations are configured server-side via
 `@CrudJoin()` — so the fix removed the undocumented-because-broken parameter rather than
-just naming it), and optimistic locking in `TypeOrmRepository` (`OptimisticLockException`,
+just naming it), optimistic locking in `TypeOrmRepository` (`OptimisticLockException`,
 409, on a stale `update`/`replace` — see `nestjs-repository-typeorm/README.md`'s
-"Optimistic Locking" section for the full mechanism).
+"Optimistic Locking" section for the full mechanism), and the
+`@nestjs/common/utils/shared.utils` deep-import migration (the 9 v8 files that used it now
+import `isNil`/`isNumber`/`isObject`/`isString`/`isUndefined` from
+`@concepta/nestjs-core`'s new `infrastructure/utils/type-guards.util.ts`; a dedicated spec
+compares every guard against the original Nest internal across a battery of values so any
+future behavioral drift between the two fails loudly instead of silently).
 
-  1. **[S/M] Audit the `@nestjs/common/utils/shared.utils` imports** — 9 v8 files import
-     this undocumented internal path. It resolves today via v12's wildcard `./*` export
-     but could disappear in any minor. Migrate each to a public equivalent or a local
-     utility. nestjs-crud (8): `interceptors/crud-serialize.interceptor.ts`,
-     `utils/validation.ts`, `utils/crud-empty-body-guard.util.ts`,
-     `adapters/crud.adapter.ts`, `request/crud-scondition.converter.ts`,
-     `request/crud-query.builder.ts`, `request/crud-query.parser.ts`,
-     `request/crud-query.validator.ts`. nestjs-repository (1):
-     `repository/repository-adapter.ts`. (`nestjs-common/src/filters/exceptions.filter.ts`
-     also matches — deprecated package, out of the v8 workspace, ignore.)
-
-  2. **[S/M] System-wide scan for direct settings injection** — smaller than the original
+  1. **[S/M] System-wide scan for direct settings injection** — smaller than the original
      note implied: exactly 7 sites inject the raw `*_SETTINGS_TOKEN` into a handler instead
      of the module definition providing narrowed values — nestjs-otp (5: 4 command/query
      handlers + 1 listener), nestjs-access-control (2: handlers). No options/settings
      should escape the module definitions this way. Architectural hygiene, nothing
      currently broken by it.
 
-  3. **[M] Audit hook/interceptor error-swallowing boundaries** — user has had prior
+  2. **[M] Audit hook/interceptor error-swallowing boundaries** — user has had prior
      negative feedback specifically about this. The optimistic-locking work fixed one
      instance: `RepoPermeatorFactory`'s `onError`
      (`nestjs-repository/src/hooks/repo-permeator-factory.ts`) used to only pass through
@@ -56,39 +50,39 @@ just naming it), and optimistic locking in `TypeOrmRepository` (`OptimisticLockE
      policy: if the caught error is already a `RuntimeException` subclass, rethrow it
      unchanged; only wrap genuinely opaque/unexpected errors.
 
-  4. **[S] `roleCreateSchema`/`roleUpdateSchema` allow empty `name`/`description` via
+  3. **[S] `roleCreateSchema`/`roleUpdateSchema` allow empty `name`/`description` via
      `.default('')`** — a faithful reproduction of the v7 class defaults, but it means
      empty-named roles validate successfully today. 3 fixtures/specs currently assert on
      `name: ''` and will need updating in the same change if `name` becomes required.
 
-  5. **[M] Per-operation `api.body` options silently dropped** — `ApiBodyOptions`
+  4. **[M] Per-operation `api.body` options silently dropped** — `ApiBodyOptions`
      overrides (description, examples, `required`) are lost for schema-based request
      bodies; needs metadata plumbing to carry the options alongside the per-operation
      schema into `CrudInitApiBody` (root cause documented in the migration plan's
      post-Phase-4 audit). Docs-only degradation, not a runtime bug.
 
-  6. **[M/L — needs design first] Domain services should generate their own event
+  5. **[M/L — needs design first] Domain services should generate their own event
      contexts** — 32 call sites across 7 packages currently pass
      `new EventContextHost({}, {})` (empty). What the real context should be derived
      from isn't decided — user confirmed this needs a design pass (not sure yet whether
      it's the active transaction, request context, or something else) before it's
      actionable. Don't pick this up as a quick win; scope a design session first.
 
-  7. **[S] Add an ESLint `import/extensions` rule** — belt-and-suspenders guard for the
+  6. **[S] Add an ESLint `import/extensions` rule** — belt-and-suspenders guard for the
      `nodenext` `.js`-extension requirement on relative imports (`eslint-plugin-import`
      is already a configured dependency, no conflicting rule exists). Not essential —
      `tsc` itself already makes a missing extension a hard `TS2835` compile error. Do
      opportunistically.
 
-  8. **[needs research first] Optional exports patterns are different across the
+  7. **[needs research first] Optional exports patterns are different across the
      modules** — user confirmed no canonical pattern has been chosen yet; needs research
      into the existing per-module variations before a target shape can even be proposed.
      Not a quick win.
 
-  9. **Tutorial Topics** — Support of the minimum interface; Provider Overrides. Docs
+  8. **Tutorial Topics** — Support of the minimum interface; Provider Overrides. Docs
      work; sequence after the API stabilizes.
 
-  10. **When non-v8 packages are migrated to NestJS 12** — not actionable until triggered.
+  9. **When non-v8 packages are migrated to NestJS 12** — not actionable until triggered.
       Full restore checklist per package:
       1. Root `package.json` `workspaces` array — add dir (or revert to glob `packages/*`
          when all are migrated)

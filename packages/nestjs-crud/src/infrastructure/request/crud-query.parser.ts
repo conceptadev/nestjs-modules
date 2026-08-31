@@ -1,6 +1,6 @@
 import { type PlainLiteralObject } from '@nestjs/common';
-import { isNil, isObject } from '@nestjs/common/utils/shared.utils';
 
+import { isNil, isObject } from '@concepta/nestjs-core';
 import {
   type EntityColumn,
   type OrderSortKey,

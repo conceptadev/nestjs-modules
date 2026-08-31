@@ -1,6 +1,6 @@
 import { BadRequestException, type PlainLiteralObject } from '@nestjs/common';
-import { isObject } from '@nestjs/common/utils/shared.utils';
 
+import { isObject } from '@concepta/nestjs-core';
 import { Where, type WhereClause } from '@concepta/nestjs-repository';
 
 import { sanitizeForMessage } from '../utils/validation.js';

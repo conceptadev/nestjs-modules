@@ -1,9 +1,9 @@
 import { type PlainLiteralObject } from '@nestjs/common';
-import { isObject } from '@nestjs/common/utils/shared.utils';
 
 import {
   AppContextHost,
   type DeepPartial,
+  isObject,
   RuntimeException,
   type HookMethodKeyType,
   type HookResolverService,

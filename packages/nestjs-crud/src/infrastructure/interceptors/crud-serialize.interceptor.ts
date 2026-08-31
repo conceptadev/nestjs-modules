@@ -10,9 +10,8 @@ import {
   PlainLiteralObject,
   StreamableFile,
 } from '@nestjs/common';
-import { isObject } from '@nestjs/common/utils/shared.utils';
 
-import { isStandardSchema } from '@concepta/nestjs-core';
+import { isObject, isStandardSchema } from '@concepta/nestjs-core';
 
 import { CrudException } from '../exceptions/crud.exception.js';
 import { CrudResponsePaginatedInterface } from '../interfaces/crud-response-paginated.interface.js';

@@ -4,9 +4,8 @@ import {
   type PlainLiteralObject,
   type Type,
 } from '@nestjs/common';
-import { isObject, isUndefined } from '@nestjs/common/utils/shared.utils';
 
-import { type DeepPartial } from '@concepta/nestjs-core';
+import { type DeepPartial, isObject, isUndefined } from '@concepta/nestjs-core';
 import {
   type EntityColumn,
   isWhereCondition,

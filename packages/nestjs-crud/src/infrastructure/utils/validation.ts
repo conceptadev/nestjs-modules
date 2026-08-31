@@ -1,4 +1,4 @@
-import { isNumber } from '@nestjs/common/utils/shared.utils';
+import { isNumber } from '@concepta/nestjs-core';
 
 export const isStringFull = (val: unknown): val is string =>
   typeof val === 'string' && val.length > 0;

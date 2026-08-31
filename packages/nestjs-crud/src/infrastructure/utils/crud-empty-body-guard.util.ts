@@ -1,6 +1,6 @@
 import { type z } from 'zod';
 
-import { isObject } from '@nestjs/common/utils/shared.utils';
+import { isObject } from '@concepta/nestjs-core';
 
 const EMPTY_BODY_MESSAGE = 'Body must not be empty.';
 
