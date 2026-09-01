@@ -36,18 +36,30 @@ describe('roleCreateSchema', () => {
     expect(roleCreateSchema.parse(validCreate)).toEqual(validCreate);
   });
 
-  it('defaults description to "" when omitted (matching legacy @IsOptional() + property initializer)', () => {
+  it('defaults description to "" when omitted (matching legacy @IsOptional())', () => {
     const { description: _description, ...rest } = validCreate;
     expect(roleCreateSchema.parse(rest)).toEqual({ ...rest, description: '' });
   });
 
-  it('defaults name to "" when omitted (matching legacy property initializer)', () => {
+  it('rejects a missing name', () => {
     const { name: _name, ...rest } = validCreate;
-    expect(roleCreateSchema.parse(rest)).toEqual({ ...rest, name: '' });
+    expect(roleCreateSchema.safeParse(rest).success).toBe(false);
   });
 
-  it('accepts an empty payload (both fields default to "")', () => {
-    expect(roleCreateSchema.parse({})).toEqual({ name: '', description: '' });
+  it('rejects an empty name', () => {
+    expect(
+      roleCreateSchema.safeParse({ ...validCreate, name: '' }).success,
+    ).toBe(false);
+  });
+
+  it('rejects a whitespace-only name', () => {
+    expect(
+      roleCreateSchema.safeParse({ ...validCreate, name: '   ' }).success,
+    ).toBe(false);
+  });
+
+  it('rejects an empty payload', () => {
+    expect(roleCreateSchema.safeParse({}).success).toBe(false);
   });
 });
 
@@ -58,13 +70,32 @@ describe('roleUpdateSchema', () => {
     expect(roleUpdateSchema.parse(validUpdate)).toEqual(validUpdate);
   });
 
-  it('defaults description to "" when omitted', () => {
+  it('leaves description untouched (unset) when omitted', () => {
     const { description: _description, ...rest } = validUpdate;
-    expect(roleUpdateSchema.parse(rest)).toEqual({ ...rest, description: '' });
+    expect(roleUpdateSchema.parse(rest)).toEqual(rest);
   });
 
-  it('accepts an empty payload (both fields default to "")', () => {
-    expect(roleUpdateSchema.parse({})).toEqual({ name: '', description: '' });
+  it('leaves name untouched (unset) when only description is sent', () => {
+    const { name: _name, ...rest } = validUpdate;
+    const result = roleUpdateSchema.parse(rest);
+    expect(result).toEqual(rest);
+    expect(result).not.toHaveProperty('name');
+  });
+
+  it('rejects an empty name', () => {
+    expect(
+      roleUpdateSchema.safeParse({ ...validUpdate, name: '' }).success,
+    ).toBe(false);
+  });
+
+  it('rejects a whitespace-only name', () => {
+    expect(
+      roleUpdateSchema.safeParse({ ...validUpdate, name: '   ' }).success,
+    ).toBe(false);
+  });
+
+  it('accepts an empty payload as a no-op patch', () => {
+    expect(roleUpdateSchema.parse({})).toEqual({});
   });
 });
 

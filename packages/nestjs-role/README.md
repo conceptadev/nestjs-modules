@@ -610,17 +610,18 @@ Exported from `@concepta/nestjs-role`:
 | Schema | Conforms To | Fields |
 | --- | --- | --- |
 | `roleSchema` | `RoleInterface` | `id`, `name`, `description`, audit fields (named OpenAPI component `Role`) |
-| `roleCreateSchema` | `RoleCreatableInterface` | `name`, `description` |
-| `roleUpdateSchema` | `RoleUpdatableInterface` | `name`, `description` |
+| `roleCreateSchema` | `RoleCreatableInterface` | `name` (required, non-blank), `description` (defaults to `''`) |
+| `roleUpdateSchema` | `RoleUpdatableInterface` | `name`, `description` (both optional — a partial update) |
 | `rolePaginatedSchema` | — | Paginated role list response |
 | `roleAssignmentSchema` | `RoleAssignmentInterface` | `id`, `roleId`, `assigneeId`, audit fields |
 | `roleAssignmentCreateSchema` | `RoleAssignmentCreatableInterface` | `roleId`, `assigneeId` |
 | `roleAssignmentPaginatedSchema` | — | Paginated assignment list response |
 
-`roleCreateSchema` and `roleUpdateSchema` apply `.default('')` to both
-`name` and `description` — omitted fields become empty strings rather than
-producing a 400. This preserves the legacy DTO behavior and is documented
-(intentional) behavior.
+`roleCreateSchema` requires a non-blank `name` (`.trim().min(1)`) and
+defaults an omitted `description` to `''`. `roleUpdateSchema` is a true
+partial — both fields are `.optional()`, so an omitted field is left
+untouched rather than overwritten; a present-but-blank `name` is still
+rejected. An empty `{}` body is accepted as a no-op patch.
 
 ### CRUD Schemas (optional)
 

@@ -6,18 +6,24 @@ import { type RoleUpdatableInterface } from '../../domain/interfaces/role-updata
 
 /**
  * Used only as a request body — not a named OpenAPI component (no
- * `withNamedComponent`). Structurally identical to `roleCreateSchema` (both
- * fields default to `''` when omitted) — kept as a separate schema since it
- * targets a distinct interface (`RoleUpdatableInterface`) and a distinct
- * wiring point (the Update operation).
+ * `withNamedComponent`). Unlike `roleCreateSchema`, both fields are
+ * `.optional()` — this is a partial update, so an omitted field must mean
+ * "don't touch it", not "set it to `''`". A present-but-blank `name` is
+ * still rejected (`.trim().min(1)`); an empty body (`{}`) is accepted as a
+ * no-op patch.
  */
 export const roleUpdateSchema = withOpenApi(
   conformsTo<RoleUpdatableInterface>()(
     z.object({
-      name: z.string().default('').meta({ description: 'Name of the role' }),
+      name: z
+        .string()
+        .trim()
+        .min(1)
+        .optional()
+        .meta({ description: 'Name of the role' }),
       description: z
         .string()
-        .default('')
+        .optional()
         .meta({ description: 'Description of the role' }),
     }),
   ),

@@ -148,6 +148,44 @@ describe('RoleCrudController (e2e)', () => {
       });
     });
 
+    it('PATCH /role/:id does not blank name when only description is sent', async () => {
+      const createRes = await supertest(app.getHttpServer())
+        .post('/role')
+        .send({ name: 'partial-patch', description: 'Original description' })
+        .expect(201);
+
+      const roleId = createRes.body.id;
+
+      const res = await supertest(app.getHttpServer())
+        .patch(`/role/${roleId}`)
+        .send({ description: 'Only description sent' })
+        .expect(200);
+
+      expect(res.body).toEqual({
+        id: roleId,
+        name: 'partial-patch',
+        description: 'Only description sent',
+        dateCreated: expect.any(String),
+        dateUpdated: expect.any(String),
+        dateDeleted: null,
+        version: 2,
+      });
+    });
+
+    it('POST /role rejects a missing name', async () => {
+      await supertest(app.getHttpServer())
+        .post('/role')
+        .send({ description: 'No name provided' })
+        .expect(400);
+    });
+
+    it('PUT /role/:id (new) rejects a missing name', async () => {
+      await supertest(app.getHttpServer())
+        .put(`/role/${randomUUID()}`)
+        .send({})
+        .expect(400);
+    });
+
     it('PUT /role/:id (new)', async () => {
       const roleId = randomUUID();
       const payload = {
