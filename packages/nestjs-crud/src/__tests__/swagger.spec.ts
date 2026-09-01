@@ -202,14 +202,13 @@ describe('CrudModule swagger document', () => {
   });
 });
 
-// ── Placeholder stripping (regression) ───────────────────────────────────
-// When an operation decorator has no local `request.body`, it applies a
-// placeholder `@CrudApiBody()` which would otherwise render as a
-// `{ type: 'string' }` request body. `CrudInitApiBody` must strip that
-// placeholder whenever a body schema resolves from the metadata hierarchy,
-// so handwritten controllers relying on the controller-level `request.body`
-// never document a stray string-typed body.
-describe('CrudModule swagger placeholder stripping', () => {
+// ── String-typed body regression ──────────────────────────────────────────
+// When an operation has no local `request.body`, `CrudInitApiBody` resolves
+// the controller-level default from the metadata hierarchy and documents
+// that — not swagger's own `{ type: 'string' }` `ApiBody()` default, which
+// only appears when no schema resolves anywhere at all (see
+// `crud-init-api-body.decorator.ts`'s schemaless branch).
+describe('CrudModule swagger request body resolution', () => {
   @CrudController({
     path: 'probe',
     entity: 'Probe',
@@ -217,8 +216,8 @@ describe('CrudModule swagger placeholder stripping', () => {
     response: { resource: photoSchema, paginated: photoPaginatedSchema },
   })
   class ProbeControllerFixture {
-    // deliberately NO local request.body — the placeholder ApiBody applied
-    // by @CrudCreate must be stripped in favor of the controller-level schema
+    // deliberately NO local request.body — resolves the controller-level
+    // schema via the metadata hierarchy instead
     @CrudCreate()
     async create() {
       return undefined;

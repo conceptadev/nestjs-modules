@@ -610,7 +610,7 @@ options object:
     operation?: ApiOperationOptions;
     query?: ApiQueryOptions[];
     params?: ApiParamOptions;
-    body?: ApiBodyOptions;
+    body?: ApiBodyOptions;                // Create/CreateBatch/Update/Replace only
     response?: ApiResponseOptions;
   };
 }
@@ -623,6 +623,12 @@ options object:
   `validateCustomDecorators`, `validateOptions`, `errorHttpStatusCode`,
   `exceptionFactory`. Pass `false` to disable validation for the body
   (it is still bound, just unvalidated).
+- `api.body` is only read by the four write operations that accept a body
+  (Create, CreateBatch, Update, Replace); it's ignored on read/delete
+  operations. It merges (`description`, `examples`, `required`, ...) into
+  the `@ApiBody()` documenting the resolved request body schema — a
+  `schema`/`type` set here is superseded by the resolved schema and has no
+  effect.
 - `response.serialization` is `CrudSerializationOptionsInterface`:
   `{ resource?: CrudSchema; paginated?: CrudSchema }` — schema
   overrides for response serialization.

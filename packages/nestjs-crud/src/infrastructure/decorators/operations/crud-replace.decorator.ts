@@ -51,12 +51,9 @@ export const CrudReplace = <T extends PlainLiteralObject = PlainLiteralObject>(
     CrudSerialize(response?.serialization),
     CrudApiOperation(api?.operation),
     CrudApiParam(api?.params),
-    // Schema-based bodies are documented by crud-init-api-body.decorator.ts's
-    // manual ApiBody injection instead of this placeholder-based mechanism
-    // (see that file — it resolves the same request.body/bodyBatch hierarchy
-    // this operation stores into below, so a placeholder is only needed when
-    // no schema resolves at all).
-    ...(bodySchema === undefined ? [CrudApiBody({ ...api?.body })] : []),
+    // Stores api.body for crud-init-api-body.decorator.ts to read and merge
+    // into the ApiBody() it builds from the resolved request body schema.
+    CrudApiBody(api?.body),
     CrudApiResponse(api?.response),
     ...getTransactionalDecorators(transactional),
   );

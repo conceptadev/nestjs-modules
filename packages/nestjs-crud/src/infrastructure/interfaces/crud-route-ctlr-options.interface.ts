@@ -32,6 +32,11 @@ interface CrudRouteCtlrOptionsInterface<T extends PlainLiteralObject> {
     operation?: ApiOperationOptions;
     query?: ApiQueryOptions[];
     params?: ApiParamOptions;
+    /**
+     * Only read by the write operations that accept a body — Create,
+     * CreateBatch, Update, Replace. Setting this on a read/delete operation
+     * type-checks but has no effect.
+     */
     body?: ApiBodyOptions;
     response?: ApiResponseOptions;
   };

@@ -1,36 +1,24 @@
-import { ApiBody, type ApiBodyOptions } from '@nestjs/swagger';
+import { type ApiBodyOptions } from '@nestjs/swagger';
 
-import { type DecoratorTargetObject } from '../../../crud.types.js';
-import { CrudException } from '../../exceptions/crud.exception.js';
+import { CRUD_MODULE_API_BODY_METADATA } from '../../../crud.constants.js';
+import {
+  CrudMetadataLookupTarget,
+  CrudMetadata,
+} from '../../services/crud-metadata.service.js';
 
 /**
- * \@CrudApiBody() open api decorator
+ * \@CrudApiBody() open api decorator.
+ *
+ * Stores the operation's `api.body` `ApiBodyOptions` for
+ * `crud-init-api-body.decorator.ts` to read and merge into the `@ApiBody()`
+ * it builds from the resolved request body schema — the same
+ * store-then-apply split `CrudApiParam`/`CrudApiQuery`/`CrudApiResponse`
+ * already use. `standardSchema` always wins over a caller-supplied
+ * `schema`/`type` (`@nestjs/swagger`'s own `SchemaObjectFactory` omits both
+ * before spreading the converted schema back in last), so a caller-supplied
+ * `schema`/`type` here is accepted but has no effect.
  */
-export function CrudApiBody(options?: ApiBodyOptions): MethodDecorator {
-  return (classTarget: DecoratorTargetObject, ...rest) => {
-    const [propertyKey] = rest;
-
-    if ('__proto__' in classTarget) {
-      // need the descriptor
-      const descriptor = Object.getOwnPropertyDescriptor(
-        classTarget,
-        propertyKey,
-      );
-
-      // sanity check
-      if (!descriptor) {
-        throw new CrudException({
-          message: 'Did not find property descriptor',
-          fault: 'usage',
-        });
-      }
-
-      ApiBody(options ?? {})(classTarget.prototype, propertyKey, descriptor);
-    } else {
-      throw new CrudException({
-        message: 'Cannot decorate with api body, target must be a class',
-        fault: 'usage',
-      });
-    }
-  };
-}
+export const CrudApiBody = CrudMetadata.createDecorator<ApiBodyOptions>({
+  key: CRUD_MODULE_API_BODY_METADATA,
+  lookupTarget: CrudMetadataLookupTarget.Method,
+});

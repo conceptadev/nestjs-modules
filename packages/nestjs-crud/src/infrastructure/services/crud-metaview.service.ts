@@ -1,5 +1,6 @@
 import { Injectable, PlainLiteralObject, Type } from '@nestjs/common';
 import {
+  ApiBodyOptions,
   ApiParamOptions,
   ApiQueryOptions,
   ApiResponseOptions,
@@ -13,6 +14,7 @@ import {
   CrudValidationOptions,
   MethodHandler,
 } from '../../crud.types.js';
+import { CrudApiBody } from '../decorators/openapi/crud-api-body.decorator.js';
 import { CrudApiParam } from '../decorators/openapi/crud-api-param.decorator.js';
 import { CrudApiQuery } from '../decorators/openapi/crud-api-query.decorator.js';
 import { CrudApiResponse } from '../decorators/openapi/crud-api-response.decorator.js';
@@ -160,6 +162,10 @@ export class CrudMetaview<
     handler: MethodHandler,
   ): ApiResponseOptions[] | undefined {
     return CrudMetadata.getHierarchy(CrudApiResponse, handler);
+  }
+
+  public getApiBodyOptions(handler: MethodHandler): ApiBodyOptions | undefined {
+    return CrudMetadata.getHierarchy(CrudApiBody, handler);
   }
 
   public getQuery(

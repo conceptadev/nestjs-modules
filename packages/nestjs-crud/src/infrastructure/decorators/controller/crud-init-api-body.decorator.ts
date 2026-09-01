@@ -3,7 +3,7 @@ import { ApiBody, type ApiBodyOptions } from '@nestjs/swagger';
 
 import { Operation } from '@concepta/nestjs-core';
 
-import { type CrudSchema } from '../../../crud.types.js';
+import { type CrudSchema, type MethodHandler } from '../../../crud.types.js';
 import { CrudException } from '../../exceptions/crud.exception.js';
 import { CrudMetaview } from '../../services/crud-metaview.service.js';
 import { swagger } from '../../utils/swagger.helper.js';
@@ -51,26 +51,57 @@ function discoverApiParametersKey(): string | undefined {
 const API_PARAMETERS_KEY: string | undefined = discoverApiParametersKey();
 
 /**
+ * Removes any existing body parameter entry this decorator previously wrote
+ * to `handler` (an entry with `in` set to `'body'`). `ApiBody()`'s own
+ * metadata storage is append-only, and `@nestjs/swagger`'s
+ * document-build-time dedup keeps the *first* body entry among duplicates —
+ * so without this, a second `ApiBody()` call on the same handler would be
+ * silently discarded instead of overriding the first. `CrudInit()` (and
+ * therefore this decorator) is documented as re-runnable
+ * (`crud-init.decorator.ts`) and genuinely does run twice on the
+ * hybrid-builder path (`configurable-crud.builder.ts` re-runs `CrudInit()`
+ * on an already-`@CrudController`-decorated class after augmenting it), so
+ * this keeps a second run's resolved body — which can differ from the
+ * first, e.g. a `@CrudBody`-pinned override — winning
+ * instead of being discarded by swagger's first-wins dedup.
+ */
+function stripExistingBodyEntry(handler: MethodHandler): void {
+  if (!API_PARAMETERS_KEY) return;
+
+  const existingParams: unknown[] =
+    Reflect.getMetadata(API_PARAMETERS_KEY, handler) ?? [];
+  const withoutBody = existingParams.filter(
+    (p) =>
+      typeof p !== 'object' || p === null || Reflect.get(p, 'in') !== 'body',
+  );
+  Reflect.defineMetadata(API_PARAMETERS_KEY, withoutBody, handler);
+}
+
+/**
  * \@CrudInit() api body decorator.
+ *
+ * The sole place `@ApiBody()` is ever applied for a CRUD operation —
+ * `CrudApiBody` (the operation decorators' `api.body` option) only stores
+ * `ApiBodyOptions` metadata, it never calls `@ApiBody()` itself.
  *
  * Resolves the request body schema — preferring a parameter-level
  * `@CrudBody({ schema })` (so a caller pinning the schema on the parameter
  * itself isn't silently overridden by a differing class/method default),
  * then falling back to the metadata hierarchy (method → class) — and
- * applies `@ApiBody({ standardSchema })` for each write operation. Passing
- * the schema itself (rather than a pre-converted JSON Schema blob) routes
- * it through the SAME document-level `standardSchemaConverter` responses
- * already use (see `apply-api-response.decorator.ts`), so a schema
- * registered via `withNamedComponent` documents as a `$ref` instead of
- * inlining — dynamically-generated crud controller methods have no
- * `design:paramtypes` reflection metadata for swagger's OWN parameter
- * explorer to pick this up automatically (see parameter-metadata-accessor.js),
- * so it's applied manually here instead.
+ * applies `@ApiBody({ ...apiBodyOptions, standardSchema })` for each write
+ * operation. Passing the schema itself (rather than a pre-converted JSON
+ * Schema blob) routes it through the SAME document-level
+ * `standardSchemaConverter` responses already use (see
+ * `apply-api-response.decorator.ts`), so a schema registered via
+ * `withNamedComponent` documents as a `$ref` instead of inlining —
+ * dynamically-generated crud controller methods have no `design:paramtypes`
+ * reflection metadata for swagger's OWN parameter explorer to pick this up
+ * automatically (see parameter-metadata-accessor.js), so it's applied
+ * manually here instead.
  *
- * Also removes any placeholder body entry left by the method-level
- * `@CrudApiBody` decorator (added by the operation decorators whenever
- * their own local `request.body` is undefined) so only one body entry
- * exists per operation.
+ * When no schema resolves at all, still applies `api.body` (if set) as a
+ * plain `@ApiBody()` so a fully-schemaless body-bearing operation isn't left
+ * completely undocumented.
  */
 export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
   /* istanbul ignore if */
@@ -110,12 +141,19 @@ export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
         continue;
     }
 
+    const apiBodyOptions = reflectionService.getApiBodyOptions(handler);
+
     const crudBodySchema = reflectionService
       .getBodyParamOptions(handler)
       ?.find((metadata) => metadata.schema)?.schema;
 
     const bodySchema = crudBodySchema ?? hierarchySchema;
-    if (!bodySchema) continue;
+
+    if (!bodySchema) {
+      stripExistingBodyEntry(handler);
+      ApiBody(apiBodyOptions ?? {})(prototype, methodName, descriptor);
+      continue;
+    }
 
     if (!bodySchema['~standard'].jsonSchema?.input) {
       // A schema missing its ~standard.jsonSchema bridge (i.e. never
@@ -127,26 +165,12 @@ export const CrudInitApiBody = (): ClassDecorator => (classTarget) => {
       });
     }
 
-    // Remove any existing body entry added by the method-level CrudApiBody
-    // placeholder (which renders as `{ type: 'string' }` when left in place).
-    // ApiBody() appends to API_PARAMETERS on descriptor.value, so clearing
-    // first ensures only one body entry exists after we append the resolved
-    // one below.
-    if (API_PARAMETERS_KEY) {
-      const existingParams: unknown[] =
-        Reflect.getMetadata(API_PARAMETERS_KEY, handler) ?? [];
-      const withoutBody = existingParams.filter(
-        (p) =>
-          typeof p !== 'object' ||
-          p === null ||
-          Reflect.get(p, 'in') !== 'body',
-      );
-      Reflect.defineMetadata(API_PARAMETERS_KEY, withoutBody, handler);
-    }
+    stripExistingBodyEntry(handler);
 
     const options: ApiBodyOptionsWithStandardSchema = {
+      ...apiBodyOptions,
+      required: apiBodyOptions?.required ?? true,
       standardSchema: bodySchema,
-      required: true,
     };
 
     ApiBody(options)(prototype, methodName, descriptor);
