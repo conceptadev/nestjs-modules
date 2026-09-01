@@ -4,6 +4,8 @@ import {
   type ArgumentsHost,
   type CanActivate,
   type ExecutionContext,
+  HttpStatus,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 
@@ -45,6 +47,12 @@ class MockErrorGuard implements CanActivate {
 class MockAsyncErrorGuard implements CanActivate {
   canActivate(_context: ExecutionContext): Promise<boolean> {
     return Promise.reject(new Error('Mock async guard error'));
+  }
+}
+
+class MockHttpExceptionGuard implements CanActivate {
+  canActivate(_context: ExecutionContext): boolean {
+    throw new UnauthorizedException('bad credentials');
   }
 }
 
@@ -314,6 +322,41 @@ describe(AuthRouterGuard.name, () => {
       await expect(call).rejects.toMatchObject({
         safeMessage: expect.stringContaining('Unknown error'),
       });
+    });
+
+    it('should classify a wrapped unexpected error as internal/500, not client/401', async () => {
+      mockExecutionContext = createMockExecutionContext('google');
+      mockAuthRouterGuards = {
+        google: new MockErrorGuard(),
+      };
+
+      const guardWithGuards = new AuthRouterGuard(mockAuthRouterGuards);
+
+      try {
+        await guardWithGuards.canActivate(mockExecutionContext);
+        throw new Error('Expected AuthRouterAuthenticationFailedException');
+      } catch (e) {
+        expect(e).toBeInstanceOf(AuthRouterAuthenticationFailedException);
+        expect((e as AuthRouterAuthenticationFailedException).httpStatus).toBe(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+        expect((e as AuthRouterAuthenticationFailedException).fault).toBe(
+          'internal',
+        );
+      }
+    });
+
+    it('should pass through an HttpException thrown by the delegated guard unwrapped', async () => {
+      mockExecutionContext = createMockExecutionContext('google');
+      mockAuthRouterGuards = {
+        google: new MockHttpExceptionGuard(),
+      };
+
+      const guardWithGuards = new AuthRouterGuard(mockAuthRouterGuards);
+
+      await expect(
+        guardWithGuards.canActivate(mockExecutionContext),
+      ).rejects.toBeInstanceOf(UnauthorizedException);
     });
   });
 

@@ -6,7 +6,10 @@ export const getExpirationDate = (
   expiresIn: string,
   now: Date = new Date(),
 ): Date => {
-  const expires = toMilliseconds(expiresIn);
+  // expiresIn is a required, client-supplied schema field with no
+  // module-configured fallback — an unparseable value is the caller's
+  // mistake.
+  const expires = toMilliseconds(expiresIn, undefined, 'client');
 
   if (!expires) {
     throw new OtpInvalidExpirationDateException();

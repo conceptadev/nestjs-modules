@@ -1,3 +1,5 @@
+import { HttpStatus } from '@nestjs/common';
+
 import {
   type OrderClause,
   type OrderSortKey,
@@ -59,6 +61,8 @@ export function analyzeExecution(
       message:
         'Filtering on many-cardinality relation "%s" requires distinctFilter configuration',
       messageParams: [effectiveDrivingRelation.name],
+      httpStatus: HttpStatus.BAD_REQUEST,
+      fault: 'client',
     });
   }
 
@@ -159,6 +163,8 @@ function validateNoOwningRelationConstraints(
         message:
           'Filtering or sorting on owning federated relation "%s" is not supported',
         messageParams: [relation.name],
+        httpStatus: HttpStatus.BAD_REQUEST,
+        fault: 'client',
       });
     }
   }
@@ -182,6 +188,8 @@ function validateRelationSorts(
         message:
           'Sorting on many-cardinality relation "%s" requires distinctFilter configuration',
         messageParams: [name],
+        httpStatus: HttpStatus.BAD_REQUEST,
+        fault: 'client',
       });
     }
   }

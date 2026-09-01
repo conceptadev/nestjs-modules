@@ -14,10 +14,14 @@ export class IdentityUserRelationshipException extends FederatedException {
 
   constructor(identityId: string, options?: RuntimeExceptionOptions) {
     super({
+      // A stored federated identity whose `user` relation is null/missing is
+      // a dangling reference in our own data (broken FK, missing eager
+      // load) — the caller presented a valid identity, so this isn't their
+      // mistake.
       message: 'Error while trying to load user relationship from identity %s',
       messageParams: [identityId],
-      httpStatus: HttpStatus.NOT_FOUND,
-      fault: 'client',
+      httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+      fault: 'internal',
       ...options,
     });
 

@@ -98,7 +98,7 @@ export class CrudSerializeInterceptor<
         message: 'Response failed schema validation: %s',
         messageParams: [result.issues.map((issue) => issue.message).join('; ')],
         originalError: new Error(JSON.stringify(result.issues)),
-        fault: 'usage',
+        fault: 'internal',
       });
     }
     return result.value;

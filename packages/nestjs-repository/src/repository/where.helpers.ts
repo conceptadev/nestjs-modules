@@ -210,6 +210,7 @@ export class Where<Entity extends PlainLiteralObject = PlainLiteralObject> {
             .replace(/[^\w.]/g, '')
             .substring(0, 100),
         ],
+        fault: 'usage',
       });
     }
     return { ...condition, relation: parts[0] };

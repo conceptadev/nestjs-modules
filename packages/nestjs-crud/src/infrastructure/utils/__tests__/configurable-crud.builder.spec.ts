@@ -1,4 +1,4 @@
-import { Inject, PlainLiteralObject } from '@nestjs/common';
+import { Controller, Inject, PlainLiteralObject } from '@nestjs/common';
 
 import { Ctx, Operation } from '@concepta/nestjs-core';
 
@@ -9,6 +9,8 @@ import { CrudCreate } from '../../decorators/operations/crud-create.decorator.js
 import { CrudList } from '../../decorators/operations/crud-list.decorator.js';
 import { CrudRead } from '../../decorators/operations/crud-read.decorator.js';
 import { CrudBody } from '../../decorators/params/crud-body.decorator.js';
+import { CrudEntity } from '../../decorators/routes/crud-entity.decorator.js';
+import { CrudDecoratorException } from '../../exceptions/crud-decorator.exception.js';
 import { CrudCtx } from '../../interceptors/crud-context.overlay.js';
 import { CrudContextInterface } from '../../interceptors/interfaces/crud-context.interface.js';
 import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver.js';
@@ -83,6 +85,26 @@ describe('ConfigurableCrudBuilder', () => {
       expect(() => builder.build()).toThrow(
         'Controller BareController must have @CrudEntity or @CrudController with entity specified',
       );
+    });
+
+    it('should throw when @CrudEntity is applied without @CrudController', () => {
+      // Realistic mistake: @CrudEntity alone never applies @CrudInit, so no
+      // query/command classes get resolved and no adapter is registered —
+      // this would otherwise boot clean and 500 on every request.
+      @Controller('entity-only')
+      @CrudEntity('TestEntity')
+      class EntityOnlyController {
+        @CrudList()
+        async list(@Ctx(CrudCtx) ctx: CrudContextInterface<TestEntity>) {
+          return ctx;
+        }
+      }
+
+      const builder = new ConfigurableCrudBuilder<TestEntity>({
+        controller: { class: EntityOnlyController },
+      });
+
+      expect(() => builder.build()).toThrow(CrudDecoratorException);
     });
   });
 
@@ -439,8 +461,9 @@ describe('ConfigurableCrudBuilder', () => {
         operations: [{ operation: Operation.List }],
       });
 
+      expect(() => builder.build()).toThrow(CrudDecoratorException);
       expect(() => builder.build()).toThrow(
-        'Controller BareController must have @CrudController with entity specified',
+        'Controller BareController must have @CrudEntity or @CrudController with entity specified',
       );
     });
   });

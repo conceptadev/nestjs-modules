@@ -20,6 +20,11 @@ export class CacheExpirationPolicy {
   }
 
   resolveExpirationDate(expiresIn?: string | null): Date | null {
-    return getExpirationDate(expiresIn ?? this.defaultExpiresIn);
+    // A malformed client-supplied value is the caller's mistake; falling
+    // through to a malformed module-configured default is ours.
+    return getExpirationDate(
+      expiresIn ?? this.defaultExpiresIn,
+      expiresIn ? 'client' : 'usage',
+    );
   }
 }

@@ -1,3 +1,5 @@
+import { HttpStatus } from '@nestjs/common';
+
 import { CacheException } from '../../../domain/exceptions/cache.exception.js';
 import { assertCacheId } from '../assert-cache-id.util.js';
 
@@ -33,6 +35,17 @@ describe('assertCacheId', () => {
     } catch (e) {
       expect(e).toBeInstanceOf(CacheException);
       expect((e as CacheException).message).toContain('number');
+    }
+  });
+
+  it('should throw with httpStatus BAD_REQUEST and a safe message', () => {
+    try {
+      assertCacheId(42);
+      throw new Error('Expected CacheException');
+    } catch (e) {
+      expect(e).toBeInstanceOf(CacheException);
+      expect((e as CacheException).httpStatus).toBe(HttpStatus.BAD_REQUEST);
+      expect((e as CacheException).safeMessage).toBe('Invalid id');
     }
   });
 });

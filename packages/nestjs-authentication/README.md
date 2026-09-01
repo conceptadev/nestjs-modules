@@ -1404,6 +1404,7 @@ without taking it as a parameter.
 | `Token` | Token lifecycle aggregate |
 | `TokenIssuedEvent` | Emitted when a token is issued |
 | `TokenRevokedEvent` | Emitted when a token is revoked |
+| `NotificationSendFailedEvent` | Emitted when a verify/recovery notification send fails |
 | `TokenInterface` / `TokenType` / `TokenCreatableInterface` | Token shapes |
 | `TokenOptionsInterface` | Per-token JWT options (extends `JwtModuleOptions`) |
 | `AuthenticatedUserInterface` | Shape of `request.user` |
@@ -1449,7 +1450,7 @@ without taking it as a parameter.
 | `RecoveryOtpInvalidException` | Recovery OTP invalid |
 | `VerifyException` | Base verify exception |
 | `VerifyOtpInvalidException` | Verify OTP invalid |
-| `AuthRouterException` | Base router exception (bad requests → 400) |
+| `AuthRouterException` | Base router exception (500 by default; `ProviderMissing`/`ProviderNotSupported` render 400, `AuthenticationFailed` renders 401) |
 | `AuthenticationUserPortRequiredException` | UserPort not configured |
 | `AuthenticationFeatureConfigException` | Feature misconfiguration |
 

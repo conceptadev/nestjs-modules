@@ -1,5 +1,7 @@
 import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
+import { HttpStatus } from '@nestjs/common';
+
 import { AppContextHost } from '@concepta/nestjs-core';
 
 import {
@@ -117,6 +119,23 @@ describe(InvitationService.name, () => {
       await expect(service.send(ctx, invitation)).rejects.toThrow(
         InvitationUserUndefinedException,
       );
+    });
+
+    it('should classify a dangling userId as internal/usage, not client', async () => {
+      const invitation = toInvitationDomain(createMockInvitationEntity());
+
+      mockUserPort.getById.mockResolvedValue(null);
+
+      try {
+        await service.send(ctx, invitation);
+        throw new Error('Expected InvitationUserUndefinedException');
+      } catch (e) {
+        expect(e).toBeInstanceOf(InvitationUserUndefinedException);
+        expect((e as InvitationUserUndefinedException).fault).toBe('usage');
+        expect((e as InvitationUserUndefinedException).httpStatus).toBe(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     });
   });
 
@@ -255,6 +274,21 @@ describe(InvitationService.name, () => {
       await expect(
         service.revokeByEmail(ctx, 'unknown@example.com', 'user'),
       ).rejects.toThrow(InvitationUserUndefinedException);
+    });
+
+    it('should classify no-user-for-email as client/BAD_REQUEST', async () => {
+      mockUserPort.getByEmail.mockResolvedValue(null);
+
+      try {
+        await service.revokeByEmail(ctx, 'unknown@example.com', 'user');
+        throw new Error('Expected InvitationUserUndefinedException');
+      } catch (e) {
+        expect(e).toBeInstanceOf(InvitationUserUndefinedException);
+        expect((e as InvitationUserUndefinedException).fault).toBe('client');
+        expect((e as InvitationUserUndefinedException).httpStatus).toBe(
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     });
   });
 

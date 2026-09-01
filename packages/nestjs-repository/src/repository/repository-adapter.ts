@@ -1,4 +1,4 @@
-import { type PlainLiteralObject } from '@nestjs/common';
+import { HttpStatus, type PlainLiteralObject } from '@nestjs/common';
 
 import {
   AppContextHost,
@@ -414,6 +414,8 @@ export abstract class RepositoryAdapter<
         throw new RuntimeException({
           message: 'Unknown relation "%s" on entity "%s"',
           messageParams: [j.relation, this.metadata.name],
+          httpStatus: HttpStatus.BAD_REQUEST,
+          fault: 'client',
         });
       }
     }
@@ -477,6 +479,8 @@ export abstract class RepositoryAdapter<
             throw new RuntimeException({
               message: 'Where clause too complex: exceeded %d DNF branches',
               messageParams: [RepositoryAdapter.MAX_DNF_BRANCHES],
+              httpStatus: HttpStatus.BAD_REQUEST,
+              fault: 'client',
             });
           }
           newResult.push([...existing, ...next]);

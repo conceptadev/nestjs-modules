@@ -3,6 +3,7 @@ import { MetadataScanner } from '@nestjs/core';
 
 import { createQuery } from '../../../application/utils/create-operation-classes.js';
 import { createQueryHandler } from '../../../application/utils/create-operation-handlers.js';
+import { CrudDecoratorException } from '../../exceptions/crud-decorator.exception.js';
 import { CrudAdapterResolver } from '../../resolvers/crud-adapter.resolver.js';
 import { CrudMetaview } from '../../services/crud-metaview.service.js';
 import {
@@ -48,9 +49,9 @@ export const CrudInitQuery =
       const name = reflectionService.getName(classTarget);
 
       if (!entity) {
-        throw new Error(
-          `CrudQuery on ${classTarget.name}.${methodName} requires controller entity (use @CrudEntity or @CrudController)`,
-        );
+        throw new CrudDecoratorException({
+          message: `CrudQuery on ${classTarget.name}.${methodName} requires controller entity (use @CrudEntity or @CrudController)`,
+        });
       }
 
       const controllerName = getControllerName({ entity, name });

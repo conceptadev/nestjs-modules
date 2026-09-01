@@ -140,11 +140,23 @@ export class ConfigurableCrudBuilder<
         });
       }
 
+      const hasAdapter = Boolean(adapter && isAdapterType<Entity>(adapter));
+
+      // @CrudEntity alone (without @CrudController) never applies CrudInit,
+      // so no query/command classes get resolved and no adapter metadata is
+      // stamped — a controller in that state boots clean but 500s on every
+      // request. Catch it here instead of at first request.
+      if (handlers.length === 0 && !hasAdapter) {
+        throw new CrudDecoratorException({
+          message: `Controller ${controllerClass.name} has @CrudEntity but no CRUD operations were resolved and no adapter provider was found. Use @CrudController (which wires operations via @CrudInit), not @CrudEntity alone.`,
+        });
+      }
+
       const providers: Provider[] = [...handlers];
       const adapters: ConfigurableCrudClassesMap = {};
 
-      // Create adapter provider if we have both entity and adapter type
-      if (entity && adapter && isAdapterType<Entity>(adapter)) {
+      // Create adapter provider if we have an adapter type
+      if (hasAdapter && adapter) {
         providers.unshift(
           createCrudAdapterProvider<Entity>({ entity, adapter }),
         );
@@ -645,7 +657,7 @@ export class ConfigurableCrudBuilder<
 
     if (!entity) {
       throw new CrudDecoratorException({
-        message: `Controller ${controllerClass.name} must have @CrudController with entity specified`,
+        message: `Controller ${controllerClass.name} must have @CrudEntity or @CrudController with entity specified`,
       });
     }
 

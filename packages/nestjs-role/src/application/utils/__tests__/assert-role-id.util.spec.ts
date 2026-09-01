@@ -1,3 +1,5 @@
+import { HttpStatus } from '@nestjs/common';
+
 import { RoleException } from '../../exceptions/role.exception.js';
 import { assertRoleId } from '../assert-role-id.util.js';
 
@@ -24,5 +26,16 @@ describe('assertRoleId', () => {
 
   it('should throw RoleException for a number', () => {
     expect(() => assertRoleId(42)).toThrow(RoleException);
+  });
+
+  it('should throw with httpStatus BAD_REQUEST and a safe message', () => {
+    try {
+      assertRoleId(42);
+      throw new Error('Expected RoleException');
+    } catch (e) {
+      expect(e).toBeInstanceOf(RoleException);
+      expect((e as RoleException).httpStatus).toBe(HttpStatus.BAD_REQUEST);
+      expect((e as RoleException).safeMessage).toBe('Invalid id');
+    }
   });
 });

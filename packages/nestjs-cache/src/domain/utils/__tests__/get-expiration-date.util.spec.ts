@@ -1,3 +1,5 @@
+import { type RuntimeException } from '@concepta/nestjs-core';
+
 import { getExpirationDate } from '../get-expiration-date.util.js';
 
 describe('getExpirationDate', () => {
@@ -35,5 +37,23 @@ describe('getExpirationDate', () => {
 
   it('should throw for invalid format', () => {
     expect(() => getExpirationDate('invalid')).toThrow();
+  });
+
+  it('should default to a client fault for an unparseable value', () => {
+    try {
+      getExpirationDate('invalid');
+      throw new Error('Expected a throw');
+    } catch (e) {
+      expect((e as RuntimeException).fault).toBe('client');
+    }
+  });
+
+  it('should use the fault passed by the caller', () => {
+    try {
+      getExpirationDate('invalid', 'usage');
+      throw new Error('Expected a throw');
+    } catch (e) {
+      expect((e as RuntimeException).fault).toBe('usage');
+    }
   });
 });

@@ -1,8 +1,13 @@
+import { fileURLToPath } from 'url';
+
 import { type RuntimeExceptionFault } from '../domain/exceptions/exception.types.js';
 import { RuntimeException } from '../domain/exceptions/runtime.exception.js';
 import { OverlayNotDefinedException } from '../infrastructure/context/exceptions/overlay-not-defined.exception.js';
 import { HookNotDecoratedException } from '../infrastructure/hook/exceptions/hook-not-decorated.exception.js';
 import { HookProviderNotFoundException } from '../infrastructure/hook/exceptions/hook-provider-not-found.exception.js';
+import { collectRuntimeExceptionClassNames } from '../testing/collect-runtime-exception-class-names.js';
+
+const SRC_DIR = fileURLToPath(new URL('..', import.meta.url));
 
 /**
  * Anti-drift check: every `RuntimeException` subclass in this package states
@@ -40,5 +45,15 @@ const CASES: {
 describe('exception fault classification', () => {
   it.each(CASES)('$name has fault=$fault', ({ build, fault }) => {
     expect(build().fault).toEqual(fault);
+  });
+
+  it('every RuntimeException subclass in this package is listed above', async () => {
+    const discovered = await collectRuntimeExceptionClassNames(
+      SRC_DIR,
+      RuntimeException,
+    );
+    const expected = new Set(CASES.map((c) => c.build().constructor.name));
+    const missing = discovered.filter((name) => !expected.has(name));
+    expect(missing).toEqual([]);
   });
 });

@@ -492,11 +492,11 @@ legacy class-validator DTO classes. All are exported from the main entry.
 | Exception | HTTP Status | Error Code |
 | --- | --- | --- |
 | `InvitationException` | -- | `INVITATION_ERROR` |
-| `InvitationAlreadyAcceptedException` | -- | `INVITATION_ALREADY_ACCEPTED_ERROR` |
-| `InvitationRevokedException` | -- | `INVITATION_REVOKED_ERROR` |
+| `InvitationAlreadyAcceptedException` | 409 | `INVITATION_ALREADY_ACCEPTED_ERROR` |
+| `InvitationRevokedException` | 409 | `INVITATION_REVOKED_ERROR` |
 | `InvitationNotFoundException` | 404 | `INVITATION_NOT_FOUND_ERROR` |
-| `InvitationUserUndefinedException` | -- | `INVITATION_USER_UNDEFINED_ERROR` |
-| `InvitationNotAcceptedException` | 400 | `INVITATION_NOT_ACCEPTED_ERROR` |
+| `InvitationUserUndefinedException` | -- (400 for a client-supplied email; see source) | `INVITATION_USER_UNDEFINED_ERROR` |
+| `InvitationNotAcceptedException` | -- (400 for a wrong/expired passcode; see source) | `INVITATION_NOT_ACCEPTED_ERROR` |
 
 All exceptions extend `InvitationException`, which extends
 `RuntimeException` from `@concepta/nestjs-core`. `RuntimeException` extends

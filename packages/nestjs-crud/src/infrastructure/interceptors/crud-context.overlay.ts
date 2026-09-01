@@ -47,6 +47,7 @@ export class CrudContextOverlay<
     if (!context) {
       throw new CrudContextException({
         message: 'CrudContextOverlay requires an ExecutionContext',
+        fault: 'usage',
       });
     }
 
@@ -72,6 +73,7 @@ export class CrudContextOverlay<
       if (!entity) {
         throw new CrudContextException({
           message: `No entity defined for ${target.name} (use @CrudEntity or @CrudController)`,
+          fault: 'usage',
         });
       }
 
@@ -80,6 +82,7 @@ export class CrudContextOverlay<
       if (!operation) {
         throw new CrudContextException({
           message: `No CRUD operation defined for ${target.name}.${handler.name}`,
+          fault: 'usage',
         });
       }
 
@@ -104,8 +107,11 @@ export class CrudContextOverlay<
         throw error;
       }
 
+      // Genuinely unexpected: query/param parsing errors are HttpExceptions
+      // and already rethrown above, so anything reaching here is a bug or
+      // an infrastructure failure, not something the caller did.
       throw new CrudContextException({
-        httpStatus: HttpStatus.BAD_REQUEST,
+        httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
         originalError: error,
       });
     }

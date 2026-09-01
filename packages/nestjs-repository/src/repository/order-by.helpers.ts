@@ -84,6 +84,7 @@ export class OrderBy<Entity extends PlainLiteralObject = PlainLiteralObject> {
             .replace(/[^\w.]/g, '')
             .substring(0, 100),
         ],
+        fault: 'usage',
       });
     }
     return { ...key, relation: parts[0] };

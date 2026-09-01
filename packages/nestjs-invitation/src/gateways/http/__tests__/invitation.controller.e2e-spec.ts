@@ -99,6 +99,21 @@ describe('InvitationController (e2e)', () => {
         .send(body)
         .expect(200);
     });
+
+    it('PATCH /invitation-acceptance/:code (wrong passcode is a 400)', async () => {
+      const { code } = invitation;
+      await otpPort.create({}, orgCategory, user.id);
+
+      const body: InvitationAcceptableInterface = {
+        passcode: 'wrong-passcode',
+        payload: { newPassword: 'hOdv2A2h%' },
+      };
+
+      await supertest(app.getHttpServer())
+        .patch(`/invitation-acceptance/${code}`)
+        .send(body)
+        .expect(400);
+    });
   });
 
   describe('Type: user', () => {

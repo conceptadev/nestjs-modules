@@ -20,9 +20,9 @@ export class AuthenticationFeatureConfigException extends AuthenticationExceptio
       message:
         "Feature '%s' requires [%s] to be configured but no provider was found.",
       messageParams: [feature, missingPorts.join(', ')],
+      fault: 'usage',
       ...options,
       httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
-      fault: 'usage',
     });
     this.errorCode = 'AUTHENTICATION_FEATURE_CONFIG_ERROR';
   }

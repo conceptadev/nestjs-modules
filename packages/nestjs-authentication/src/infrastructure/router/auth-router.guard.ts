@@ -4,6 +4,8 @@ import {
   CanActivate,
   Injectable,
   ExecutionContext,
+  HttpException,
+  HttpStatus,
   Inject,
 } from '@nestjs/common';
 
@@ -14,7 +16,6 @@ import { AuthRouterConfigNotAvailableException } from './exceptions/auth-router-
 import { AuthRouterGuardInvalidException } from './exceptions/auth-router-guard-invalid.exception.js';
 import { AuthRouterProviderMissingException } from './exceptions/auth-router-provider-missing.exception.js';
 import { AuthRouterProviderNotSupportedException } from './exceptions/auth-router-provider-not-supported.exception.js';
-import { AuthRouterException } from './exceptions/auth-router.exception.js';
 
 /**
  * Auth Router
@@ -88,14 +89,27 @@ export class AuthRouterGuard implements CanActivate {
         return Boolean(result);
       }
     } catch (error) {
-      // Re-throw our custom Auth Router exceptions
-      if (error instanceof AuthRouterException) {
+      // Re-throw our own Auth Router exceptions and anything the delegated
+      // guard already rendered as an HttpException (e.g. a passport strategy
+      // rejecting bad credentials) — those already carry the right status
+      // and body. Only an unexpected non-HTTP failure (provider outage,
+      // misconfiguration, a bug) reaches the wrap below, so it's classified
+      // as internal/500 rather than the client/401 that would tell a caller
+      // their credentials were wrong when the server is actually broken.
+      if (error instanceof HttpException) {
         throw error;
       }
 
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      throw new AuthRouterAuthenticationFailedException(provider, errorMessage);
+      throw new AuthRouterAuthenticationFailedException(
+        provider,
+        errorMessage,
+        {
+          httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+          fault: 'internal',
+        },
+      );
     }
   }
 

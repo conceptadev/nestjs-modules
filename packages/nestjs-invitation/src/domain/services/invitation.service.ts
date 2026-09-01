@@ -1,6 +1,11 @@
 import { randomUUID } from 'crypto';
 
-import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  PlainLiteralObject,
+} from '@nestjs/common';
 import { EventPublisher } from '@nestjs/cqrs';
 
 import { EventContextHost, ReferenceId } from '@concepta/nestjs-core';
@@ -61,7 +66,13 @@ export class InvitationService {
       const user = await this.userPort.getByEmail(txCtx, email);
 
       if (!user) {
-        throw new InvitationUserUndefinedException();
+        // No user for a caller-supplied email — a client mistake, not a
+        // wiring problem.
+        throw new InvitationUserUndefinedException({
+          safeMessage: 'No user found for the given email',
+          httpStatus: HttpStatus.BAD_REQUEST,
+          fault: 'client',
+        });
       }
 
       return this.create(txCtx, {
@@ -80,6 +91,9 @@ export class InvitationService {
       const user = await this.userPort.getById(txCtx, userId);
 
       if (!user) {
+        // userId came from the invitation row, not caller input — a
+        // dangling reference is a wiring/data problem. Leave fault at the
+        // class default ('usage').
         throw new InvitationUserUndefinedException();
       }
 
@@ -197,7 +211,13 @@ export class InvitationService {
       const user = await this.userPort.getByEmail(txCtx, email);
 
       if (!user) {
-        throw new InvitationUserUndefinedException();
+        // No user for a caller-supplied email — a client mistake, not a
+        // wiring problem.
+        throw new InvitationUserUndefinedException({
+          safeMessage: 'No user found for the given email',
+          httpStatus: HttpStatus.BAD_REQUEST,
+          fault: 'client',
+        });
       }
 
       await this.revokeByUserId(txCtx, user.id, category);

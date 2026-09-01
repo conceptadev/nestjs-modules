@@ -70,6 +70,7 @@ export class FederationOrchestrator {
       throw new FederationException({
         message: 'Entity "%s" has no primary key column',
         messageParams: [meta.name],
+        fault: 'usage',
       });
     }
 
@@ -407,6 +408,7 @@ export class FederationOrchestrator {
           message: 'Failed to fetch relation "%s" from entity "%s"',
           messageParams: [relation.name, relation.targetEntity],
           originalError: error,
+          fault: 'internal',
         });
       }
     });
@@ -566,6 +568,7 @@ export class FederationOrchestrator {
       throw new FederationException({
         message: 'No repository registered for entity "%s"',
         messageParams: [entityName],
+        fault: 'usage',
       });
     }
 

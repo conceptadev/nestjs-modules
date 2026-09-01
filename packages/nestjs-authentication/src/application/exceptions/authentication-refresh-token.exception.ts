@@ -11,9 +11,9 @@ export class AuthenticationRefreshTokenException extends AuthenticationException
   constructor(options?: Omit<RuntimeExceptionOptions, 'httpStatus'>) {
     super({
       message: 'Refresh token was verified, but failed further validation.',
+      fault: 'client',
       ...options,
       httpStatus: HttpStatus.UNAUTHORIZED,
-      fault: 'client',
     });
     this.errorCode = 'AUTHENTICATION_REFRESH_TOKEN_ERROR';
   }

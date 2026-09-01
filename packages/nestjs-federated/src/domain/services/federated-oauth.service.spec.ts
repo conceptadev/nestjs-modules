@@ -1,3 +1,4 @@
+import { HttpStatus } from '@nestjs/common';
 import { type EventPublisher } from '@nestjs/cqrs';
 
 import { AppContextHost } from '@concepta/nestjs-core';
@@ -146,6 +147,28 @@ describe(FederatedOAuthService, () => {
       await expect(
         service.sign({}, 'google', 'test@example.com', 'subject-id'),
       ).rejects.toThrow(IdentityUserRelationshipException);
+    });
+
+    it('should classify a broken identity/user relation as internal/500, not client/404', async () => {
+      const identityWithoutUser = toIdentityDomain(
+        createMockIdentityEntity({
+          user: { id: null },
+        }),
+      );
+      identityRepo.findByProviderAndSubject.mockResolvedValue(
+        identityWithoutUser,
+      );
+
+      try {
+        await service.sign({}, 'google', 'test@example.com', 'subject-id');
+        throw new Error('Expected IdentityUserRelationshipException');
+      } catch (e) {
+        expect(e).toBeInstanceOf(IdentityUserRelationshipException);
+        expect((e as IdentityUserRelationshipException).httpStatus).toBe(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+        expect((e as IdentityUserRelationshipException).fault).toBe('internal');
+      }
     });
 
     it('should throw IdentityFindUserException when user is not found', async () => {

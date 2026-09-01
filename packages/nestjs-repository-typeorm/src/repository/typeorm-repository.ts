@@ -225,6 +225,7 @@ export class TypeOrmRepository<
         throw new RuntimeException({
           message: 'Unknown where operator "%s"',
           messageParams: [operator],
+          fault: 'internal',
         });
       }
     }
@@ -483,6 +484,7 @@ export class TypeOrmRepository<
         throw new RuntimeException({
           message: 'Entity "%s" not found after update',
           messageParams: [this.metadata.name],
+          fault: 'internal',
         });
       }
 
@@ -522,6 +524,7 @@ export class TypeOrmRepository<
           'import RepositoryModule.forRoot() so TransactionScope is ' +
           'available, or wrap this call in an existing transaction',
         messageParams: [this.metadata.name],
+        fault: 'usage',
       });
     }
 

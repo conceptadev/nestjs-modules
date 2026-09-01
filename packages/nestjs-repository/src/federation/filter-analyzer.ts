@@ -1,4 +1,4 @@
-import { type PlainLiteralObject } from '@nestjs/common';
+import { HttpStatus, type PlainLiteralObject } from '@nestjs/common';
 
 import {
   type WhereClause,
@@ -130,6 +130,8 @@ export class FilterAnalyzer {
             message:
               'OR conditions on federated relation "%s" are not supported',
             messageParams: [clause.relation],
+            httpStatus: HttpStatus.BAD_REQUEST,
+            fault: 'client',
           });
         }
         this.addRelationCondition(clause.relation, clause);

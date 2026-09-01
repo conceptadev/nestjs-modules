@@ -1,4 +1,4 @@
-import { HttpException } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { AcceptInvitationCommand } from '../../../../application/commands/impl/accept-invitation.command.js';
@@ -34,7 +34,12 @@ export class AcceptInvitationRequestHandler implements ICommandHandler<AcceptInv
     }
 
     if (!invitation) {
-      throw new InvitationNotAcceptedException();
+      // otpPort.consume() found no match: a wrong or expired passcode.
+      throw new InvitationNotAcceptedException({
+        safeMessage: 'Invitation could not be accepted',
+        httpStatus: HttpStatus.BAD_REQUEST,
+        fault: 'client',
+      });
     }
 
     return null;

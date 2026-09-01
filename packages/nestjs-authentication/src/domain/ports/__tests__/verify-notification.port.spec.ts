@@ -4,6 +4,7 @@ import { type PlainLiteralObject } from '@nestjs/common';
 import { Command, type CommandBus, type EventBus } from '@nestjs/cqrs';
 
 import { NotificationSendFailedEvent } from '../../events/notification-send-failed.event.js';
+import { AuthenticationEmailException } from '../../exceptions/authentication-email.exception.js';
 import {
   type SendVerifyNotificationCommandInterface,
   VerifyNotificationPort,
@@ -24,6 +25,7 @@ class MockSendVerifyNotificationCommand
   }
 }
 
+const ctx = { requestId: 'req-1' };
 const flush = () => new Promise<void>((resolve) => setImmediate(resolve));
 
 describe(VerifyNotificationPort.name, () => {
@@ -46,7 +48,7 @@ describe(VerifyNotificationPort.name, () => {
       void commandBus.execute;
       vi.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
 
-      port.sendVerify({}, 'me@mail.com', {
+      port.sendVerify(ctx, 'me@mail.com', {
         passcode: 'abc123',
         tokenExp: new Date(),
       });
@@ -56,13 +58,27 @@ describe(VerifyNotificationPort.name, () => {
       );
     });
 
+    it('should not publish when the command succeeds', async () => {
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockResolvedValue(undefined);
+
+      port.sendVerify(ctx, 'me@mail.com', {
+        passcode: 'abc123',
+        tokenExp: new Date(),
+      });
+
+      await flush();
+
+      expect(eventBus.publish).not.toHaveBeenCalled();
+    });
+
     it('should not leave an unhandled rejection when the command fails', async () => {
       void commandBus.execute;
       vi.spyOn(commandBus, 'execute').mockRejectedValue(
         new Error('send failed'),
       );
 
-      port.sendVerify({}, 'me@mail.com', {
+      port.sendVerify(ctx, 'me@mail.com', {
         passcode: 'abc123',
         tokenExp: new Date(),
       });
@@ -75,21 +91,56 @@ describe(VerifyNotificationPort.name, () => {
       const error = new Error('send failed');
       vi.spyOn(commandBus, 'execute').mockRejectedValue(error);
 
-      port.sendVerify({}, 'me@mail.com', {
+      port.sendVerify(ctx, 'me@mail.com', {
         passcode: 'abc123',
         tokenExp: new Date(),
       });
 
       await flush();
 
-      expect(eventBus.publish).toHaveBeenCalledWith(
-        new NotificationSendFailedEvent(
-          {},
-          'me@mail.com',
-          MockSendVerifyNotificationCommand,
-          error,
-        ),
+      expect(eventBus.publish).toHaveBeenCalledTimes(1);
+      const published = vi.mocked(eventBus.publish).mock
+        .calls[0][0] as NotificationSendFailedEvent;
+      expect(published).toBeInstanceOf(NotificationSendFailedEvent);
+      expect(published.ctx).toBe(ctx);
+      expect(published.email).toBe('me@mail.com');
+      expect(published.command).toBe(MockSendVerifyNotificationCommand);
+      expect(published.error).toBeInstanceOf(AuthenticationEmailException);
+      expect(published.error.context.originalError).toBe(error);
+    });
+
+    it('should not leave an unhandled rejection when eventBus.publish rejects', async () => {
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockRejectedValue(
+        new Error('send failed'),
       );
+      vi.mocked(eventBus.publish).mockRejectedValue(
+        new Error('publish also failed'),
+      );
+
+      port.sendVerify(ctx, 'me@mail.com', {
+        passcode: 'abc123',
+        tokenExp: new Date(),
+      });
+
+      await expect(flush()).resolves.toBeUndefined();
+    });
+
+    it('should not leave an unhandled rejection when eventBus.publish throws synchronously', async () => {
+      void commandBus.execute;
+      vi.spyOn(commandBus, 'execute').mockRejectedValue(
+        new Error('send failed'),
+      );
+      vi.mocked(eventBus.publish).mockImplementation(() => {
+        throw new Error('publish threw synchronously');
+      });
+
+      port.sendVerify(ctx, 'me@mail.com', {
+        passcode: 'abc123',
+        tokenExp: new Date(),
+      });
+
+      await expect(flush()).resolves.toBeUndefined();
     });
   });
 });

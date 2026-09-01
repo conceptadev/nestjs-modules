@@ -407,7 +407,7 @@ which is what persisted entities and responses carry.
 | --- | --- |
 | `CacheNotFoundException` | Cache ID not found (HTTP 404) |
 | `CacheEntityNotFoundException` | Entity key not registered via `forFeature()` |
-| `CacheInvalidExpiredDateException` | Invalid `expiresIn` format |
+| `CacheInvalidExpiredDateException` | Invalid `expiresIn` format (HTTP 400) |
 | `CacheException` | Base cache exception |
 
 ## HTTP Controller with CRUD Module

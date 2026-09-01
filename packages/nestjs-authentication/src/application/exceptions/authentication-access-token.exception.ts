@@ -11,9 +11,9 @@ export class AuthenticationAccessTokenException extends AuthenticationException 
   constructor(options?: Omit<RuntimeExceptionOptions, 'httpStatus'>) {
     super({
       message: 'Access token was verified, but failed further validation.',
+      fault: 'client',
       ...options,
       httpStatus: HttpStatus.UNAUTHORIZED,
-      fault: 'client',
     });
     this.errorCode = 'AUTHENTICATION_ACCESS_TOKEN_ERROR';
   }
