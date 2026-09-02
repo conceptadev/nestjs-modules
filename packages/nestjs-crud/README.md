@@ -10,7 +10,7 @@ build modes: fully generated, pre-decorated, and hybrid.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-crud)](https://www.npmjs.com/package/@concepta/nestjs-crud)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-crud%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/nestjs-modules/peer/@nestjs/common/feature/version-8?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-crud%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -35,6 +35,8 @@ build modes: fully generated, pre-decorated, and hybrid.
 
 ```sh
 yarn add @concepta/nestjs-crud
+# required peers
+yarn add @nestjs/common @nestjs/config @nestjs/core @nestjs/swagger rxjs
 ```
 
 This package is **ESM-only** and targets **NestJS 12** on
@@ -47,18 +49,22 @@ schemas (Standard Schema) — `zod` is a direct dependency.
 | --- | --- |
 | `@concepta/nestjs-core` | Core interfaces, utilities, schema helpers, and hook system |
 | `@concepta/nestjs-repository` | Repository abstraction layer |
-| `@nestjs/common` | NestJS core |
-| `@nestjs/core` | Module reference and reflection |
-| `@nestjs/swagger` | OpenAPI decorator support |
+| `@standard-schema/spec` | Standard Schema types |
+| `deepmerge` | Option merging |
+| `qs` | Query-string parsing |
 | `zod` | Schema validation and serialization (Standard Schema) |
 
 ### Peer Dependencies
 
 | Package | Required | Notes |
 | --- | --- | --- |
+| `@nestjs/common` | Yes | NestJS core — install explicitly, no longer bundled |
+| `@nestjs/core` | Yes | Module reference and reflection — install explicitly |
+| `@nestjs/config` | Yes | Module option registration via `registerAs` |
+| `@nestjs/swagger` | Yes | OpenAPI decorator support — install explicitly |
 | `rxjs` | Yes | Interceptor pipeline |
 | `@concepta/nestjs-repository-typeorm` | No | TypeORM repository driver |
-| `@nestjs/cqrs` | No | Only when using `CrudCqrsResolver` |
+| `@nestjs/cqrs` | No | Optional peer — only when using `CrudCqrsResolver` |
 
 ## Quick Start
 
@@ -349,6 +355,16 @@ export class SomeService {
 | SoftDelete | `softDelete()` | `softDelete()` |
 | Restore | `restore()` | `restore()` |
 
+**Update / Replace and optimistic locking.** When the entity carries a
+version column (`CommonPostgresEntity`/`CommonSqliteEntity`), `update`/
+`replace` are guarded by an atomic version compare-and-swap in the
+repository layer. A concurrent write that lands between this request's read
+and its write is rejected with `409 Conflict` (`OptimisticLockException`)
+rather than silently clobbering. This requires `RepositoryModule.forRoot()`
+to be imported (it provides `TransactionScope`) — see
+[Optimistic Locking](../nestjs-repository-typeorm/README.md#optimistic-locking)
+in `@concepta/nestjs-repository-typeorm`.
+
 ## Controller Build Modes
 
 `ConfigurableCrudBuilder` supports three controller build paths.
@@ -628,7 +644,9 @@ options object:
   operations. It merges (`description`, `examples`, `required`, ...) into
   the `@ApiBody()` documenting the resolved request body schema — a
   `schema`/`type` set here is superseded by the resolved schema and has no
-  effect.
+  effect. The one exception: when no schema resolves anywhere for the
+  operation, `api.body` is instead applied verbatim as a plain `@ApiBody()`
+  — that is the one case where a `schema`/`type` set here does take effect.
 - `response.serialization` is `CrudSerializationOptionsInterface`:
   `{ resource?: CrudSchema; paginated?: CrudSchema }` — schema
   overrides for response serialization.
@@ -913,10 +931,12 @@ Pass `validation: false` (or `@CrudValidate(false)`) to disable validation
 for that body — the parameter is still bound, just unvalidated.
 
 In hand-written controllers, the validation schema resolves from
-`@CrudBody({ schema })` first, falling back to the operation decorator's own
-`request.body`/`bodyBatch`; the controller-level `request.body` default is
-never used for validation. Builder-generated and hybrid-generated methods
-derive `@CrudBody({ schema })` automatically from `operations[].request.body`.
+`@CrudBody({ schema })` first, falling back to `request.body`/`bodyBatch`
+resolved through the metadata hierarchy (method → class) — so a
+controller-level default is validated too, not just a docs placeholder for
+`@ApiBody` to render (see [Controller Build Modes](#controller-build-modes)).
+Builder-generated and hybrid-generated methods derive `@CrudBody({ schema })`
+automatically from `operations[].request.body`.
 
 ## OpenAPI Documents
 

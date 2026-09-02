@@ -9,7 +9,7 @@ entries keyed by `key`, `type`, and `assigneeId` with optional TTL expiration.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-cache)](https://www.npmjs.com/package/@concepta/nestjs-cache)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-cache%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/nestjs-modules/peer/@nestjs/common/feature/version-8?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-cache%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -33,7 +33,7 @@ entries keyed by `key`, `type`, and `assigneeId` with optional TTL expiration.
 ## Installation
 
 ```sh
-yarn add @concepta/nestjs-cache
+yarn add @concepta/nestjs-cache @nestjs/common @nestjs/config @nestjs/core
 ```
 
 This package is **ESM-only** and targets **NestJS 12** on
@@ -41,14 +41,17 @@ This package is **ESM-only** and targets **NestJS 12** on
 
 ### Dependencies
 
-`@nestjs/cqrs` is a direct dependency (used for `CommandBus`, `QueryBus`,
-`EventBus`). `zod` is a direct dependency — request/response shapes are
-Zod v4 (Standard Schema) schemas.
+`zod` is a direct dependency — request/response shapes are Zod v4
+(Standard Schema) schemas.
 
 ### Peer Dependencies
 
 | Package | Required | Notes |
 | --- | --- | --- |
+| `@nestjs/common` | Yes | NestJS core — install explicitly, no longer bundled |
+| `@nestjs/config` | Yes | Module option registration |
+| `@nestjs/core` | Yes | Module reference and reflection |
+| `@nestjs/cqrs` | No | Optional peer — required in practice for `CommandBus`/`QueryBus`/`EventBus` |
 | `typeorm` | No | Only if using the TypeORM repository adapter |
 | `@concepta/nestjs-crud` | No | Only if using the HTTP gateway layer |
 | `@concepta/typeorm-seeding` | No | Only for database seeding |

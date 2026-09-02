@@ -8,7 +8,7 @@ Advanced access control guard for NestJS with optional per-request filtering.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-access-control)](https://www.npmjs.com/package/@concepta/nestjs-access-control)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-access-control%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/nestjs-modules/peer/@nestjs/common/feature/version-8?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-access-control%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 # Table of Contents
 
@@ -76,15 +76,21 @@ Advanced access control guard for NestJS with optional per-request filtering.
 Install the `@concepta/nestjs-access-control` package using yarn or npm:
 
 ```sh
-yarn add @concepta/nestjs-access-control
+yarn add @concepta/nestjs-access-control @nestjs/common @nestjs/config @nestjs/core
 ```
 
 ```sh
-npm install @concepta/nestjs-access-control
+npm install @concepta/nestjs-access-control @nestjs/common @nestjs/config @nestjs/core
 ```
 
 Requirements: the package is **ESM-only** (no CommonJS build), targets
 **Node.js >= 22.12**, and runs on **NestJS 12**.
+
+Peer dependencies: `@nestjs/common`, `@nestjs/config`, and `@nestjs/core`
+(^12) must be installed by your app. `@nestjs/cqrs` (^12) is an optional
+peer but is required in practice — the guard and filter dispatch
+`CheckAccessQuery` / `FilterResponseAttributesQuery` / `ResolveUserRolesQuery`
+through it.
 
 ## Basic Setup
 

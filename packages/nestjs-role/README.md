@@ -10,7 +10,7 @@ queries, and domain events.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-role)](https://www.npmjs.com/package/@concepta/nestjs-role)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-role%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/nestjs-modules/peer/@nestjs/common/feature/version-8?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-role%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -31,7 +31,7 @@ queries, and domain events.
 ## Installation
 
 ```sh
-yarn add @concepta/nestjs-role
+yarn add @concepta/nestjs-role @nestjs/common @nestjs/core
 ```
 
 This package is ESM-only and requires Node.js >= 22.12 and NestJS 12.
@@ -42,15 +42,15 @@ This package is ESM-only and requires Node.js >= 22.12 and NestJS 12.
 | --- | --- |
 | `@concepta/nestjs-core` | Core interfaces, event context, and utilities |
 | `@concepta/nestjs-repository` | Repository abstraction and transaction scope |
-| `@nestjs/common` | NestJS core |
-| `@nestjs/core` | Module reference and reflection |
-| `@nestjs/cqrs` | CQRS command/query/event bus |
-| `@nestjs/swagger` | OpenAPI decorator support |
+| `zod` | Schema validation and serialization (Standard Schema) |
 
 ### Peer Dependencies
 
 | Package | Required | Notes |
 | --- | --- | --- |
+| `@nestjs/common` | Yes | NestJS core — install explicitly, no longer bundled |
+| `@nestjs/core` | Yes | Module reference and reflection — install explicitly |
+| `@nestjs/cqrs` | No | Optional peer — required in practice for the CQRS buses |
 | `typeorm` | No | Only when using TypeORM repository driver |
 | `@concepta/nestjs-crud` | Yes | The main entry imports `paginatedSchema` from it |
 | `@concepta/typeorm-seeding` | No | Only when using database seeding |

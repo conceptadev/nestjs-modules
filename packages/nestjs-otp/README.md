@@ -10,7 +10,7 @@ duplicate strategies, and automatic history cleanup.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-otp)](https://www.npmjs.com/package/@concepta/nestjs-otp)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-otp%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/nestjs-modules/peer/@nestjs/common/feature/version-8?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-otp%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -22,6 +22,7 @@ duplicate strategies, and automatic history cleanup.
 - [Queries](#queries)
 - [Domain Events](#domain-events)
 - [Otp Aggregate](#otp-aggregate)
+- [Otp Policy](#otp-policy)
 - [Repository](#repository)
 - [Context Overlay](#context-overlay)
 - [Schemas](#schemas)
@@ -34,20 +35,24 @@ duplicate strategies, and automatic history cleanup.
 ## Installation
 
 ```sh
-yarn add @concepta/nestjs-otp
+yarn add @concepta/nestjs-otp @nestjs/common @nestjs/config @nestjs/core
 ```
 
 This package is ESM-only and requires Node.js >= 22.12 and NestJS 12.
 
 ### Dependencies
 
-`@nestjs/cqrs` is a direct dependency (used for `CommandBus`, `QueryBus`,
-`EventBus`).
+`@standard-schema/spec` and `zod` are direct dependencies — request/response
+shapes are Zod v4 (Standard Schema) schemas.
 
 ### Peer Dependencies
 
 | Package | Required | Notes |
 | --- | --- | --- |
+| `@nestjs/common` | Yes | NestJS 12 framework |
+| `@nestjs/core` | Yes | Module reference and reflection |
+| `@nestjs/config` | Yes | Settings/config loading |
+| `@nestjs/cqrs` | No | Optional peer — required in practice for `CommandBus`, `QueryBus`, `EventBus` |
 | `rxjs` | Yes | Required by NestJS interceptors |
 | `typeorm` | No | Only if using the TypeORM repository adapter |
 | `@concepta/typeorm-seeding` | No | Only for database seeding |
@@ -187,7 +192,7 @@ Infrastructure (Repository, Mapper, Schemas, Config)
 ```
 
 - **Domain** -- `Otp` aggregate extending `DomainAggregate<OtpInterface>`,
-  3 domain events, history cleanup service
+  3 domain events, history cleanup service, domain policy (`OtpPolicy`)
 - **Application** -- 6 commands and 4 queries dispatched via `@nestjs/cqrs`,
   1 built-in event listener
 - **Infrastructure** -- `OtpRepository` with ctx-first signatures,
@@ -346,6 +351,43 @@ otp.isExpired();
 // Convert to plain OtpInterface object (inherited from DomainAggregate)
 const plain = otp.toPlain();
 ```
+
+## Otp Policy
+
+`OtpPolicy` (exported with its `OtpPolicySettings` interface) fronts access
+to OTP settings — type-service resolution, duplicate strategy, history
+retention, and rate limiting. It is constructed from the module settings and
+provided in DI, and exported from the core module so consumers can inject it
+directly instead of the raw settings token.
+
+```ts
+interface OtpPolicySettings {
+  types?: { [key: string]: OtpTypeServiceInterface };
+  duplicateStrategy?: 'ALLOW' | 'DEACTIVATE';
+  keepHistoryDays?: number;
+  rateSeconds?: number;
+  rateThreshold?: number;
+}
+
+class OtpPolicy {
+  constructor(settings?: OtpPolicySettings);
+  resolveTypeService(type: string): OtpTypeServiceInterface;
+  resolveDuplicateStrategy(override?: 'ALLOW' | 'DEACTIVATE'): 'ALLOW' | 'DEACTIVATE';
+  resolveKeepHistoryDays(override?: number): number | undefined;
+  resolveRateLimit(overrides?: {
+    rateSeconds?: number;
+    rateThreshold?: number;
+  }): { rateSeconds: number; rateThreshold: number } | undefined;
+}
+```
+
+`resolveTypeService(type)` throws `OtpTypeNotDefinedException` when no
+type service is registered for `type`. Every `resolve*` method accepts a
+per-call override that takes precedence over the module-level setting — this
+is how command/query handlers apply request-level rate-limit or
+duplicate-strategy overrides without bypassing the module default. All five
+command/query handlers and the history-cleanup listener resolve settings
+through `OtpPolicy` rather than reading the settings token directly.
 
 ## Repository
 
@@ -560,7 +602,7 @@ in a parent module for `forFeature()` to resolve its dependencies.
 
 | Import Path | Contents |
 | --- | --- |
-| `@concepta/nestjs-otp` | Module, aggregate, commands, queries, events, handlers, `otpCreateSchema`, repository, context overlay (`OtpContextOverlay`, `OtpCtx`, `OtpNamespace`), exceptions, domain interfaces |
+| `@concepta/nestjs-otp` | Module, aggregate, commands, queries, events, handlers, `OtpPolicy` / `OtpPolicySettings`, `otpCreateSchema`, repository, context overlay (`OtpContextOverlay`, `OtpCtx`, `OtpNamespace`), exceptions, domain interfaces |
 | `@concepta/nestjs-otp/optional/typeorm` | `OtpSqliteEntity`, `OtpPostgresEntity` |
 | `@concepta/nestjs-otp/optional/seeding` | `OtpFactory` |
 

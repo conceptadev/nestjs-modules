@@ -11,7 +11,7 @@ database-specific base entities for Postgres and SQLite.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-repository-typeorm)](https://www.npmjs.com/package/@concepta/nestjs-repository-typeorm)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-repository-typeorm%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/nestjs-modules/peer/@nestjs/common/feature/version-8?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-repository-typeorm%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -28,7 +28,7 @@ database-specific base entities for Postgres and SQLite.
 ## Installation
 
 ```sh
-yarn add @concepta/nestjs-repository-typeorm
+yarn add @concepta/nestjs-repository-typeorm @nestjs/common typeorm
 ```
 
 ### Requirements
@@ -42,7 +42,6 @@ NestJS 12.
 | --- | --- |
 | `@concepta/nestjs-core` | Core interfaces, utilities, and hook system |
 | `@concepta/nestjs-repository` | Abstract repository layer (`RepositoryAdapter`) |
-| `@nestjs/common` | NestJS core |
 | `@nestjs/typeorm` | TypeORM integration for NestJS |
 | `@tsyche/membrane` | Hook pipeline (`Permeator`/`Membrane`) |
 
@@ -50,6 +49,7 @@ NestJS 12.
 
 | Package | Required | Notes |
 | --- | --- | --- |
+| `@nestjs/common` | Yes | NestJS core — install explicitly, no longer bundled |
 | `typeorm` | Yes | TypeORM ^0.3.0 |
 
 ## Module Registration
@@ -151,7 +151,10 @@ export class OrderService {
 `@concepta/nestjs-repository` and implements the protected `do*` template
 methods using TypeORM; the public methods below are inherited concrete
 wrappers that run the hook pipeline. Every operation is transaction-aware,
-runs repository hooks, and throws `RepositoryQueryException` on errors.
+runs repository hooks, and wraps opaque driver errors in
+`RepositoryQueryException`. Purpose-built `RuntimeException` subclasses such
+as `OptimisticLockException` propagate unwrapped so callers can catch them
+by type.
 
 ### Methods
 
@@ -180,16 +183,26 @@ an optional `ctx` (repository context) for transaction and hook support.
 ### Optimistic Locking
 
 `update`/`replace` automatically enforce optimistic locking whenever the
-target entity carries a version column (any entity extending
-`CommonPostgresEntity`/`CommonSqliteEntity` — see
-[Base Entities](#base-entities)). The check derives entirely from the
-`entity` argument the caller already passes in: its version is compared,
-atomically, against the row's current version at write time, and a stale
-write — one based on an `entity` fetched before someone else already
-updated it — is rejected with `OptimisticLockException` (HTTP 409) instead
-of silently overwriting the concurrent change. No extra API surface, no
-opt-in required; existing `update`/`replace` call sites behave identically
-except that a stale write now throws.
+target entity carries a TypeORM `@VersionColumn` — which includes every
+entity extending `AuditPostgresEntity`, `AuditSqliteEntity`,
+`CommonPostgresEntity`, or `CommonSqliteEntity` (see
+[Base Entities](#base-entities)), plus any entity that declares one itself.
+The check derives entirely from the `entity` argument the caller already
+passes in: its version is compared, atomically, against the row's current
+version at write time, and a stale write — one based on an `entity` fetched
+before someone else already updated it — is rejected with
+`OptimisticLockException` (HTTP 409) instead of silently overwriting the
+concurrent change. No extra API surface and no opt-in required, but two
+behaviors do change for versioned entities. First, the write is applied to
+a freshly re-read row rather than to the `entity` you passed: your `entity`
+instance is no longer mutated in place, the returned entity is a different
+object with no relations loaded, and any in-memory changes you made to
+`entity` that aren't also in `data` are discarded — read the result back
+from the return value. Second, because the guard runs inside a
+`TransactionScope.run()` (see below), a conflict dooms the enclosing
+transaction — catching `OptimisticLockException` and continuing does not
+rescue it; retry the whole transaction from outside, re-reading the entity
+first.
 
 The check runs inside a transaction, opening one scoped to just that call
 if the caller isn't already inside one (e.g. via `@Transactional()`), so a
@@ -198,8 +211,11 @@ write — **when `RepositoryModule.forRoot()` is imported**, since it's the
 one that provides `TransactionScope`. If `TypeOrmRepositoryModule` is used
 directly without it (see [Module Registration](#module-registration)) and
 the caller isn't already inside their own active transaction, `update`/
-`replace` on a versioned entity throws immediately rather than silently
-running the guard and the write as two separate, unprotected statements.
+`replace` on a versioned entity throws immediately — a `RuntimeException`
+whose message names the entity and points at `RepositoryModule.forRoot()` —
+rather than silently running the guard and the write as two separate,
+unprotected statements. This is a configuration error surfaced at call
+time, not a runtime conflict; it is not an `OptimisticLockException`.
 A version value supplied by the caller in `data` is always ignored — only
 the version read from the `entity` argument, and the row's own
 auto-incrementing column, ever determine the real version.

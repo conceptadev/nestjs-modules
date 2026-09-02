@@ -10,7 +10,7 @@ nesting, and a two-level repository hook system.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-repository)](https://www.npmjs.com/package/@concepta/nestjs-repository)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-repository%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/nestjs-modules/peer/@nestjs/common/feature/version-8?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-repository%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -33,7 +33,7 @@ nesting, and a two-level repository hook system.
 ## Installation
 
 ```sh
-yarn add @concepta/nestjs-repository
+yarn add @concepta/nestjs-repository @nestjs/common @nestjs/core rxjs
 ```
 
 ### Requirements
@@ -46,14 +46,14 @@ NestJS 12.
 | Package | Notes |
 | --- | --- |
 | `@concepta/nestjs-core` | Core interfaces, hook system, and utilities |
-| `@nestjs/common` | NestJS core |
-| `@nestjs/core` | Reflector for metadata |
 | `@tsyche/membrane` | Hook pipeline (`Permeator`/`Membrane`) — ^0.7.0 |
 
 ### Peer Dependencies
 
 | Package | Required | Notes |
 | --- | --- | --- |
+| `@nestjs/common` | Yes | NestJS core — install explicitly, no longer bundled |
+| `@nestjs/core` | Yes | Reflector for metadata — install explicitly |
 | `rxjs` | Yes | Used by `TransactionalRunner` and interceptor |
 
 ## Module Registration
@@ -226,6 +226,12 @@ class MyDriverRepository<Entity> extends RepositoryAdapter<Entity> {
   // ... implement the remaining do* methods, transform, and merge
 }
 ```
+
+Each entry in `metadata.columns` must supply `name`, `isPrimary`,
+`isRemoveDate`, and `isVersion`. Set `isVersion: true` on the
+optimistic-locking version column, if the driver has one — `getVersionColumn()`
+reads it. Adapters that leave it `false` everywhere simply get no
+optimistic-locking support.
 
 ## Relations and Joins
 
@@ -1028,8 +1034,10 @@ then runs after-hooks on the result, with one of two merge semantics:
   hook mutations.
 
 Any error thrown inside the pipeline (a hook or the driver call) is wrapped
-in `RepositoryQueryException`; already-wrapped errors pass through
-unchanged.
+in `RepositoryQueryException`. `RuntimeException` subclasses — `OptimisticLockException`,
+`FederationException`, the transaction exceptions, and any already-wrapped
+`RepositoryQueryException` — pass through unchanged, so callers can catch
+them by type and their `httpStatus` survives to the transport layer.
 
 Two `OverlayRef` tokens are exported for reading repository state from an
 `AppContextHost` (via `ctx.with(ref)` or `@Ctx(ref)`):

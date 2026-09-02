@@ -14,7 +14,7 @@ utilities**.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-core)](https://www.npmjs.com/package/@concepta/nestjs-core)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/nestjs-modules/peer/@nestjs/common/feature/version-8?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-core%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -36,7 +36,7 @@ utilities**.
 ## Installation
 
 ```sh
-yarn add @concepta/nestjs-core
+yarn add @concepta/nestjs-core @nestjs/common @nestjs/core @nestjs/swagger rxjs
 ```
 
 ### Requirements
@@ -50,19 +50,21 @@ NestJS 12.
 | --- | --- |
 | `@concepta/nestjs-core` | Full public surface: hooks, context, exceptions, references, utilities, enums, schemas (`auditSchema`, `referenceIdSchema`, `conformsTo`, `withOpenApi`, `withNamedComponent`, `standardSchemaConverter`, `isStandardSchema`). |
 | `@concepta/nestjs-core/aggregate` | `DomainAggregate`, `DomainMapper`, `domainAggregateSchema`, `AggregateMetaInterface`. |
-| `@concepta/nestjs-core/testing` | `createMockEventPublisher`, `createMockCommandBus`, `createMockQueryBus`. |
+| `@concepta/nestjs-core/testing` | `createMockEventPublisher`, `createMockCommandBus`, `createMockQueryBus`, `collectRuntimeExceptionClassNames`. |
 
 ### Dependencies
 
-Direct dependencies: `@nestjs/common`, `@nestjs/core`, `@nestjs/swagger`,
-`ms`, `rxjs`, `zod` (^4.4.3).
+Direct dependencies: `ms`, `rxjs`, `zod` (^4.4.3).
 
 ### Peer Dependencies
 
 | Package | Required | Notes |
 | --- | --- | --- |
+| `@nestjs/common` | Yes | NestJS 12 framework — install explicitly, no longer bundled |
+| `@nestjs/core` | Yes | Module reference and reflection — install explicitly |
+| `@nestjs/swagger` | Yes | Required by the schema/OpenAPI bridge utilities — install explicitly |
 | `rxjs` | Yes | Observable support |
-| `@nestjs/cqrs` | No | Only if using CQRS patterns |
+| `@nestjs/cqrs` | No | Optional peer — only if using CQRS patterns |
 
 ## Module Registration
 
@@ -129,6 +131,11 @@ export class TenantScopeHook {
   }
 }
 ```
+
+Forgetting `@Hook()` is a hard failure, not a silent no-op: a class registered
+via `@UseHooks()` without the class-level `@Hook()` decorator throws
+`HookNotDecoratedException` at resolution time, and a hook that can't be
+resolved from the module's providers throws `HookProviderNotFoundException`.
 
 ### Attaching Hooks to Controllers
 
@@ -324,6 +331,7 @@ export class MyNotFoundException extends RuntimeException {
       httpStatus: HttpStatus.NOT_FOUND,
       message: 'Entity %s not found',
       messageParams: [id],
+      fault: 'client',
     });
     this.errorCode = 'MY_NOT_FOUND_ERROR';
   }
@@ -340,6 +348,7 @@ Key options (`RuntimeExceptionOptions`):
 | `safeMessageParams` | `unknown[]` | Interpolation values for `safeMessage`. |
 | `httpStatus` | `HttpStatus` | HTTP status code. Defaults to `500`. |
 | `originalError` | `unknown` | Original error cause (wrapped into context). |
+| `fault` | `'client' \| 'usage' \| 'internal'` | Who is at fault, independent of `httpStatus` — triage classification for logging/observability. Defaults to `'internal'` (the fail-loud fallback for an unclassified exception), so subclasses should set it explicitly. Never rendered on the wire — see HTTP Responses below. |
 
 ### HTTP Responses
 
@@ -359,7 +368,8 @@ returned by `getResponse()`:
 `error` is the HTTP status text (omitted for unknown status codes). Message
 resolution: when `safeMessage` is set, it is always used; without one,
 statuses `>= 500` fall back to `'Internal Server Error'` (never the internal
-message), and 4xx statuses use `message`.
+message), and 4xx statuses use `message`. `fault` is deliberately absent from
+the response body — it never reaches the wire.
 
 ## Schemas & OpenAPI
 
@@ -525,13 +535,14 @@ import {
   createMockEventPublisher,
   createMockCommandBus,
   createMockQueryBus,
+  collectRuntimeExceptionClassNames,
 } from '@concepta/nestjs-core/testing';
 ```
 
-Each factory returns a `vitest-mock-extended` `DeepMockProxy` of the
-corresponding CQRS class. `createMockEventPublisher` additionally pre-wires
-`mergeObjectContext` to return its argument unchanged, matching real runtime
-behavior.
+`createMockEventPublisher`, `createMockCommandBus`, and `createMockQueryBus`
+each return a `vitest-mock-extended` `DeepMockProxy` of the corresponding CQRS
+class. `createMockEventPublisher` additionally pre-wires `mergeObjectContext`
+to return its argument unchanged, matching real runtime behavior.
 
 ```ts
 import { Test } from '@nestjs/testing';
@@ -545,6 +556,13 @@ const moduleRef = await Test.createTestingModule({
   .useValue(createMockEventPublisher())
   .compile();
 ```
+
+`collectRuntimeExceptionClassNames(srcDir, runtimeExceptionClass)` is a
+different kind of helper — not a mock. It discovers every `RuntimeException`
+subclass exported from a `*.exception.ts` file under `srcDir`, by dynamically
+importing each file and walking its prototype chain. Packages use it in a
+per-package `exception-fault.spec.ts` suite to assert every exception class
+sets a `fault`, so a new exception can't silently ship unclassified.
 
 ## API Reference
 
@@ -569,6 +587,8 @@ const moduleRef = await Test.createTestingModule({
 | --- | --- |
 | `HookResolverService` | Resolves and executes hook methods for a given hook type and method key. |
 | `HooksCtx` | `OverlayRef` token for the hook context. Use with `ctx.with(HooksCtx)` or `@Ctx(HooksCtx)`. |
+| `HookNotDecoratedException` | Thrown when a class passed to `@UseHooks()` is missing the class-level `@Hook()` decorator (error code `HOOK_NOT_DECORATED`). |
+| `HookProviderNotFoundException` | Thrown when a hook registered via `@UseHooks()` cannot be resolved from the module's providers (error code `HOOK_PROVIDER_NOT_FOUND`). |
 
 ### Hook Types and Interfaces
 
@@ -610,12 +630,13 @@ const moduleRef = await Test.createTestingModule({
 
 | Export | Description |
 | --- | --- |
-| `RuntimeException` | Base domain exception. Extends NestJS `HttpException`; composes the wire body `{ statusCode, message, errorCode, error? }` lazily in `getResponse()`. Accepts `httpStatus`, `safeMessage`, `messageParams`, `originalError`. |
+| `RuntimeException` | Base domain exception. Extends NestJS `HttpException`; composes the wire body `{ statusCode, message, errorCode, error? }` lazily in `getResponse()`. Accepts `httpStatus`, `safeMessage`, `messageParams`, `originalError`, `fault`. |
 | `RuntimeExceptionInterface` | Interface for `RuntimeException`. |
 | `RuntimeExceptionOptions` | Options bag for the `RuntimeException` constructor. |
 | `RuntimeExceptionContext` | Type of the `context` property on `RuntimeException`. Defined as `ExceptionContext & { originalError?: Error }`. |
+| `RuntimeExceptionFault` | String union `'client' \| 'usage' \| 'internal'` classifying who is at fault. |
 | `ExceptionContext` | Base context shape: `Record<string, unknown> & { originalError?: unknown }`. Extended by `RuntimeExceptionContext`. |
-| `ExceptionInterface` | Minimal interface: `errorCode`, `httpStatus`, `safeMessage`. |
+| `ExceptionInterface` | Minimal interface: `errorCode`, `context?`. Extends `Error`. |
 | `NotAnErrorException` | Wraps a non-`Error` value (e.g. a string or object) into an `Error`. Used internally by `mapNonErrorToException`. |
 
 ### Event Context Exports
@@ -675,7 +696,8 @@ const moduleRef = await Test.createTestingModule({
 | --- | --- |
 | `createSettingsProvider` | Factory that creates a NestJS `Provider` wiring module options to a settings token, with optional transformer support. |
 | `mapNonErrorToException` | Converts any non-`Error` value to a `NotAnErrorException`; passes through real `Error` instances unchanged. |
-| `toMilliseconds` | Converts a duration string (e.g. `'1h'`) or number to milliseconds via the `ms` library. |
+| `toMilliseconds` | Converts a duration string (e.g. `'1h'`) or number to milliseconds via the `ms` library. Accepts an optional third `fault` argument classifying an unparseable value on the thrown `RuntimeException` (defaults to `'internal'`). |
+| `isNil`, `isUndefined`, `isString`, `isNumber`, `isObject` | Narrowing type guards. Rockets-owned replacements for the unpublished `@nestjs/common/utils/shared.utils` internals. |
 | `DeepPartial<T>` | Recursive `Partial<T>`. |
 | `DomainFactory<Creatable, Domain>` | Interface enforcing `create` and `createWithId` static factory signatures on domain aggregate classes. |
 | `AssigneeRelationInterface` | Interface for entities that hold an `assignee` relation (`{ assignee: ReferenceIdInterface }`). |

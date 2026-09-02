@@ -4,7 +4,7 @@
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-authentication)](https://www.npmjs.com/package/@concepta/nestjs-authentication)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-authentication%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/nestjs-modules/peer/@nestjs/common/feature/version-8?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-authentication%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 Comprehensive NestJS authentication module built on CQRS and clean architecture.
 Includes local (username/password), JWT bearer, refresh token, password recovery,
@@ -92,8 +92,12 @@ yarn add @concepta/nestjs-authentication
 Peer dependencies:
 
 ```bash
-yarn add rxjs
+yarn add rxjs @nestjs/common @nestjs/config @nestjs/core @nestjs/swagger
 ```
+
+`@nestjs/cqrs` is also a peer, marked optional in `peerDependenciesMeta`,
+but is required in practice — every port-backed feature (recovery, verify,
+OAuth router) dispatches through it.
 
 Requirements:
 
@@ -769,7 +773,9 @@ settings: {
 **Notification dispatch:** Recovery events are dispatched fire-and-forget via
 `RecoveryNotificationPort`, which calls `CommandBus.execute()` with the command
 class you provide in `ports.recoveryNotification`. Register a `@CommandHandler`
-for each command class in your application module:
+for each command class in your application module. A rejecting handler is not
+silent — see [Custom Notification Commands](#custom-notification-commands)
+for the `NotificationSendFailedEvent` published on failure.
 
 ```typescript
 ports: {
@@ -877,7 +883,9 @@ settings: {
 
 **Notification dispatch:** `VerifyNotificationPort` fires
 `sendVerifyNotificationCommand` via the command bus. The command receives
-`(ctx, email, passcode, tokenExp)` — see `SendVerifyNotificationCommandInterface`:
+`(ctx, email, passcode, tokenExp)` — see `SendVerifyNotificationCommandInterface`.
+A rejecting handler publishes `NotificationSendFailedEvent` — see
+[Custom Notification Commands](#custom-notification-commands):
 
 ```typescript
 ports: {
@@ -949,7 +957,11 @@ async callback(@Req() req: Request) {
 only router exception in the public exports. Client mistakes — a missing
 `?provider=` parameter or a provider with no registered guard — are rejected
 with **400 Bad Request**. Server-side misconfiguration (missing guard config,
-invalid guard) surfaces as 500.
+invalid guard) surfaces as 500. An `HttpException` thrown by the delegated
+provider guard (e.g. a Passport strategy rejecting credentials) is re-thrown
+unchanged — the router does not rewrite its status or body. Any other
+unexpected failure from the provider guard is wrapped as
+`AuthRouterAuthenticationFailedException` with **500** and `fault: 'internal'`.
 
 ---
 
@@ -1243,6 +1255,13 @@ export class SendRecoverPasswordHandler
 }
 ```
 
+If your command handler rejects, the port publishes `NotificationSendFailedEvent`
+on the `EventBus` — it carries `ctx`, `email`, the command class, and an
+`AuthenticationEmailException` wrapping the original error. Register an
+`@EventsHandler(NotificationSendFailedEvent)` to log or retry; the send
+itself is never retried by the module and the originating request is
+unaffected.
+
 ### Disabling the Global Guard
 
 To disable the global guard entirely:
@@ -1450,7 +1469,7 @@ without taking it as a parameter.
 | `RecoveryOtpInvalidException` | Recovery OTP invalid |
 | `VerifyException` | Base verify exception |
 | `VerifyOtpInvalidException` | Verify OTP invalid |
-| `AuthRouterException` | Base router exception (500 by default; `ProviderMissing`/`ProviderNotSupported` render 400, `AuthenticationFailed` renders 401) |
+| `AuthRouterException` | Base router exception (500 by default; `ProviderMissing`/`ProviderNotSupported` render 400. `AuthRouterGuard` classifies an unexpected provider-guard failure as 500/internal; an `HttpException` raised by the delegated guard is re-thrown unchanged.) |
 | `AuthenticationUserPortRequiredException` | UserPort not configured |
 | `AuthenticationFeatureConfigException` | Feature misconfiguration |
 

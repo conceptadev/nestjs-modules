@@ -10,7 +10,7 @@ checking via four domain services and a configurable policy.
 [![NPM Downloads](https://img.shields.io/npm/dw/@concepta/nestjs-password)](https://www.npmjs.com/package/@concepta/nestjs-password)
 [![GH Last Commit](https://img.shields.io/github/last-commit/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets)
 [![GH Contrib](https://img.shields.io/github/contributors/conceptadev/rockets?logo=github)](https://github.com/conceptadev/rockets/graphs/contributors)
-[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/rockets/@nestjs/common?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-password%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
+[![NestJS Dep](https://img.shields.io/github/package-json/dependency-version/conceptadev/nestjs-modules/peer/@nestjs/common/feature/version-8?label=NestJS&logo=nestjs&filename=packages%2Fnestjs-password%2Fpackage.json)](https://www.npmjs.com/package/@nestjs/common)
 
 ## Table of Contents
 
@@ -27,7 +27,7 @@ checking via four domain services and a configurable policy.
 ## Installation
 
 ```sh
-yarn add @concepta/nestjs-password
+yarn add @concepta/nestjs-password @nestjs/common @nestjs/config @nestjs/core
 ```
 
 Requirements: the package is **ESM-only** (no CommonJS build), targets
@@ -38,12 +38,17 @@ Requirements: the package is **ESM-only** (no CommonJS build), targets
 | Package | Notes |
 | --- | --- |
 | `@concepta/nestjs-core` | `RuntimeException` base class, reference types, utilities |
-| `@nestjs/common` | NestJS core |
-| `@nestjs/core` | NestJS core |
-| `@nestjs/config` | Configuration module |
-| `@nestjs/cqrs` | CQRS command bus |
 | `bcrypt` | Password hashing |
 | `zxcvbn` | Password strength evaluation |
+
+### Peer Dependencies
+
+| Package | Required | Notes |
+| --- | --- | --- |
+| `@nestjs/common` | Yes | NestJS 12 framework |
+| `@nestjs/core` | Yes | Required by `@nestjs/cqrs` |
+| `@nestjs/config` | Yes | Configuration module |
+| `@nestjs/cqrs` | No | Optional peer — required in practice, the command bus |
 
 ## Module Registration
 
