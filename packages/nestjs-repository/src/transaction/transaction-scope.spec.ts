@@ -131,6 +131,76 @@ describe(TransactionScope.name, () => {
     });
   });
 
+  describe('onApplicationBootstrap', () => {
+    it('should warn when no transaction factory is registered', async () => {
+      const emptyRegistry = new TransactionFactoryRegistry();
+      const moduleRef = await Test.createTestingModule({
+        providers: [
+          TransactionScope,
+          {
+            provide: TRANSACTION_FACTORY_REGISTRY,
+            useValue: emptyRegistry,
+          },
+          {
+            provide: REPOSITORY_MODULE_OPTIONS,
+            useValue: { defaultTimeout: 30000 },
+          },
+        ],
+      }).compile();
+
+      const txScope = moduleRef.get<TransactionScope>(TransactionScope);
+      const warnSpy = vi.spyOn(Logger, 'warn').mockImplementation(() => {});
+
+      txScope.onApplicationBootstrap();
+
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      expect(warnSpy.mock.calls[0][0]).toContain(
+        'No transaction factory is registered',
+      );
+
+      warnSpy.mockRestore();
+    });
+
+    it('should not warn when a transaction factory is registered', () => {
+      const warnSpy = vi.spyOn(Logger, 'warn').mockImplementation(() => {});
+
+      transaction.onApplicationBootstrap();
+
+      expect(warnSpy).not.toHaveBeenCalled();
+
+      warnSpy.mockRestore();
+    });
+
+    it('should also warn from the first run() call, as a fallback for a boot-time warning that never reached its logger transport', async () => {
+      const emptyRegistry = new TransactionFactoryRegistry();
+      const moduleRef = await Test.createTestingModule({
+        providers: [
+          TransactionScope,
+          {
+            provide: TRANSACTION_FACTORY_REGISTRY,
+            useValue: emptyRegistry,
+          },
+          {
+            provide: REPOSITORY_MODULE_OPTIONS,
+            useValue: { defaultTimeout: 30000 },
+          },
+        ],
+      }).compile();
+
+      const txScope = moduleRef.get<TransactionScope>(TransactionScope);
+      const warnSpy = vi.spyOn(Logger, 'warn').mockImplementation(() => {});
+
+      // onApplicationBootstrap() deliberately not called — simulates a
+      // logger transport not yet attached at boot.
+      await txScope.run(new AppContextHost(), async () => 'result');
+      await txScope.run(new AppContextHost(), async () => 'result');
+
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+
+      warnSpy.mockRestore();
+    });
+  });
+
   describe('commit and rollback lifecycle', () => {
     it('should commit active transactions on success', async () => {
       const mockTx = createMockTransaction();

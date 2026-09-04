@@ -2,6 +2,7 @@ import {
   Injectable,
   Inject,
   Logger,
+  type OnApplicationBootstrap,
   Optional,
   PlainLiteralObject,
 } from '@nestjs/common';
@@ -65,8 +66,9 @@ export interface TransactionRunOptions {
  * ```
  */
 @Injectable()
-export class TransactionScope {
+export class TransactionScope implements OnApplicationBootstrap {
   private readonly defaultTimeout: number;
+  private warnedEmptyRegistry = false;
 
   constructor(
     @Inject(TRANSACTION_FACTORY_REGISTRY)
@@ -76,6 +78,41 @@ export class TransactionScope {
     options?: RepositoryModuleOptionsInterface,
   ) {
     this.defaultTimeout = options?.defaultTimeout ?? DEFAULT_TIMEOUT;
+  }
+
+  /**
+   * By bootstrap, every `forFeature` transaction factory has registered
+   * (registration happens in provider factories, instantiated during DI —
+   * see `RepositoryModule.forFeature`), so the count is final here. An
+   * empty registry means every `run()` in this app executes without a
+   * transaction: writes are not atomic and `onRollback` callbacks never
+   * fire, silently, since nothing else in this class distinguishes that
+   * case from a real commit.
+   */
+  onApplicationBootstrap(): void {
+    this.warnEmptyRegistryOnce();
+  }
+
+  /**
+   * Repeated at the first `run()`, not just at bootstrap: a custom
+   * `app.useLogger()` transport wired up after lifecycle hooks have already
+   * run would otherwise let the boot-time warning go nowhere, with no
+   * second chance to see it.
+   */
+  private warnEmptyRegistryOnce(): void {
+    if (this.warnedEmptyRegistry || this.registry.count > 0) {
+      return;
+    }
+
+    this.warnedEmptyRegistry = true;
+    Logger.warn(
+      'No transaction factory is registered. TransactionScope.run() will ' +
+        'execute without a transaction: writes are not atomic and ' +
+        'onRollback callbacks never fire. Register a repository module ' +
+        'that provides one, e.g. RepositoryModule.forFeature({ module: ' +
+        'TypeOrmRepositoryModule, ... }).',
+      TransactionScope.name,
+    );
   }
 
   /**
@@ -91,6 +128,8 @@ export class TransactionScope {
     operation: (txCtx: TransactionContextInterface) => Promise<T>,
     options?: TransactionRunOptions,
   ): Promise<T> {
+    this.warnEmptyRegistryOnce();
+
     const appCtx = AppContextHost.from(ctx);
     const timeout = options?.timeout ?? this.defaultTimeout;
 
