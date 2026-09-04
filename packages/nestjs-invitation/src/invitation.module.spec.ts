@@ -1,282 +1,56 @@
-import { mock } from 'jest-mock-extended';
+import { Test, type TestingModule } from '@nestjs/testing';
 
-import { DynamicModule, ModuleMetadata } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { InvitationNotificationPort } from './domain/ports/invitation-notification.port.js';
+import { InvitationOtpPort } from './domain/ports/invitation-otp.port.js';
+import { InvitationUserPort } from './domain/ports/invitation-user.port.js';
+import { InvitationService } from './domain/services/invitation.service.js';
+import { AppCrudModuleFixture } from './gateways/http/__tests__/fixtures/app-crud.module.fixture.js';
+import { InvitationMapper } from './infrastructure/persistence/invitation.mapper.js';
+import { InvitationModule } from './invitation.module.js';
 
-import { CrudModule } from '@concepta/nestjs-crud';
-import { EmailModule, EmailService } from '@concepta/nestjs-email';
-import { EventModule } from '@concepta/nestjs-event';
-import { TypeOrmExtModule } from '@concepta/nestjs-typeorm-ext';
-
-import { InvitationEmailServiceInterface } from './interfaces/services/invitation-email-service.interface';
-import { InvitationOtpServiceInterface } from './interfaces/services/invitation-otp-service.interface';
-import { InvitationSendServiceInterface } from './interfaces/services/invitation-send-service.interface';
-import { InvitationServiceInterface } from './interfaces/services/invitation-service.interface';
-import { InvitationUserModelServiceInterface } from './interfaces/services/invitation-user-model.service.interface';
-import {
-  INVITATION_MODULE_OTP_SERVICE_TOKEN,
-  INVITATION_MODULE_USER_MODEL_SERVICE_TOKEN,
-} from './invitation.constants';
-import { InvitationModule } from './invitation.module';
-import { InvitationAcceptanceService } from './services/invitation-acceptance.service';
-import { InvitationRevocationService } from './services/invitation-revocation.service';
-import { InvitationSendService } from './services/invitation-send.service';
-import { InvitationService } from './services/invitation.service';
-
-import { MailerServiceFixture } from './__fixtures__/email/mailer.service.fixture';
-import { InvitationLocalModuleFixture } from './__fixtures__/invitation/entities/invitation-local.module.fixture';
-import { InvitationSendServiceFixture } from './__fixtures__/invitation/entities/invitation-send.service.fixture';
-import { InvitationEntityFixture } from './__fixtures__/invitation/entities/invitation.entity.fixture';
-import { default as ormConfig } from './__fixtures__/ormconfig.fixture';
-import { OtpModuleFixture } from './__fixtures__/otp/otp.module.fixture';
-import { OtpServiceFixture } from './__fixtures__/otp/otp.service.fixture';
-import { UserModelServiceFixture } from './__fixtures__/user/services/user-model.service.fixture';
-import { UserModuleFixture } from './__fixtures__/user/user.module.fixture';
-
-describe(InvitationModule, () => {
+describe(InvitationModule.name, () => {
   let testModule: TestingModule;
-  let invitationModule: InvitationModule;
-  let otpService: InvitationOtpServiceInterface;
-  let emailService: InvitationEmailServiceInterface;
-  let userModelService: InvitationUserModelServiceInterface;
-  let invitationService: InvitationServiceInterface;
-  let invitationSendService: InvitationSendServiceInterface;
-  let invitationAcceptanceService: InvitationAcceptanceService;
-  let invitationRevocationService: InvitationRevocationService;
 
-  const mockEmailService = mock<InvitationEmailServiceInterface>();
-
-  describe(InvitationModule.forRoot, () => {
-    beforeEach(async () => {
-      testModule = await Test.createTestingModule(
-        testModuleFactory([
-          TypeOrmExtModule.forFeature({
-            invitation: {
-              entity: InvitationEntityFixture,
-            },
-          }),
-          InvitationModule.forRoot({
-            emailService: mockEmailService,
-            otpService: new OtpServiceFixture(),
-            userModelService: new UserModelServiceFixture(),
-            invitationSendService: new InvitationSendServiceFixture(),
-          }),
-        ]),
-      ).compile();
-    });
-
-    it('module should be loaded', async () => {
-      commonVars();
-      commonTests();
-    });
-  });
-
-  describe(InvitationModule.forRoot, () => {
-    beforeEach(async () => {
-      testModule = await Test.createTestingModule(
-        testModuleFactory([
-          TypeOrmExtModule.forFeature({
-            invitation: {
-              entity: InvitationEntityFixture,
-            },
-          }),
-          InvitationModule.forRoot({
-            emailService: mockEmailService,
-            otpService: new OtpServiceFixture(),
-            userModelService: new UserModelServiceFixture(),
-          }),
-        ]),
-      ).compile();
-    });
-
-    it('check send service type for default send service', async () => {
-      invitationSendService = testModule.get<InvitationSendServiceInterface>(
-        InvitationSendService,
-      );
-      // check the default
-      expect(invitationSendService).toBeInstanceOf(InvitationSendService);
-    });
+  beforeEach(async () => {
+    testModule = await Test.createTestingModule({
+      imports: [AppCrudModuleFixture],
+    }).compile();
   });
 
   afterEach(async () => {
-    if (testModule) await testModule.close();
+    vi.clearAllMocks();
+    await testModule.close();
   });
 
-  describe(InvitationModule.register, () => {
-    beforeEach(async () => {
-      testModule = await Test.createTestingModule(
-        testModuleFactory([
-          TypeOrmExtModule.forFeature({
-            invitation: {
-              entity: InvitationEntityFixture,
-            },
-          }),
-          InvitationModule.register({
-            emailService: mockEmailService,
-            otpService: new OtpServiceFixture(),
-            userModelService: new UserModelServiceFixture(),
-            invitationSendService: new InvitationSendServiceFixture(),
-          }),
-        ]),
-      ).compile();
-    });
-
-    it('module should be loaded', async () => {
-      commonVars();
-      commonTests();
-    });
+  it('should be loaded', () => {
+    const module = testModule.get<InvitationModule>(InvitationModule);
+    expect(module).toBeInstanceOf(InvitationModule);
   });
 
-  afterEach(async () => {
-    if (testModule) await testModule.close();
+  it('should resolve InvitationService', () => {
+    const service = testModule.get<InvitationService>(InvitationService);
+    expect(service).toBeInstanceOf(InvitationService);
   });
 
-  describe(InvitationModule.forRootAsync, () => {
-    beforeEach(async () => {
-      testModule = await Test.createTestingModule(
-        testModuleFactory([
-          InvitationModule.forRootAsync({
-            imports: [
-              TypeOrmExtModule.forFeature({
-                invitation: {
-                  entity: InvitationEntityFixture,
-                },
-              }),
-            ],
-            inject: [
-              UserModelServiceFixture,
-              OtpServiceFixture,
-              EmailService,
-              InvitationSendServiceFixture,
-            ],
-            useFactory: (
-              userModelService,
-              otpService,
-              emailService,
-              invitationSendService,
-            ) => ({
-              userModelService,
-              otpService,
-              emailService,
-              invitationSendService,
-            }),
-          }),
-        ]),
-      ).compile();
-    });
-
-    it('module should be loaded', async () => {
-      commonVars();
-      commonTests();
-    });
+  it('should resolve InvitationOtpPort', () => {
+    const port = testModule.get<InvitationOtpPort>(InvitationOtpPort);
+    expect(port).toBeInstanceOf(InvitationOtpPort);
   });
 
-  afterEach(async () => {
-    if (testModule) await testModule.close();
+  it('should resolve InvitationUserPort', () => {
+    const port = testModule.get<InvitationUserPort>(InvitationUserPort);
+    expect(port).toBeInstanceOf(InvitationUserPort);
   });
 
-  describe(InvitationModule.registerAsync, () => {
-    beforeEach(async () => {
-      testModule = await Test.createTestingModule(
-        testModuleFactory([
-          InvitationModule.registerAsync({
-            imports: [
-              TypeOrmExtModule.forFeature({
-                invitation: {
-                  entity: InvitationEntityFixture,
-                },
-              }),
-            ],
-            inject: [
-              UserModelServiceFixture,
-              OtpServiceFixture,
-              EmailService,
-              InvitationSendServiceFixture,
-            ],
-            useFactory: (
-              userModelService,
-              otpService,
-              emailService,
-              invitationSendService,
-            ) => ({
-              userModelService,
-              otpService,
-              emailService,
-              invitationSendService,
-            }),
-          }),
-        ]),
-      ).compile();
-    });
-
-    it('module should be loaded', async () => {
-      commonVars();
-      commonTests();
-    });
+  it('should resolve InvitationNotificationPort', () => {
+    const port = testModule.get<InvitationNotificationPort>(
+      InvitationNotificationPort,
+    );
+    expect(port).toBeInstanceOf(InvitationNotificationPort);
   });
 
-  afterEach(async () => {
-    if (testModule) await testModule.close();
+  it('should resolve InvitationMapper', () => {
+    const mapper = testModule.get<InvitationMapper>(InvitationMapper);
+    expect(mapper).toBeInstanceOf(InvitationMapper);
   });
-
-  function commonVars() {
-    invitationModule = testModule.get<InvitationModule>(InvitationModule);
-
-    emailService =
-      testModule.get<InvitationEmailServiceInterface>(EmailService);
-
-    otpService = testModule.get<InvitationOtpServiceInterface>(
-      INVITATION_MODULE_OTP_SERVICE_TOKEN,
-    );
-
-    userModelService = testModule.get<InvitationUserModelServiceInterface>(
-      INVITATION_MODULE_USER_MODEL_SERVICE_TOKEN,
-    );
-
-    invitationService = testModule.get<InvitationService>(InvitationService);
-
-    invitationSendService = testModule.get<InvitationSendServiceInterface>(
-      InvitationSendService,
-    );
-
-    invitationAcceptanceService = testModule.get<InvitationAcceptanceService>(
-      InvitationAcceptanceService,
-    );
-
-    invitationRevocationService = testModule.get<InvitationRevocationService>(
-      InvitationRevocationService,
-    );
-  }
-
-  function commonTests() {
-    expect(invitationModule).toBeInstanceOf(InvitationModule);
-    expect(otpService).toBeInstanceOf(OtpServiceFixture);
-    expect(emailService).toBeInstanceOf(EmailService);
-    expect(userModelService).toBeInstanceOf(UserModelServiceFixture);
-    expect(invitationService).toBeInstanceOf(InvitationService);
-    expect(invitationSendService).toBeInstanceOf(InvitationSendServiceFixture);
-    expect(invitationAcceptanceService).toBeInstanceOf(
-      InvitationAcceptanceService,
-    );
-    expect(invitationRevocationService).toBeInstanceOf(
-      InvitationRevocationService,
-    );
-  }
 });
-
-function testModuleFactory(
-  extraImports: DynamicModule['imports'] = [],
-): ModuleMetadata {
-  return {
-    imports: [
-      TypeOrmExtModule.forRoot(ormConfig),
-      EventModule.forRoot({}),
-      CrudModule.forRoot({}),
-      UserModuleFixture,
-      OtpModuleFixture,
-      InvitationLocalModuleFixture,
-      EmailModule.forRoot({ mailerService: new MailerServiceFixture() }),
-      ...extraImports,
-    ],
-  };
-}

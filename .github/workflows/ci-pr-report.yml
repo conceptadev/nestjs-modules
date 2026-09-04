@@ -16,9 +16,9 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
           artifact: test-results
-          name: Jest Tests
+          name: Unit Tests
           path: 'junit.xml'
-          reporter: jest-junit
+          reporter: java-junit
   coverage-report:
     runs-on: ubuntu-latest
     steps:

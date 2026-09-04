@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [22.x]
     steps:
       - uses: actions/checkout@v2
       - name: Enable Corepack
@@ -33,9 +33,9 @@ jobs:
       - name: Process Test Results
         uses: dorny/test-reporter@v1
         with:
-          name: Jest Tests
+          name: Unit Tests
           path: "junit.xml"
-          reporter: jest-junit
+          reporter: java-junit
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
         with:
