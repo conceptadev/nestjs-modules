@@ -8,7 +8,12 @@ import {
 } from '@nestjs/common';
 import { EventPublisher } from '@nestjs/cqrs';
 
-import { EventContextHost, ReferenceId } from '@concepta/nestjs-core';
+import {
+  createEventContext,
+  EventContextHeadersInterface,
+  EventContextHost,
+  ReferenceId,
+} from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { InvitationNotFoundException } from '../../application/exceptions/invitation-not-found.exception.js';
@@ -39,7 +44,7 @@ export class InvitationService {
     dto: InvitationCreatableInterface,
   ): Promise<Invitation> {
     return this.txScope.run(ctx, async (txCtx) => {
-      const eventContext = new EventContextHost({}, {});
+      const eventContext = createEventContext(txCtx, {}, {});
 
       const invitation = this.eventPublisher.mergeObjectContext(
         Invitation.create(eventContext, dto),
@@ -99,10 +104,11 @@ export class InvitationService {
 
       const otp = await this.otpPort.create(txCtx, category, userId);
 
-      const eventContext = new EventContextHost<
+      const eventContext = createEventContext<
         PlainLiteralObject,
         InvitationDispatchedMetadataInterface
       >(
+        txCtx,
         {},
         {
           passcode: otp.passcode,
@@ -163,7 +169,7 @@ export class InvitationService {
         return null;
       }
 
-      const eventContext = new EventContextHost({}, {});
+      const eventContext = createEventContext(txCtx, {}, {});
 
       const merged = this.eventPublisher.mergeObjectContext(invitation);
       merged.accept(eventContext, payload);
@@ -188,7 +194,7 @@ export class InvitationService {
         throw new InvitationNotFoundException(String(id));
       }
 
-      const eventContext = new EventContextHost({}, {});
+      const eventContext = createEventContext(txCtx, {}, {});
 
       const merged = this.eventPublisher.mergeObjectContext(invitation);
       merged.remove(eventContext);
@@ -242,7 +248,7 @@ export class InvitationService {
         return;
       }
 
-      const eventContext = new EventContextHost({}, {});
+      const eventContext = createEventContext(txCtx, {}, {});
 
       await this.revokeActive(txCtx, eventContext, activeInvitations);
     });
@@ -250,7 +256,7 @@ export class InvitationService {
 
   protected async revokeActive(
     ctx: PlainLiteralObject,
-    eventContext: EventContextHost,
+    eventContext: EventContextHost<EventContextHeadersInterface>,
     invitations: Invitation[],
   ): Promise<void> {
     return this.txScope.run(ctx, async (txCtx) => {

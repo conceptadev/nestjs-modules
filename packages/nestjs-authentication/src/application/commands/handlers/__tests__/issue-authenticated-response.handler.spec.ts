@@ -5,6 +5,7 @@ import { mock } from 'vitest-mock-extended';
 import { type EventPublisher } from '@nestjs/cqrs';
 
 import { type Token } from '../../../../domain/aggregates/token.aggregate.js';
+import { TokenIssuedEvent } from '../../../../domain/events/token-issued.event.js';
 import { type AuthenticatedResponseInterface } from '../../../../domain/interfaces/authenticated-response.interface.js';
 import { type JwtPolicy } from '../../../../domain/policies/jwt.policy.js';
 import { type JwtPort } from '../../../../domain/ports/jwt.port.js';
@@ -77,6 +78,31 @@ describe(IssueAuthenticatedResponseHandler.name, () => {
     expect(jwtPort.signRefreshToken).toHaveBeenCalledWith(
       {},
       expect.objectContaining({ sub: userId, type: 'refresh' }),
+    );
+  });
+
+  it('should share one correlationId/causationId across access and refresh token events', async () => {
+    // `mergeObjectContext` runs right after each `Token.create()`, before
+    // the handler's own `commit()` clears the aggregate's uncommitted
+    // events — capture the events here rather than after `execute` returns.
+    const capturedEvents: TokenIssuedEvent[] = [];
+    vi.spyOn(eventPublisher, 'mergeObjectContext').mockImplementation((agg) => {
+      for (const event of agg.getUncommittedEvents()) {
+        if (event instanceof TokenIssuedEvent) capturedEvents.push(event);
+      }
+      return agg as Token;
+    });
+
+    const command = new IssueAuthenticatedResponseCommand({}, userId);
+    await handler.execute(command);
+
+    const [accessEvent, refreshEvent] = capturedEvents;
+
+    expect(refreshEvent.eventContext.getHeader('correlationId')).toBe(
+      accessEvent.eventContext.getHeader('correlationId'),
+    );
+    expect(refreshEvent.eventContext.getHeader('causationId')).toBe(
+      accessEvent.eventContext.getHeader('causationId'),
     );
   });
 });

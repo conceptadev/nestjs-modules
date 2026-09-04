@@ -298,6 +298,35 @@ const { tenantId } = ctx.with(MyCtx);
 Subclasses implement `ref` (the `OverlayRef` token) and `attach()` (where
 `defineOverlay` is called). Register them as global `APP_INTERCEPTOR` providers.
 
+### Correlation Context
+
+`CorrelationContextOverlay` seeds `correlationId`/`causationId` from the
+inbound `x-correlation-id` request header, minting a fresh self-correlated
+pair when the header is absent. Attaching it twice is idempotent — the
+first-seen pair wins. This is the overlay `createEventContext` reads from
+(see [Event Context](#event-context)).
+
+Unlike other overlays, which are registered by whichever feature module
+owns them, `CorrelationContextOverlay` is registered by `CoreModule` itself
+— correlation has no single natural owning feature module, since every
+package needs it equally. **Importing `CoreModule` at the application root
+is required** for any app using event-context-bearing packages; without it
+the overlay never attaches, and every event context silently falls back to
+a synthesized, unlinked correlation pair.
+
+```ts
+import { CoreModule } from '@concepta/nestjs-core';
+
+@Module({
+  imports: [CoreModule.forRoot()],
+})
+export class AppModule {}
+```
+
+Like all overlays, `CorrelationContextOverlay.attach()` reads the request
+via `context.switchToHttp()` — on RPC/WS/GraphQL transports this yields a
+bogus request object, the same limitation every overlay in this system has.
+
 ## Exceptions
 
 ### RuntimeException
@@ -435,25 +464,51 @@ documented automatically, with no decorator needed).
 
 ## Event Context
 
-`EventContextHost<H, M>` is a frozen container of request headers and metadata,
-used as the first argument to aggregate factory methods and domain events. It
-ensures the event-issuing context is captured immutably at the point of command
-execution.
+`EventContextHost<H, M>` is a frozen container of headers and metadata, used
+as the first argument to aggregate factory methods and domain events. It
+ensures the event-issuing context is captured immutably at the point of
+command execution.
+
+`headers` and `metadata` serve different roles. Headers are framework-owned
+and auto-populated: every context carries `correlationId` (stable across a
+whole causal chain), `causationId` (the inbound request/command that caused
+this context to exist), and `recordedAt`, plus any per-package extension
+such as `namespace`. Metadata is caller-supplied, per-event-type payload
+extras — arbitrary typed data an event needs to carry that isn't part of the
+uniform header set.
+
+Because the causal headers are required, `EventContextHost` is not built
+directly — `createEventContext` derives `correlationId`/`causationId` from
+the ambient context (`ctx`) rather than accepting them as arguments:
 
 ```ts
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createEventContext } from '@concepta/nestjs-core';
 
-const eventContext = new EventContextHost(
-  { namespace: 'my-module' },  // headers
-  { correlationId: '...' },    // metadata
-);
+const eventContext = createEventContext(ctx, { namespace: 'my-module' }, {});
 
-eventContext.getHeader('namespace');     // 'my-module'
-eventContext.getMeta('correlationId');  // '...'
+eventContext.getHeader('namespace');      // 'my-module'
+eventContext.getHeader('correlationId');  // derived from ctx, or synthesized
+eventContext.getHeader('recordedAt');     // Date
+```
+
+The correlation pair comes from a `CorrelationCtx` overlay attached to `ctx`
+(see [Correlation Context](#correlation-context)) when one is present. If
+not — a seed script, a bare unit test — `createEventContext` mints a fresh
+self-correlated pair (`correlationId === causationId`), which is how such a
+context is visibly distinguishable from a real request chain.
+
+Metadata is passed as the third argument and read back with `getMeta`:
+
+```ts
+const eventContext = createEventContext(ctx, {}, { passcode, tokenExp });
+
+eventContext.getMeta('passcode');  // typed
 ```
 
 `EventContextHost` is frozen on construction — its `headers` and `metadata`
-properties cannot be mutated.
+properties cannot be mutated. `H` is constrained to
+`EventContextHeadersInterface`, so a context missing the causal headers
+fails to compile.
 
 ## Aggregate (`@concepta/nestjs-core/aggregate` subpath)
 
@@ -536,6 +591,7 @@ import {
   createMockCommandBus,
   createMockQueryBus,
   collectRuntimeExceptionClassNames,
+  createTestEventContext,
 } from '@concepta/nestjs-core/testing';
 ```
 
@@ -563,6 +619,11 @@ subclass exported from a `*.exception.ts` file under `srcDir`, by dynamically
 importing each file and walking its prototype chain. Packages use it in a
 per-package `exception-fault.spec.ts` suite to assert every exception class
 sets a `fault`, so a new exception can't silently ship unclassified.
+
+`createTestEventContext(extraHeaders, metadata)` builds an `EventContextHost`
+with a fixed, deterministic `correlationId`/`causationId`/`recordedAt` —
+for tests that need a valid context to satisfy the compile guard but don't
+exercise correlation behavior directly.
 
 ## API Reference
 
@@ -625,6 +686,9 @@ sets a `fault`, so a new exception can't silently ship unclassified.
 | `OverlayNotDefinedException` | Thrown when `with(ref)` is called for an overlay that was not defined on the context. |
 | `AppContextInterface` | Interface implemented by `AppContextHost`. |
 | `AppContextLike` | Type accepted by `AppContextHost.from()` — either an `AppContextHost` or a nullish/empty plain object. |
+| `CorrelationCtx` | `OverlayRef` token for the correlation overlay. Use with `ctx.with(CorrelationCtx)` or `@Ctx(CorrelationCtx)`. |
+| `CorrelationContextOverlay` | Seeds `correlationId`/`causationId` from the `x-correlation-id` request header. Registered by `CoreModule`. |
+| `CorrelationContextInterface` | Shape of the resolved overlay: `{ correlationId, causationId }`. |
 
 ### Exceptions Exports
 
@@ -644,7 +708,13 @@ sets a `fault`, so a new exception can't silently ship unclassified.
 | Export | Description |
 | --- | --- |
 | `EventContextHost<H, M>` | Frozen container of `headers: H` and `metadata: M`. Passed as first arg to aggregate factories and domain events. Provides `getHeader(key)` and `getMeta(key)`. |
-| `EventContextInterface<H, M>` | Interface implemented by `EventContextHost`. |
+| `EventContextInterface<H, M>` | Interface implemented by `EventContextHost` — declares `headers`, `metadata`, `getHeader(key)`, `getMeta(key)`. |
+| `EventContextHeadersInterface` | Required header shape: `correlationId`, `causationId`, `recordedAt`. Per-package headers extend this. |
+| `createEventContext(ctx, extraHeaders, metadata)` | Builds an `EventContextHost`, deriving `correlationId`/`causationId` from `ctx`'s `CorrelationCtx` overlay (or synthesizing a self-correlated pair). Never throws, even on an unusual `ctx` shape. |
+| `createCausalContext(resolver, extraHeaders, metadata)` | The framework-agnostic algorithm `createEventContext` delegates to — resolves or synthesizes a correlation pair via a `CausalContextResolver`, with no `AppContextHost` involved. |
+| `CausalContextResolver` | Port abstracting over where the correlation pair lives — `resolve()` returns a pair or `undefined`; `memoize(pair)` records a synthesized one. |
+| `CausalPairInterface` | `{ correlationId, causationId }` — the shape resolved and memoized by a `CausalContextResolver`. |
+| `AppContextHostCausalResolver` | `CausalContextResolver` implementation backed by an `AppContextHost`'s `CorrelationCtx` overlay. Used internally by `createEventContext`. |
 
 ### Reference Types
 
@@ -732,3 +802,5 @@ sets a `fault`, so a new exception can't silently ship unclassified.
 | `createMockEventPublisher()` | Returns a `DeepMockProxy<EventPublisher>` with `mergeObjectContext` pre-wired to return its argument. |
 | `createMockCommandBus()` | Returns a `DeepMockProxy<CommandBus>`. |
 | `createMockQueryBus()` | Returns a `DeepMockProxy<QueryBus>`. |
+| `collectRuntimeExceptionClassNames(srcDir, runtimeExceptionClass)` | Discovers every `RuntimeException` subclass under `srcDir` by dynamic import and prototype walk. |
+| `createTestEventContext(extraHeaders, metadata)` | Builds an `EventContextHost` with a fixed, deterministic correlation pair for tests that don't exercise correlation directly. |

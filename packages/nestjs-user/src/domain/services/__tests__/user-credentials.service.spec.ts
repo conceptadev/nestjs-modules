@@ -1,4 +1,4 @@
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createTestEventContext } from '@concepta/nestjs-core/testing';
 
 import {
   createMockEventPublisher,
@@ -15,7 +15,7 @@ import { UserPasswordPolicy } from '../../policies/user-password.policy.js';
 import { UserCredentialsService } from '../user-credentials.service.js';
 
 describe(UserCredentialsService.name, () => {
-  const eventContext = new EventContextHost({}, {});
+  const eventContext = createTestEventContext({}, {});
   const mockCredentialEntity = createMockUserCredentialEntity();
 
   function setup(policy?: UserPasswordPolicy) {

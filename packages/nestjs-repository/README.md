@@ -685,7 +685,7 @@ This ensures domain events are only published after the transaction succeeds.
 
 ```ts
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createEventContext } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 @CommandHandler(CreateOrderCommand)
@@ -701,7 +701,7 @@ export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
 
     const orderRepo = this.repositoryResolver.resolve(namespace);
 
-    const eventContext = new EventContextHost({ namespace }, {});
+    const eventContext = createEventContext(ctx, { namespace }, {});
 
     return this.txScope.run(ctx, async (txCtx) => {
       const order = this.eventPublisher.mergeObjectContext(

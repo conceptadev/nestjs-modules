@@ -1,4 +1,4 @@
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createTestEventContext } from '@concepta/nestjs-core/testing';
 
 import {
   createMockUserEntity,
@@ -6,7 +6,7 @@ import {
 } from '../../../__tests__/helpers/mock.helpers.js';
 import { User } from '../user.js';
 
-const eventContext = new EventContextHost({}, {});
+const eventContext = createTestEventContext({}, {});
 const mockEntity = createMockUserEntity();
 
 describe(User.name, () => {

@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createEventContext } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { CACHE_REPOSITORY_RESOLVER_TOKEN } from '../../../cache.constants.js';
@@ -26,7 +26,7 @@ export class UpdateCacheHandler implements ICommandHandler<UpdateCacheCommand> {
     const { data, expiresIn } = dto;
     const cacheRepo = this.repositoryResolver.resolve(namespace);
 
-    const eventContext = new EventContextHost({ namespace }, {});
+    const eventContext = createEventContext(ctx, { namespace }, {});
 
     return this.txScope.run(ctx, async (txCtx) => {
       const existing = await cacheRepo.get(txCtx, id);

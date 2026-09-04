@@ -132,4 +132,24 @@ export default tseslint.config(
       'tsdoc/syntax': 'off',
     },
   },
+
+  // `causal-context` is framework-agnostic by design — forbid framework
+  // imports here so the boundary can't silently erode.
+  {
+    files: ['packages/nestjs-core/src/domain/events/causal-context/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@nestjs/*', '@nestjs/**', '@concepta/*', '@concepta/**'],
+              message:
+                'causal-context is framework-agnostic — framework imports belong in the adapter layer (domain/events/*.ts, infrastructure/context/*.ts), not here.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

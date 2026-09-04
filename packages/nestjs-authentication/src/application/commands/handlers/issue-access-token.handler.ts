@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createEventContext } from '@concepta/nestjs-core';
 
 import { AUTHENTICATION_JWT_PORT_TOKEN } from '../../../authentication.constants.js';
 import { Token } from '../../../domain/aggregates/token.aggregate.js';
@@ -27,7 +27,7 @@ export class IssueAccessTokenHandler implements ICommandHandler<
     const now = new Date();
 
     const token = this.eventPublisher.mergeObjectContext(
-      Token.create(new EventContextHost({}, {}), {
+      Token.create(createEventContext(ctx, {}, {}), {
         sub: payload.sub,
         type: 'access',
         iat: now,

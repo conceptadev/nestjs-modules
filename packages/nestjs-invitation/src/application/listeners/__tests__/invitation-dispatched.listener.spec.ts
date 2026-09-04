@@ -1,6 +1,6 @@
 import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createTestEventContext } from '@concepta/nestjs-core/testing';
 
 import { type InvitationEventPayloadInterface } from '../../../domain/events/interfaces/invitation-event-payload.interface.js';
 import { InvitationDispatchedEvent } from '../../../domain/events/invitation-dispatched.event.js';
@@ -19,7 +19,7 @@ describe(InvitationDispatchedListener.name, () => {
   it('should call notificationPort.sendInvitation with invitation and OTP data from meta', async () => {
     const tokenExp = new Date('2026-02-01');
 
-    const eventContext = new EventContextHost(
+    const eventContext = createTestEventContext(
       {},
       { passcode: 'abc123', tokenExp },
     );

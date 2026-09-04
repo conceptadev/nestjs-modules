@@ -1,4 +1,4 @@
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createTestEventContext } from '@concepta/nestjs-core/testing';
 
 import { InvitationAlreadyAcceptedException } from '../../exceptions/invitation-already-accepted.exception.js';
 import { InvitationRevokedException } from '../../exceptions/invitation-revoked.exception.js';
@@ -6,7 +6,7 @@ import { type InvitationCreatableInterface } from '../../interfaces/invitation-c
 import { Invitation } from '../invitation.js';
 
 describe(Invitation.name, () => {
-  const eventContext = new EventContextHost({}, {});
+  const eventContext = createTestEventContext({}, {});
 
   const validCreateDto: InvitationCreatableInterface = {
     code: 'test-code',
@@ -136,7 +136,7 @@ describe(Invitation.name, () => {
     it('should not change any state', () => {
       const invitation = Invitation.create(eventContext, validCreateDto);
 
-      const dispatchContext = new EventContextHost(
+      const dispatchContext = createTestEventContext(
         {},
         { passcode: 'abc', tokenExp: new Date() },
       );

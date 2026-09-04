@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createEventContext } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { UserCredentialsService } from '../../../domain/services/user-credentials.service.js';
@@ -19,7 +19,7 @@ export class UpdateUserCredentialHandler implements ICommandHandler<
   async execute(command: UpdateUserCredentialCommand): Promise<void> {
     const { ctx, userId, passwordDto } = command;
     return this.txScope.run(ctx, async (txCtx) => {
-      const eventContext = new EventContextHost({}, {});
+      const eventContext = createEventContext(txCtx, {}, {});
 
       await this.userCredentialsService.updatePassword(
         txCtx,

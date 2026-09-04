@@ -1,5 +1,5 @@
-import { type PlainLiteralObject } from '@nestjs/common';
+import { type EventContextHeadersInterface } from '@concepta/nestjs-core';
 
-export interface OtpEventHeaderInterface extends PlainLiteralObject {
+export interface OtpEventHeaderInterface extends EventContextHeadersInterface {
   namespace: string;
 }

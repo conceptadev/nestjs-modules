@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createEventContext } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { Identity } from '../../../domain/aggregates/identity.js';
@@ -22,7 +22,7 @@ export class CreateIdentityHandler implements ICommandHandler<CreateIdentityComm
     const { ctx, dto } = command;
 
     return this.txScope.run(ctx, async (txCtx) => {
-      const eventContext = new EventContextHost({}, {});
+      const eventContext = createEventContext(txCtx, {}, {});
 
       const identity = this.eventPublisher.mergeObjectContext(
         Identity.create(eventContext, dto),

@@ -1,7 +1,7 @@
 import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
-import { EventContextHost } from '@concepta/nestjs-core';
 import {
+  createTestEventContext,
   createMockCommandBus,
   createMockEventPublisher,
   createMockQueryBus,
@@ -52,7 +52,7 @@ export function createMockAssignmentRepositoryResolver(
 }
 
 export function createMockEventContext(namespace = DEFAULT_ROLE_NAMESPACE) {
-  return new EventContextHost({ namespace }, {});
+  return createTestEventContext({ namespace }, {});
 }
 
 export function createMockRoleEntity(

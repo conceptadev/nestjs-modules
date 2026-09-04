@@ -120,9 +120,24 @@ export { ContextOverlayInterceptor } from './infrastructure/context/context-over
 export { AppContextInterface } from './domain/context/interfaces/app-context.interface.js';
 export { HookContextInterface } from './infrastructure/context/interfaces/hook-context.interface.js';
 
+// Correlation context
+export {
+  CorrelationCtx,
+  CorrelationContextOverlay,
+} from './infrastructure/context/correlation-context.overlay.js';
+export { CorrelationContextInterface } from './infrastructure/context/interfaces/correlation-context.interface.js';
+
 // Event context
-export { EventContextHost } from './domain/events/event-context.host.js';
-export { EventContextInterface } from './domain/events/interfaces/event-context.interface.js';
+export { EventContextHost } from './domain/events/causal-context/event-context.host.js';
+export { EventContextInterface } from './domain/events/causal-context/interfaces/event-context.interface.js';
+export { EventContextHeadersInterface } from './domain/events/causal-context/causal-context-headers.interface.js';
+export {
+  CausalContextResolver,
+  CausalPairInterface,
+} from './domain/events/causal-context/causal-context-resolver.interface.js';
+export { createCausalContext } from './domain/events/causal-context/create-causal-context.js';
+export { AppContextHostCausalResolver } from './domain/events/app-context-host-causal-resolver.js';
+export { createEventContext } from './domain/events/create-event-context.js';
 
 // Top-level module
 export { CoreModule } from './core.module.js';

@@ -3,7 +3,7 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
 import {
   AssigneeRelationInterface,
-  EventContextHost,
+  createEventContext,
 } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
@@ -52,7 +52,7 @@ export class ConsumeOtpHandler implements ICommandHandler<
         return;
       }
 
-      const eventContext = new EventContextHost({ namespace }, {});
+      const eventContext = createEventContext(txCtx, { namespace }, {});
 
       this.eventPublisher.mergeObjectContext(activeOtp);
 

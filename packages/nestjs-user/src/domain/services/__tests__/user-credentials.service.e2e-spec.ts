@@ -1,7 +1,8 @@
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 
-import { AppContextHost, EventContextHost } from '@concepta/nestjs-core';
+import { AppContextHost } from '@concepta/nestjs-core';
+import { createTestEventContext } from '@concepta/nestjs-core/testing';
 
 import { AppRepoModuleFixture } from '../../../__tests__/fixtures/app-repo.module.fixture.js';
 import {
@@ -26,7 +27,7 @@ describe(UserCredentialsService.name + ' (e2e)', () => {
   let service: UserCredentialsService;
   let userRepository: UserRepositoryInterface;
   let credentialsRepository: UserCredentialsRepositoryInterface;
-  const eventContext = new EventContextHost({}, {});
+  const eventContext = createTestEventContext({}, {});
 
   let testUser: User;
 

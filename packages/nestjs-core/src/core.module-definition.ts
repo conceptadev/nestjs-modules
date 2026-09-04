@@ -5,6 +5,10 @@ import {
 } from '@nestjs/common';
 
 import {
+  createCorrelationFeatureExports,
+  createCorrelationFeatureProviders,
+} from './infrastructure/context/utils/create-correlation-feature-providers.js';
+import {
   createHookFeatureExports,
   createHookFeatureProviders,
 } from './infrastructure/hook/utils/create-hook-feature-providers.js';
@@ -57,6 +61,8 @@ export function createCoreProviders(options: {
     ...(options.providers ?? []),
     // Hook feature
     ...createHookFeatureProviders(),
+    // Correlation feature
+    ...createCorrelationFeatureProviders(),
   ];
 }
 
@@ -64,5 +70,7 @@ export function createCoreExports(): NonNullable<DynamicModule['exports']> {
   return [
     // Hook feature
     ...createHookFeatureExports(),
+    // Correlation feature
+    ...createCorrelationFeatureExports(),
   ];
 }

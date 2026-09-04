@@ -1,6 +1,6 @@
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 
-import { AppContextHost } from '@concepta/nestjs-core';
+import { AppContextHost, CorrelationCtx } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { OtpCreatedEvent } from '../../domain/events/otp-created.event.js';
@@ -26,6 +26,10 @@ export class OtpHistoryCleanupListener implements IEventHandler<OtpCreatedEvent>
     if (keepHistoryDays === undefined) return;
 
     const appCtx = new AppContextHost();
+    appCtx.defineOverlay(CorrelationCtx, {
+      correlationId: eventContext.getHeader('correlationId'),
+      causationId: eventContext.getHeader('causationId'),
+    });
 
     await this.txScope.run(appCtx, async (txCtx) => {
       await this.historyCleanup.cleanup(txCtx, {

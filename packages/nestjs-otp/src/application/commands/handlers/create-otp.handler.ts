@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createEventContext } from '@concepta/nestjs-core';
 import {
   TransactionContextInterface,
   TransactionScope,
@@ -50,7 +50,7 @@ export class CreateOtpHandler implements ICommandHandler<CreateOtpCommand> {
 
     const passcode = typeService.generator();
 
-    const eventContext = new EventContextHost({ namespace }, {});
+    const eventContext = createEventContext(ctx, { namespace }, {});
 
     return this.txScope.run(ctx, async (txCtx) => {
       await this.validateRateLimit({

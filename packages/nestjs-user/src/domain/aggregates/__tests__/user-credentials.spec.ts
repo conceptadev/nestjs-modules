@@ -1,10 +1,10 @@
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createTestEventContext } from '@concepta/nestjs-core/testing';
 
 import { UserCredentialsMapper } from '../../../infrastructure/persistence/user-credentials.mapper.js';
 import { type UserCredentialEntityInterface } from '../../interfaces/user-credential-entity.interface.js';
 import { UserCredentials } from '../user-credentials.js';
 
-const eventContext = new EventContextHost({}, {});
+const eventContext = createTestEventContext({}, {});
 const mapper = new UserCredentialsMapper();
 
 const mockEntity: UserCredentialEntityInterface = {

@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createEventContext } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { User } from '../../../domain/aggregates/user.js';
@@ -21,7 +21,7 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand> {
 
   async execute(command: UpdateUserCommand): Promise<User> {
     const { ctx, id, dto } = command;
-    const eventContext = new EventContextHost({}, {});
+    const eventContext = createEventContext(ctx, {}, {});
 
     return this.txScope.run(ctx, async (txCtx) => {
       const existing = await this.userRepository.get(txCtx, id);

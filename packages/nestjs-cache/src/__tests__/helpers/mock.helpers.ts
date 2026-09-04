@@ -1,14 +1,10 @@
 import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
-import {
-  ActionEnum,
-  AppContextHost,
-  EventContextHost,
-  Operation,
-} from '@concepta/nestjs-core';
+import { ActionEnum, AppContextHost, Operation } from '@concepta/nestjs-core';
 import {
   createMockCommandBus,
   createMockEventPublisher,
+  createTestEventContext,
 } from '@concepta/nestjs-core/testing';
 import { type CrudContextInterface, CrudCtx } from '@concepta/nestjs-crud';
 import { createMockTransaction } from '@concepta/nestjs-repository/testing';
@@ -42,7 +38,7 @@ export function createMockRepositoryResolver(
 }
 
 export function createMockEventContext(namespace = DEFAULT_CACHE_NAMESPACE) {
-  return new EventContextHost({ namespace }, {});
+  return createTestEventContext({ namespace }, {});
 }
 
 export function createMockCacheEntity(

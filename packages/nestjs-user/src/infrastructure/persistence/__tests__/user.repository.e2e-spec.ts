@@ -1,6 +1,6 @@
 import { Test, type TestingModule } from '@nestjs/testing';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createTestEventContext } from '@concepta/nestjs-core/testing';
 
 import { AppRepoModuleFixture } from '../../../__tests__/fixtures/app-repo.module.fixture.js';
 import { User } from '../../../domain/aggregates/user.js';
@@ -11,7 +11,7 @@ import { UserRepository } from '../user.repository.js';
 describe(UserRepository.name + ' (e2e)', () => {
   let moduleFixture: TestingModule;
   let userRepository: UserRepositoryInterface;
-  const eventContext = new EventContextHost({}, {});
+  const eventContext = createTestEventContext({}, {});
 
   beforeEach(async () => {
     moduleFixture = await Test.createTestingModule({

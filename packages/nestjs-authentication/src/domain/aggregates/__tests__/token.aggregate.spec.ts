@@ -1,11 +1,11 @@
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createTestEventContext } from '@concepta/nestjs-core/testing';
 
 import { TokenIssuedEvent } from '../../events/token-issued.event.js';
 import { TokenRevokedEvent } from '../../events/token-revoked.event.js';
 import { TokenAlreadyRevokedException } from '../../exceptions/token-already-revoked.exception.js';
 import { Token } from '../token.aggregate.js';
 
-const eventContext = new EventContextHost({}, {});
+const eventContext = createTestEventContext({}, {});
 
 const makeDto = (
   overrides: Partial<Parameters<typeof Token.create>[1]> = {},

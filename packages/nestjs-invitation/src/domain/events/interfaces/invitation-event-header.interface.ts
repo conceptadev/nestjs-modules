@@ -1,3 +1,3 @@
-import { type PlainLiteralObject } from '@nestjs/common';
+import { type EventContextHeadersInterface } from '@concepta/nestjs-core';
 
-export interface InvitationEventHeaderInterface extends PlainLiteralObject {}
+export interface InvitationEventHeaderInterface extends EventContextHeadersInterface {}

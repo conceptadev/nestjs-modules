@@ -1,6 +1,6 @@
 import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createTestEventContext } from '@concepta/nestjs-core/testing';
 
 import { type InvitationEventPayloadInterface } from '../../../domain/events/interfaces/invitation-event-payload.interface.js';
 import { InvitationAcceptedEvent } from '../../../domain/events/invitation-accepted.event.js';
@@ -17,7 +17,7 @@ describe(InvitationAcceptedListener.name, () => {
   });
 
   it('should call notificationPort.sendAccepted with the invitation from the event', async () => {
-    const eventContext = new EventContextHost({}, {});
+    const eventContext = createTestEventContext({}, {});
 
     const invitation: InvitationEventPayloadInterface = {
       id: 'inv-1',

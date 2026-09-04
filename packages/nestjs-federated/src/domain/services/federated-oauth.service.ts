@@ -1,7 +1,7 @@
 import { Inject, Injectable, PlainLiteralObject } from '@nestjs/common';
 import { EventPublisher } from '@nestjs/cqrs';
 
-import { EventContextHost, NotAnErrorException } from '@concepta/nestjs-core';
+import { createEventContext, NotAnErrorException } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { FEDERATED_MODULE_IDENTITY_REPOSITORY_TOKEN } from '../../federated.constants.js';
@@ -68,7 +68,7 @@ export class FederatedOAuthService implements FederatedOAuthServiceInterface {
     return this.txScope.run(ctx, async (txCtx) => {
       const user = await this.findOrCreateUser(txCtx, email);
 
-      const eventContext = new EventContextHost({}, {});
+      const eventContext = createEventContext(txCtx, {}, {});
       const identity = this.eventPublisher.mergeObjectContext(
         Identity.create(eventContext, { provider, subject, user }),
       );

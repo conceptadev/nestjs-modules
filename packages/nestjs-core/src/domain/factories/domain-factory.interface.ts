@@ -1,4 +1,4 @@
-import { type EventContextInterface } from '../events/interfaces/event-context.interface.js';
+import { type EventContextInterface } from '../events/causal-context/interfaces/event-context.interface.js';
 
 export interface DomainFactory<Creatable, Domain> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -5,6 +5,7 @@ import {
   createMockEventPublisher,
   DEFAULT_ROLE_NAMESPACE,
 } from '../../../../__tests__/helpers/mock.helpers.js';
+import { type RoleAssignedEvent } from '../../../../domain/events/role-assigned.event.js';
 import { RoleAssignmentsConflictException } from '../../../exceptions/role-assignments-conflict.exception.js';
 import { AssignRolesCommand } from '../../impl/assign-roles.command.js';
 import { AssignRolesHandler } from '../assign-roles.handler.js';
@@ -73,6 +74,36 @@ describe(AssignRolesHandler.name, () => {
 
     expect(trxHandle.onCommit).toHaveBeenCalledTimes(1);
     expect(trxHandle.onRollback).toHaveBeenCalledTimes(1);
+  });
+
+  it('should share one correlationId/causationId across all resulting events', async () => {
+    mockRepo.countByRoleIdsAndAssignee.mockResolvedValue(0);
+
+    const result = await handler.execute(
+      new AssignRolesCommand(
+        ctx,
+        DEFAULT_ROLE_NAMESPACE,
+        ['role-1', 'role-2'],
+        'user-1',
+      ),
+    );
+
+    const eventContexts = result.map((roleAssignment) => {
+      const [event] = roleAssignment.getUncommittedEvents() as [
+        RoleAssignedEvent,
+      ];
+      return event.eventContext;
+    });
+
+    const [first, ...rest] = eventContexts;
+    for (const eventContext of rest) {
+      expect(eventContext.getHeader('correlationId')).toBe(
+        first.getHeader('correlationId'),
+      );
+      expect(eventContext.getHeader('causationId')).toBe(
+        first.getHeader('causationId'),
+      );
+    }
   });
 
   it('should throw RoleAssignmentsConflictException when any already assigned', async () => {

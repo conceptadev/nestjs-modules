@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createEventContext } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { RoleAssignmentRepositoryResolverInterface } from '../../../domain/repositories/role-assignment-repository-resolver.interface.js';
@@ -21,7 +21,7 @@ export class RevokeRoleHandler implements ICommandHandler<RevokeRoleCommand> {
     const { ctx, namespace, roleId, assigneeId } = command;
     const assignmentRepo = this.repositoryResolver.resolve(namespace);
 
-    const eventContext = new EventContextHost({ namespace }, {});
+    const eventContext = createEventContext(ctx, { namespace }, {});
 
     return this.txScope.run(ctx, async (txCtx) => {
       const roleAsmnt = await assignmentRepo.findOne(txCtx, roleId, assigneeId);

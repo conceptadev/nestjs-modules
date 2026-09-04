@@ -6,7 +6,7 @@ import {
   ICommandHandler,
 } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createEventContext } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { User } from '../../../domain/aggregates/user.js';
@@ -27,7 +27,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
 
   async execute(command: CreateUserCommand): Promise<User> {
     const { ctx, dto } = command;
-    const userEventContext = new EventContextHost({}, {});
+    const userEventContext = createEventContext(ctx, {}, {});
 
     return this.txScope.run(ctx, async (txCtx) => {
       const user = this.eventPublisher.mergeObjectContext(

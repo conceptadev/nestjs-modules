@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 
-import { EventContextHost } from '@concepta/nestjs-core';
+import { createEventContext } from '@concepta/nestjs-core';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { Role } from '../../../domain/aggregates/role.js';
@@ -22,7 +22,7 @@ export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand> {
     const { ctx, namespace, dto } = command;
     const roleRepo = this.repositoryResolver.resolve(namespace);
 
-    const eventContext = new EventContextHost({ namespace }, {});
+    const eventContext = createEventContext(ctx, { namespace }, {});
 
     return this.txScope.run(ctx, async (txCtx) => {
       const role = this.eventPublisher.mergeObjectContext(
