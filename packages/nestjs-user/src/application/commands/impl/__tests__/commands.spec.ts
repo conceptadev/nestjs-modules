@@ -51,6 +51,12 @@ describe(CreateUserCredentialCommand.name, () => {
     expect(cmd.userId).toBe('user-1');
     expect(cmd.password).toBe('pass123');
   });
+
+  it('should store an already-hashed password storage object', () => {
+    const passwordStorage = { passwordHash: 'hashed' };
+    const cmd = new CreateUserCredentialCommand({}, 'user-1', passwordStorage);
+    expect(cmd.password).toBe(passwordStorage);
+  });
 });
 
 describe(UpdateUserPasswordCommand.name, () => {

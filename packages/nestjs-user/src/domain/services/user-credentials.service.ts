@@ -6,7 +6,10 @@ import {
   ReferenceId,
   ReferenceIdInterface,
 } from '@concepta/nestjs-core';
-import { PasswordStorageInterface } from '@concepta/nestjs-password';
+import {
+  isPasswordStorage,
+  PasswordStorageInterface,
+} from '@concepta/nestjs-password';
 import { TransactionScope } from '@concepta/nestjs-repository';
 
 import { USER_CREDENTIALS_REPOSITORY_TOKEN } from '../../user.constants.js';
@@ -33,7 +36,7 @@ export class UserCredentialsService {
     ctx: PlainLiteralObject,
     eventContext: EventContextHost,
     userId: ReferenceId,
-    password: string,
+    password: string | PasswordStorageInterface,
   ): Promise<UserCredentials> {
     return this.txScope.run(ctx, async (txCtx) => {
       const existing = await this.userCredentialsRepository.findActiveByUserId(
@@ -45,7 +48,10 @@ export class UserCredentialsService {
         throw new UserCredentialsAlreadyExistException();
       }
 
-      const passwordStorage = await this.passwordPort.create(password);
+      const passwordStorage = isPasswordStorage(password)
+        ? password
+        : await this.passwordPort.create(password);
+
       return this.createCredentials(
         txCtx,
         eventContext,

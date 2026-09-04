@@ -34,4 +34,15 @@ describe(CreateUserCredentialHandler.name, () => {
     expect(userId).toBe('user-1');
     expect(password).toBe('secret');
   });
+
+  it('should delegate an already-hashed password storage object as-is', async () => {
+    const passwordStorage = { passwordHash: 'hashed' };
+
+    await handler.execute(
+      new CreateUserCredentialCommand({}, 'user-1', passwordStorage),
+    );
+
+    const [, , , password] = userCredentialsService.setPassword.mock.calls[0];
+    expect(password).toBe(passwordStorage);
+  });
 });

@@ -61,6 +61,27 @@ describe(UserCredentialsService.name, () => {
       expect(userCredentialsRepository.save).toHaveBeenCalled();
     });
 
+    it('should hash a plain password via the password port', async () => {
+      const { service, userCredentialsRepository, passwordPort } = setup();
+      userCredentialsRepository.findActiveByUserId.mockResolvedValue(null);
+
+      await service.setPassword({}, eventContext, 'user-1', 'pass');
+
+      expect(passwordPort.create).toHaveBeenCalledWith('pass');
+    });
+
+    it('should store an already-hashed password storage object as-is', async () => {
+      const { service, userCredentialsRepository, passwordPort } = setup();
+      userCredentialsRepository.findActiveByUserId.mockResolvedValue(null);
+
+      const result = await service.setPassword({}, eventContext, 'user-1', {
+        passwordHash: 'pre-hashed',
+      });
+
+      expect(passwordPort.create).not.toHaveBeenCalled();
+      expect(result.passwordHash).toBe('pre-hashed');
+    });
+
     it('should throw when active credentials already exist', async () => {
       const { service, userCredentialsRepository } = setup();
       userCredentialsRepository.findActiveByUserId.mockResolvedValue(

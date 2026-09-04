@@ -2,6 +2,7 @@ import { createMockCommandBus } from '@concepta/nestjs-core/testing';
 
 import {
   createMockEventPublisher,
+  createMockPasswordPort,
   createMockTxScope,
   createMockUserRepository,
 } from '../../../../__tests__/helpers/mock.helpers.js';
@@ -16,16 +17,19 @@ describe(CreateUserHandler.name, () => {
   const commandBus = createMockCommandBus();
   const eventPublisher = createMockEventPublisher();
   const txScope = createMockTxScope();
+  const passwordPort = createMockPasswordPort();
 
   let handler: CreateUserHandler;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    passwordPort.create.mockResolvedValue({ passwordHash: 'hashed' });
     handler = new CreateUserHandler(
       userRepository,
       commandBus,
       eventPublisher,
       txScope,
+      passwordPort,
     );
   });
 
@@ -43,7 +47,7 @@ describe(CreateUserHandler.name, () => {
     expect(userRepository.save).toHaveBeenCalledTimes(1);
   });
 
-  it('should dispatch CreateUserCredentialCommand when password provided', async () => {
+  it('should hash the password before saving and dispatch it as storage', async () => {
     const dto: UserCreatableInterface = {
       email: 'a@b.com',
       username: 'john',
@@ -52,11 +56,12 @@ describe(CreateUserHandler.name, () => {
 
     const result = await handler.execute(new CreateUserCommand({}, dto));
 
+    expect(passwordPort.create).toHaveBeenCalledWith('secret');
     expect(commandBus.execute).toHaveBeenCalledTimes(1);
     const dispatched = commandBus.execute.mock
       .calls[0][0] as CreateUserCredentialCommand;
     expect(dispatched.userId).toBe(result.id);
-    expect(dispatched.password).toBe('secret');
+    expect(dispatched.password).toEqual({ passwordHash: 'hashed' });
   });
 
   it('should not dispatch credential command when no password', async () => {
@@ -68,5 +73,21 @@ describe(CreateUserHandler.name, () => {
     await handler.execute(new CreateUserCommand({}, dto));
 
     expect(commandBus.execute).not.toHaveBeenCalled();
+  });
+
+  it('should reject a weak password before saving the user', async () => {
+    const dto: UserCreatableInterface = {
+      email: 'a@b.com',
+      username: 'john',
+      password: 'weak',
+    };
+    passwordPort.create.mockRejectedValue(new Error('password not strong'));
+
+    await expect(
+      handler.execute(new CreateUserCommand({}, dto)),
+    ).rejects.toThrow('password not strong');
+
+    expect(userRepository.save).not.toHaveBeenCalled();
+    expect(txScope.run).not.toHaveBeenCalled();
   });
 });
